@@ -60,7 +60,7 @@ export default function CreateClass() {
     try {
       const user = JSON.parse(localStorage.getItem('user'))
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:3001/api/classes', {
+      const response = await fetch('https://linguaxchange-backend-production.up.railway.app/api/classes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

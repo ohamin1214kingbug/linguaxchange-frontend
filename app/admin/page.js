@@ -19,7 +19,7 @@ export default function Admin() {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('token')
-      const res = await fetch('http://localhost:3001/api/admin/users', {
+      const res = await fetch('https://linguaxchange-backend-production.up.railway.app/api/admin/users', {
         headers: { Authorization: `Bearer ${token}` }
       })
       const data = await res.json()
@@ -31,7 +31,7 @@ export default function Admin() {
   const fetchClasses = async () => {
     try {
       const token = localStorage.getItem('token')
-      const res = await fetch('http://localhost:3001/api/admin/classes', {
+      const res = await fetch('https://linguaxchange-backend-production.up.railway.app/api/admin/classes', {
         headers: { Authorization: `Bearer ${token}` }
       })
       const data = await res.json()
@@ -41,7 +41,7 @@ export default function Admin() {
 
   const approveUser = async (id) => {
     const token = localStorage.getItem('token')
-    await fetch(`http://localhost:3001/api/admin/users/${id}/approve`, {
+    await fetch(`https://linguaxchange-backend-production.up.railway.app/api/admin/users/${id}/approve`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -50,7 +50,7 @@ export default function Admin() {
 
   const rejectUser = async (id) => {
     const token = localStorage.getItem('token')
-    await fetch(`http://localhost:3001/api/admin/users/${id}/reject`, {
+    await fetch(`https://linguaxchange-backend-production.up.railway.app/api/admin/users/${id}/reject`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -59,7 +59,7 @@ export default function Admin() {
 
   const approveClass = async (id) => {
     const token = localStorage.getItem('token')
-    await fetch(`http://localhost:3001/api/classes/${id}/approve`, {
+    await fetch(`https://linguaxchange-backend-production.up.railway.app/api/classes/${id}/approve`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -68,7 +68,7 @@ export default function Admin() {
 
   const rejectClass = async (id) => {
     const token = localStorage.getItem('token')
-    await fetch(`http://localhost:3001/api/classes/${id}/reject`, {
+    await fetch(`https://linguaxchange-backend-production.up.railway.app/api/classes/${id}/reject`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` }
     })

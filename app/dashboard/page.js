@@ -18,11 +18,11 @@ export default function Dashboard() {
     const parsedUser = JSON.parse(stored)
     setUser(parsedUser)
 
-    fetch(`http://localhost:3001/api/credits?user_id=${parsedUser.id}`)
+    fetch(`https://linguaxchange-backend-production.up.railway.app/api/credits?user_id=${parsedUser.id}`)
       .then(res => res.json())
       .then(data => setCredits(data?.balance ?? 0))
 
-    fetch(`http://localhost:3001/api/credits/transactions?user_id=${parsedUser.id}`)
+    fetch(`https://linguaxchange-backend-production.up.railway.app/api/credits/transactions?user_id=${parsedUser.id}`)
       .then(res => res.json())
       .then(data => setTransactions(Array.isArray(data) ? data : []))
   }, [])
