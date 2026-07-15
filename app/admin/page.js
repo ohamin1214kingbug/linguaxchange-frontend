@@ -9,6 +9,8 @@ export default function Admin() {
   const [classes, setClasses] = useState([])
   const [loading, setLoading] = useState(true)
 
+  const API = 'https://linguaxchange-backend-production.up.railway.app'
+
   useEffect(() => {
     const token = localStorage.getItem('token')
     if (!token) { router.push('/auth/login'); return }
@@ -19,7 +21,7 @@ export default function Admin() {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('token')
-      const res = await fetch('https://linguaxchange-backend-production.up.railway.app/api/admin/users', {
+      const res = await fetch(`${API}/api/admin/users`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       const data = await res.json()
@@ -31,7 +33,7 @@ export default function Admin() {
   const fetchClasses = async () => {
     try {
       const token = localStorage.getItem('token')
-      const res = await fetch('https://linguaxchange-backend-production.up.railway.app/api/admin/classes', {
+      const res = await fetch(`${API}/api/admin/classes`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       const data = await res.json()
@@ -41,36 +43,40 @@ export default function Admin() {
 
   const approveUser = async (id) => {
     const token = localStorage.getItem('token')
-    await fetch(`https://linguaxchange-backend-production.up.railway.app/api/admin/users/${id}/approve`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` }
+    await fetch(`${API}/api/admin/users/${id}/approve`, {
+      method: 'POST', headers: { Authorization: `Bearer ${token}` }
     })
     fetchUsers()
   }
 
   const rejectUser = async (id) => {
     const token = localStorage.getItem('token')
-    await fetch(`https://linguaxchange-backend-production.up.railway.app/api/admin/users/${id}/reject`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` }
+    await fetch(`${API}/api/admin/users/${id}/reject`, {
+      method: 'POST', headers: { Authorization: `Bearer ${token}` }
     })
     fetchUsers()
   }
 
   const approveClass = async (id) => {
     const token = localStorage.getItem('token')
-    await fetch(`https://linguaxchange-backend-production.up.railway.app/api/classes/${id}/approve`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` }
+    await fetch(`${API}/api/classes/${id}/approve`, {
+      method: 'POST', headers: { Authorization: `Bearer ${token}` }
     })
     fetchClasses()
   }
 
   const rejectClass = async (id) => {
     const token = localStorage.getItem('token')
-    await fetch(`https://linguaxchange-backend-production.up.railway.app/api/classes/${id}/reject`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` }
+    await fetch(`${API}/api/classes/${id}/reject`, {
+      method: 'POST', headers: { Authorization: `Bearer ${token}` }
+    })
+    fetchClasses()
+  }
+
+  const completeClass = async (id) => {
+    const token = localStorage.getItem('token')
+    await fetch(`${API}/api/admin/classes/${id}/complete`, {
+      method: 'POST', headers: { Authorization: `Bearer ${token}` }
     })
     fetchClasses()
   }
@@ -78,6 +84,7 @@ export default function Admin() {
   const pendingUsers = users.filter(u => !u.is_approved)
   const approvedUsers = users.filter(u => u.is_approved)
   const pendingClasses = classes.filter(c => c.status === 'pending')
+  const approvedClasses = classes.filter(c => c.status === 'approved')
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -90,7 +97,7 @@ export default function Admin() {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
         <p className="text-gray-500 mb-8">Manage users and classes</p>
 
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-xl p-4 border border-gray-100 text-center">
             <p className="text-3xl font-bold text-amber-500">{pendingUsers.length}</p>
             <p className="text-gray-500 text-sm">Pending users</p>
@@ -100,8 +107,12 @@ export default function Admin() {
             <p className="text-gray-500 text-sm">Approved users</p>
           </div>
           <div className="bg-white rounded-xl p-4 border border-gray-100 text-center">
-            <p className="text-3xl font-bold text-indigo-500">{pendingClasses.length}</p>
+            <p className="text-3xl font-bold text-amber-500">{pendingClasses.length}</p>
             <p className="text-gray-500 text-sm">Pending classes</p>
+          </div>
+          <div className="bg-white rounded-xl p-4 border border-gray-100 text-center">
+            <p className="text-3xl font-bold text-indigo-500">{approvedClasses.length}</p>
+            <p className="text-gray-500 text-sm">Active classes</p>
           </div>
         </div>
 
@@ -180,28 +191,55 @@ export default function Admin() {
 
         {tab === 'classes' && !loading && (
           <div className="space-y-4">
-            {pendingClasses.map(cls => (
-              <div key={cls.id} className="bg-white rounded-xl p-5 border border-amber-200 shadow-sm">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="font-semibold text-gray-900">{cls.title}</p>
-                    <p className="text-gray-500 text-sm">{cls.language_code} · {cls.level} · {cls.duration_minutes} min</p>
-                    {cls.description && <p className="text-gray-500 text-sm mt-2">{cls.description}</p>}
+            {approvedClasses.length > 0 && (
+              <>
+                <h2 className="font-semibold text-gray-700">✅ Active classes — mark complete to give teacher 1 credit</h2>
+                {approvedClasses.map(cls => (
+                  <div key={cls.id} className="bg-white rounded-xl p-5 border border-green-200 shadow-sm">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="font-semibold text-gray-900">{cls.title}</p>
+                        <p className="text-gray-500 text-sm">{cls.language_code} · {cls.level} · {cls.duration_minutes} min</p>
+                        {cls.description && <p className="text-gray-500 text-sm mt-2">{cls.description}</p>}
+                      </div>
+                      <button onClick={() => completeClass(cls.id)}
+                        className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                        ✓ Mark complete (+1 credit)
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => approveClass(cls.id)}
-                      className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                      ✓ Approve
-                    </button>
-                    <button onClick={() => rejectClass(cls.id)}
-                      className="bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-medium">
-                      ✗ Reject
-                    </button>
+                ))}
+              </>
+            )}
+            {pendingClasses.length > 0 && (
+              <>
+                <h2 className="font-semibold text-gray-700 mt-4">⏳ Pending approval</h2>
+                {pendingClasses.map(cls => (
+                  <div key={cls.id} className="bg-white rounded-xl p-5 border border-amber-200 shadow-sm">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="font-semibold text-gray-900">{cls.title}</p>
+                        <p className="text-gray-500 text-sm">{cls.language_code} · {cls.level} · {cls.duration_minutes} min</p>
+                        {cls.description && <p className="text-gray-500 text-sm mt-2">{cls.description}</p>}
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => approveClass(cls.id)}
+                          className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                          ✓ Approve
+                        </button>
+                        <button onClick={() => rejectClass(cls.id)}
+                          className="bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-medium">
+                          ✗ Reject
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
-            {pendingClasses.length === 0 && <p className="text-gray-400 text-center py-12">No pending classes</p>}
+                ))}
+              </>
+            )}
+            {pendingClasses.length === 0 && approvedClasses.length === 0 && (
+              <p className="text-gray-400 text-center py-12">No classes yet</p>
+            )}
           </div>
         )}
       </div>
