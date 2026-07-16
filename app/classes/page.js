@@ -35,9 +35,9 @@ export default function Classes() {
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-          user_id: user.id,
-          class_session_id: cls.id
-        })
+  user_id: user.id,
+  class_id: cls.id
+})
       })
       const data = await res.json()
       if (!res.ok) {
