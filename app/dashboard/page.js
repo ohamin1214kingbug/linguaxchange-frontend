@@ -2,30 +2,70 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
+const API = 'https://linguaxchange-backend-production.up.railway.app'
+
 export default function Dashboard() {
   const router = useRouter()
   const [user, setUser] = useState(null)
   const [credits, setCredits] = useState(null)
   const [transactions, setTransactions] = useState([])
+  const [enrollments, setEnrollments] = useState([])
+  const [confirming, setConfirming] = useState(null)
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
     const token = localStorage.getItem('token')
-    if (!stored || !token) {
-      router.push('/auth/login')
-      return
-    }
+    if (!stored || !token) { router.push('/auth/login'); return }
     const parsedUser = JSON.parse(stored)
     setUser(parsedUser)
+    fetchCredits(parsedUser.id)
+    fetchTransactions(parsedUser.id)
+    fetchEnrollments(parsedUser.id)
+  }, [])
 
-    fetch(`https://linguaxchange-backend-production.up.railway.app/api/credits?user_id=${parsedUser.id}`)
+  const fetchCredits = (id) => {
+    fetch(`${API}/api/credits?user_id=${id}`)
       .then(res => res.json())
       .then(data => setCredits(data?.balance ?? 0))
+  }
 
-    fetch(`https://linguaxchange-backend-production.up.railway.app/api/credits/transactions?user_id=${parsedUser.id}`)
+  const fetchTransactions = (id) => {
+    fetch(`${API}/api/credits/transactions?user_id=${id}`)
       .then(res => res.json())
       .then(data => setTransactions(Array.isArray(data) ? data : []))
-  }, [])
+  }
+
+  const fetchEnrollments = (id) => {
+    fetch(`${API}/api/enrollments?user_id=${id}`)
+      .then(res => res.json())
+      .then(data => setEnrollments(Array.isArray(data) ? data : []))
+  }
+
+  const confirmAttendance = async (enrollmentId) => {
+    setConfirming(enrollmentId)
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${API}/api/enrollments/${enrollmentId}/confirm`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ user_id: user.id })
+      })
+      if (res.ok) {
+        setMessage('Attendance confirmed! Teacher received +1 credit.')
+        fetchEnrollments(user.id)
+        fetchCredits(user.id)
+      } else {
+        setMessage('Could not confirm attendance')
+      }
+    } catch (e) {
+      setMessage('Could not connect to server')
+    }
+    setConfirming(null)
+  }
 
   if (!user) return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading...</div>
 
@@ -45,10 +85,14 @@ export default function Dashboard() {
       </nav>
 
       <div className="max-w-4xl mx-auto px-8 py-12">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Welcome back, {user.first_name}!
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, {user.first_name}!</h1>
         <p className="text-gray-500 mb-8">Here's your account overview</p>
+
+        {message && (
+          <div className={`px-4 py-3 rounded-lg mb-6 text-sm ${message.includes('confirmed') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
+            {message}
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-6 mb-10">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
@@ -57,12 +101,42 @@ export default function Dashboard() {
             <p className="text-gray-400 text-sm mt-1">credits available</p>
           </div>
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <p className="text-gray-500 text-sm mb-1">Total transactions</p>
-            <p className="text-5xl font-bold text-green-600">{transactions.length}</p>
-            <p className="text-gray-400 text-sm mt-1">credit movements</p>
+            <p className="text-gray-500 text-sm mb-1">Classes joined</p>
+            <p className="text-5xl font-bold text-green-600">{enrollments.length}</p>
+            <p className="text-gray-400 text-sm mt-1">total enrollments</p>
           </div>
         </div>
 
+        {/* Enrolled classes */}
+        {enrollments.length > 0 && (
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
+            <h2 className="font-semibold text-gray-900 mb-4">My classes</h2>
+            <div className="space-y-3">
+              {enrollments.map(enrollment => (
+                <div key={enrollment.id} className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
+                  <div>
+                    <p className="text-gray-900 text-sm font-medium">
+                      {enrollment.class_sessions?.classes?.title || 'Class'}
+                    </p>
+                    <p className="text-gray-400 text-xs">
+                      {enrollment.status === 'attended' ? '✅ Attended' : '⏳ Enrolled'}
+                    </p>
+                  </div>
+                  {enrollment.status !== 'attended' && (
+                    <button
+                      onClick={() => confirmAttendance(enrollment.id)}
+                      disabled={confirming === enrollment.id}
+                      className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-600 disabled:opacity-50">
+                      {confirming === enrollment.id ? 'Confirming...' : '✓ Confirm attendance'}
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Credit history */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
           <h2 className="font-semibold text-gray-900 mb-4">Credit history</h2>
           {transactions.length === 0 ? (
