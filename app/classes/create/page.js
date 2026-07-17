@@ -44,6 +44,7 @@ export default function CreateClass() {
     max_students: 6,
     duration_minutes: 60,
     materials: '',
+    scheduled_at: '',
   })
 
   const handleChange = (e) => {
@@ -56,6 +57,7 @@ export default function CreateClass() {
     if (!form.level) return setError('Please select a level')
     if (!form.topic && !form.custom_topic) return setError('Please select or write a topic')
     if (!form.title) return setError('Please write a class title')
+    if (!form.scheduled_at) return setError('Please select a date and time')
     setLoading(true)
     try {
       const user = JSON.parse(localStorage.getItem('user'))
@@ -70,6 +72,7 @@ export default function CreateClass() {
           ...form,
           topic: form.custom_topic || form.topic,
           teacher_id: user.id,
+          scheduled_at: new Date(form.scheduled_at).toISOString(),
         })
       })
       const data = await response.json()
@@ -90,7 +93,7 @@ export default function CreateClass() {
         <div className="bg-white p-8 rounded-2xl shadow-sm w-full max-w-md text-center">
           <div className="text-5xl mb-4">🎉</div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Class submitted!</h1>
-          <p className="text-gray-500 mb-6">Your class is now waiting for admin approval. Once approved it will appear in the class list.</p>
+          <p className="text-gray-500 mb-6">Your class is now waiting for admin approval.</p>
           <div className="flex gap-3 justify-center">
             <a href="/classes" className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium">Browse classes</a>
             <a href="/dashboard" className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium">Dashboard</a>
@@ -177,6 +180,15 @@ export default function CreateClass() {
               placeholder="What will students learn in this class?"/>
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Date & time <span className="text-gray-400 font-normal">(when does the class start?)</span>
+            </label>
+            <input name="scheduled_at" type="datetime-local" onChange={handleChange}
+              value={form.scheduled_at}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2"/>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
@@ -234,12 +246,11 @@ export default function CreateClass() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Materials or preparation for students
-              <span className="text-gray-400 font-normal"> (optional)</span>
+              Materials <span className="text-gray-400 font-normal">(optional)</span>
             </label>
             <textarea name="materials" onChange={handleChange} value={form.materials} rows={2}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 resize-none"
-              placeholder="e.g. Please bring a pen and paper, watch this YouTube video first..."/>
+              placeholder="e.g. Please bring a pen and paper..."/>
           </div>
 
           <button onClick={handleSubmit} disabled={loading}
