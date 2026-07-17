@@ -4,6 +4,60 @@ import { useRouter } from 'next/navigation'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
+function RatingForm({ enrollmentId, studentId }) {
+  const [rating, setRating] = useState(0)
+  const [comment, setComment] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+
+  const submitRating = async () => {
+    try {
+      await fetch(`${API}/api/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          class_session_id: enrollmentId,
+          student_id: studentId,
+          rating,
+          comment
+        })
+      })
+      setSubmitted(true)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  if (submitted) return (
+    <p className="text-green-600 text-sm mt-2 bg-green-50 px-3 py-2 rounded-lg">
+      ✅ Review submitted! Thank you!
+    </p>
+  )
+
+  return (
+    <div className="mt-3 bg-gray-50 rounded-lg p-4">
+      <p className="text-sm font-medium text-gray-700 mb-2">Rate this class</p>
+      <div className="flex gap-1 mb-3">
+        {[1,2,3,4,5].map(star => (
+          <button key={star} onClick={() => setRating(star)}
+            className={`text-2xl transition-colors ${rating >= star ? 'text-yellow-400' : 'text-gray-300'}`}>
+            ★
+          </button>
+        ))}
+      </div>
+      <textarea
+        value={comment}
+        onChange={e => setComment(e.target.value)}
+        rows={2}
+        placeholder="Write a short review (optional)..."
+        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none mb-2"/>
+      <button onClick={submitRating} disabled={rating === 0}
+        className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50">
+        Submit review
+      </button>
+    </div>
+  )
+}
+
 export default function Dashboard() {
   const router = useRouter()
   const [user, setUser] = useState(null)
@@ -55,11 +109,13 @@ export default function Dashboard() {
         body: JSON.stringify({ user_id: user.id })
       })
       if (res.ok) {
-        setMessage('Attendance confirmed! Teacher received +1 credit.')
+        setMessage('Attendance confirmed! Teacher received +1 credit. 🎉')
         fetchEnrollments(user.id)
         fetchCredits(user.id)
+        fetchTransactions(user.id)
       } else {
-        setMessage('Could not confirm attendance')
+        const data = await res.json()
+        setMessage(data.error || 'Could not confirm attendance')
       }
     } catch (e) {
       setMessage('Could not connect to server')
@@ -67,7 +123,9 @@ export default function Dashboard() {
     setConfirming(null)
   }
 
-  if (!user) return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading...</div>
+  if (!user) return (
+    <div className="min-h-screen flex items-center justify-center text-gray-400">Loading...</div>
+  )
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -85,11 +143,17 @@ export default function Dashboard() {
       </nav>
 
       <div className="max-w-4xl mx-auto px-8 py-12">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, {user.first_name}!</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Welcome back, {user.first_name}!
+        </h1>
         <p className="text-gray-500 mb-8">Here's your account overview</p>
 
         {message && (
-          <div className={`px-4 py-3 rounded-lg mb-6 text-sm ${message.includes('confirmed') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
+          <div className={`px-4 py-3 rounded-lg mb-6 text-sm ${
+            message.includes('confirmed') || message.includes('🎉')
+              ? 'bg-green-50 text-green-700'
+              : 'bg-red-50 text-red-600'
+          }`}>
             {message}
           </div>
         )}
@@ -107,31 +171,67 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Enrolled classes */}
+        {/* My enrolled classes */}
         {enrollments.length > 0 && (
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
             <h2 className="font-semibold text-gray-900 mb-4">My classes</h2>
-            <div className="space-y-3">
-              {enrollments.map(enrollment => (
-                <div key={enrollment.id} className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
-                  <div>
-                    <p className="text-gray-900 text-sm font-medium">
-                      {enrollment.class_sessions?.classes?.title || 'Class'}
-                    </p>
-                    <p className="text-gray-400 text-xs">
-                      {enrollment.status === 'attended' ? '✅ Attended' : '⏳ Enrolled'}
-                    </p>
+            <div className="space-y-1">
+              {enrollments.map(enrollment => {
+                const cls = enrollment.class_sessions?.classes
+                const scheduledAt = cls?.scheduled_at ? new Date(cls.scheduled_at) : null
+                const durationMs = (cls?.duration_minutes || 60) * 60 * 1000
+                const classEndTime = scheduledAt ? new Date(scheduledAt.getTime() + durationMs) : null
+                const isClassOver = classEndTime ? new Date() > classEndTime : true
+
+                return (
+                  <div key={enrollment.id} className="py-4 border-b border-gray-50 last:border-0">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-gray-900 text-sm font-medium">
+                          {cls?.title || 'Class'}
+                        </p>
+                        <p className="text-gray-400 text-xs mt-0.5">
+                          {scheduledAt
+                            ? scheduledAt.toLocaleString()
+                            : 'No time set'}
+                          {' · '}
+                          {enrollment.status === 'attended'
+                            ? '✅ Attended'
+                            : isClassOver
+                              ? '🔔 Class ended — please confirm!'
+                              : '⏳ Upcoming'}
+                        </p>
+                      </div>
+                      <div>
+                        {enrollment.status !== 'attended' && isClassOver && (
+                          <button
+                            onClick={() => confirmAttendance(enrollment.id)}
+                            disabled={confirming === enrollment.id}
+                            className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-600 disabled:opacity-50">
+                            {confirming === enrollment.id ? 'Confirming...' : '✓ Confirm attendance'}
+                          </button>
+                        )}
+                        {enrollment.status !== 'attended' && !isClassOver && (
+                          <span className="text-gray-400 text-sm">Not started yet</span>
+                        )}
+                        {enrollment.status === 'attended' && (
+                          <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium">
+                            ✅ Confirmed
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Rating form - shows after confirming attendance */}
+                    {enrollment.status === 'attended' && (
+                      <RatingForm
+                        enrollmentId={enrollment.id}
+                        studentId={user.id}
+                      />
+                    )}
                   </div>
-                  {enrollment.status !== 'attended' && (
-                    <button
-                      onClick={() => confirmAttendance(enrollment.id)}
-                      disabled={confirming === enrollment.id}
-                      className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-600 disabled:opacity-50">
-                      {confirming === enrollment.id ? 'Confirming...' : '✓ Confirm attendance'}
-                    </button>
-                  )}
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         )}
@@ -144,12 +244,16 @@ export default function Dashboard() {
           ) : (
             <div className="space-y-3">
               {transactions.map((tx) => (
-                <div key={tx.id} className="flex justify-between items-center py-2 border-b border-gray-50">
+                <div key={tx.id} className="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
                   <div>
                     <p className="text-gray-900 text-sm">{tx.description}</p>
-                    <p className="text-gray-400 text-xs">{new Date(tx.created_at).toLocaleDateString()}</p>
+                    <p className="text-gray-400 text-xs">
+                      {new Date(tx.created_at).toLocaleDateString()}
+                    </p>
                   </div>
-                  <span className={tx.amount > 0 ? 'text-green-600 font-semibold' : 'text-red-500 font-semibold'}>
+                  <span className={tx.amount > 0
+                    ? 'text-green-600 font-semibold'
+                    : 'text-red-500 font-semibold'}>
                     {tx.amount > 0 ? '+' : ''}{tx.amount}
                   </span>
                 </div>
@@ -158,13 +262,16 @@ export default function Dashboard() {
           )}
         </div>
 
+        {/* Quick actions */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <h2 className="font-semibold text-gray-900 mb-4">Quick actions</h2>
           <div className="flex gap-4">
-            <a href="/classes" className="bg-indigo-600 text-white px-6 py-3 rounded-lg text-sm font-medium">
+            <a href="/classes"
+              className="bg-indigo-600 text-white px-6 py-3 rounded-lg text-sm font-medium">
               Browse classes
             </a>
-            <a href="/classes/create" className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg text-sm font-medium">
+            <a href="/classes/create"
+              className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg text-sm font-medium">
               Create a class
             </a>
           </div>
