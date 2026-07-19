@@ -11,12 +11,9 @@ export default function Callback() {
   useEffect(() => {
     const handleCallback = async () => {
       const { data: { session } } = await supabase.auth.getSession()
-
       if (session?.user) {
         const googleUser = session.user
-
         try {
-          // Try to login first
           const loginRes = await fetch(`${API}/api/auth/google-login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -26,7 +23,6 @@ export default function Callback() {
               google_id: googleUser.id
             })
           })
-
           const data = await loginRes.json()
           if (loginRes.ok) {
             localStorage.setItem('token', data.token)
@@ -40,7 +36,6 @@ export default function Callback() {
         }
       }
     }
-
     handleCallback()
   }, [])
 
