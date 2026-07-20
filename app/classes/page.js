@@ -9,6 +9,8 @@ export default function Classes() {
   const [filter, setFilter] = useState('all')
   const [joining, setJoining] = useState(null)
   const [message, setMessage] = useState('')
+  const [credits, setCredits] = useState(null)
+  const [currentUser, setCurrentUser] = useState(null)
 
   useEffect(() => {
     fetch(`${API}/api/classes`)
@@ -17,6 +19,15 @@ export default function Classes() {
         setClasses(Array.isArray(data) ? data : [])
         setLoading(false)
       })
+
+    const stored = localStorage.getItem('user')
+    if (stored) {
+      const u = JSON.parse(stored)
+      setCurrentUser(u)
+      fetch(`${API}/api/credits?user_id=${u.id}`)
+        .then(r => r.json())
+        .then(d => setCredits(d?.balance ?? null))
+    }
   }, [])
 
   const joinClass = async (cls) => {
@@ -34,16 +45,16 @@ export default function Classes() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({
-  user_id: user.id,
-  class_id: cls.id
-})
+        body: JSON.stringify({ user_id: user.id, class_id: cls.id })
       })
       const data = await res.json()
       if (!res.ok) {
         setMessage(data.error || 'Could not join class')
       } else {
         setMessage('Successfully joined! Check your dashboard.')
+        fetch(`${API}/api/credits?user_id=${user.id}`)
+          .then(r => r.json())
+          .then(d => setCredits(d?.balance ?? null))
       }
     } catch (e) {
       setMessage('Could not connect to server')
@@ -67,6 +78,11 @@ export default function Classes() {
         <a href="/" className="text-xl font-semibold text-indigo-600">LinguaXchange</a>
         <div className="flex gap-3 md:gap-4 items-center">
           <a href="/dashboard" className="hidden sm:block text-gray-500">Dashboard</a>
+          {credits !== null && (
+            <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">
+              ⚡ {credits} credits
+            </span>
+          )}
           <a href="/classes/create" className="bg-indigo-600 text-white px-3 md:px-4 py-2 rounded-lg text-sm">+ Create class</a>
         </div>
       </nav>
