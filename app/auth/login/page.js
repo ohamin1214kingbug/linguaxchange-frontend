@@ -42,7 +42,7 @@ export default function Login() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://linguaxchange-frontend.vercel.app/auth/callback'
+        redirectTo: `${window.location.origin}/auth/callback`
       }
     })
     if (error) setError(error.message)
