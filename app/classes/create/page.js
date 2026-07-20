@@ -45,7 +45,6 @@ export default function CreateClass() {
     duration_minutes: 60,
     materials: '',
     scheduled_at: '',
-    meeting_link: '',
   })
 
   const handleChange = (e) => {
@@ -186,15 +185,6 @@ export default function CreateClass() {
             <input name="scheduled_at" type="datetime-local" onChange={handleChange}
               value={form.scheduled_at}
               className="w-full border border-gray-300 rounded-lg px-3 py-2"/>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Meeting link <span className="text-gray-400 font-normal">(optional — Zoom, Meet, etc.)</span>
-            </label>
-            <input name="meeting_link" type="url" onChange={handleChange} value={form.meeting_link}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
-              placeholder="https://zoom.us/j/..."/>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

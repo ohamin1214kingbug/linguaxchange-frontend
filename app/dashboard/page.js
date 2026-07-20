@@ -67,6 +67,7 @@ export default function Dashboard() {
   const [credits, setCredits] = useState(null)
   const [transactions, setTransactions] = useState([])
   const [enrollments, setEnrollments] = useState([])
+  const [teachingClasses, setTeachingClasses] = useState([])
   const [confirming, setConfirming] = useState(null)
   const [message, setMessage] = useState('')
 
@@ -79,6 +80,7 @@ export default function Dashboard() {
     fetchCredits()
     fetchTransactions()
     fetchEnrollments()
+    fetchTeachingClasses(parsedUser.id)
   }, [])
 
   const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
@@ -99,6 +101,12 @@ export default function Dashboard() {
     fetch(`${API}/api/enrollments`, { headers: authHeaders() })
       .then(res => res.json())
       .then(data => setEnrollments(Array.isArray(data) ? data : []))
+  }
+
+  const fetchTeachingClasses = (teacherId) => {
+    fetch(`${API}/api/classes?teacher_id=${teacherId}`)
+      .then(res => res.json())
+      .then(data => setTeachingClasses(Array.isArray(data) ? data : []))
   }
 
   const confirmAttendance = async (enrollmentId) => {
@@ -188,7 +196,6 @@ export default function Dashboard() {
                 const durationMs = (cls?.duration_minutes || 60) * 60 * 1000
                 const classEndTime = scheduledAt ? new Date(scheduledAt.getTime() + durationMs) : null
                 const isClassOver = classEndTime ? new Date() > classEndTime : true
-                const meetingLink = session?.zoom_meeting_link || cls?.zoom_meeting_link
 
                 return (
                   <div key={enrollment.id} className="py-4 border-b border-gray-50 last:border-0">
@@ -208,8 +215,8 @@ export default function Dashboard() {
                               ? '🔔 Class ended — please confirm!'
                               : '⏳ Upcoming'}
                         </p>
-                        {meetingLink && !isClassOver && (
-                          <a href={meetingLink} target="_blank" rel="noopener noreferrer"
+                        {!isClassOver && (
+                          <a href={`/classroom/${enrollment.class_session_id}`}
                             className="text-indigo-600 text-xs font-medium hover:underline">
                             🔗 Join meeting
                           </a>
@@ -239,6 +246,44 @@ export default function Dashboard() {
                     {enrollment.status === 'attended' && (
                       <RatingForm classSessionId={enrollment.class_session_id} />
                     )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Classes I'm teaching */}
+        {teachingClasses.length > 0 && (
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
+            <h2 className="font-semibold text-gray-900 mb-4">Classes I'm teaching</h2>
+            <div className="space-y-1">
+              {teachingClasses.map(cls => {
+                const session = cls.class_sessions?.[0]
+                const scheduledAt = session?.session_date ? new Date(session.session_date) : null
+                const durationMs = (cls.duration_minutes || 60) * 60 * 1000
+                const classEndTime = scheduledAt ? new Date(scheduledAt.getTime() + durationMs) : null
+                const isClassOver = classEndTime ? new Date() > classEndTime : true
+
+                return (
+                  <div key={cls.id} className="py-4 border-b border-gray-50 last:border-0">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-gray-900 text-sm font-medium">{cls.title}</p>
+                        <p className="text-gray-400 text-xs mt-0.5">
+                          {scheduledAt ? scheduledAt.toLocaleString() : 'No time set'}
+                        </p>
+                        {session && !isClassOver && (
+                          <a href={`/classroom/${session.id}`}
+                            className="text-indigo-600 text-xs font-medium hover:underline">
+                            🔗 Start class
+                          </a>
+                        )}
+                      </div>
+                      {isClassOver && (
+                        <span className="text-gray-400 text-sm">Ended</span>
+                      )}
+                    </div>
                   </div>
                 )
               })}
