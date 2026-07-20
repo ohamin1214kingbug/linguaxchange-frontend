@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '../../lib/supabase'
+import { supabase } from '../../../lib/supabase'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
