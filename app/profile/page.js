@@ -34,7 +34,7 @@ export default function ProfilePage() {
     if (!stored || !token) { router.push('/auth/login'); return }
     const u = JSON.parse(stored)
     setUser(u)
-    fetch(`${API}/api/users/${u.id}`)
+    fetch(`${API}/api/users/${u.id}`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())
       .then(data => {
         setProfile(data)
@@ -84,9 +84,13 @@ export default function ProfilePage() {
     setSaving(true)
     setMessage('')
     try {
+      const token = localStorage.getItem('token')
       const res = await fetch(`${API}/api/users/${user.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify(form)
       })
       const data = await res.json()

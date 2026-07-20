@@ -4,19 +4,22 @@ import { useRouter } from 'next/navigation'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
-function RatingForm({ enrollmentId, studentId }) {
+function RatingForm({ classSessionId }) {
   const [rating, setRating] = useState(0)
   const [comment, setComment] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
   const submitRating = async () => {
     try {
+      const token = localStorage.getItem('token')
       await fetch(`${API}/api/reviews`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({
-          class_session_id: enrollmentId,
-          student_id: studentId,
+          class_session_id: classSessionId,
           rating,
           comment
         })
@@ -73,25 +76,27 @@ export default function Dashboard() {
     if (!stored || !token) { router.push('/auth/login'); return }
     const parsedUser = JSON.parse(stored)
     setUser(parsedUser)
-    fetchCredits(parsedUser.id)
-    fetchTransactions(parsedUser.id)
-    fetchEnrollments(parsedUser.id)
+    fetchCredits()
+    fetchTransactions()
+    fetchEnrollments()
   }, [])
 
-  const fetchCredits = (id) => {
-    fetch(`${API}/api/credits?user_id=${id}`)
+  const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
+
+  const fetchCredits = () => {
+    fetch(`${API}/api/credits`, { headers: authHeaders() })
       .then(res => res.json())
       .then(data => setCredits(data?.balance ?? 0))
   }
 
-  const fetchTransactions = (id) => {
-    fetch(`${API}/api/credits/transactions?user_id=${id}`)
+  const fetchTransactions = () => {
+    fetch(`${API}/api/credits/transactions`, { headers: authHeaders() })
       .then(res => res.json())
       .then(data => setTransactions(Array.isArray(data) ? data : []))
   }
 
-  const fetchEnrollments = (id) => {
-    fetch(`${API}/api/enrollments?user_id=${id}`)
+  const fetchEnrollments = () => {
+    fetch(`${API}/api/enrollments`, { headers: authHeaders() })
       .then(res => res.json())
       .then(data => setEnrollments(Array.isArray(data) ? data : []))
   }
@@ -105,14 +110,13 @@ export default function Dashboard() {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ user_id: user.id })
+        }
       })
       if (res.ok) {
         setMessage('Attendance confirmed! Teacher received +1 credit. 🎉')
-        fetchEnrollments(user.id)
-        fetchCredits(user.id)
-        fetchTransactions(user.id)
+        fetchEnrollments()
+        fetchCredits()
+        fetchTransactions()
       } else {
         const data = await res.json()
         setMessage(data.error || 'Could not confirm attendance')
@@ -178,11 +182,13 @@ export default function Dashboard() {
             <h2 className="font-semibold text-gray-900 mb-4">My classes</h2>
             <div className="space-y-1">
               {enrollments.map(enrollment => {
-                const cls = enrollment.class_sessions?.classes
-                const scheduledAt = cls?.scheduled_at ? new Date(cls.scheduled_at) : null
+                const session = enrollment.class_sessions
+                const cls = session?.classes
+                const scheduledAt = session?.session_date ? new Date(session.session_date) : null
                 const durationMs = (cls?.duration_minutes || 60) * 60 * 1000
                 const classEndTime = scheduledAt ? new Date(scheduledAt.getTime() + durationMs) : null
                 const isClassOver = classEndTime ? new Date() > classEndTime : true
+                const meetingLink = session?.zoom_meeting_link || cls?.zoom_meeting_link
 
                 return (
                   <div key={enrollment.id} className="py-4 border-b border-gray-50 last:border-0">
@@ -202,6 +208,12 @@ export default function Dashboard() {
                               ? '🔔 Class ended — please confirm!'
                               : '⏳ Upcoming'}
                         </p>
+                        {meetingLink && !isClassOver && (
+                          <a href={meetingLink} target="_blank" rel="noopener noreferrer"
+                            className="text-indigo-600 text-xs font-medium hover:underline">
+                            🔗 Join meeting
+                          </a>
+                        )}
                       </div>
                       <div>
                         {enrollment.status !== 'attended' && isClassOver && (
@@ -225,10 +237,7 @@ export default function Dashboard() {
 
                     {/* Rating form - shows after confirming attendance */}
                     {enrollment.status === 'attended' && (
-                      <RatingForm
-                        enrollmentId={enrollment.id}
-                        studentId={user.id}
-                      />
+                      <RatingForm classSessionId={enrollment.class_session_id} />
                     )}
                   </div>
                 )

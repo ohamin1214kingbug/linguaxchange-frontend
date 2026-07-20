@@ -21,10 +21,11 @@ export default function Classes() {
       })
 
     const stored = localStorage.getItem('user')
-    if (stored) {
+    const token = localStorage.getItem('token')
+    if (stored && token) {
       const u = JSON.parse(stored)
       setCurrentUser(u)
-      fetch(`${API}/api/credits?user_id=${u.id}`)
+      fetch(`${API}/api/credits`, { headers: { Authorization: `Bearer ${token}` } })
         .then(r => r.json())
         .then(d => setCredits(d?.balance ?? null))
     }
@@ -45,14 +46,14 @@ export default function Classes() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ user_id: user.id, class_id: cls.id })
+        body: JSON.stringify({ class_id: cls.id })
       })
       const data = await res.json()
       if (!res.ok) {
         setMessage(data.error || 'Could not join class')
       } else {
         setMessage('Successfully joined! Check your dashboard.')
-        fetch(`${API}/api/credits?user_id=${user.id}`)
+        fetch(`${API}/api/credits`, { headers: { Authorization: `Bearer ${token}` } })
           .then(r => r.json())
           .then(d => setCredits(d?.balance ?? null))
       }
@@ -119,6 +120,11 @@ export default function Classes() {
                   </div>
                   <h3 className="font-semibold text-gray-900 text-lg mb-1">{cls.title}</h3>
                   {cls.description && <p className="text-gray-500 text-sm mb-2">{cls.description}</p>}
+                  {cls.class_sessions?.[0]?.session_date && (
+                    <p className="text-indigo-600 text-xs font-medium mb-1">
+                      🗓️ {new Date(cls.class_sessions[0].session_date).toLocaleString()}
+                    </p>
+                  )}
                   <p className="text-gray-400 text-xs">
                     {cls.topic} · Max {cls.max_students} students
                     {cls.teacher && (
