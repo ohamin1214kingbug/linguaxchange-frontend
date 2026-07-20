@@ -133,6 +133,7 @@ export default function Dashboard() {
         <a href="/" className="text-xl font-semibold text-indigo-600">LinguaXchange</a>
         <div className="flex gap-6 items-center">
           <a href="/classes" className="text-gray-500">Explore</a>
+          <a href="/profile" className="text-gray-500">Profile</a>
           <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">
             ⚡ {credits ?? '...'} credits
           </span>
