@@ -7,6 +7,7 @@ export default function Classes() {
   const [classes, setClasses] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
+  const [levelFilter, setLevelFilter] = useState('all')
   const [joining, setJoining] = useState(null)
   const [message, setMessage] = useState('')
   const [credits, setCredits] = useState(null)
@@ -71,7 +72,11 @@ export default function Classes() {
     PT: { flag: '🇧🇷', name: 'Portuguese' },
   }
 
-  const filtered = filter === 'all' ? classes : classes.filter(c => c.language_code === filter)
+  const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+
+  const filtered = classes
+    .filter(c => filter === 'all' || c.language_code === filter)
+    .filter(c => levelFilter === 'all' || c.level === levelFilter)
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -97,11 +102,20 @@ export default function Classes() {
           </div>
         )}
 
-        <div className="flex gap-3 mb-8 flex-wrap">
+        <div className="flex gap-3 mb-4 flex-wrap">
           {['all', 'KO', 'ES', 'DE', 'EN', 'PT'].map(lang => (
             <button key={lang} onClick={() => setFilter(lang)}
               className={`px-4 py-2 rounded-full text-sm font-medium ${filter === lang ? 'bg-indigo-600 text-white' : 'bg-white border border-gray-300 text-gray-600'}`}>
               {lang === 'all' ? 'All' : `${LANGS[lang].flag} ${LANGS[lang].name}`}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex gap-2 mb-8 flex-wrap">
+          {['all', ...LEVELS].map(level => (
+            <button key={level} onClick={() => setLevelFilter(level)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium ${levelFilter === level ? 'bg-gray-800 text-white' : 'bg-white border border-gray-300 text-gray-600'}`}>
+              {level === 'all' ? 'All levels' : level}
             </button>
           ))}
         </div>

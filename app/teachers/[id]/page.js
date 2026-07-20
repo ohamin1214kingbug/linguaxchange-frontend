@@ -28,6 +28,8 @@ export default function TeacherProfile() {
   const [classes, setClasses] = useState([])
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
+  const [joining, setJoining] = useState(null)
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
     if (!id) return
@@ -42,6 +44,32 @@ export default function TeacherProfile() {
       setLoading(false)
     })
   }, [id])
+
+  const joinClass = async (cls) => {
+    const user = JSON.parse(localStorage.getItem('user') || 'null')
+    const token = localStorage.getItem('token')
+    if (!user || !token) {
+      window.location.href = '/auth/login'
+      return
+    }
+    setJoining(cls.id)
+    setMessage('')
+    try {
+      const res = await fetch(`${API}/api/enrollments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ class_id: cls.id })
+      })
+      const data = await res.json()
+      setMessage(res.ok ? 'Successfully joined! Check your dashboard.' : (data.error || 'Could not join class'))
+    } catch (e) {
+      setMessage('Could not connect to server')
+    }
+    setJoining(null)
+  }
 
   const avgRating = reviews.length > 0
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
@@ -115,6 +143,13 @@ export default function TeacherProfile() {
         {classes.length > 0 && (
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
             <h2 className="font-semibold text-gray-900 mb-4">Upcoming classes</h2>
+
+            {message && (
+              <div className={`px-4 py-3 rounded-lg mb-4 text-sm ${message.includes('Successfully') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
+                {message}
+              </div>
+            )}
+
             <div className="space-y-3">
               {classes.map(cls => (
                 <div key={cls.id} className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
@@ -126,11 +161,17 @@ export default function TeacherProfile() {
                     </div>
                     <p className="font-medium text-gray-900 text-sm">{cls.title}</p>
                     {cls.description && <p className="text-gray-400 text-xs mt-0.5">{cls.description}</p>}
+                    {cls.class_sessions?.[0]?.session_date && (
+                      <p className="text-indigo-600 text-xs font-medium mt-1">
+                        🗓️ {new Date(cls.class_sessions[0].session_date).toLocaleString()}
+                      </p>
+                    )}
                   </div>
-                  <a href="/classes"
-                    className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 flex-shrink-0 ml-4">
-                    Join
-                  </a>
+                  <button onClick={() => joinClass(cls)}
+                    disabled={joining === cls.id}
+                    className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 flex-shrink-0 ml-4">
+                    {joining === cls.id ? 'Joining...' : 'Join'}
+                  </button>
                 </div>
               ))}
             </div>
