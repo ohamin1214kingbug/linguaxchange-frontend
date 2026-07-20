@@ -129,7 +129,7 @@ export default function Dashboard() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <nav className="flex items-center justify-between px-8 py-4 border-b border-gray-100 bg-white">
+      <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-gray-100 bg-white">
         <a href="/" className="text-xl font-semibold text-indigo-600">LinguaXchange</a>
         <div className="flex gap-6 items-center">
           <a href="/classes" className="text-gray-500">Explore</a>
@@ -143,8 +143,8 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-8 py-12">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+      <div className="max-w-4xl mx-auto px-4 md:px-8 py-8 md:py-12">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
           Welcome back, {user.first_name}!
         </h1>
         <p className="text-gray-500 mb-8">Here's your account overview</p>
@@ -159,7 +159,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-6 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-10">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
             <p className="text-gray-500 text-sm mb-1">Credit balance</p>
             <p className="text-5xl font-bold text-indigo-600">{credits ?? '...'}</p>

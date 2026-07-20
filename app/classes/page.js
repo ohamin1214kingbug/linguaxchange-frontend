@@ -63,16 +63,16 @@ export default function Classes() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <nav className="flex items-center justify-between px-8 py-4 border-b border-gray-100 bg-white">
+      <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-gray-100 bg-white">
         <a href="/" className="text-xl font-semibold text-indigo-600">LinguaXchange</a>
-        <div className="flex gap-4 items-center">
-          <a href="/dashboard" className="text-gray-500">Dashboard</a>
-          <a href="/classes/create" className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm">+ Create class</a>
+        <div className="flex gap-3 md:gap-4 items-center">
+          <a href="/dashboard" className="hidden sm:block text-gray-500">Dashboard</a>
+          <a href="/classes/create" className="bg-indigo-600 text-white px-3 md:px-4 py-2 rounded-lg text-sm">+ Create class</a>
         </div>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-8 py-12">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Browse classes</h1>
+      <div className="max-w-4xl mx-auto px-4 md:px-8 py-8 md:py-12">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">Browse classes</h1>
 
         {message && (
           <div className={`px-4 py-3 rounded-lg mb-6 text-sm ${message.includes('Successfully') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
@@ -93,8 +93,8 @@ export default function Classes() {
 
         <div className="space-y-4">
           {filtered.map(cls => (
-            <div key={cls.id} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <div className="flex items-start justify-between">
+            <div key={cls.id} className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100">
+              <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lg">{LANGS[cls.language_code]?.flag}</span>
@@ -116,7 +116,7 @@ export default function Classes() {
                     )}
                   </p>
                 </div>
-                <div className="ml-4 flex flex-col items-end gap-2">
+                <div className="flex-shrink-0 flex flex-col items-end gap-2">
                   <span className="text-amber-600 text-sm font-medium">⚡ 1 credit</span>
                   <button onClick={() => joinClass(cls)}
                     disabled={joining === cls.id}
