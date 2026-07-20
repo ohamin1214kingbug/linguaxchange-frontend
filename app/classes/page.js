@@ -103,7 +103,18 @@ export default function Classes() {
                   </div>
                   <h3 className="font-semibold text-gray-900 text-lg mb-1">{cls.title}</h3>
                   {cls.description && <p className="text-gray-500 text-sm mb-2">{cls.description}</p>}
-                  <p className="text-gray-400 text-xs">{cls.topic} · Max {cls.max_students} students</p>
+                  <p className="text-gray-400 text-xs">
+                    {cls.topic} · Max {cls.max_students} students
+                    {cls.teacher && (
+                      <>
+                        {' · '}
+                        <a href={`/teachers/${cls.teacher.id}`}
+                          className="text-indigo-500 hover:text-indigo-700">
+                          {cls.teacher.first_name} {cls.teacher.last_name}
+                        </a>
+                      </>
+                    )}
+                  </p>
                 </div>
                 <div className="ml-4 flex flex-col items-end gap-2">
                   <span className="text-amber-600 text-sm font-medium">⚡ 1 credit</span>
