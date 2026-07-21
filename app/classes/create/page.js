@@ -41,6 +41,7 @@ export default function CreateClass() {
     description: '',
     format: 'one-time',
     recurrence_type: '',
+    recurrence_end_date: '',
     max_students: 6,
     duration_minutes: 60,
     materials: '',
@@ -58,6 +59,8 @@ export default function CreateClass() {
     if (!form.topic && !form.custom_topic) return setError('Please select or write a topic')
     if (!form.title) return setError('Please write a class title')
     if (!form.scheduled_at) return setError('Please select a date and time')
+    if (form.format === 'recurring' && !form.recurrence_type) return setError('Please select a frequency')
+    if (form.format === 'recurring' && !form.recurrence_end_date) return setError('Please select when the class recurs until')
     setLoading(true)
     try {
       const token = localStorage.getItem('token')
@@ -230,15 +233,25 @@ export default function CreateClass() {
           </div>
 
           {form.format === 'recurring' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
-              <select name="recurrence_type" onChange={handleChange} value={form.recurrence_type}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2">
-                <option value="">Select frequency...</option>
-                <option value="weekly">Weekly</option>
-                <option value="biweekly">Every 2 weeks</option>
-                <option value="monthly">Monthly</option>
-              </select>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
+                <select name="recurrence_type" onChange={handleChange} value={form.recurrence_type}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2">
+                  <option value="">Select frequency...</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="biweekly">Every 2 weeks</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Recurs until <span className="text-gray-400 font-normal">(last date a class can happen)</span>
+                </label>
+                <input name="recurrence_end_date" type="date" onChange={handleChange}
+                  value={form.recurrence_end_date}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2"/>
+              </div>
             </div>
           )}
 
