@@ -83,7 +83,10 @@ export default function Login() {
               className="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="maria@email.com"/>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-medium text-gray-700">Password</label>
+              <a href="/auth/forgot-password" className="text-xs text-indigo-600 hover:underline">Forgot password?</a>
+            </div>
             <input name="password" type="password" onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg px-3 py-2"/>
           </div>
