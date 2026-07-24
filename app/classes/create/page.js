@@ -90,14 +90,14 @@ export default function CreateClass() {
 
   if (success) {
     return (
-      <main className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-2xl shadow-sm w-full max-w-md text-center">
+      <main className="min-h-screen bg-cream flex items-center justify-center px-4">
+        <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md text-center">
           <div className="text-5xl mb-4">🎉</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Class submitted!</h1>
-          <p className="text-gray-500 mb-6">Your class is now waiting for admin approval.</p>
+          <h1 className="font-display font-extrabold text-navy text-2xl mb-2">Class submitted!</h1>
+          <p className="text-navy/60 mb-6">Your class is now waiting for admin approval.</p>
           <div className="flex gap-3 justify-center">
-            <a href="/classes" className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium">Browse classes</a>
-            <a href="/dashboard" className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium">Dashboard</a>
+            <a href="/classes" className="bg-brand-red text-white px-6 py-3 rounded-full font-bold border-2 border-navy">Browse classes</a>
+            <a href="/dashboard" className="border-2 border-navy text-navy px-6 py-3 rounded-full font-bold hover:bg-navy hover:text-white transition-colors">Dashboard</a>
           </div>
         </div>
       </main>
@@ -105,47 +105,47 @@ export default function CreateClass() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <nav className="flex items-center justify-between px-8 py-4 border-b border-gray-100 bg-white">
-        <a href="/" className="text-xl font-semibold text-indigo-600">LinguaXchange</a>
-        <a href="/dashboard" className="text-gray-500">← Back to dashboard</a>
+    <main className="min-h-screen bg-cream">
+      <nav className="flex items-center justify-between px-8 py-4 border-b border-navy/10 bg-white">
+        <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
+        <a href="/dashboard" className="text-navy/70 font-medium hover:text-navy">← Back to dashboard</a>
       </nav>
 
-      <div className="max-w-2xl mx-auto px-8 py-12">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Create a class</h1>
-        <p className="text-gray-500 mb-8">Fill in the details and submit for admin approval</p>
+      <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
+        <h1 className="font-display font-extrabold text-3xl text-navy mb-2">Create a class</h1>
+        <p className="text-navy/60 mb-8">Fill in the details and submit for admin approval</p>
 
         {error && (
-          <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-6 text-sm">{error}</div>
+          <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-6 text-sm font-medium">{error}</div>
         )}
 
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-6">
+        <div className="bg-white rounded-2xl p-6 border-2 border-navy space-y-6">
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">Language you will teach</label>
+            <label className="block text-sm font-bold text-navy mb-3">Language you will teach</label>
             <div className="grid grid-cols-5 gap-2">
               {LANGUAGES.map(lang => (
                 <button key={lang.code} onClick={() => setForm({ ...form, language_code: lang.code })}
-                  className={`flex flex-col items-center p-3 rounded-xl border text-sm
+                  className={`flex flex-col items-center p-3 rounded-xl border-2 text-sm transition-colors
                     ${form.language_code === lang.code
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                      : 'border-gray-200 hover:border-gray-300'}`}>
+                      ? 'border-navy bg-brand-red/10 text-navy'
+                      : 'border-navy/15 hover:border-navy/40'}`}>
                   <span className="text-2xl mb-1">{lang.flag}</span>
-                  <span className="text-xs">{lang.name}</span>
+                  <span className="text-xs font-bold">{lang.name}</span>
                 </button>
               ))}
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">Student level</label>
+            <label className="block text-sm font-bold text-navy mb-3">Student level</label>
             <div className="flex gap-2">
               {LEVELS.map(level => (
                 <button key={level} onClick={() => setForm({ ...form, level })}
-                  className={`px-4 py-2 rounded-lg border font-medium text-sm
+                  className={`px-4 py-2 rounded-full border-2 font-bold text-sm transition-colors
                     ${form.level === level
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                      : 'border-gray-200 hover:border-gray-300'}`}>
+                      ? 'border-navy bg-brand-red text-white'
+                      : 'border-navy/15 text-navy hover:border-navy/40'}`}>
                   {level}
                 </button>
               ))}
@@ -153,48 +153,48 @@ export default function CreateClass() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">Topic</label>
+            <label className="block text-sm font-bold text-navy mb-3">Topic</label>
             <select name="topic" onChange={handleChange} value={form.topic}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-3">
+              className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 mb-3 focus:border-brand-red focus:outline-none transition-colors">
               <option value="">Select a topic...</option>
               {TOPICS.map(t => <option key={t} value={t}>{t}</option>)}
               <option value="custom">Other (write your own)</option>
             </select>
             {form.topic === 'custom' && (
               <input name="custom_topic" type="text" onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors"
                 placeholder="Write your custom topic..."/>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Class title</label>
+            <label className="block text-sm font-bold text-navy mb-1">Class title</label>
             <input name="title" type="text" onChange={handleChange} value={form.title}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors"
               placeholder="e.g. Korean pronunciation for absolute beginners"/>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label className="block text-sm font-bold text-navy mb-1">Description</label>
             <textarea name="description" onChange={handleChange} value={form.description} rows={3}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 resize-none"
+              className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 resize-none focus:border-brand-red focus:outline-none transition-colors"
               placeholder="What will students learn in this class?"/>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date & time <span className="text-gray-400 font-normal">(when does the class start?)</span>
+            <label className="block text-sm font-bold text-navy mb-1">
+              Date & time <span className="text-navy/40 font-normal">(when does the class start?)</span>
             </label>
             <input name="scheduled_at" type="datetime-local" onChange={handleChange}
               value={form.scheduled_at}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"/>
+              className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors"/>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
+              <label className="block text-sm font-bold text-navy mb-1">Duration</label>
               <select name="duration_minutes" onChange={handleChange} value={form.duration_minutes}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2">
+                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors">
                 <option value={30}>30 minutes</option>
                 <option value={45}>45 minutes</option>
                 <option value={60}>60 minutes</option>
@@ -202,9 +202,9 @@ export default function CreateClass() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Max students</label>
+              <label className="block text-sm font-bold text-navy mb-1">Max students</label>
               <select name="max_students" onChange={handleChange} value={form.max_students}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2">
+                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors">
                 {[3,4,5,6,7,8,9,10].map(n => (
                   <option key={n} value={n}>{n} students</option>
                 ))}
@@ -213,20 +213,20 @@ export default function CreateClass() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Format</label>
+            <label className="block text-sm font-bold text-navy mb-1">Format</label>
             <div className="flex gap-3">
               <button onClick={() => setForm({ ...form, format: 'one-time' })}
-                className={`flex-1 py-3 rounded-lg border font-medium text-sm
+                className={`flex-1 py-3 rounded-full border-2 font-bold text-sm transition-colors
                   ${form.format === 'one-time'
-                    ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                    : 'border-gray-200'}`}>
+                    ? 'border-navy bg-brand-red text-white'
+                    : 'border-navy/15 text-navy'}`}>
                 One-time class
               </button>
               <button onClick={() => setForm({ ...form, format: 'recurring' })}
-                className={`flex-1 py-3 rounded-lg border font-medium text-sm
+                className={`flex-1 py-3 rounded-full border-2 font-bold text-sm transition-colors
                   ${form.format === 'recurring'
-                    ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                    : 'border-gray-200'}`}>
+                    ? 'border-navy bg-brand-red text-white'
+                    : 'border-navy/15 text-navy'}`}>
                 Recurring class
               </button>
             </div>
@@ -235,9 +235,9 @@ export default function CreateClass() {
           {form.format === 'recurring' && (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
+                <label className="block text-sm font-bold text-navy mb-1">Frequency</label>
                 <select name="recurrence_type" onChange={handleChange} value={form.recurrence_type}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2">
+                  className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors">
                   <option value="">Select frequency...</option>
                   <option value="weekly">Weekly</option>
                   <option value="biweekly">Every 2 weeks</option>
@@ -245,27 +245,27 @@ export default function CreateClass() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Recurs until <span className="text-gray-400 font-normal">(last date a class can happen)</span>
+                <label className="block text-sm font-bold text-navy mb-1">
+                  Recurs until <span className="text-navy/40 font-normal">(last date a class can happen)</span>
                 </label>
                 <input name="recurrence_end_date" type="date" onChange={handleChange}
                   value={form.recurrence_end_date}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"/>
+                  className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors"/>
               </div>
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Materials <span className="text-gray-400 font-normal">(optional)</span>
+            <label className="block text-sm font-bold text-navy mb-1">
+              Materials <span className="text-navy/40 font-normal">(optional)</span>
             </label>
             <textarea name="materials" onChange={handleChange} value={form.materials} rows={2}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 resize-none"
+              className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 resize-none focus:border-brand-red focus:outline-none transition-colors"
               placeholder="e.g. Please bring a pen and paper..."/>
           </div>
 
           <button onClick={handleSubmit} disabled={loading}
-            className="w-full bg-indigo-600 text-white py-3 rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50">
+            className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
             {loading ? 'Submitting...' : 'Submit class for approval →'}
           </button>
 

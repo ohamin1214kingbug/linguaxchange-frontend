@@ -79,25 +79,25 @@ export default function Classes() {
     .filter(c => levelFilter === 'all' || c.level === levelFilter)
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-gray-100 bg-white">
-        <a href="/" className="text-xl font-semibold text-indigo-600">LinguaXchange</a>
+    <main className="min-h-screen bg-cream">
+      <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
+        <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
         <div className="flex gap-3 md:gap-4 items-center">
-          <a href="/dashboard" className="hidden sm:block text-gray-500">Dashboard</a>
+          <a href="/dashboard" className="hidden sm:block text-navy/70 font-medium hover:text-navy">Dashboard</a>
           {credits !== null && (
-            <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">
+            <span className="bg-brand-yellow/15 text-navy px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-yellow">
               ⚡ {credits} credits
             </span>
           )}
-          <a href="/classes/create" className="bg-indigo-600 text-white px-3 md:px-4 py-2 rounded-lg text-sm">+ Create class</a>
+          <a href="/classes/create" className="bg-brand-red text-white px-3 md:px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">+ Create class</a>
         </div>
       </nav>
 
       <div className="max-w-4xl mx-auto px-4 md:px-8 py-8 md:py-12">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">Browse classes</h1>
+        <h1 className="font-display font-extrabold text-2xl md:text-3xl text-navy mb-6 md:mb-8">Browse classes</h1>
 
         {message && (
-          <div className={`px-4 py-3 rounded-lg mb-6 text-sm ${message.includes('Successfully') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
+          <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${message.includes('Successfully') ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>
             {message}
           </div>
         )}
@@ -105,7 +105,7 @@ export default function Classes() {
         <div className="flex gap-3 mb-4 flex-wrap">
           {['all', 'KO', 'ES', 'DE', 'EN', 'PT'].map(lang => (
             <button key={lang} onClick={() => setFilter(lang)}
-              className={`px-4 py-2 rounded-full text-sm font-medium ${filter === lang ? 'bg-indigo-600 text-white' : 'bg-white border border-gray-300 text-gray-600'}`}>
+              className={`px-4 py-2 rounded-full text-sm font-bold border-2 transition-colors ${filter === lang ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
               {lang === 'all' ? 'All' : `${LANGS[lang].flag} ${LANGS[lang].name}`}
             </button>
           ))}
@@ -114,38 +114,38 @@ export default function Classes() {
         <div className="flex gap-2 mb-8 flex-wrap">
           {['all', ...LEVELS].map(level => (
             <button key={level} onClick={() => setLevelFilter(level)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium ${levelFilter === level ? 'bg-gray-800 text-white' : 'bg-white border border-gray-300 text-gray-600'}`}>
+              className={`px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-colors ${levelFilter === level ? 'bg-navy text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
               {level === 'all' ? 'All levels' : level}
             </button>
           ))}
         </div>
 
-        {loading && <p className="text-gray-400">Loading classes...</p>}
+        {loading && <p className="text-navy/40">Loading classes...</p>}
 
         <div className="space-y-4">
           {filtered.map(cls => (
-            <div key={cls.id} className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100">
+            <div key={cls.id} className="bg-white rounded-2xl p-4 md:p-6 border-2 border-navy">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lg">{LANGS[cls.language_code]?.flag}</span>
-                    <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium">{cls.level}</span>
-                    <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs">{cls.duration_minutes} min</span>
+                    <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{cls.level}</span>
+                    <span className="bg-navy/5 text-navy/60 px-2 py-0.5 rounded-full text-xs font-medium">{cls.duration_minutes} min</span>
                   </div>
-                  <h3 className="font-semibold text-gray-900 text-lg mb-1">{cls.title}</h3>
-                  {cls.description && <p className="text-gray-500 text-sm mb-2">{cls.description}</p>}
+                  <h3 className="font-display font-bold text-navy text-lg mb-1">{cls.title}</h3>
+                  {cls.description && <p className="text-navy/60 text-sm mb-2">{cls.description}</p>}
                   {cls.class_sessions?.[0]?.session_date && (
-                    <p className="text-indigo-600 text-xs font-medium mb-1">
+                    <p className="text-brand-red text-xs font-bold mb-1">
                       🗓️ {new Date(cls.class_sessions[0].session_date).toLocaleString()}
                     </p>
                   )}
-                  <p className="text-gray-400 text-xs">
+                  <p className="text-navy/40 text-xs">
                     {cls.topic} · Max {cls.max_students} students
                     {cls.teacher && (
                       <>
                         {' · '}
                         <a href={`/teachers/${cls.teacher.id}`}
-                          className="text-indigo-500 hover:text-indigo-700">
+                          className="text-brand-red font-bold hover:underline">
                           {cls.teacher.first_name} {cls.teacher.last_name}
                         </a>
                       </>
@@ -153,10 +153,10 @@ export default function Classes() {
                   </p>
                 </div>
                 <div className="flex-shrink-0 flex flex-col items-end gap-2">
-                  <span className="text-amber-600 text-sm font-medium">⚡ 1 credit</span>
+                  <span className="text-navy/70 text-sm font-bold">⚡ 1 credit</span>
                   <button onClick={() => joinClass(cls)}
                     disabled={joining === cls.id}
-                    className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50">
+                    className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
                     {joining === cls.id ? 'Joining...' : 'Join class'}
                   </button>
                 </div>
@@ -164,7 +164,7 @@ export default function Classes() {
             </div>
           ))}
           {!loading && filtered.length === 0 && (
-            <p className="text-gray-400 text-center py-12">No classes available yet</p>
+            <p className="text-navy/40 text-center py-12">No classes available yet</p>
           )}
         </div>
       </div>
