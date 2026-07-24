@@ -99,23 +99,23 @@ export default function Classroom() {
   }, [sessionId])
 
   return (
-    <main className="min-h-screen bg-gray-900 text-white flex flex-col">
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
-        <span className="font-semibold">{topic || 'Class'}</span>
-        <a href="/dashboard" className="text-gray-400 hover:text-white text-sm">
+    <main className="min-h-screen bg-navy-dark text-white flex flex-col">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+        <span className="font-display font-bold">{topic || 'Class'}</span>
+        <a href="/dashboard" className="text-white/50 hover:text-white text-sm font-medium">
           ← Back to dashboard
         </a>
       </div>
 
       {status === 'connecting' && (
-        <div className="flex-1 flex items-center justify-center text-gray-400">
+        <div className="flex-1 flex items-center justify-center text-white/40 font-medium">
           Connecting to class...
         </div>
       )}
 
       {status === 'error' && (
         <div className="flex-1 flex items-center justify-center">
-          <div className="bg-red-900/40 text-red-300 px-6 py-4 rounded-lg text-sm">{error}</div>
+          <div className="bg-brand-red/20 text-white border-2 border-brand-red/40 px-6 py-4 rounded-xl text-sm font-medium">{error}</div>
         </div>
       )}
 
