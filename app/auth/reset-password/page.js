@@ -41,47 +41,47 @@ function ResetPasswordForm() {
 
   if (!token) {
     return (
-      <div className="bg-white p-8 rounded-2xl shadow-sm w-full max-w-md text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Invalid link</h1>
-        <p className="text-gray-500 mb-6">This password reset link is missing its token.</p>
-        <a href="/auth/forgot-password" className="text-indigo-600 font-medium">Request a new link</a>
+      <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md text-center">
+        <h1 className="font-display font-extrabold text-navy text-2xl mb-2">Invalid link</h1>
+        <p className="text-navy/60 mb-6">This password reset link is missing its token.</p>
+        <a href="/auth/forgot-password" className="text-brand-red font-bold hover:underline">Request a new link</a>
       </div>
     )
   }
 
   if (success) {
     return (
-      <div className="bg-white p-8 rounded-2xl shadow-sm w-full max-w-md text-center">
+      <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md text-center">
         <div className="text-5xl mb-4">✅</div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Password updated</h1>
-        <p className="text-gray-500">Redirecting you to login...</p>
+        <h1 className="font-display font-extrabold text-navy text-2xl mb-2">Password updated</h1>
+        <p className="text-navy/60">Redirecting you to login...</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-sm w-full max-w-md">
-      <a href="/" className="text-indigo-600 font-semibold text-lg">🌐 LinguaXchange</a>
-      <h1 className="text-2xl font-bold text-gray-900 mt-4 mb-2">Set a new password</h1>
-      <p className="text-gray-500 mb-8">Choose a new password for your account</p>
+    <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md">
+      <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
+      <h1 className="font-display font-extrabold text-navy text-3xl mt-4 mb-2">Set a new password</h1>
+      <p className="text-navy/60 mb-8">Choose a new password for your account</p>
 
       {error && (
-        <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-4 text-sm">{error}</div>
+        <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{error}</div>
       )}
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">New password</label>
+          <label className="block text-sm font-bold text-navy mb-1">New password</label>
           <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Min. 8 characters"/>
+            className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" placeholder="Min. 8 characters"/>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Confirm password</label>
+          <label className="block text-sm font-bold text-navy mb-1">Confirm password</label>
           <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2"/>
+            className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors"/>
         </div>
         <button onClick={handleSubmit} disabled={loading}
-          className="w-full bg-indigo-600 text-white py-3 rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50">
+          className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors disabled:opacity-50">
           {loading ? 'Updating...' : 'Update password'}
         </button>
       </div>
@@ -91,8 +91,8 @@ function ResetPasswordForm() {
 
 export default function ResetPassword() {
   return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <Suspense fallback={<div className="text-gray-400">Loading...</div>}>
+    <main className="min-h-screen bg-cream flex items-center justify-center px-4">
+      <Suspense fallback={<div className="text-navy/40">Loading...</div>}>
         <ResetPasswordForm />
       </Suspense>
     </main>

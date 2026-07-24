@@ -49,18 +49,18 @@ export default function Login() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-2xl shadow-sm w-full max-w-md">
-        <a href="/" className="text-indigo-600 font-semibold text-lg">🌐 LinguaXchange</a>
-        <h1 className="text-2xl font-bold text-gray-900 mt-4 mb-2">Welcome back</h1>
-        <p className="text-gray-500 mb-8">Login to your LinguaXchange account</p>
+    <main className="min-h-screen bg-cream flex items-center justify-center px-4">
+      <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md">
+        <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
+        <h1 className="font-display font-extrabold text-navy text-3xl mt-4 mb-2">Welcome back</h1>
+        <p className="text-navy/60 mb-8">Login to your LinguaXchange account</p>
 
         {error && (
-          <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-4 text-sm">{error}</div>
+          <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{error}</div>
         )}
 
         <button onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg py-3 mb-6 hover:bg-gray-50 font-medium text-gray-700">
+          className="w-full flex items-center justify-center gap-3 border-2 border-navy/20 rounded-full py-3 mb-6 hover:border-navy transition-colors font-bold text-navy">
           <svg width="20" height="20" viewBox="0 0 48 48">
             <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
             <path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"/>
@@ -71,32 +71,32 @@ export default function Login() {
         </button>
 
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex-1 h-px bg-gray-200"></div>
-          <span className="text-gray-400 text-sm">or</span>
-          <div className="flex-1 h-px bg-gray-200"></div>
+          <div className="flex-1 h-px bg-navy/10"></div>
+          <span className="text-navy/40 text-sm font-medium">or</span>
+          <div className="flex-1 h-px bg-navy/10"></div>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-bold text-navy mb-1">Email</label>
             <input name="email" type="email" onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="maria@email.com"/>
+              className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" placeholder="maria@email.com"/>
           </div>
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-medium text-gray-700">Password</label>
-              <a href="/auth/forgot-password" className="text-xs text-indigo-600 hover:underline">Forgot password?</a>
+              <label className="block text-sm font-bold text-navy">Password</label>
+              <a href="/auth/forgot-password" className="text-xs text-brand-red font-bold hover:underline">Forgot password?</a>
             </div>
             <input name="password" type="password" onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"/>
+              className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors"/>
           </div>
           <button onClick={handleSubmit} disabled={loading}
-            className="w-full bg-indigo-600 text-white py-3 rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50">
+            className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors disabled:opacity-50">
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </div>
-        <p className="text-center text-gray-500 text-sm mt-6">
-          No account yet? <a href="/auth/register" className="text-indigo-600">Sign up free</a>
+        <p className="text-center text-navy/60 text-sm mt-6">
+          No account yet? <a href="/auth/register" className="text-brand-red font-bold hover:underline">Sign up free</a>
         </p>
       </div>
     </main>
