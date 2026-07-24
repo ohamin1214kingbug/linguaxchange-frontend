@@ -1,16 +1,10 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import { useLanguage } from '../../../lib/i18n/LanguageContext'
+import LanguageSwitcher from '../../../components/LanguageSwitcher'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
-
-const LANGS = {
-  KO: { flag: '🇰🇷', name: 'Korean' },
-  ES: { flag: '🇪🇸', name: 'Spanish' },
-  DE: { flag: '🇩🇪', name: 'German' },
-  EN: { flag: '🇬🇧', name: 'English' },
-  PT: { flag: '🇧🇷', name: 'Portuguese' },
-}
 
 function Stars({ rating }) {
   return (
@@ -24,12 +18,22 @@ function Stars({ rating }) {
 
 export default function TeacherProfile() {
   const { id } = useParams()
+  const { t } = useLanguage()
   const [teacher, setTeacher] = useState(null)
   const [classes, setClasses] = useState([])
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
   const [joining, setJoining] = useState(null)
   const [message, setMessage] = useState('')
+  const [messageOk, setMessageOk] = useState(false)
+
+  const LANGS = {
+    KO: { flag: '🇰🇷', name: t('home.langKorean') },
+    ES: { flag: '🇪🇸', name: t('home.langSpanish') },
+    DE: { flag: '🇩🇪', name: t('home.langGerman') },
+    EN: { flag: '🇬🇧', name: t('home.langEnglish') },
+    PT: { flag: '🇧🇷', name: t('home.langPortuguese') },
+  }
 
   useEffect(() => {
     if (!id) return
@@ -64,9 +68,16 @@ export default function TeacherProfile() {
         body: JSON.stringify({ class_id: cls.id })
       })
       const data = await res.json()
-      setMessage(res.ok ? 'Successfully joined! Check your dashboard.' : (data.error || 'Could not join class'))
+      if (res.ok) {
+        setMessage(t('classes.successfullyJoined'))
+        setMessageOk(true)
+      } else {
+        setMessage(data.error || t('classes.errorJoinClass'))
+        setMessageOk(false)
+      }
     } catch (e) {
-      setMessage('Could not connect to server')
+      setMessage(t('common.connectionError'))
+      setMessageOk(false)
     }
     setJoining(null)
   }
@@ -76,11 +87,11 @@ export default function TeacherProfile() {
     : null
 
   if (loading) return (
-    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">Loading...</div>
+    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">{t('common.loading')}</div>
   )
 
   if (!teacher || teacher.error) return (
-    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">Teacher not found</div>
+    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">{t('teacher.teacherNotFound')}</div>
   )
 
   return (
@@ -88,8 +99,9 @@ export default function TeacherProfile() {
       <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
         <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
         <div className="flex gap-4 items-center">
-          <a href="/classes" className="text-navy/70 font-medium hover:text-navy">Explore classes</a>
-          <a href="/dashboard" className="text-navy/70 font-medium hover:text-navy">Dashboard</a>
+          <a href="/classes" className="text-navy/70 font-medium hover:text-navy">{t('common.explore')}</a>
+          <a href="/dashboard" className="text-navy/70 font-medium hover:text-navy">{t('common.dashboard')}</a>
+          <LanguageSwitcher />
         </div>
       </nav>
 
@@ -115,20 +127,20 @@ export default function TeacherProfile() {
               <div className="flex items-center gap-3 mt-2 flex-wrap">
                 {teacher.teach_language && LANGS[teacher.teach_language] && (
                   <span className="bg-brand-red/10 text-navy px-3 py-1 rounded-full text-sm font-bold border-2 border-navy/10">
-                    {LANGS[teacher.teach_language].flag} Teaches {LANGS[teacher.teach_language].name}
+                    {LANGS[teacher.teach_language].flag} {t('teacher.teaches', { lang: LANGS[teacher.teach_language].name })}
                     {teacher.teach_level ? ` · ${teacher.teach_level}` : ''}
                   </span>
                 )}
                 {teacher.has_certificate && (
                   <span className="bg-brand-teal/10 text-brand-teal px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-teal/30">
-                    ✅ Certified
+                    {t('teacher.certified')}
                   </span>
                 )}
                 {avgRating && (
                   <span className="flex items-center gap-1">
                     <Stars rating={parseFloat(avgRating)} />
                     <span className="text-navy text-sm font-bold">{avgRating}</span>
-                    <span className="text-navy/40 text-sm">({reviews.length} reviews)</span>
+                    <span className="text-navy/40 text-sm">{t('teacher.reviewsCount', { n: reviews.length })}</span>
                   </span>
                 )}
               </div>
@@ -142,10 +154,10 @@ export default function TeacherProfile() {
         {/* Upcoming classes */}
         {classes.length > 0 && (
           <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
-            <h2 className="font-display font-bold text-navy mb-4">Upcoming classes</h2>
+            <h2 className="font-display font-bold text-navy mb-4">{t('teacher.upcomingClasses')}</h2>
 
             {message && (
-              <div className={`px-4 py-3 rounded-xl mb-4 text-sm font-medium border-2 ${message.includes('Successfully') ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>
+              <div className={`px-4 py-3 rounded-xl mb-4 text-sm font-medium border-2 ${messageOk ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>
                 {message}
               </div>
             )}
@@ -157,7 +169,7 @@ export default function TeacherProfile() {
                     <div className="flex items-center gap-2 mb-1">
                       <span>{LANGS[cls.language_code]?.flag}</span>
                       <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{cls.level}</span>
-                      <span className="text-navy/40 text-xs">{cls.duration_minutes} min</span>
+                      <span className="text-navy/40 text-xs">{cls.duration_minutes} {t('classes.min')}</span>
                     </div>
                     <p className="font-bold text-navy text-sm">{cls.title}</p>
                     {cls.description && <p className="text-navy/40 text-xs mt-0.5">{cls.description}</p>}
@@ -170,7 +182,7 @@ export default function TeacherProfile() {
                   <button onClick={() => joinClass(cls)}
                     disabled={joining === cls.id}
                     className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors flex-shrink-0 ml-4">
-                    {joining === cls.id ? 'Joining...' : 'Join'}
+                    {joining === cls.id ? t('classes.joining') : t('teacher.join')}
                   </button>
                 </div>
               ))}
@@ -181,7 +193,7 @@ export default function TeacherProfile() {
         {/* Reviews */}
         {reviews.length > 0 && (
           <div className="bg-white rounded-2xl p-6 border-2 border-navy">
-            <h2 className="font-display font-bold text-navy mb-4">Student reviews</h2>
+            <h2 className="font-display font-bold text-navy mb-4">{t('teacher.studentReviews')}</h2>
             <div className="space-y-4">
               {reviews.slice(0, 10).map((rev, i) => (
                 <div key={i} className="py-3 border-b border-navy/10 last:border-0">
@@ -198,7 +210,7 @@ export default function TeacherProfile() {
 
         {classes.length === 0 && reviews.length === 0 && (
           <div className="text-center py-12 text-navy/40">
-            <p>This teacher hasn't posted any classes yet.</p>
+            <p>{t('teacher.noClassesPosted')}</p>
           </div>
         )}
       </div>

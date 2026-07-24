@@ -1,10 +1,13 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '../../lib/i18n/LanguageContext'
+import LanguageSwitcher from '../../components/LanguageSwitcher'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
 function RatingForm({ classSessionId }) {
+  const { t } = useLanguage()
   const [rating, setRating] = useState(0)
   const [comment, setComment] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -32,13 +35,13 @@ function RatingForm({ classSessionId }) {
 
   if (submitted) return (
     <p className="text-brand-teal text-sm mt-2 bg-brand-teal/10 px-3 py-2 rounded-xl font-medium">
-      ✅ Review submitted! Thank you!
+      {t('dashboard.reviewSubmitted')}
     </p>
   )
 
   return (
     <div className="mt-3 bg-cream rounded-xl p-4 border-2 border-navy/10">
-      <p className="text-sm font-bold text-navy mb-2">Rate this class</p>
+      <p className="text-sm font-bold text-navy mb-2">{t('dashboard.rateThisClass')}</p>
       <div className="flex gap-1 mb-3">
         {[1,2,3,4,5].map(star => (
           <button key={star} onClick={() => setRating(star)}
@@ -51,11 +54,11 @@ function RatingForm({ classSessionId }) {
         value={comment}
         onChange={e => setComment(e.target.value)}
         rows={2}
-        placeholder="Write a short review (optional)..."
+        placeholder={t('dashboard.writeReviewPlaceholder')}
         className="w-full border-2 border-navy/20 rounded-xl px-3 py-2 text-sm resize-none mb-2 focus:border-brand-red focus:outline-none transition-colors"/>
       <button onClick={submitRating} disabled={rating === 0}
         className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy disabled:opacity-40 disabled:border-navy/20">
-        Submit review
+        {t('dashboard.submitReview')}
       </button>
     </div>
   )
@@ -63,6 +66,7 @@ function RatingForm({ classSessionId }) {
 
 export default function Dashboard() {
   const router = useRouter()
+  const { t } = useLanguage()
   const [user, setUser] = useState(null)
   const [credits, setCredits] = useState(null)
   const [transactions, setTransactions] = useState([])
@@ -70,6 +74,7 @@ export default function Dashboard() {
   const [teachingClasses, setTeachingClasses] = useState([])
   const [confirming, setConfirming] = useState(null)
   const [message, setMessage] = useState('')
+  const [messageOk, setMessageOk] = useState(false)
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
@@ -121,33 +126,37 @@ export default function Dashboard() {
         }
       })
       if (res.ok) {
-        setMessage('Attendance confirmed! Teacher received +1 credit. 🎉')
+        setMessage(t('dashboard.attendanceConfirmed'))
+        setMessageOk(true)
         fetchEnrollments()
         fetchCredits()
         fetchTransactions()
       } else {
         const data = await res.json()
-        setMessage(data.error || 'Could not confirm attendance')
+        setMessage(data.error || t('dashboard.errorConfirmAttendance'))
+        setMessageOk(false)
       }
     } catch (e) {
-      setMessage('Could not connect to server')
+      setMessage(t('common.connectionError'))
+      setMessageOk(false)
     }
     setConfirming(null)
   }
 
   if (!user) return (
-    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">Loading...</div>
+    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">{t('common.loading')}</div>
   )
 
   return (
     <main className="min-h-screen bg-cream">
       <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
         <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
-        <div className="flex gap-6 items-center">
-          <a href="/classes" className="text-navy/70 font-medium hover:text-navy">Explore</a>
-          <a href="/profile" className="text-navy/70 font-medium hover:text-navy">Profile</a>
+        <div className="flex gap-4 md:gap-6 items-center">
+          <a href="/classes" className="text-navy/70 font-medium hover:text-navy">{t('common.exploreShort')}</a>
+          <a href="/profile" className="text-navy/70 font-medium hover:text-navy">{t('common.profile')}</a>
+          <LanguageSwitcher />
           <span className="bg-brand-yellow/15 text-navy px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-yellow">
-            ⚡ {credits ?? '...'} credits
+            ⚡ {credits ?? '...'} {t('common.credits')}
           </span>
           <div className="w-8 h-8 bg-brand-red rounded-full flex items-center justify-center text-white font-display font-bold text-sm border-2 border-navy">
             {user.first_name?.[0]?.toUpperCase()}
@@ -157,13 +166,13 @@ export default function Dashboard() {
 
       <div className="max-w-4xl mx-auto px-4 md:px-8 py-8 md:py-12">
         <h1 className="font-display font-extrabold text-2xl md:text-3xl text-navy mb-2">
-          Welcome back, {user.first_name}!
+          {t('dashboard.welcomeBack', { name: user.first_name })}
         </h1>
-        <p className="text-navy/60 mb-8">Here's your account overview</p>
+        <p className="text-navy/60 mb-8">{t('dashboard.accountOverview')}</p>
 
         {message && (
           <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${
-            message.includes('confirmed') || message.includes('🎉')
+            messageOk
               ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
               : 'bg-brand-red/10 text-brand-red border-brand-red/30'
           }`}>
@@ -173,21 +182,21 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-10">
           <div className="bg-white rounded-2xl p-6 border-2 border-navy">
-            <p className="text-navy/60 text-sm mb-1 font-medium">Credit balance</p>
+            <p className="text-navy/60 text-sm mb-1 font-medium">{t('dashboard.creditBalance')}</p>
             <p className="font-display font-extrabold text-5xl text-brand-red">{credits ?? '...'}</p>
-            <p className="text-navy/40 text-sm mt-1">credits available</p>
+            <p className="text-navy/40 text-sm mt-1">{t('dashboard.creditsAvailable')}</p>
           </div>
           <div className="bg-white rounded-2xl p-6 border-2 border-navy">
-            <p className="text-navy/60 text-sm mb-1 font-medium">Classes joined</p>
+            <p className="text-navy/60 text-sm mb-1 font-medium">{t('dashboard.classesJoined')}</p>
             <p className="font-display font-extrabold text-5xl text-brand-teal">{enrollments.length}</p>
-            <p className="text-navy/40 text-sm mt-1">total enrollments</p>
+            <p className="text-navy/40 text-sm mt-1">{t('dashboard.totalEnrollments')}</p>
           </div>
         </div>
 
         {/* My enrolled classes */}
         {enrollments.length > 0 && (
           <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
-            <h2 className="font-display font-bold text-navy mb-4">My classes</h2>
+            <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.myClasses')}</h2>
             <div className="space-y-1">
               {enrollments.map(enrollment => {
                 const session = enrollment.class_sessions
@@ -207,18 +216,18 @@ export default function Dashboard() {
                         <p className="text-navy/40 text-xs mt-0.5">
                           {scheduledAt
                             ? scheduledAt.toLocaleString()
-                            : 'No time set'}
+                            : t('dashboard.noTimeSet')}
                           {' · '}
                           {enrollment.status === 'attended'
-                            ? '✅ Attended'
+                            ? t('dashboard.attended')
                             : isClassOver
-                              ? '🔔 Class ended — please confirm!'
-                              : '⏳ Upcoming'}
+                              ? t('dashboard.classEndedConfirm')
+                              : t('dashboard.upcoming')}
                         </p>
                         {!isClassOver && (
                           <a href={`/classroom/${enrollment.class_session_id}`}
                             className="text-brand-red text-xs font-bold hover:underline">
-                            🔗 Join meeting
+                            {t('dashboard.joinMeeting')}
                           </a>
                         )}
                       </div>
@@ -228,15 +237,15 @@ export default function Dashboard() {
                             onClick={() => confirmAttendance(enrollment.id)}
                             disabled={confirming === enrollment.id}
                             className="bg-brand-teal text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:opacity-90 disabled:opacity-50 transition-opacity">
-                            {confirming === enrollment.id ? 'Confirming...' : '✓ Confirm attendance'}
+                            {confirming === enrollment.id ? t('dashboard.confirming') : t('dashboard.confirmAttendance')}
                           </button>
                         )}
                         {enrollment.status !== 'attended' && !isClassOver && (
-                          <span className="text-navy/40 text-sm">Not started yet</span>
+                          <span className="text-navy/40 text-sm">{t('dashboard.notStartedYet')}</span>
                         )}
                         {enrollment.status === 'attended' && (
                           <span className="bg-brand-teal/10 text-brand-teal px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-teal/30">
-                            ✅ Confirmed
+                            {t('dashboard.confirmed')}
                           </span>
                         )}
                       </div>
@@ -256,7 +265,7 @@ export default function Dashboard() {
         {/* Classes I'm teaching */}
         {teachingClasses.length > 0 && (
           <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
-            <h2 className="font-display font-bold text-navy mb-4">Classes I'm teaching</h2>
+            <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.classesTeaching')}</h2>
             <div className="space-y-1">
               {teachingClasses.map(cls => {
                 const session = cls.class_sessions?.[0]
@@ -271,17 +280,17 @@ export default function Dashboard() {
                       <div>
                         <p className="text-navy text-sm font-bold">{cls.title}</p>
                         <p className="text-navy/40 text-xs mt-0.5">
-                          {scheduledAt ? scheduledAt.toLocaleString() : 'No time set'}
+                          {scheduledAt ? scheduledAt.toLocaleString() : t('dashboard.noTimeSet')}
                         </p>
                         {session && !isClassOver && (
                           <a href={`/classroom/${session.id}`}
                             className="text-brand-red text-xs font-bold hover:underline">
-                            🔗 Start class
+                            {t('dashboard.startClass')}
                           </a>
                         )}
                       </div>
                       {isClassOver && (
-                        <span className="text-navy/40 text-sm">Ended</span>
+                        <span className="text-navy/40 text-sm">{t('dashboard.ended')}</span>
                       )}
                     </div>
                   </div>
@@ -293,9 +302,9 @@ export default function Dashboard() {
 
         {/* Credit history */}
         <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
-          <h2 className="font-display font-bold text-navy mb-4">Credit history</h2>
+          <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.creditHistory')}</h2>
           {transactions.length === 0 ? (
-            <p className="text-navy/40 text-sm">No transactions yet</p>
+            <p className="text-navy/40 text-sm">{t('dashboard.noTransactionsYet')}</p>
           ) : (
             <div className="space-y-3">
               {transactions.map((tx) => (
@@ -319,15 +328,15 @@ export default function Dashboard() {
 
         {/* Quick actions */}
         <div className="bg-white rounded-2xl p-6 border-2 border-navy">
-          <h2 className="font-display font-bold text-navy mb-4">Quick actions</h2>
+          <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.quickActions')}</h2>
           <div className="flex gap-4">
             <a href="/classes"
               className="bg-brand-red text-white px-6 py-3 rounded-full text-sm font-bold border-2 border-navy">
-              Browse classes
+              {t('common.explore')}
             </a>
             <a href="/classes/create"
               className="border-2 border-navy text-navy px-6 py-3 rounded-full text-sm font-bold hover:bg-navy hover:text-white transition-colors">
-              Create a class
+              {t('dashboard.createAClass')}
             </a>
           </div>
         </div>

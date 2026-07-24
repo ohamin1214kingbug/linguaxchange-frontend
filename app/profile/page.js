@@ -2,31 +2,35 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
+import { useLanguage } from '../../lib/i18n/LanguageContext'
+import LanguageSwitcher from '../../components/LanguageSwitcher'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
-const LANGUAGES = [
-  { code: 'KO', flag: '🇰🇷', name: 'Korean' },
-  { code: 'ES', flag: '🇪🇸', name: 'Spanish' },
-  { code: 'DE', flag: '🇩🇪', name: 'German' },
-  { code: 'EN', flag: '🇬🇧', name: 'English' },
-  { code: 'PT', flag: '🇧🇷', name: 'Portuguese' },
-]
-
-const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'Native']
-
 export default function ProfilePage() {
   const router = useRouter()
+  const { t } = useLanguage()
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState('')
+  const [messageOk, setMessageOk] = useState(false)
   const [form, setForm] = useState({
     first_name: '', last_name: '', nationality: '', bio: '',
     photo_url: '', teach_language: '', teach_level: '',
     learn_languages: [], has_certificate: null, certificate_explanation: ''
   })
+
+  const LANGUAGES = [
+    { code: 'KO', flag: '🇰🇷', name: t('home.langKorean') },
+    { code: 'ES', flag: '🇪🇸', name: t('home.langSpanish') },
+    { code: 'DE', flag: '🇩🇪', name: t('home.langGerman') },
+    { code: 'EN', flag: '🇬🇧', name: t('home.langEnglish') },
+    { code: 'PT', flag: '🇧🇷', name: t('home.langPortuguese') },
+  ]
+
+  const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', t('profile.native')]
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
@@ -61,7 +65,8 @@ export default function ProfilePage() {
     const path = `avatars/${user.id}.${ext}`
     const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
     if (error) {
-      setMessage('Photo upload failed: ' + error.message)
+      setMessage(t('profile.photoUploadFailed') + error.message)
+      setMessageOk(false)
       setUploading(false)
       return
     }
@@ -95,19 +100,22 @@ export default function ProfilePage() {
       })
       const data = await res.json()
       if (!res.ok) {
-        setMessage(data.error || 'Save failed')
+        setMessage(data.error || t('profile.saveFailed'))
+        setMessageOk(false)
       } else {
         localStorage.setItem('user', JSON.stringify({ ...user, first_name: data.first_name }))
-        setMessage('Profile saved!')
+        setMessage(t('profile.profileSaved'))
+        setMessageOk(true)
       }
     } catch (e) {
-      setMessage('Could not connect to server')
+      setMessage(t('common.connectionError'))
+      setMessageOk(false)
     }
     setSaving(false)
   }
 
   if (!profile) return (
-    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">Loading...</div>
+    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">{t('common.loading')}</div>
   )
 
   return (
@@ -115,19 +123,20 @@ export default function ProfilePage() {
       <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
         <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
         <div className="flex gap-6 items-center">
-          <a href="/classes" className="text-navy/70 font-medium hover:text-navy">Explore</a>
-          <a href="/dashboard" className="text-navy/70 font-medium hover:text-navy">Dashboard</a>
-          <a href="/profile" className="text-brand-red font-bold">Profile</a>
+          <a href="/classes" className="text-navy/70 font-medium hover:text-navy">{t('common.exploreShort')}</a>
+          <a href="/dashboard" className="text-navy/70 font-medium hover:text-navy">{t('common.dashboard')}</a>
+          <a href="/profile" className="text-brand-red font-bold">{t('common.profile')}</a>
+          <LanguageSwitcher />
         </div>
       </nav>
 
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
-        <h1 className="font-display font-extrabold text-3xl text-navy mb-2">Your profile</h1>
-        <p className="text-navy/60 mb-8">This is how teachers and students see you.</p>
+        <h1 className="font-display font-extrabold text-3xl text-navy mb-2">{t('profile.yourProfile')}</h1>
+        <p className="text-navy/60 mb-8">{t('profile.howOthersSeeYou')}</p>
 
         {message && (
           <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${
-            message === 'Profile saved!'
+            messageOk
               ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
               : 'bg-brand-red/10 text-brand-red border-brand-red/30'
           }`}>
@@ -138,13 +147,13 @@ export default function ProfilePage() {
         {/* Approval status */}
         {!profile.is_approved && (
           <div className="bg-brand-yellow/10 border-2 border-brand-yellow/40 text-navy px-4 py-3 rounded-xl mb-6 text-sm font-medium">
-            Your account is pending approval. You can still explore classes while we review your profile.
+            {t('profile.pendingApprovalNotice')}
           </div>
         )}
 
         {/* Photo */}
         <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
-          <h2 className="font-display font-bold text-navy mb-4">Profile photo</h2>
+          <h2 className="font-display font-bold text-navy mb-4">{t('profile.profilePhoto')}</h2>
           <div className="flex items-center gap-6">
             {form.photo_url ? (
               <img src={form.photo_url} alt="avatar"
@@ -156,53 +165,53 @@ export default function ProfilePage() {
             )}
             <div>
               <label className="cursor-pointer bg-brand-red/10 text-brand-red px-4 py-2 rounded-full text-sm font-bold hover:bg-brand-red/20 transition-colors">
-                {uploading ? 'Uploading...' : 'Upload photo'}
+                {uploading ? t('profile.uploading') : t('profile.uploadPhoto')}
                 <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" disabled={uploading}/>
               </label>
-              <p className="text-navy/40 text-xs mt-2">JPG or PNG. Must be a real photo of you.</p>
+              <p className="text-navy/40 text-xs mt-2">{t('profile.photoHint')}</p>
             </div>
           </div>
         </div>
 
         {/* Basic info */}
         <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
-          <h2 className="font-display font-bold text-navy mb-4">Basic info</h2>
+          <h2 className="font-display font-bold text-navy mb-4">{t('profile.basicInfo')}</h2>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-navy mb-1">First name</label>
+                <label className="block text-sm font-bold text-navy mb-1">{t('auth.firstName')}</label>
                 <input value={form.first_name} onChange={e => setForm(f => ({ ...f, first_name: e.target.value }))}
                   className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" />
               </div>
               <div>
-                <label className="block text-sm font-bold text-navy mb-1">Last name</label>
+                <label className="block text-sm font-bold text-navy mb-1">{t('auth.lastName')}</label>
                 <input value={form.last_name} onChange={e => setForm(f => ({ ...f, last_name: e.target.value }))}
                   className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-bold text-navy mb-1">Nationality</label>
+              <label className="block text-sm font-bold text-navy mb-1">{t('auth.nationality')}</label>
               <input value={form.nationality} onChange={e => setForm(f => ({ ...f, nationality: e.target.value }))}
-                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" placeholder="e.g. Korean"/>
+                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" placeholder={t('profile.nationalityPlaceholder')}/>
             </div>
             <div>
               <label className="block text-sm font-bold text-navy mb-1">
-                Bio <span className="text-navy/40 font-normal">({form.bio.length}/300)</span>
+                {t('profile.bio')} <span className="text-navy/40 font-normal">{t('profile.bioCount', { n: form.bio.length })}</span>
               </label>
               <textarea value={form.bio} onChange={e => setForm(f => ({ ...f, bio: e.target.value }))}
                 maxLength={300} rows={3}
                 className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 resize-none focus:border-brand-red focus:outline-none transition-colors"
-                placeholder="Tell others about yourself, your background, and what you love about language learning..."/>
+                placeholder={t('profile.bioPlaceholder')}/>
             </div>
           </div>
         </div>
 
         {/* Teaching */}
         <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
-          <h2 className="font-display font-bold text-navy mb-4">Teaching</h2>
+          <h2 className="font-display font-bold text-navy mb-4">{t('profile.teaching')}</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-navy mb-2">Language you teach</label>
+              <label className="block text-sm font-bold text-navy mb-2">{t('profile.languageYouTeach')}</label>
               <div className="flex flex-wrap gap-2">
                 {LANGUAGES.map(lang => (
                   <button key={lang.code} onClick={() => setForm(f => ({ ...f, teach_language: lang.code }))}
@@ -217,7 +226,7 @@ export default function ProfilePage() {
             </div>
             {form.teach_language && (
               <div>
-                <label className="block text-sm font-bold text-navy mb-2">Your level</label>
+                <label className="block text-sm font-bold text-navy mb-2">{t('profile.yourLevel')}</label>
                 <div className="flex gap-2 flex-wrap">
                   {LEVELS.map(level => (
                     <button key={level} onClick={() => setForm(f => ({ ...f, teach_level: level }))}
@@ -232,31 +241,31 @@ export default function ProfilePage() {
               </div>
             )}
             <div>
-              <label className="block text-sm font-bold text-navy mb-2">Certificate status</label>
+              <label className="block text-sm font-bold text-navy mb-2">{t('profile.certificateStatus')}</label>
               <div className="flex gap-3">
                 <button onClick={() => setForm(f => ({ ...f, has_certificate: true }))}
                   className={`px-4 py-2 rounded-full border-2 text-sm font-bold transition-colors
                     ${form.has_certificate === true
                       ? 'border-navy bg-brand-red text-white'
                       : 'border-navy/15 text-navy hover:border-navy/40'}`}>
-                  ✅ I have a certificate
+                  {t('profile.haveCertificate')}
                 </button>
                 <button onClick={() => setForm(f => ({ ...f, has_certificate: false }))}
                   className={`px-4 py-2 rounded-full border-2 text-sm font-bold transition-colors
                     ${form.has_certificate === false
                       ? 'border-navy bg-brand-red text-white'
                       : 'border-navy/15 text-navy hover:border-navy/40'}`}>
-                  📝 No certificate
+                  {t('profile.noCertificate')}
                 </button>
               </div>
             </div>
             {form.has_certificate === false && (
               <div>
-                <label className="block text-sm font-bold text-navy mb-1">Explain your level</label>
+                <label className="block text-sm font-bold text-navy mb-1">{t('profile.explainYourLevel')}</label>
                 <textarea value={form.certificate_explanation}
                   onChange={e => setForm(f => ({ ...f, certificate_explanation: e.target.value }))}
                   rows={2} className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 resize-none focus:border-brand-red focus:outline-none transition-colors"
-                  placeholder="e.g. Native Korean speaker, grew up in Seoul..."/>
+                  placeholder={t('profile.certificateExplanationPlaceholder')}/>
               </div>
             )}
           </div>
@@ -264,7 +273,7 @@ export default function ProfilePage() {
 
         {/* Learning */}
         <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-8">
-          <h2 className="font-display font-bold text-navy mb-4">Languages I want to learn</h2>
+          <h2 className="font-display font-bold text-navy mb-4">{t('profile.languagesWantLearn')}</h2>
           <div className="flex flex-wrap gap-2">
             {LANGUAGES.map(lang => (
               <button key={lang.code} onClick={() => toggleLearnLanguage(lang.code)}
@@ -280,7 +289,7 @@ export default function ProfilePage() {
 
         <button onClick={handleSave} disabled={saving}
           className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
-          {saving ? 'Saving...' : 'Save profile'}
+          {saving ? t('profile.saving') : t('profile.saveProfile')}
         </button>
       </div>
     </main>
