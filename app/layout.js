@@ -1,5 +1,6 @@
 import { Baloo_2, Inter } from "next/font/google";
 import "./globals.css";
+import { LanguageProvider } from "../lib/i18n/LanguageContext";
 
 const baloo = Baloo_2({
   variable: "--font-display",
@@ -23,7 +24,9 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${baloo.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
     </html>
   );
 }
