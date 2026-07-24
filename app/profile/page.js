@@ -107,29 +107,29 @@ export default function ProfilePage() {
   }
 
   if (!profile) return (
-    <div className="min-h-screen flex items-center justify-center text-gray-400">Loading...</div>
+    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">Loading...</div>
   )
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <nav className="flex items-center justify-between px-8 py-4 border-b border-gray-100 bg-white">
-        <a href="/" className="text-xl font-semibold text-indigo-600">LinguaXchange</a>
+    <main className="min-h-screen bg-cream">
+      <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
+        <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
         <div className="flex gap-6 items-center">
-          <a href="/classes" className="text-gray-500">Explore</a>
-          <a href="/dashboard" className="text-gray-500">Dashboard</a>
-          <a href="/profile" className="text-indigo-600 font-medium">Profile</a>
+          <a href="/classes" className="text-navy/70 font-medium hover:text-navy">Explore</a>
+          <a href="/dashboard" className="text-navy/70 font-medium hover:text-navy">Dashboard</a>
+          <a href="/profile" className="text-brand-red font-bold">Profile</a>
         </div>
       </nav>
 
-      <div className="max-w-2xl mx-auto px-8 py-12">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Your profile</h1>
-        <p className="text-gray-500 mb-8">This is how teachers and students see you.</p>
+      <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
+        <h1 className="font-display font-extrabold text-3xl text-navy mb-2">Your profile</h1>
+        <p className="text-navy/60 mb-8">This is how teachers and students see you.</p>
 
         {message && (
-          <div className={`px-4 py-3 rounded-lg mb-6 text-sm ${
+          <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${
             message === 'Profile saved!'
-              ? 'bg-green-50 text-green-700'
-              : 'bg-red-50 text-red-600'
+              ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
+              : 'bg-brand-red/10 text-brand-red border-brand-red/30'
           }`}>
             {message}
           </div>
@@ -137,79 +137,79 @@ export default function ProfilePage() {
 
         {/* Approval status */}
         {!profile.is_approved && (
-          <div className="bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded-lg mb-6 text-sm">
+          <div className="bg-brand-yellow/10 border-2 border-brand-yellow/40 text-navy px-4 py-3 rounded-xl mb-6 text-sm font-medium">
             Your account is pending approval. You can still explore classes while we review your profile.
           </div>
         )}
 
         {/* Photo */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
-          <h2 className="font-semibold text-gray-900 mb-4">Profile photo</h2>
+        <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
+          <h2 className="font-display font-bold text-navy mb-4">Profile photo</h2>
           <div className="flex items-center gap-6">
             {form.photo_url ? (
               <img src={form.photo_url} alt="avatar"
-                className="w-20 h-20 rounded-full object-cover border-2 border-gray-100"/>
+                className="w-20 h-20 rounded-full object-cover border-2 border-navy"/>
             ) : (
-              <div className="w-20 h-20 rounded-full bg-indigo-100 flex items-center justify-center text-3xl text-indigo-600 font-bold">
+              <div className="w-20 h-20 rounded-full bg-brand-red flex items-center justify-center text-3xl text-white font-display font-bold border-2 border-navy">
                 {form.first_name?.[0]?.toUpperCase() || '?'}
               </div>
             )}
             <div>
-              <label className="cursor-pointer bg-indigo-50 text-indigo-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-100">
+              <label className="cursor-pointer bg-brand-red/10 text-brand-red px-4 py-2 rounded-full text-sm font-bold hover:bg-brand-red/20 transition-colors">
                 {uploading ? 'Uploading...' : 'Upload photo'}
                 <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" disabled={uploading}/>
               </label>
-              <p className="text-gray-400 text-xs mt-2">JPG or PNG. Must be a real photo of you.</p>
+              <p className="text-navy/40 text-xs mt-2">JPG or PNG. Must be a real photo of you.</p>
             </div>
           </div>
         </div>
 
         {/* Basic info */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
-          <h2 className="font-semibold text-gray-900 mb-4">Basic info</h2>
+        <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
+          <h2 className="font-display font-bold text-navy mb-4">Basic info</h2>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">First name</label>
+                <label className="block text-sm font-bold text-navy mb-1">First name</label>
                 <input value={form.first_name} onChange={e => setForm(f => ({ ...f, first_name: e.target.value }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                  className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Last name</label>
+                <label className="block text-sm font-bold text-navy mb-1">Last name</label>
                 <input value={form.last_name} onChange={e => setForm(f => ({ ...f, last_name: e.target.value }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2" />
+                  className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
+              <label className="block text-sm font-bold text-navy mb-1">Nationality</label>
               <input value={form.nationality} onChange={e => setForm(f => ({ ...f, nationality: e.target.value }))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="e.g. Korean"/>
+                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" placeholder="e.g. Korean"/>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Bio <span className="text-gray-400">({form.bio.length}/300)</span>
+              <label className="block text-sm font-bold text-navy mb-1">
+                Bio <span className="text-navy/40 font-normal">({form.bio.length}/300)</span>
               </label>
               <textarea value={form.bio} onChange={e => setForm(f => ({ ...f, bio: e.target.value }))}
                 maxLength={300} rows={3}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 resize-none"
+                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 resize-none focus:border-brand-red focus:outline-none transition-colors"
                 placeholder="Tell others about yourself, your background, and what you love about language learning..."/>
             </div>
           </div>
         </div>
 
         {/* Teaching */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
-          <h2 className="font-semibold text-gray-900 mb-4">Teaching</h2>
+        <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
+          <h2 className="font-display font-bold text-navy mb-4">Teaching</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Language you teach</label>
+              <label className="block text-sm font-bold text-navy mb-2">Language you teach</label>
               <div className="flex flex-wrap gap-2">
                 {LANGUAGES.map(lang => (
                   <button key={lang.code} onClick={() => setForm(f => ({ ...f, teach_language: lang.code }))}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm
+                    className={`flex items-center gap-2 px-3 py-2 rounded-full border-2 text-sm font-bold transition-colors
                       ${form.teach_language === lang.code
-                        ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                        : 'border-gray-200 hover:border-gray-300'}`}>
+                        ? 'border-navy bg-brand-red/10 text-navy'
+                        : 'border-navy/15 text-navy hover:border-navy/40'}`}>
                     {lang.flag} {lang.name}
                   </button>
                 ))}
@@ -217,14 +217,14 @@ export default function ProfilePage() {
             </div>
             {form.teach_language && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Your level</label>
+                <label className="block text-sm font-bold text-navy mb-2">Your level</label>
                 <div className="flex gap-2 flex-wrap">
                   {LEVELS.map(level => (
                     <button key={level} onClick={() => setForm(f => ({ ...f, teach_level: level }))}
-                      className={`px-4 py-2 rounded-lg border text-sm font-medium
+                      className={`px-4 py-2 rounded-full border-2 text-sm font-bold transition-colors
                         ${form.teach_level === level
-                          ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                          : 'border-gray-200 hover:border-gray-300'}`}>
+                          ? 'border-navy bg-brand-red text-white'
+                          : 'border-navy/15 text-navy hover:border-navy/40'}`}>
                       {level}
                     </button>
                   ))}
@@ -232,30 +232,30 @@ export default function ProfilePage() {
               </div>
             )}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Certificate status</label>
+              <label className="block text-sm font-bold text-navy mb-2">Certificate status</label>
               <div className="flex gap-3">
                 <button onClick={() => setForm(f => ({ ...f, has_certificate: true }))}
-                  className={`px-4 py-2 rounded-lg border text-sm font-medium
+                  className={`px-4 py-2 rounded-full border-2 text-sm font-bold transition-colors
                     ${form.has_certificate === true
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                      : 'border-gray-200 hover:border-gray-300'}`}>
+                      ? 'border-navy bg-brand-red text-white'
+                      : 'border-navy/15 text-navy hover:border-navy/40'}`}>
                   ✅ I have a certificate
                 </button>
                 <button onClick={() => setForm(f => ({ ...f, has_certificate: false }))}
-                  className={`px-4 py-2 rounded-lg border text-sm font-medium
+                  className={`px-4 py-2 rounded-full border-2 text-sm font-bold transition-colors
                     ${form.has_certificate === false
-                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                      : 'border-gray-200 hover:border-gray-300'}`}>
+                      ? 'border-navy bg-brand-red text-white'
+                      : 'border-navy/15 text-navy hover:border-navy/40'}`}>
                   📝 No certificate
                 </button>
               </div>
             </div>
             {form.has_certificate === false && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Explain your level</label>
+                <label className="block text-sm font-bold text-navy mb-1">Explain your level</label>
                 <textarea value={form.certificate_explanation}
                   onChange={e => setForm(f => ({ ...f, certificate_explanation: e.target.value }))}
-                  rows={2} className="w-full border border-gray-300 rounded-lg px-3 py-2 resize-none"
+                  rows={2} className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 resize-none focus:border-brand-red focus:outline-none transition-colors"
                   placeholder="e.g. Native Korean speaker, grew up in Seoul..."/>
               </div>
             )}
@@ -263,15 +263,15 @@ export default function ProfilePage() {
         </div>
 
         {/* Learning */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-8">
-          <h2 className="font-semibold text-gray-900 mb-4">Languages I want to learn</h2>
+        <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-8">
+          <h2 className="font-display font-bold text-navy mb-4">Languages I want to learn</h2>
           <div className="flex flex-wrap gap-2">
             {LANGUAGES.map(lang => (
               <button key={lang.code} onClick={() => toggleLearnLanguage(lang.code)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm
+                className={`flex items-center gap-2 px-3 py-2 rounded-full border-2 text-sm font-bold transition-colors
                   ${form.learn_languages.includes(lang.code)
-                    ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                    : 'border-gray-200 hover:border-gray-300'}`}>
+                    ? 'border-navy bg-brand-red/10 text-navy'
+                    : 'border-navy/15 text-navy hover:border-navy/40'}`}>
                 {lang.flag} {lang.name}
               </button>
             ))}
@@ -279,7 +279,7 @@ export default function ProfilePage() {
         </div>
 
         <button onClick={handleSave} disabled={saving}
-          className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50">
+          className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
           {saving ? 'Saving...' : 'Save profile'}
         </button>
       </div>
