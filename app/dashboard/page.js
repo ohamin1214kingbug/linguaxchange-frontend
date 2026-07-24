@@ -69,6 +69,7 @@ export default function Dashboard() {
   const { t } = useLanguage()
   const [user, setUser] = useState(null)
   const [credits, setCredits] = useState(null)
+  const [streak, setStreak] = useState(null)
   const [transactions, setTransactions] = useState([])
   const [enrollments, setEnrollments] = useState([])
   const [teachingClasses, setTeachingClasses] = useState([])
@@ -83,6 +84,7 @@ export default function Dashboard() {
     const parsedUser = JSON.parse(stored)
     setUser(parsedUser)
     fetchCredits()
+    fetchStreak(parsedUser.id)
     fetchTransactions()
     fetchEnrollments()
     fetchTeachingClasses(parsedUser.id)
@@ -94,6 +96,12 @@ export default function Dashboard() {
     fetch(`${API}/api/credits`, { headers: authHeaders() })
       .then(res => res.json())
       .then(data => setCredits(data?.balance ?? 0))
+  }
+
+  const fetchStreak = (userId) => {
+    fetch(`${API}/api/users/${userId}`, { headers: authHeaders() })
+      .then(res => res.json())
+      .then(data => setStreak(data?.current_streak ?? 0))
   }
 
   const fetchTransactions = () => {
@@ -130,6 +138,7 @@ export default function Dashboard() {
         setMessageOk(true)
         fetchEnrollments()
         fetchCredits()
+        fetchStreak(user.id)
         fetchTransactions()
       } else {
         const data = await res.json()
@@ -155,6 +164,11 @@ export default function Dashboard() {
           <a href="/classes" className="text-navy/70 font-medium hover:text-navy">{t('common.exploreShort')}</a>
           <a href="/profile" className="text-navy/70 font-medium hover:text-navy">{t('common.profile')}</a>
           <LanguageSwitcher />
+          {!!streak && (
+            <span className="bg-brand-red/10 text-brand-red px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-red/30">
+              {t('dashboard.weekStreak', { n: streak })}
+            </span>
+          )}
           <span className="bg-brand-yellow/15 text-navy px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-yellow">
             ⚡ {credits ?? '...'} {t('common.credits')}
           </span>

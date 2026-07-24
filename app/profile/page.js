@@ -132,7 +132,12 @@ export default function ProfilePage() {
 
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">{t('profile.yourProfile')}</h1>
-        <p className="text-navy/60 mb-8">{t('profile.howOthersSeeYou')}</p>
+        <p className="text-navy/60 mb-2">{t('profile.howOthersSeeYou')}</p>
+        <p className="text-navy/40 text-sm mb-8">
+          {profile.longest_streak > 0
+            ? `${t('profile.longestStreak')}: ${t('profile.weeksCount', { n: profile.longest_streak })}`
+            : t('profile.noStreakYet')}
+        </p>
 
         {message && (
           <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${
