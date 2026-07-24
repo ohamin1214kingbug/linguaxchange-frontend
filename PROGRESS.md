@@ -4,7 +4,7 @@ _Last updated: 2026-07-24. Written so a fresh Claude session can pick up this pr
 
 ## 1. Project overview
 
-LinguaXchange is a language-exchange platform where students book/join live video classes with teachers in five languages: English, Korean, Spanish, German, Portuguese. It's a two-repo project: a Next.js frontend and an Express/Supabase backend, both solo-developer projects owned by the user (ohamin1214kingbug on GitHub). Early phases focused on fixing real security/logic bugs, adding email + password reset, and adding tests. The project then went through a full visual redesign (cream/navy/red "sticker" style matching reference screenshots), and is now **mid-way through adding full i18n (translation) support** with a language-switcher bar, translating the app page-by-page.
+LinguaXchange is a language-exchange platform where students book/join live video classes with teachers in five languages: English, Korean, Spanish, German, Portuguese. It's a two-repo project: a Next.js frontend and an Express/Supabase backend, both solo-developer projects owned by the user (ohamin1214kingbug on GitHub). Early phases focused on fixing real security/logic bugs, adding email + password reset, and adding tests. The project then went through a full visual redesign (cream/navy/red "sticker" style matching reference screenshots), and then a **full i18n (translation) rollout** with a language-switcher bar — this is now **complete** across all user-facing pages.
 
 ## 2. What's been built
 
@@ -20,7 +20,7 @@ LinguaXchange is a language-exchange platform where students book/join live vide
 **Frontend** (`/Users/kinghamin/linguaxchange-frontend`):
 - Full visual redesign: cream/navy/red palette, Baloo 2 (display) + Inter (body) fonts, thick-border "sticker" card style — applied to home, auth pages, dashboard, classes (browse + create), profile, teacher profile, admin, classroom nav
 - i18n infrastructure (see Architecture below) — `lib/i18n/translations.js`, `lib/i18n/LanguageContext.js`, `components/LanguageSwitcher.js`
-- Translated pages so far: home (`app/page.js`), all auth pages (`app/auth/login`, `app/auth/register`, `app/auth/forgot-password`, `app/auth/reset-password`), dashboard (`app/dashboard/page.js`), browse classes (`app/classes/page.js`)
+- Translated pages (i18n rollout complete): home (`app/page.js`), all auth pages (`app/auth/login`, `app/auth/register`, `app/auth/forgot-password`, `app/auth/reset-password`), dashboard (`app/dashboard/page.js`), browse classes (`app/classes/page.js`), create-class form (`app/classes/create/page.js`), profile (`app/profile/page.js`), teacher profile (`app/teachers/[id]/page.js`). Intentionally left in English: `app/admin/page.js` (internal-only tool) and most of `app/classroom/[sessionId]/page.js` (third-party Jitsi UI chrome).
 
 ## 3. Tech stack & architecture
 
@@ -40,26 +40,22 @@ LinguaXchange is a language-exchange platform where students book/join live vide
 - All backend functionality (auth, classes, enrollments, credits, reviews, video/Jitsi, password reset, email) is live and verified working in earlier sessions.
 - Visual redesign is complete and live across all pages.
 - i18n infrastructure is complete and verified: language switching works, persists across reload, falls back to English correctly.
-- Translated and build-verified (via `npx next build`, all passing, 14 routes, no errors): home page, all 4 auth pages, dashboard.
-- `app/classes/page.js` (browse classes) was just rewritten with full translation support — **build-verified** (`npx next build` passes cleanly, all 14 routes present, no errors) but **not yet browser-verified** in a non-English language (see below).
+- **i18n rollout is complete.** All user-facing pages translated and verified: home, all 4 auth pages, dashboard, browse classes, create-class form, profile, teacher profile. `npx next build` passes cleanly (14 routes, no errors); browser-verified end-to-end in Korean and Spanish (language switching, form validation, save/join flows) with no console errors. Committed and pushed (`16d7c5b`).
+- Translation dictionary key counts verified equal across all 5 languages (EN/KO/ES/DE/PT): common 12, home 30, auth 69, dashboard 29, classes 69, profile 27, teacher 8.
 - A pre-existing unrelated CSS bug was fixed opportunistically while working on the home page: a decorative "Hola" badge that overlapped the hero stat badge (moved from `-top-4 left-0` to `-top-16 left-4`).
-- A recurring bug pattern was found and fixed: several pages styled success/error message banners by checking `message.includes('Successfully')` or `.includes('confirmed')` — this breaks once messages are translated. Fix: use an explicit `messageOk` boolean state set alongside every `setMessage(...)` call, and style off that instead. **Already applied to** `app/dashboard/page.js` and `app/classes/page.js`. **Still needs to be applied to** `app/teachers/[id]/page.js` (uses the same fragile pattern) when that page is translated.
+- The `message.includes('Successfully')`-style fragile string-matching bug (see Known issues below) has been fixed everywhere it was found: `app/dashboard/page.js`, `app/classes/page.js`, and `app/teachers/[id]/page.js` all now use an explicit `messageOk` boolean state instead.
+- `LanguageSwitcher` is present in the nav of every translated page, including `app/classes/create/page.js`, `app/profile/page.js`, and `app/teachers/[id]/page.js` (added in the same pass — the established page pattern requires it, and it was initially missed, then caught and fixed before commit).
 
 ## 5. In progress / next steps
 
-Task #31 ("Translate dashboard, classes, profile, teacher profile pages") is `in_progress`. Concrete next actions, in order:
+Task #31 ("Translate dashboard, classes, profile, teacher profile pages") is **complete**. There is no known in-progress frontend or backend work as of this update. Possible next steps (not started, no priority assigned):
 
-1. **Uncommitted work exists right now** — `app/classes/page.js`, `app/dashboard/page.js`, and `lib/i18n/translations.js` have unstaged changes in the frontend repo. Verify `app/classes/page.js` builds cleanly (`npx next build`) and browser-test it (switch to a non-English language, confirm no console errors, confirm class cards render correctly) before moving on.
-2. **Translate `app/classes/create/page.js`** (create-class form). Needs: `LANGUAGES`, `LEVELS`, and a 12-item `TOPICS` array of hardcoded English topic strings translated via `classes.topicFreeConversation` ... `classes.topicWriting` keys (already present in the dictionary), plus form labels and validation errors (`classes.errorSelectLanguage` etc. — already present).
-3. **Translate `app/profile/page.js`**. Keys already exist in the `profile` namespace (23 keys: `yourProfile`, `howOthersSeeYou`, `profileSaved`, `saveFailed`, `pendingApprovalNotice`, `profilePhoto`, `uploadPhoto`, `uploading`, `photoHint`, `basicInfo`, `bio`, `bioPlaceholder`, `teaching`, `yourLevel`, `certificateStatus`, `haveCertificate`, `noCertificate`, `explainYourLevel`, `certificateExplanationPlaceholder`, `languagesWantLearn`, `saveProfile`, `saving`, `photoUploadFailed`).
-4. **Translate `app/teachers/[id]/page.js`**. Keys already exist in the `teacher` namespace (8 keys: `teacherNotFound`, `upcomingClasses`, `join`, `studentReviews`, `noClassesPosted`, `teaches` with `{lang}`, `certified`, `reviewsCount` with `{n}`). Also apply the `messageOk` boolean-state fix here (currently uses `message.includes('Successfully')`), and localize its `LANGS` label object.
-5. Run `npx next build` for a final full-repo check, browser-verify at least one non-English language end-to-end, check console for errors.
-6. Commit and push the batch (imperative summary + body + `Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>` trailer, matching the existing commit style — see `git log`).
-7. Mark task #31 completed.
+- Address the class-topic i18n limitation described below (would need a topic-code schema change).
+- Any new page/feature work would follow the established page pattern (see Architecture section 3) — add `useLanguage`, translate strings, drop in `<LanguageSwitcher />`, use `messageOk` for any success/error banner.
 
-**Known scoping decision not yet communicated to the user**: `app/admin/page.js` and most of `app/classroom/[sessionId]/page.js` are intentionally being left in English — admin is an internal-only tool the site owner (English speaker) uses, and the classroom page is mostly third-party Jitsi UI chrome, not ours to translate. Mention this when reporting the i18n rollout as complete.
+**Known scoping decision (communicated)**: `app/admin/page.js` and most of `app/classroom/[sessionId]/page.js` are intentionally left in English — admin is an internal-only tool the site owner (English speaker) uses, and the classroom page is mostly third-party Jitsi UI chrome, not ours to translate.
 
-There is also a known, not-yet-solved deeper issue: class `topic` values are stored as free English text in the DB when a class is created (selected from the `TOPICS` list or custom text), so translating the *display* of `cls.topic` on the browse-classes page isn't straightforward — it would require storing a topic code instead of raw text and translating on render. Out of scope for now; flagged as a possible future improvement, not a bug to fix in this pass.
+There is also a known, not-yet-solved deeper issue: class `topic` values are stored as free English text in the DB when a class is created (selected from the `TOPICS` list or custom text), so translating the *display* of `cls.topic` on the browse-classes and teacher-profile pages isn't straightforward — it would require storing a topic code instead of raw text and translating on render. Out of scope for now; flagged as a possible future improvement, not a bug to fix.
 
 ## 6. Known issues & gotchas
 
