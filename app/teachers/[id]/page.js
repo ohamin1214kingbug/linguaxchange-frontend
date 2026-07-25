@@ -6,6 +6,27 @@ import LanguageSwitcher from '../../../components/LanguageSwitcher'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
+const BADGE_KEYS = { first_class: 'firstClass', five_taught: 'fiveTaught', polyglot: 'polyglot' }
+
+function BadgeRow({ badges, t }) {
+  if (!badges || badges.length === 0) return null
+  return (
+    <div className="flex gap-2 mt-3">
+      {badges.map(badge => {
+        const key = BADGE_KEYS[badge.id]
+        const label = key ? t(`badges.${key}Label`) : badge.label
+        const criteria = key ? t(`badges.${key}Criteria`) : badge.criteria
+        return (
+          <span key={badge.id} title={`${label} — ${criteria}`}
+            className="w-9 h-9 flex items-center justify-center text-lg bg-brand-yellow/15 border-2 border-brand-yellow rounded-full">
+            {badge.icon}
+          </span>
+        )
+      })}
+    </div>
+  )
+}
+
 function Stars({ rating }) {
   return (
     <span className="text-brand-yellow text-lg">
@@ -144,6 +165,7 @@ export default function TeacherProfile() {
                   </span>
                 )}
               </div>
+              <BadgeRow badges={teacher.badges} t={t} />
               {teacher.bio && (
                 <p className="text-navy/70 mt-4 leading-relaxed">{teacher.bio}</p>
               )}

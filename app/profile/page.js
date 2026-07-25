@@ -7,6 +7,27 @@ import LanguageSwitcher from '../../components/LanguageSwitcher'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
+const BADGE_KEYS = { first_class: 'firstClass', five_taught: 'fiveTaught', polyglot: 'polyglot' }
+
+function BadgeRow({ badges, t }) {
+  if (!badges || badges.length === 0) return null
+  return (
+    <div className="flex gap-2 mb-6">
+      {badges.map(badge => {
+        const key = BADGE_KEYS[badge.id]
+        const label = key ? t(`badges.${key}Label`) : badge.label
+        const criteria = key ? t(`badges.${key}Criteria`) : badge.criteria
+        return (
+          <span key={badge.id} title={`${label} — ${criteria}`}
+            className="w-9 h-9 flex items-center justify-center text-lg bg-brand-yellow/15 border-2 border-brand-yellow rounded-full">
+            {badge.icon}
+          </span>
+        )
+      })}
+    </div>
+  )
+}
+
 export default function ProfilePage() {
   const router = useRouter()
   const { t } = useLanguage()
@@ -138,6 +159,8 @@ export default function ProfilePage() {
             ? `${t('profile.longestStreak')}: ${t('profile.weeksCount', { n: profile.longest_streak })}`
             : t('profile.noStreakYet')}
         </p>
+
+        <BadgeRow badges={profile.badges} t={t} />
 
         {message && (
           <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${
