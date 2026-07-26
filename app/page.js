@@ -1,9 +1,15 @@
 'use client'
+import { useState, useEffect } from 'react'
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 
 export default function Home() {
   const { t } = useLanguage()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    setIsLoggedIn(!!(localStorage.getItem('user') && localStorage.getItem('token')))
+  }, [])
 
   const LANGUAGES = [
     { code: 'KO', flag: '🇰🇷', name: t('home.langKorean'), greeting: '안녕하세요', color: 'bg-brand-red' },
@@ -29,11 +35,13 @@ export default function Home() {
         </a>
         <div className="flex gap-3 md:gap-6 items-center">
           <a href="/classes" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.explore')}</a>
-          <a href="/auth/login" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.signIn')}</a>
+          {!isLoggedIn && (
+            <a href="/auth/login" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.signIn')}</a>
+          )}
           <LanguageSwitcher />
-          <a href="/auth/register"
+          <a href={isLoggedIn ? '/dashboard' : '/auth/register'}
             className="bg-brand-red text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full text-sm md:text-base font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">
-            {t('common.joinFree')}
+            {isLoggedIn ? t('common.dashboard') : t('common.joinFree')}
           </a>
         </div>
       </nav>
