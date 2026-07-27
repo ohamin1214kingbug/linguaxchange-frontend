@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
+import { logout } from '../../lib/auth'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -148,6 +149,7 @@ export default function ProfilePage() {
           <a href="/dashboard" className="text-navy/70 font-medium hover:text-navy">{t('common.dashboard')}</a>
           <a href="/profile" className="text-brand-red font-bold">{t('common.profile')}</a>
           <LanguageSwitcher />
+          <button onClick={logout} className="text-navy/70 font-medium hover:text-navy">{t('common.logout')}</button>
         </div>
       </nav>
 

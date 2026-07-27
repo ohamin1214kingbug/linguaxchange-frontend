@@ -2,6 +2,7 @@ import { Baloo_2, Inter } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "../lib/i18n/LanguageContext";
 import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
+import AuthTabSync from "../components/AuthTabSync";
 
 const baloo = Baloo_2({
   variable: "--font-display",
@@ -39,6 +40,7 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full flex flex-col">
         <ServiceWorkerRegister />
+        <AuthTabSync />
         <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
