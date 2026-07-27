@@ -77,6 +77,10 @@ export default function Dashboard() {
   const [confirming, setConfirming] = useState(null)
   const [message, setMessage] = useState('')
   const [messageOk, setMessageOk] = useState(false)
+  const [editingClassId, setEditingClassId] = useState(null)
+  const [editForm, setEditForm] = useState({ title: '', description: '' })
+  const [savingEdit, setSavingEdit] = useState(false)
+  const [cancellingClassId, setCancellingClassId] = useState(null)
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
@@ -121,6 +125,63 @@ export default function Dashboard() {
     fetch(`${API}/api/classes?teacher_id=${teacherId}`)
       .then(res => res.json())
       .then(data => setTeachingClasses(Array.isArray(data) ? data : []))
+  }
+
+  const startEditClass = (cls) => {
+    setEditingClassId(cls.id)
+    setEditForm({ title: cls.title || '', description: cls.description || '' })
+  }
+
+  const saveEditClass = async (classId) => {
+    setSavingEdit(true)
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${API}/api/classes/${classId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(editForm)
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setEditingClassId(null)
+        fetchTeachingClasses(user.id)
+      } else {
+        setMessage(data.error || t('dashboard.errorEditClass'))
+        setMessageOk(false)
+      }
+    } catch (e) {
+      setMessage(t('common.connectionError'))
+      setMessageOk(false)
+    }
+    setSavingEdit(false)
+  }
+
+  const cancelTeachingClass = async (classId) => {
+    if (!window.confirm(t('dashboard.cancelClassConfirm'))) return
+    setCancellingClassId(classId)
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${API}/api/classes/${classId}/cancel`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setMessage(t('dashboard.classCancelledMsg'))
+        setMessageOk(true)
+        fetchTeachingClasses(user.id)
+      } else {
+        setMessage(data.error || t('dashboard.errorCancelClass'))
+        setMessageOk(false)
+      }
+    } catch (e) {
+      setMessage(t('common.connectionError'))
+      setMessageOk(false)
+    }
+    setCancellingClassId(null)
   }
 
   const confirmAttendance = async (enrollmentId) => {
@@ -292,23 +353,60 @@ export default function Dashboard() {
 
                 return (
                   <div key={cls.id} className="py-4 border-b border-navy/10 last:border-0">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-navy text-sm font-bold">{cls.title}</p>
-                        <p className="text-navy/40 text-xs mt-0.5">
-                          {scheduledAt ? scheduledAt.toLocaleString() : t('dashboard.noTimeSet')}
-                        </p>
-                        {session && !isClassOver && (
-                          <a href={`/classroom/${session.id}`}
-                            className="text-brand-red text-xs font-bold hover:underline">
-                            {t('dashboard.startClass')}
-                          </a>
+                    {editingClassId === cls.id ? (
+                      <div className="bg-cream rounded-xl p-4 space-y-3">
+                        <div>
+                          <label className="block text-xs font-bold text-navy mb-1">{t('dashboard.editTitleLabel')}</label>
+                          <input value={editForm.title} onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))}
+                            className="w-full border-2 border-navy/20 rounded-xl px-3 py-2 text-sm focus:border-brand-red focus:outline-none transition-colors"/>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-navy mb-1">{t('dashboard.editDescriptionLabel')}</label>
+                          <textarea value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
+                            rows={2}
+                            className="w-full border-2 border-navy/20 rounded-xl px-3 py-2 text-sm resize-none focus:border-brand-red focus:outline-none transition-colors"/>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => saveEditClass(cls.id)} disabled={savingEdit}
+                            className="bg-brand-red text-white px-4 py-1.5 rounded-full text-xs font-bold border-2 border-navy disabled:opacity-50">
+                            {savingEdit ? t('dashboard.savingChanges') : t('dashboard.saveChanges')}
+                          </button>
+                          <button onClick={() => setEditingClassId(null)}
+                            className="border-2 border-navy/20 text-navy px-4 py-1.5 rounded-full text-xs font-bold">
+                            {t('dashboard.discardEdit')}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-navy text-sm font-bold">{cls.title}</p>
+                          <p className="text-navy/40 text-xs mt-0.5">
+                            {scheduledAt ? scheduledAt.toLocaleString() : t('dashboard.noTimeSet')}
+                          </p>
+                          {session && !isClassOver && (
+                            <a href={`/classroom/${session.id}`}
+                              className="text-brand-red text-xs font-bold hover:underline">
+                              {t('dashboard.startClass')}
+                            </a>
+                          )}
+                        </div>
+                        {isClassOver ? (
+                          <span className="text-navy/40 text-sm">{t('dashboard.ended')}</span>
+                        ) : (
+                          <div className="flex gap-2 flex-shrink-0 ml-4">
+                            <button onClick={() => startEditClass(cls)}
+                              className="border-2 border-navy/20 text-navy px-3 py-1.5 rounded-full text-xs font-bold hover:border-navy/40">
+                              {t('dashboard.edit')}
+                            </button>
+                            <button onClick={() => cancelTeachingClass(cls.id)} disabled={cancellingClassId === cls.id}
+                              className="border-2 border-brand-red/30 text-brand-red px-3 py-1.5 rounded-full text-xs font-bold hover:border-brand-red disabled:opacity-50">
+                              {cancellingClassId === cls.id ? t('dashboard.cancelling') : t('dashboard.cancelClass')}
+                            </button>
+                          </div>
                         )}
                       </div>
-                      {isClassOver && (
-                        <span className="text-navy/40 text-sm">{t('dashboard.ended')}</span>
-                      )}
-                    </div>
+                    )}
                   </div>
                 )
               })}
