@@ -2,27 +2,34 @@
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
+import { formatInTimezone } from '../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
 export default function Classes() {
   const { t } = useLanguage()
   const [classes, setClasses] = useState([])
+  const [teacherOptions, setTeacherOptions] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
   const [levelFilter, setLevelFilter] = useState('all')
+  const [teacherFilter, setTeacherFilter] = useState('all')
+  const [search, setSearch] = useState('')
   const [joining, setJoining] = useState(null)
   const [message, setMessage] = useState('')
   const [messageOk, setMessageOk] = useState(false)
   const [credits, setCredits] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
 
+  // Unfiltered, fetched once — used only to populate the teacher dropdown so
+  // picking a teacher doesn't shrink the dropdown's own option list.
   useEffect(() => {
     fetch(`${API}/api/classes`)
       .then(res => res.json())
       .then(data => {
-        setClasses(Array.isArray(data) ? data : [])
-        setLoading(false)
+        const teachers = Array.isArray(data) ? data.map(c => c.teacher).filter(Boolean) : []
+        const unique = Array.from(new Map(teachers.map(tch => [tch.id, tch])).values())
+        setTeacherOptions(unique)
       })
 
     const stored = localStorage.getItem('user')
@@ -35,6 +42,26 @@ export default function Classes() {
         .then(d => setCredits(d?.balance ?? null))
     }
   }, [])
+
+  // Debounced so typing in the search box doesn't fire a request per keystroke.
+  useEffect(() => {
+    setLoading(true)
+    const handle = setTimeout(() => {
+      const params = new URLSearchParams()
+      if (filter !== 'all') params.set('language_code', filter)
+      if (levelFilter !== 'all') params.set('level', levelFilter)
+      if (teacherFilter !== 'all') params.set('teacher_id', teacherFilter)
+      if (search.trim()) params.set('q', search.trim())
+
+      fetch(`${API}/api/classes?${params.toString()}`)
+        .then(res => res.json())
+        .then(data => {
+          setClasses(Array.isArray(data) ? data : [])
+          setLoading(false)
+        })
+    }, 300)
+    return () => clearTimeout(handle)
+  }, [filter, levelFilter, teacherFilter, search])
 
   const joinClass = async (cls) => {
     const user = JSON.parse(localStorage.getItem('user') || 'null')
@@ -81,10 +108,6 @@ export default function Classes() {
 
   const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
-  const filtered = classes
-    .filter(c => filter === 'all' || c.language_code === filter)
-    .filter(c => levelFilter === 'all' || c.level === levelFilter)
-
   return (
     <main className="min-h-screen bg-cream">
       <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
@@ -119,7 +142,7 @@ export default function Classes() {
           ))}
         </div>
 
-        <div className="flex gap-2 mb-8 flex-wrap">
+        <div className="flex gap-2 mb-4 flex-wrap">
           {['all', ...LEVELS].map(level => (
             <button key={level} onClick={() => setLevelFilter(level)}
               className={`px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-colors ${levelFilter === level ? 'bg-navy text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
@@ -128,10 +151,23 @@ export default function Classes() {
           ))}
         </div>
 
+        <div className="flex gap-3 mb-8 flex-wrap">
+          <input value={search} onChange={e => setSearch(e.target.value)}
+            placeholder={t('classes.searchPlaceholder')}
+            className="flex-1 min-w-[200px] border-2 border-navy/20 rounded-full px-4 py-2 text-sm focus:border-brand-red focus:outline-none transition-colors"/>
+          <select value={teacherFilter} onChange={e => setTeacherFilter(e.target.value)}
+            className="border-2 border-navy/20 rounded-full px-4 py-2 text-sm text-navy focus:border-brand-red focus:outline-none transition-colors">
+            <option value="all">{t('classes.allTeachers')}</option>
+            {teacherOptions.map(tch => (
+              <option key={tch.id} value={tch.id}>{tch.first_name} {tch.last_name}</option>
+            ))}
+          </select>
+        </div>
+
         {loading && <p className="text-navy/40">{t('classes.loadingClasses')}</p>}
 
         <div className="space-y-4">
-          {filtered.map(cls => (
+          {classes.map(cls => (
             <div key={cls.id} className="bg-white rounded-2xl p-4 md:p-6 border-2 border-navy">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
@@ -144,7 +180,7 @@ export default function Classes() {
                   {cls.description && <p className="text-navy/60 text-sm mb-2">{cls.description}</p>}
                   {cls.class_sessions?.[0]?.session_date && (
                     <p className="text-brand-red text-xs font-bold mb-1">
-                      🗓️ {new Date(cls.class_sessions[0].session_date).toLocaleString()}
+                      🗓️ {formatInTimezone(cls.class_sessions[0].session_date, currentUser?.timezone)}
                     </p>
                   )}
                   <p className="text-navy/40 text-xs">
@@ -171,8 +207,12 @@ export default function Classes() {
               </div>
             </div>
           ))}
-          {!loading && filtered.length === 0 && (
-            <p className="text-navy/40 text-center py-12">{t('classes.noClassesYet')}</p>
+          {!loading && classes.length === 0 && (
+            <p className="text-navy/40 text-center py-12">
+              {(filter !== 'all' || levelFilter !== 'all' || teacherFilter !== 'all' || search.trim())
+                ? t('classes.noClassesMatch')
+                : t('classes.noClassesYet')}
+            </p>
           )}
         </div>
       </div>

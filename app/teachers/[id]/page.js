@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../../components/LanguageSwitcher'
+import { formatInTimezone } from '../../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -47,6 +48,7 @@ export default function TeacherProfile() {
   const [joining, setJoining] = useState(null)
   const [message, setMessage] = useState('')
   const [messageOk, setMessageOk] = useState(false)
+  const [viewerTimezone, setViewerTimezone] = useState(null)
 
   const LANGS = {
     KO: { flag: '🇰🇷', name: t('home.langKorean') },
@@ -55,6 +57,11 @@ export default function TeacherProfile() {
     EN: { flag: '🇬🇧', name: t('home.langEnglish') },
     PT: { flag: '🇧🇷', name: t('home.langPortuguese') },
   }
+
+  useEffect(() => {
+    const stored = localStorage.getItem('user')
+    if (stored) setViewerTimezone(JSON.parse(stored).timezone)
+  }, [])
 
   useEffect(() => {
     if (!id) return
@@ -197,7 +204,7 @@ export default function TeacherProfile() {
                     {cls.description && <p className="text-navy/40 text-xs mt-0.5">{cls.description}</p>}
                     {cls.class_sessions?.[0]?.session_date && (
                       <p className="text-brand-red text-xs font-bold mt-1">
-                        🗓️ {new Date(cls.class_sessions[0].session_date).toLocaleString()}
+                        🗓️ {formatInTimezone(cls.class_sessions[0].session_date, viewerTimezone)}
                       </p>
                     )}
                   </div>

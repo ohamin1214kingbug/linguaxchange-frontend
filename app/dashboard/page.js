@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
 import { logout } from '../../lib/auth'
+import { formatInTimezone } from '../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -292,7 +293,7 @@ export default function Dashboard() {
                         </p>
                         <p className="text-navy/40 text-xs mt-0.5">
                           {scheduledAt
-                            ? scheduledAt.toLocaleString()
+                            ? formatInTimezone(scheduledAt, user.timezone)
                             : t('dashboard.noTimeSet')}
                           {' · '}
                           {enrollment.status === 'attended'
@@ -382,7 +383,7 @@ export default function Dashboard() {
                         <div>
                           <p className="text-navy text-sm font-bold">{cls.title}</p>
                           <p className="text-navy/40 text-xs mt-0.5">
-                            {scheduledAt ? scheduledAt.toLocaleString() : t('dashboard.noTimeSet')}
+                            {scheduledAt ? formatInTimezone(scheduledAt, user.timezone) : t('dashboard.noTimeSet')}
                           </p>
                           {session && !isClassOver && (
                             <a href={`/classroom/${session.id}`}

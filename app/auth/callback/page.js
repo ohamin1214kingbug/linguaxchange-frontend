@@ -2,6 +2,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../../lib/supabase'
+import { syncTimezone } from '../../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -51,6 +52,7 @@ export default function Callback() {
         if (loginRes.ok) {
           localStorage.setItem('token', data.token)
           localStorage.setItem('user', JSON.stringify(data.user))
+          syncTimezone(data.user.id, data.token)
           router.replace('/dashboard')
         } else {
           router.replace('/auth/register')
