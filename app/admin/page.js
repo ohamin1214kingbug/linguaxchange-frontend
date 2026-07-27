@@ -193,7 +193,7 @@ export default function Admin() {
           <div className="space-y-4">
             {approvedClasses.length > 0 && (
               <>
-                <h2 className="font-display font-bold text-navy">✅ Active classes — mark complete to give teacher 1 credit</h2>
+                <h2 className="font-display font-bold text-navy">✅ Active classes — mark complete once the class has happened (updates teacher streak/badges; credit is earned separately when students confirm attendance)</h2>
                 {approvedClasses.map(cls => (
                   <div key={cls.id} className="bg-white rounded-2xl p-5 border-2 border-brand-teal">
                     <div className="flex items-start justify-between">
@@ -204,7 +204,7 @@ export default function Admin() {
                       </div>
                       <button onClick={() => completeClass(cls.id)}
                         className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
-                        ✓ Mark complete (+1 credit)
+                        ✓ Mark complete
                       </button>
                     </div>
                   </div>
