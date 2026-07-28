@@ -50,6 +50,8 @@ export default function ProfilePage() {
     { code: 'DE', flag: '🇩🇪', name: t('home.langGerman') },
     { code: 'EN', flag: '🇬🇧', name: t('home.langEnglish') },
     { code: 'PT', flag: '🇧🇷', name: t('home.langPortuguese') },
+    { code: 'FR', flag: '🇫🇷', name: t('home.langFrench') },
+    { code: 'IT', flag: '🇮🇹', name: t('home.langItalian') },
   ]
 
   const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', t('profile.native')]

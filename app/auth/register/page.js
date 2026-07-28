@@ -23,6 +23,8 @@ export default function Register() {
     { code: 'DE', flag: '🇩🇪', name: t('home.langGerman') },
     { code: 'EN', flag: '🇬🇧', name: t('home.langEnglish') },
     { code: 'PT', flag: '🇧🇷', name: t('home.langPortuguese') },
+    { code: 'FR', flag: '🇫🇷', name: t('home.langFrench') },
+    { code: 'IT', flag: '🇮🇹', name: t('home.langItalian') },
   ]
 
   const [form, setForm] = useState({

@@ -104,6 +104,8 @@ export default function Classes() {
     DE: { flag: '🇩🇪', name: t('home.langGerman') },
     EN: { flag: '🇬🇧', name: t('home.langEnglish') },
     PT: { flag: '🇧🇷', name: t('home.langPortuguese') },
+    FR: { flag: '🇫🇷', name: t('home.langFrench') },
+    IT: { flag: '🇮🇹', name: t('home.langItalian') },
   }
 
   const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
@@ -134,7 +136,7 @@ export default function Classes() {
         )}
 
         <div className="flex gap-3 mb-4 flex-wrap">
-          {['all', 'KO', 'ES', 'DE', 'EN', 'PT'].map(lang => (
+          {['all', 'KO', 'ES', 'DE', 'EN', 'PT', 'FR', 'IT'].map(lang => (
             <button key={lang} onClick={() => setFilter(lang)}
               className={`px-4 py-2 rounded-full text-sm font-bold border-2 transition-colors ${filter === lang ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
               {lang === 'all' ? t('classes.all') : `${LANGS[lang].flag} ${LANGS[lang].name}`}

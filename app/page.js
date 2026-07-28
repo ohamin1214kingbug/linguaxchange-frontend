@@ -17,6 +17,8 @@ export default function Home() {
     { code: 'DE', flag: '🇩🇪', name: t('home.langGerman'), greeting: 'Hallo', color: 'bg-brand-yellow' },
     { code: 'EN', flag: '🇬🇧', name: t('home.langEnglish'), greeting: 'Hello', color: 'bg-brand-teal' },
     { code: 'PT', flag: '🇧🇷', name: t('home.langPortuguese'), greeting: 'Olá', color: 'bg-brand-purple' },
+    { code: 'FR', flag: '🇫🇷', name: t('home.langFrench'), greeting: 'Bonjour', color: 'bg-brand-coral' },
+    { code: 'IT', flag: '🇮🇹', name: t('home.langItalian'), greeting: 'Ciao', color: 'bg-brand-red-dark' },
   ]
 
   const STEPS = [

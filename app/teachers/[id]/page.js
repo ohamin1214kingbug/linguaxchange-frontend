@@ -56,6 +56,8 @@ export default function TeacherProfile() {
     DE: { flag: '🇩🇪', name: t('home.langGerman') },
     EN: { flag: '🇬🇧', name: t('home.langEnglish') },
     PT: { flag: '🇧🇷', name: t('home.langPortuguese') },
+    FR: { flag: '🇫🇷', name: t('home.langFrench') },
+    IT: { flag: '🇮🇹', name: t('home.langItalian') },
   }
 
   useEffect(() => {
