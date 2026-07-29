@@ -57,7 +57,11 @@ export default function Classes() {
       fetch(`${API}/api/classes?${params.toString()}`)
         .then(res => res.json())
         .then(data => {
-          setClasses(Array.isArray(data) ? data : [])
+          const now = new Date()
+          const upcoming = (Array.isArray(data) ? data : []).filter(cls =>
+            (cls.class_sessions || []).some(s => s.status === 'scheduled' && new Date(s.session_date) > now)
+          )
+          setClasses(upcoming)
           setLoading(false)
         })
     }, 300)
