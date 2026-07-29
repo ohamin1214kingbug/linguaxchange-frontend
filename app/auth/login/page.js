@@ -1,6 +1,6 @@
 'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '../../../lib/supabase'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../../components/LanguageSwitcher'
@@ -8,12 +8,14 @@ import { syncTimezone } from '../../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
-export default function Login() {
+function LoginForm() {
   const router = useRouter()
   const { t } = useLanguage()
+  const searchParams = useSearchParams()
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const notice = searchParams.get('notice') === 'already_registered' ? t('auth.alreadyRegisteredNotice') : ''
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -44,6 +46,7 @@ export default function Login() {
   }
 
   const handleGoogleLogin = async () => {
+    sessionStorage.removeItem('oauth_intent')
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -62,6 +65,10 @@ export default function Login() {
         <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
         <h1 className="font-display font-extrabold text-navy text-3xl mt-4 mb-2">{t('auth.welcomeBack')}</h1>
         <p className="text-navy/60 mb-8">{t('auth.loginSubtitle')}</p>
+
+        {notice && !error && (
+          <div className="bg-brand-teal/10 text-brand-teal border-2 border-brand-teal/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{notice}</div>
+        )}
 
         {error && (
           <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{error}</div>
@@ -108,5 +115,14 @@ export default function Login() {
         </p>
       </div>
     </main>
+  )
+}
+
+export default function Login() {
+  const { t } = useLanguage()
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-cream flex items-center justify-center text-navy/40">{t('common.loading')}</div>}>
+      <LoginForm />
+    </Suspense>
   )
 }

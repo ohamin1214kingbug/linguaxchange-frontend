@@ -121,6 +121,7 @@ export default function Register() {
   }
 
   const handleGoogleLogin = async () => {
+    sessionStorage.setItem('oauth_intent', 'register')
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {

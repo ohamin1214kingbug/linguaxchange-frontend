@@ -38,6 +38,9 @@ export default function Callback() {
           return
         }
 
+        const intent = sessionStorage.getItem('oauth_intent')
+        sessionStorage.removeItem('oauth_intent')
+
         const googleUser = session.user
         const loginRes = await fetch(`${API}/api/auth/google-login`, {
           method: 'POST',
@@ -50,6 +53,11 @@ export default function Callback() {
         })
         const data = await loginRes.json()
         if (loginRes.ok) {
+          if (intent === 'register' && !data.isNewUser) {
+            // They already have an account — send them to log in instead of silently signing in from the register page.
+            router.replace('/auth/login?notice=already_registered')
+            return
+          }
           localStorage.setItem('token', data.token)
           localStorage.setItem('user', JSON.stringify(data.user))
           syncTimezone(data.user.id, data.token)
