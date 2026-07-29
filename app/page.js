@@ -84,9 +84,9 @@ export default function Home() {
           </p>
 
           <div className="flex flex-wrap gap-4">
-            <a href="/auth/register"
+            <a href={isLoggedIn ? '/classes/create' : '/auth/register'}
               className="bg-brand-red text-white px-8 py-4 rounded-full text-lg font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors inline-flex items-center gap-2">
-              {t('home.ctaGetStarted')}
+              {isLoggedIn ? t('home.ctaTeachClass') : t('home.ctaGetStarted')}
             </a>
             <a href="/classes"
               className="bg-white text-navy px-8 py-4 rounded-full text-lg font-bold border-2 border-navy hover:bg-navy hover:text-white transition-colors">
