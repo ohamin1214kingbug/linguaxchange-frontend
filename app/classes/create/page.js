@@ -116,6 +116,7 @@ export default function CreateClass() {
       <nav className="flex items-center justify-between px-8 py-4 border-b border-navy/10 bg-white">
         <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
         <div className="flex items-center gap-4">
+          <a href="/classes" className="text-navy/70 font-medium hover:text-navy">{t('common.explore')}</a>
           <LanguageSwitcher />
           <a href="/dashboard" className="text-navy/70 font-medium hover:text-navy">{t('common.backToDashboard')}</a>
         </div>
