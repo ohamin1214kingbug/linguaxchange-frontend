@@ -12,6 +12,7 @@ export default function CreateClass() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [publishedImmediately, setPublishedImmediately] = useState(false)
   const [form, setForm] = useState({
     title: '',
     language_code: '',
@@ -85,6 +86,7 @@ export default function CreateClass() {
       if (!response.ok) {
         setError(data.error || t('auth.errorSomethingWrong'))
       } else {
+        setPublishedImmediately(data.status === 'approved')
         setSuccess(true)
       }
     } catch (err) {
@@ -98,8 +100,8 @@ export default function CreateClass() {
       <main className="min-h-screen bg-cream flex items-center justify-center px-4">
         <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md text-center">
           <div className="text-5xl mb-4">🎉</div>
-          <h1 className="font-display font-extrabold text-navy text-2xl mb-2">{t('classes.classSubmitted')}</h1>
-          <p className="text-navy/60 mb-6">{t('classes.pendingApprovalText')}</p>
+          <h1 className="font-display font-extrabold text-navy text-2xl mb-2">{publishedImmediately ? t('classes.classPublished') : t('classes.classSubmitted')}</h1>
+          <p className="text-navy/60 mb-6">{publishedImmediately ? t('classes.publishedText') : t('classes.pendingApprovalText')}</p>
           <div className="flex gap-3 justify-center">
             <a href="/classes" className="bg-brand-red text-white px-6 py-3 rounded-full font-bold border-2 border-navy">{t('classes.browseClasses')}</a>
             <a href="/dashboard" className="border-2 border-navy text-navy px-6 py-3 rounded-full font-bold hover:bg-navy hover:text-white transition-colors">{t('common.dashboard')}</a>
