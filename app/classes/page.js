@@ -20,6 +20,7 @@ export default function Classes() {
   const [messageOk, setMessageOk] = useState(false)
   const [credits, setCredits] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
+  const [showCreditsTip, setShowCreditsTip] = useState(false)
 
   // Unfiltered, fetched once — used only to populate the teacher dropdown so
   // picking a teacher doesn't shrink the dropdown's own option list.
@@ -118,9 +119,20 @@ export default function Classes() {
           <a href="/dashboard" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.dashboard')}</a>
           <LanguageSwitcher />
           {credits !== null && (
-            <span className="bg-brand-yellow/15 text-navy px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-yellow">
-              ⚡ {credits} {t('common.credits')}
-            </span>
+            <div className="relative">
+              <button onClick={() => setShowCreditsTip(o => !o)}
+                className="bg-brand-yellow/15 text-navy px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-yellow">
+                ⚡ {credits} {t('common.credits')}
+              </button>
+              {showCreditsTip && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setShowCreditsTip(false)} />
+                  <div className="absolute right-0 mt-2 bg-white border-2 border-navy rounded-xl px-4 py-3 z-20 w-56 shadow-lg text-sm font-medium text-navy/80">
+                    {t('common.creditsTip')}
+                  </div>
+                </>
+              )}
+            </div>
           )}
           <a href="/classes/create" className="bg-brand-red text-white px-3 md:px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">+ {t('classes.createClass')}</a>
         </div>
