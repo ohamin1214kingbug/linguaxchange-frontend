@@ -82,6 +82,7 @@ export default function Dashboard() {
   const [editForm, setEditForm] = useState({ title: '', description: '' })
   const [savingEdit, setSavingEdit] = useState(false)
   const [cancellingClassId, setCancellingClassId] = useState(null)
+  const [showCreditsTip, setShowCreditsTip] = useState(false)
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
@@ -232,9 +233,22 @@ export default function Dashboard() {
               {t('dashboard.weekStreak', { n: streak })}
             </span>
           )}
-          <span className="bg-brand-yellow/15 text-navy px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-yellow">
-            ⚡ {credits ?? '...'} {t('common.credits')}
-          </span>
+          <div className="relative">
+            <button onClick={() => setShowCreditsTip(o => !o)}
+              className="bg-brand-yellow/15 text-navy px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-yellow">
+              ⚡ {credits ?? '...'} {t('common.credits')}
+            </button>
+            {showCreditsTip && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setShowCreditsTip(false)} />
+                <div className="absolute right-0 mt-2 bg-white border-2 border-navy rounded-xl z-20 w-56 shadow-lg overflow-hidden">
+                  <p className="px-4 py-3 text-sm font-medium text-navy/80 border-b border-navy/10">{t('common.creditsTip')}</p>
+                  <a href="/classes" className="block px-4 py-2.5 text-sm font-bold text-navy hover:bg-cream transition-colors">{t('classes.browseClasses')} →</a>
+                  <a href="/classes/create" className="block px-4 py-2.5 text-sm font-bold text-navy hover:bg-cream transition-colors">{t('classes.createClass')} →</a>
+                </div>
+              </>
+            )}
+          </div>
           <div className="w-8 h-8 bg-brand-red rounded-full flex items-center justify-center text-white font-display font-bold text-sm border-2 border-navy">
             {user.first_name?.[0]?.toUpperCase()}
           </div>
