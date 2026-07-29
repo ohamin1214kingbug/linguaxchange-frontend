@@ -37,7 +37,9 @@ export default function Home() {
         </a>
         <div className="flex gap-3 md:gap-6 items-center">
           <a href="/classes" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.explore')}</a>
-          {!isLoggedIn && (
+          {isLoggedIn ? (
+            <a href="/profile" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.profile')}</a>
+          ) : (
             <a href="/auth/login" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.signIn')}</a>
           )}
           <LanguageSwitcher />
