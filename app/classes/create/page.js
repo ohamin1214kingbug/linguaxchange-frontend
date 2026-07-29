@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../../components/LanguageSwitcher'
+import DateTimePicker from '../../../components/DateTimePicker'
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
@@ -10,6 +11,7 @@ export default function CreateClass() {
   const router = useRouter()
   const { t } = useLanguage()
   const [error, setError] = useState('')
+  const [dateTimeError, setDateTimeError] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [publishedImmediately, setPublishedImmediately] = useState(false)
@@ -60,11 +62,15 @@ export default function CreateClass() {
 
   const handleSubmit = async () => {
     setError('')
+    setDateTimeError('')
     if (!form.language_code) return setError(t('classes.errorSelectLanguage'))
     if (!form.level) return setError(t('classes.errorSelectLevel'))
     if (!form.topic && !form.custom_topic) return setError(t('classes.errorSelectTopic'))
     if (!form.title) return setError(t('classes.errorClassTitle'))
-    if (!form.scheduled_at) return setError(t('classes.errorDateTime'))
+    if (!form.scheduled_at) return setDateTimeError(t('classes.errorDateTime'))
+    // Re-check on submit, not just at picker-selection time — the tab may
+    // have been left open long enough for a previously-valid pick to lapse.
+    if (new Date(form.scheduled_at).getTime() <= Date.now()) return setDateTimeError(t('classes.errorDateTimePast'))
     if (form.format === 'recurring' && !form.recurrence_type) return setError(t('classes.errorFrequency'))
     if (form.format === 'recurring' && !form.recurrence_end_date) return setError(t('classes.errorRecursUntil'))
     setLoading(true)
@@ -84,7 +90,8 @@ export default function CreateClass() {
       })
       const data = await response.json()
       if (!response.ok) {
-        setError(data.error || t('auth.errorSomethingWrong'))
+        if (data.field === 'scheduled_at') setDateTimeError(data.error)
+        else setError(data.error || t('auth.errorSomethingWrong'))
       } else {
         setPublishedImmediately(data.status === 'approved')
         setSuccess(true)
@@ -196,9 +203,8 @@ export default function CreateClass() {
             <label className="block text-sm font-bold text-navy mb-1">
               {t('classes.dateTime')} <span className="text-navy/40 font-normal">{t('classes.dateTimeHint')}</span>
             </label>
-            <input name="scheduled_at" type="datetime-local" onChange={handleChange}
-              value={form.scheduled_at}
-              className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors"/>
+            <DateTimePicker value={form.scheduled_at} onChange={val => { setDateTimeError(''); setForm({ ...form, scheduled_at: val }) }} t={t} />
+            {dateTimeError && <p className="text-brand-red text-sm font-medium mt-1.5">{dateTimeError}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
