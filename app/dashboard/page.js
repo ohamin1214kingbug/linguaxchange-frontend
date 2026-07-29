@@ -238,7 +238,7 @@ export default function Dashboard() {
           <div className="w-8 h-8 bg-brand-red rounded-full flex items-center justify-center text-white font-display font-bold text-sm border-2 border-navy">
             {user.first_name?.[0]?.toUpperCase()}
           </div>
-          <button onClick={logout} className="text-navy/70 font-medium hover:text-navy">{t('common.logout')}</button>
+          <button onClick={() => window.confirm(t('common.logoutConfirm')) && logout()} className="text-navy/70 font-medium hover:text-navy">{t('common.logout')}</button>
         </div>
       </nav>
 

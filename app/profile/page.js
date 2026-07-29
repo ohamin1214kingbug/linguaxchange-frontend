@@ -151,7 +151,7 @@ export default function ProfilePage() {
           <a href="/dashboard" className="text-navy/70 font-medium hover:text-navy">{t('common.dashboard')}</a>
           <a href="/profile" className="text-brand-red font-bold">{t('common.profile')}</a>
           <LanguageSwitcher />
-          <button onClick={logout} className="text-navy/70 font-medium hover:text-navy">{t('common.logout')}</button>
+          <button onClick={() => window.confirm(t('common.logoutConfirm')) && logout()} className="text-navy/70 font-medium hover:text-navy">{t('common.logout')}</button>
         </div>
       </nav>
 
