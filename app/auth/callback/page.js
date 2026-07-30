@@ -41,14 +41,11 @@ export default function Callback() {
         const intent = sessionStorage.getItem('oauth_intent')
         sessionStorage.removeItem('oauth_intent')
 
-        const googleUser = session.user
         const loginRes = await fetch(`${API}/api/auth/google-login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            email: googleUser.email,
-            name: googleUser.user_metadata?.full_name,
-            google_id: googleUser.id
+            access_token: session.access_token
           })
         })
         const data = await loginRes.json()
