@@ -58,7 +58,11 @@ export default function Callback() {
           localStorage.setItem('token', data.token)
           localStorage.setItem('user', JSON.stringify(data.user))
           syncTimezone(data.user.id, data.token)
-          router.replace('/dashboard')
+          if (data.isNewUser && !data.user.phone_verified) {
+            router.replace('/auth/verify-phone')
+          } else {
+            router.replace('/dashboard')
+          }
         } else {
           router.replace('/auth/register')
         }
