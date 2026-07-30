@@ -8,6 +8,9 @@ import { syncTimezone } from '../../../lib/timezone'
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
+const TOTAL_STEPS = 5
+const API = 'https://linguaxchange-backend-production.up.railway.app'
+
 export default function Register() {
   const router = useRouter()
   const { t } = useLanguage()
@@ -16,6 +19,13 @@ export default function Register() {
   const [loading, setLoading] = useState(false)
   const [photo, setPhoto] = useState(null)
   const [photoPreview, setPhotoPreview] = useState(null)
+  const [phone, setPhone] = useState('')
+  const [otpCode, setOtpCode] = useState('')
+  const [otpSent, setOtpSent] = useState(false)
+  const [otpLoading, setOtpLoading] = useState(false)
+  const [verifyLoading, setVerifyLoading] = useState(false)
+  const [phoneVerified, setPhoneVerified] = useState(false)
+  const [verifiedToken, setVerifiedToken] = useState('')
 
   const LANGUAGES = [
     { code: 'KO', flag: '🇰🇷', name: t('home.langKorean') },
@@ -73,6 +83,14 @@ export default function Register() {
   }
 
   const validateStep2 = () => {
+    if (!phoneVerified) {
+      setError(t('auth.errorPhoneNotVerified'))
+      return false
+    }
+    return true
+  }
+
+  const validateStep3 = () => {
     if (!photo) {
       setError(t('auth.errorUploadPhoto'))
       return false
@@ -84,7 +102,7 @@ export default function Register() {
     return true
   }
 
-  const validateStep3 = () => {
+  const validateStep4 = () => {
     if (!form.teach_language) {
       setError(t('auth.errorSelectTeachLanguage'))
       return false
@@ -100,7 +118,7 @@ export default function Register() {
     return true
   }
 
-  const validateStep4 = () => {
+  const validateStep5 = () => {
     if (form.has_certificate === null) {
       setError(t('auth.errorSelectCertificate'))
       return false
@@ -117,6 +135,7 @@ export default function Register() {
     if (step === 1 && !validateStep1()) return
     if (step === 2 && !validateStep2()) return
     if (step === 3 && !validateStep3()) return
+    if (step === 4 && !validateStep4()) return
     setStep(step + 1)
   }
 
@@ -131,12 +150,55 @@ export default function Register() {
     if (error) setError(error.message)
   }
 
+  const sendOtp = async () => {
+    setError('')
+    setOtpLoading(true)
+    try {
+      const response = await fetch(`${API}/api/auth/send-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone_number: phone })
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        setError(data.error || t('auth.errorSendCode'))
+      } else {
+        setOtpSent(true)
+      }
+    } catch (err) {
+      setError(t('common.connectionError'))
+    }
+    setOtpLoading(false)
+  }
+
+  const verifyOtp = async () => {
+    setError('')
+    setVerifyLoading(true)
+    try {
+      const response = await fetch(`${API}/api/auth/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone_number: phone, code: otpCode })
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        setError(data.error || t('auth.errorInvalidCode'))
+      } else {
+        setPhoneVerified(true)
+        setVerifiedToken(data.verified_token)
+      }
+    } catch (err) {
+      setError(t('common.connectionError'))
+    }
+    setVerifyLoading(false)
+  }
+
   const handleSubmit = async () => {
     setError('')
-    if (!validateStep4()) return
+    if (!validateStep5()) return
     setLoading(true)
     try {
-      const response = await fetch('https://linguaxchange-backend-production.up.railway.app/api/auth/register', {
+      const response = await fetch(`${API}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -146,6 +208,8 @@ export default function Register() {
           last_name: form.last_name,
           nationality: form.nationality,
           bio: form.bio,
+          phone_number: phone,
+          verified_token: verifiedToken,
         })
       })
       const data = await response.json()
@@ -166,7 +230,7 @@ export default function Register() {
   const StepIndicator = () => (
     <div className="w-full bg-navy/10 rounded-full h-1.5 mb-8">
       <div className="bg-brand-red h-1.5 rounded-full transition-all duration-300"
-        style={{ width: `${(step / 4) * 100}%` }}/>
+        style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}/>
     </div>
   )
 
@@ -178,7 +242,7 @@ export default function Register() {
       <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md">
         <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
         <h1 className="font-display font-extrabold text-navy text-3xl mt-4 mb-2">{t('auth.createAccount')}</h1>
-        <p className="text-navy/60 mb-6">{t('auth.stepOf', { n: step })}</p>
+        <p className="text-navy/60 mb-6">{t('auth.stepOf', { n: step, total: TOTAL_STEPS })}</p>
 
         <StepIndicator />
 
@@ -245,8 +309,70 @@ export default function Register() {
           </div>
         )}
 
-        {/* STEP 2 - Photo + Bio */}
+        {/* STEP 2 - Phone verification */}
         {step === 2 && (
+          <div className="space-y-4">
+            <div>
+              <h2 className="font-display font-bold text-navy text-lg mb-1">{t('auth.verifyPhoneTitle')}</h2>
+              <p className="text-navy/60 text-sm mb-3">{t('auth.verifyPhoneSubtitle')}</p>
+              <label className="block text-sm font-bold text-navy mb-1">{t('auth.phoneNumber')}</label>
+              <input type="tel" value={phone}
+                onChange={e => { setPhone(e.target.value); setOtpSent(false); setPhoneVerified(false) }}
+                disabled={phoneVerified}
+                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors disabled:opacity-50"
+                placeholder={t('auth.phoneNumberPlaceholder')}/>
+              <p className="text-navy/40 text-xs mt-1">{t('auth.phoneNumberHint')}</p>
+            </div>
+
+            {phoneVerified ? (
+              <div className="bg-brand-teal/10 text-brand-teal border-2 border-brand-teal/30 rounded-xl px-4 py-3 text-sm font-bold flex items-center justify-between">
+                {t('auth.phoneVerifiedMsg')}
+                <button onClick={() => { setPhoneVerified(false); setOtpSent(false); setOtpCode(''); setVerifiedToken('') }}
+                  className="text-navy/50 font-medium underline text-xs">
+                  {t('auth.changeNumber')}
+                </button>
+              </div>
+            ) : !otpSent ? (
+              <button onClick={sendOtp} disabled={otpLoading || !phone}
+                className="w-full bg-navy text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-navy/90 transition-colors disabled:opacity-50">
+                {otpLoading ? t('auth.sendingCode') : t('auth.sendCode')}
+              </button>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-navy/60 text-sm">{t('auth.codeSentTo', { phone })}</p>
+                <div>
+                  <label className="block text-sm font-bold text-navy mb-1">{t('auth.verificationCode')}</label>
+                  <input type="text" inputMode="numeric" value={otpCode} onChange={e => setOtpCode(e.target.value)}
+                    className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" placeholder="123456"/>
+                </div>
+                <div className="flex gap-3">
+                  <button onClick={sendOtp} disabled={otpLoading}
+                    className="text-navy/60 font-bold text-sm underline">
+                    {t('auth.resendCode')}
+                  </button>
+                </div>
+                <button onClick={verifyOtp} disabled={verifyLoading || !otpCode}
+                  className="w-full bg-navy text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-navy/90 transition-colors disabled:opacity-50">
+                  {verifyLoading ? t('auth.verifyingCode') : t('auth.verifyCode')}
+                </button>
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button onClick={() => setStep(1)}
+                className="w-full border-2 border-navy text-navy py-3 rounded-full font-bold hover:bg-navy hover:text-white transition-colors">
+                {t('auth.back')}
+              </button>
+              <button onClick={nextStep}
+                className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">
+                {t('auth.continueArrow')}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 3 - Photo + Bio */}
+        {step === 3 && (
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-bold text-navy mb-2">{t('auth.yourRealPhoto')}</label>
@@ -273,7 +399,7 @@ export default function Register() {
                 placeholder={t('auth.bioPlaceholder')}/>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setStep(1)}
+              <button onClick={() => setStep(2)}
                 className="w-full border-2 border-navy text-navy py-3 rounded-full font-bold hover:bg-navy hover:text-white transition-colors">
                 {t('auth.back')}
               </button>
@@ -285,8 +411,8 @@ export default function Register() {
           </div>
         )}
 
-        {/* STEP 3 - Languages */}
-        {step === 3 && (
+        {/* STEP 4 - Languages */}
+        {step === 4 && (
           <div className="space-y-5">
             <div>
               <label className="block text-sm font-bold text-navy mb-2">{t('auth.whichLanguageTeach')}</label>
@@ -334,7 +460,7 @@ export default function Register() {
               </div>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setStep(2)}
+              <button onClick={() => setStep(3)}
                 className="w-full border-2 border-navy text-navy py-3 rounded-full font-bold hover:bg-navy hover:text-white transition-colors">
                 {t('auth.back')}
               </button>
@@ -346,8 +472,8 @@ export default function Register() {
           </div>
         )}
 
-        {/* STEP 4 - Certificate */}
-        {step === 4 && (
+        {/* STEP 5 - Certificate */}
+        {step === 5 && (
           <div className="space-y-5">
             <div>
               <label className="block text-sm font-bold text-navy mb-3">
@@ -395,7 +521,7 @@ export default function Register() {
             )}
 
             <div className="flex gap-3">
-              <button onClick={() => setStep(3)}
+              <button onClick={() => setStep(4)}
                 className="w-full border-2 border-navy text-navy py-3 rounded-full font-bold hover:bg-navy hover:text-white transition-colors">
                 {t('auth.back')}
               </button>
