@@ -3,12 +3,13 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../../components/LanguageSwitcher'
+import PhoneNumberField from '../../../components/PhoneNumberField'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
 export default function VerifyPhone() {
   const router = useRouter()
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const [token, setToken] = useState(null)
   const [phone, setPhone] = useState('')
   const [otpCode, setOtpCode] = useState('')
@@ -117,11 +118,9 @@ export default function VerifyPhone() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-bold text-navy mb-1">{t('auth.phoneNumber')}</label>
-            <input type="tel" value={phone}
-              onChange={e => { setPhone(e.target.value); setOtpSent(false); setPhoneVerified(false) }}
-              disabled={phoneVerified}
-              className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors disabled:opacity-50"
-              placeholder={t('auth.phoneNumberPlaceholder')}/>
+            <PhoneNumberField value={phone} language={language}
+              onChange={value => { setPhone(value || ''); setOtpSent(false); setPhoneVerified(false) }}
+              disabled={phoneVerified}/>
             <p className="text-navy/40 text-xs mt-1">{t('auth.phoneNumberHint')}</p>
           </div>
 

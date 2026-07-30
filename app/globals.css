@@ -33,3 +33,44 @@ body {
 .font-display {
   font-family: var(--font-display), sans-serif;
 }
+
+.phone-field .PhoneInput {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  border: 2px solid rgb(26 26 46 / 0.2);
+  border-radius: 0.75rem;
+  padding: 0.5rem 1rem;
+  transition: border-color 0.15s;
+}
+
+.phone-field .PhoneInput--focus {
+  border-color: var(--color-brand-red);
+}
+
+.phone-field .PhoneInputCountry {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.phone-field .PhoneInputCountrySelect {
+  cursor: pointer;
+}
+
+.phone-field .PhoneInputCountryIcon {
+  width: 1.5rem;
+}
+
+.phone-field .PhoneInputInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+}
+
+.phone-field .PhoneInputInput:disabled {
+  opacity: 0.5;
+}
