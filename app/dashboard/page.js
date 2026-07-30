@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
 import { logout } from '../../lib/auth'
-import { formatInTimezone } from '../../lib/timezone'
+import { formatInTimezone, asUtcDate } from '../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -293,7 +293,7 @@ export default function Dashboard() {
               {enrollments.map(enrollment => {
                 const session = enrollment.class_sessions
                 const cls = session?.classes
-                const scheduledAt = session?.session_date ? new Date(session.session_date) : null
+                const scheduledAt = session?.session_date ? asUtcDate(session.session_date) : null
                 const durationMs = (cls?.duration_minutes || 60) * 60 * 1000
                 const classEndTime = scheduledAt ? new Date(scheduledAt.getTime() + durationMs) : null
                 const isClassOver = classEndTime ? new Date() > classEndTime : true
@@ -361,7 +361,7 @@ export default function Dashboard() {
             <div className="space-y-1">
               {teachingClasses.map(cls => {
                 const session = cls.class_sessions?.[0]
-                const scheduledAt = session?.session_date ? new Date(session.session_date) : null
+                const scheduledAt = session?.session_date ? asUtcDate(session.session_date) : null
                 const durationMs = (cls.duration_minutes || 60) * 60 * 1000
                 const classEndTime = scheduledAt ? new Date(scheduledAt.getTime() + durationMs) : null
                 const isClassOver = classEndTime ? new Date() > classEndTime : true

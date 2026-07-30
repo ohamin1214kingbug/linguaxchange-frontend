@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
-import { formatInTimezone } from '../../lib/timezone'
+import { formatInTimezone, asUtcDate } from '../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -59,7 +59,7 @@ export default function Classes() {
         .then(data => {
           const now = new Date()
           const upcoming = (Array.isArray(data) ? data : []).filter(cls =>
-            (cls.class_sessions || []).some(s => s.status === 'scheduled' && new Date(s.session_date) > now)
+            (cls.class_sessions || []).some(s => s.status === 'scheduled' && asUtcDate(s.session_date) > now)
           )
           setClasses(upcoming)
           setLoading(false)
