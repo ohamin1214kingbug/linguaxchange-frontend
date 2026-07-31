@@ -166,8 +166,12 @@ export default function Home() {
         </a>
       </section>
 
-      <footer className="text-center py-8 text-navy/40 text-sm border-t border-navy/10">
-        {t('home.footer')}
+      <footer className="text-center py-8 text-navy/40 text-sm border-t border-navy/10 space-y-2">
+        <div className="flex justify-center gap-4">
+          <a href="/legal/privacy" className="hover:text-navy/70">Privacy Policy</a>
+          <a href="/legal/terms" className="hover:text-navy/70">Terms of Service</a>
+        </div>
+        <div>{t('home.footer')}</div>
       </footer>
 
     </main>
