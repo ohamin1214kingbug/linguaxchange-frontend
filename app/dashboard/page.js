@@ -82,6 +82,7 @@ export default function Dashboard() {
   const [editForm, setEditForm] = useState({ title: '', description: '' })
   const [savingEdit, setSavingEdit] = useState(false)
   const [cancellingClassId, setCancellingClassId] = useState(null)
+  const [cancellingEnrollmentId, setCancellingEnrollmentId] = useState(null)
   const [showCreditsTip, setShowCreditsTip] = useState(false)
 
   useEffect(() => {
@@ -184,6 +185,33 @@ export default function Dashboard() {
       setMessageOk(false)
     }
     setCancellingClassId(null)
+  }
+
+  const cancelEnrollment = async (enrollment, willRefund) => {
+    const confirmMsg = willRefund ? t('dashboard.cancelEnrollConfirmRefund') : t('dashboard.cancelEnrollConfirmNoRefund')
+    if (!window.confirm(confirmMsg)) return
+    setCancellingEnrollmentId(enrollment.id)
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${API}/api/enrollments/${enrollment.id}/cancel`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setMessage(data.refunded ? t('dashboard.enrollCancelledRefunded') : t('dashboard.enrollCancelledNoRefund'))
+        setMessageOk(true)
+        fetchEnrollments()
+        fetchCredits()
+      } else {
+        setMessage(data.error || t('dashboard.errorCancelEnroll'))
+        setMessageOk(false)
+      }
+    } catch (e) {
+      setMessage(t('common.connectionError'))
+      setMessageOk(false)
+    }
+    setCancellingEnrollmentId(null)
   }
 
   const confirmAttendance = async (enrollmentId) => {
@@ -333,7 +361,12 @@ export default function Dashboard() {
                           </button>
                         )}
                         {enrollment.status !== 'attended' && !isClassOver && (
-                          <span className="text-navy/40 text-sm">{t('dashboard.notStartedYet')}</span>
+                          <button
+                            onClick={() => cancelEnrollment(enrollment, scheduledAt && (scheduledAt.getTime() - Date.now() >= 24 * 60 * 60 * 1000))}
+                            disabled={cancellingEnrollmentId === enrollment.id}
+                            className="text-brand-red text-sm font-bold hover:underline disabled:opacity-50">
+                            {cancellingEnrollmentId === enrollment.id ? t('dashboard.cancelling') : t('dashboard.cancelClass')}
+                          </button>
                         )}
                         {enrollment.status === 'attended' && (
                           <span className="bg-brand-teal/10 text-brand-teal px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-teal/30">

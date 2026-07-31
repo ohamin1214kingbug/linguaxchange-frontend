@@ -21,6 +21,7 @@ export default function Classes() {
   const [credits, setCredits] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
   const [showCreditsTip, setShowCreditsTip] = useState(false)
+  const [joinedClassIds, setJoinedClassIds] = useState(new Set())
 
   // Unfiltered, fetched once — used only to populate the teacher dropdown so
   // picking a teacher doesn't shrink the dropdown's own option list.
@@ -41,8 +42,21 @@ export default function Classes() {
       fetch(`${API}/api/credits`, { headers: { Authorization: `Bearer ${token}` } })
         .then(r => r.json())
         .then(d => setCredits(d?.balance ?? null))
+      fetchJoinedClassIds(token)
     }
   }, [])
+
+  const fetchJoinedClassIds = (token) => {
+    fetch(`${API}/api/enrollments`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(data => {
+        const ids = (Array.isArray(data) ? data : [])
+          .filter(e => e.status === 'confirmed')
+          .map(e => e.class_sessions?.classes?.id)
+          .filter(Boolean)
+        setJoinedClassIds(new Set(ids))
+      })
+  }
 
   // Debounced so typing in the search box doesn't fire a request per keystroke.
   useEffect(() => {
@@ -75,6 +89,7 @@ export default function Classes() {
       window.location.href = '/auth/login'
       return
     }
+    if (!window.confirm(t('classes.confirmJoin'))) return
     setJoining(cls.id)
     try {
       const res = await fetch(`${API}/api/enrollments`, {
@@ -95,6 +110,7 @@ export default function Classes() {
         fetch(`${API}/api/credits`, { headers: { Authorization: `Bearer ${token}` } })
           .then(r => r.json())
           .then(d => setCredits(d?.balance ?? null))
+        fetchJoinedClassIds(token)
       }
     } catch (e) {
       setMessage(t('common.connectionError'))
@@ -222,6 +238,10 @@ export default function Classes() {
                       className="bg-navy/5 text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-navy/10 transition-colors">
                       {t('classes.yourClass')}
                     </a>
+                  ) : joinedClassIds.has(cls.id) ? (
+                    <span className="bg-brand-teal/10 text-brand-teal px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-teal/30">
+                      {t('classes.joined')}
+                    </span>
                   ) : (
                     <>
                       <span className="text-navy/70 text-sm font-bold">{t('classes.oneCredit')}</span>
