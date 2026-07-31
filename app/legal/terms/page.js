@@ -14,7 +14,7 @@ export default function TermsOfService() {
 
           <section>
             <h2 className="font-display font-bold text-xl text-navy mb-2">1. Your account</h2>
-            <p>You must be 18 or older, provide accurate information, and verify a real phone number you own. Each phone number may only be used for one account. You're responsible for keeping your login credentials secure.</p>
+            <p>You must be 16 or older, provide accurate information, and verify a real phone number you own. Each phone number may only be used for one account. You're responsible for keeping your login credentials secure.</p>
           </section>
 
           <section>

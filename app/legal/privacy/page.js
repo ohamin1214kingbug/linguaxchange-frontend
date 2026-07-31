@@ -49,7 +49,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="font-display font-bold text-xl text-navy mb-2">5. Who can use LinguaXchange</h2>
-            <p>You must be at least 18 years old to create an account.</p>
+            <p>You must be at least 16 years old to create an account.</p>
           </section>
 
           <section>
