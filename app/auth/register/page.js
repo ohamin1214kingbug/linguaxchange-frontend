@@ -6,8 +6,20 @@ import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../../components/LanguageSwitcher'
 import { syncTimezone } from '../../../lib/timezone'
 import PhoneNumberField from '../../../components/PhoneNumberField'
+import { getCountries } from 'react-phone-number-input/input'
+import countryNames from 'react-phone-number-input/locale/en'
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+
+// Comprehensively-sanctioned countries excluded from signup — named
+// explicitly here so the list is easy to see and adjust, rather than a
+// magic filter buried in the render.
+const EXCLUDED_NATIONALITIES = new Set(['KP', 'IR', 'SY', 'CU'])
+
+const NATIONALITIES = getCountries()
+  .filter(code => countryNames[code] && !EXCLUDED_NATIONALITIES.has(code))
+  .map(code => countryNames[code])
+  .sort((a, b) => a.localeCompare(b))
 
 const TOTAL_STEPS = 5
 const API = 'https://linguaxchange-backend-production.up.railway.app'
@@ -300,8 +312,13 @@ export default function Register() {
             </div>
             <div>
               <label className="block text-sm font-bold text-navy mb-1">{t('auth.nationality')}</label>
-              <input name="nationality" type="text" onChange={handleChange} value={form.nationality}
-                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" placeholder={t('home.langSpanish')}/>
+              <select name="nationality" onChange={handleChange} value={form.nationality}
+                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors bg-white">
+                <option value="" disabled>{t('auth.selectNationality')}</option>
+                {NATIONALITIES.map(name => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
+              </select>
             </div>
             <button onClick={nextStep}
               className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">
