@@ -37,7 +37,7 @@ export default function PrivacyPolicy() {
               <li><strong>Twilio</strong> — sends the SMS verification code to your phone</li>
               <li><strong>Resend</strong> — sends account and notification emails</li>
               <li><strong>Railway</strong> and <strong>Vercel</strong> — host our backend and website</li>
-              <li><strong>Jitsi</strong> — powers video class calls, on a shared public server</li>
+              <li><strong>8x8 (Jitsi as a Service)</strong> — powers video class calls on a private room for your class</li>
             </ul>
             <p className="mt-2">Other users can see your profile photo, bio, and the languages/levels you teach or learn. Your email, phone number, and password are never shown to other users.</p>
           </section>

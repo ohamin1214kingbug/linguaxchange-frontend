@@ -3,13 +3,14 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
-const JITSI_DOMAIN = 'meet.jit.si'
 
-function loadJitsiScript() {
+// Domain comes from the backend alongside the room token, so the video
+// provider is swappable without touching this page.
+function loadJitsiScript(domain) {
   if (window.JitsiMeetExternalAPI) return Promise.resolve()
   return new Promise((resolve, reject) => {
     const script = document.createElement('script')
-    script.src = `https://${JITSI_DOMAIN}/external_api.js`
+    script.src = `https://${domain}/external_api.js`
     script.onload = resolve
     script.onerror = () => reject(new Error('Could not load Jitsi'))
     document.body.appendChild(script)
@@ -58,11 +59,14 @@ export default function Classroom() {
         if (cancelled) return
         setTopic(data.topic || '')
 
-        await loadJitsiScript()
+        await loadJitsiScript(data.domain)
         if (cancelled || !containerRef.current) return
 
-        const api = new window.JitsiMeetExternalAPI(JITSI_DOMAIN, {
+        const api = new window.JitsiMeetExternalAPI(data.domain, {
           roomName: data.roomName,
+          // Authenticates this user to JaaS and grants the teacher moderator
+          // rights, so the room starts without anyone logging in.
+          jwt: data.jwt,
           parentNode: containerRef.current,
           width: '100%',
           height: '100%',
