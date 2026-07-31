@@ -217,12 +217,21 @@ export default function Classes() {
                   </p>
                 </div>
                 <div className="flex-shrink-0 flex flex-col items-end gap-2">
-                  <span className="text-navy/70 text-sm font-bold">{t('classes.oneCredit')}</span>
-                  <button onClick={() => joinClass(cls)}
-                    disabled={joining === cls.id}
-                    className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
-                    {joining === cls.id ? t('classes.joining') : t('classes.joinClass')}
-                  </button>
+                  {cls.teacher?.id === currentUser?.id ? (
+                    <a href={`/teachers/${cls.teacher.id}`}
+                      className="bg-navy/5 text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-navy/10 transition-colors">
+                      {t('classes.yourClass')}
+                    </a>
+                  ) : (
+                    <>
+                      <span className="text-navy/70 text-sm font-bold">{t('classes.oneCredit')}</span>
+                      <button onClick={() => joinClass(cls)}
+                        disabled={joining === cls.id}
+                        className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
+                        {joining === cls.id ? t('classes.joining') : t('classes.joinClass')}
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
