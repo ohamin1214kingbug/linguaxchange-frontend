@@ -2,8 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
-import LanguageSwitcher from '../../components/LanguageSwitcher'
-import { logout } from '../../lib/auth'
+import Navbar from '../../components/Navbar'
 import { formatInTimezone, asUtcDate } from '../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
@@ -71,7 +70,6 @@ export default function Dashboard() {
   const { t } = useLanguage()
   const [user, setUser] = useState(null)
   const [credits, setCredits] = useState(null)
-  const [streak, setStreak] = useState(null)
   const [transactions, setTransactions] = useState([])
   const [enrollments, setEnrollments] = useState([])
   const [teachingClasses, setTeachingClasses] = useState([])
@@ -83,7 +81,6 @@ export default function Dashboard() {
   const [savingEdit, setSavingEdit] = useState(false)
   const [cancellingClassId, setCancellingClassId] = useState(null)
   const [cancellingEnrollmentId, setCancellingEnrollmentId] = useState(null)
-  const [showCreditsTip, setShowCreditsTip] = useState(false)
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
@@ -92,7 +89,6 @@ export default function Dashboard() {
     const parsedUser = JSON.parse(stored)
     setUser(parsedUser)
     fetchCredits()
-    fetchStreak(parsedUser.id)
     fetchTransactions()
     fetchEnrollments()
     fetchTeachingClasses(parsedUser.id)
@@ -104,12 +100,6 @@ export default function Dashboard() {
     fetch(`${API}/api/credits`, { headers: authHeaders() })
       .then(res => res.json())
       .then(data => setCredits(data?.balance ?? 0))
-  }
-
-  const fetchStreak = (userId) => {
-    fetch(`${API}/api/users/${userId}`, { headers: authHeaders() })
-      .then(res => res.json())
-      .then(data => setStreak(data?.current_streak ?? 0))
   }
 
   const fetchTransactions = () => {
@@ -203,6 +193,7 @@ export default function Dashboard() {
         setMessageOk(true)
         fetchEnrollments()
         fetchCredits()
+        if (data.refunded) window.dispatchEvent(new Event('credits-changed'))
       } else {
         setMessage(data.error || t('dashboard.errorCancelEnroll'))
         setMessageOk(false)
@@ -230,7 +221,6 @@ export default function Dashboard() {
         setMessageOk(true)
         fetchEnrollments()
         fetchCredits()
-        fetchStreak(user.id)
         fetchTransactions()
       } else {
         const data = await res.json()
@@ -250,39 +240,7 @@ export default function Dashboard() {
 
   return (
     <main className="min-h-screen bg-cream">
-      <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
-        <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
-        <div className="flex gap-4 md:gap-6 items-center">
-          <a href="/classes" className="text-navy/70 font-medium hover:text-navy">{t('common.exploreShort')}</a>
-          <a href="/profile" className="text-navy/70 font-medium hover:text-navy">{t('common.profile')}</a>
-          <LanguageSwitcher />
-          {!!streak && (
-            <span className="bg-brand-red/10 text-brand-red px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-red/30">
-              {t('dashboard.weekStreak', { n: streak })}
-            </span>
-          )}
-          <div className="relative">
-            <button onClick={() => setShowCreditsTip(o => !o)}
-              className="bg-brand-yellow/15 text-navy px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-yellow">
-              ⚡ {credits ?? '...'} {t('common.credits')}
-            </button>
-            {showCreditsTip && (
-              <>
-                <div className="fixed inset-0 z-10" onClick={() => setShowCreditsTip(false)} />
-                <div className="absolute right-0 mt-2 bg-white border-2 border-navy rounded-xl z-20 w-56 shadow-lg overflow-hidden">
-                  <p className="px-4 py-3 text-sm font-medium text-navy/80 border-b border-navy/10">{t('common.creditsTip')}</p>
-                  <a href="/classes" className="block px-4 py-2.5 text-sm font-bold text-navy hover:bg-cream transition-colors">{t('classes.browseClasses')} →</a>
-                  <a href="/classes/create" className="block px-4 py-2.5 text-sm font-bold text-navy hover:bg-cream transition-colors">{t('classes.createClass')} →</a>
-                </div>
-              </>
-            )}
-          </div>
-          <div className="w-8 h-8 bg-brand-red rounded-full flex items-center justify-center text-white font-display font-bold text-sm border-2 border-navy">
-            {user.first_name?.[0]?.toUpperCase()}
-          </div>
-          <button onClick={() => window.confirm(t('common.logoutConfirm')) && logout()} className="text-navy/70 font-medium hover:text-navy">{t('common.logout')}</button>
-        </div>
-      </nav>
+      <Navbar />
 
       <div className="max-w-4xl mx-auto px-4 md:px-8 py-8 md:py-12">
         <h1 className="font-display font-extrabold text-2xl md:text-3xl text-navy mb-2">
@@ -325,9 +283,16 @@ export default function Dashboard() {
                 const durationMs = (cls?.duration_minutes || 60) * 60 * 1000
                 const classEndTime = scheduledAt ? new Date(scheduledAt.getTime() + durationMs) : null
                 const isClassOver = classEndTime ? new Date() > classEndTime : true
+                const isLive = scheduledAt && !isClassOver && new Date() >= scheduledAt
 
                 return (
                   <div key={enrollment.id} className="py-4 border-b border-navy/10 last:border-0">
+                    {isLive && (
+                      <a href={`/classroom/${enrollment.class_session_id}`}
+                        className="flex items-center justify-center gap-2 mb-3 bg-red-600 text-white font-extrabold text-sm tracking-wide px-4 py-2 rounded-xl animate-pulse shadow-[0_0_16px_4px_rgba(220,38,38,0.55)] hover:bg-red-700 transition-colors">
+                        <span className="w-2 h-2 bg-white rounded-full" /> {t('dashboard.liveNow')} · {t('dashboard.joinMeeting')}
+                      </a>
+                    )}
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-navy text-sm font-bold">
@@ -342,9 +307,11 @@ export default function Dashboard() {
                             ? t('dashboard.attended')
                             : isClassOver
                               ? t('dashboard.classEndedConfirm')
-                              : t('dashboard.upcoming')}
+                              : isLive
+                                ? t('dashboard.liveNow')
+                                : t('dashboard.upcoming')}
                         </p>
-                        {!isClassOver && (
+                        {!isClassOver && !isLive && (
                           <a href={`/classroom/${enrollment.class_session_id}`}
                             className="text-brand-red text-xs font-bold hover:underline">
                             {t('dashboard.joinMeeting')}
@@ -398,9 +365,16 @@ export default function Dashboard() {
                 const durationMs = (cls.duration_minutes || 60) * 60 * 1000
                 const classEndTime = scheduledAt ? new Date(scheduledAt.getTime() + durationMs) : null
                 const isClassOver = classEndTime ? new Date() > classEndTime : true
+                const isLive = scheduledAt && !isClassOver && new Date() >= scheduledAt
 
                 return (
                   <div key={cls.id} className="py-4 border-b border-navy/10 last:border-0">
+                    {isLive && session && (
+                      <a href={`/classroom/${session.id}`}
+                        className="flex items-center justify-center gap-2 mb-3 bg-red-600 text-white font-extrabold text-sm tracking-wide px-4 py-2 rounded-xl animate-pulse shadow-[0_0_16px_4px_rgba(220,38,38,0.55)] hover:bg-red-700 transition-colors">
+                        <span className="w-2 h-2 bg-white rounded-full" /> {t('dashboard.liveNow')} · {t('dashboard.startClass')}
+                      </a>
+                    )}
                     {editingClassId === cls.id ? (
                       <div className="bg-cream rounded-xl p-4 space-y-3">
                         <div>
@@ -432,7 +406,7 @@ export default function Dashboard() {
                           <p className="text-navy/40 text-xs mt-0.5">
                             {scheduledAt ? formatInTimezone(scheduledAt, user.timezone) : t('dashboard.noTimeSet')}
                           </p>
-                          {session && !isClassOver && (
+                          {session && !isClassOver && !isLive && (
                             <a href={`/classroom/${session.id}`}
                               className="text-brand-red text-xs font-bold hover:underline">
                               {t('dashboard.startClass')}

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
-import LanguageSwitcher from '../../../components/LanguageSwitcher'
+import Navbar from '../../../components/Navbar'
 import { formatInTimezone } from '../../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
@@ -126,14 +126,7 @@ export default function TeacherProfile() {
 
   return (
     <main className="min-h-screen bg-cream">
-      <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
-        <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
-        <div className="flex gap-4 items-center">
-          <a href="/classes" className="text-navy/70 font-medium hover:text-navy">{t('common.explore')}</a>
-          <a href="/dashboard" className="text-navy/70 font-medium hover:text-navy">{t('common.dashboard')}</a>
-          <LanguageSwitcher />
-        </div>
-      </nav>
+      <Navbar />
 
       <div className="max-w-3xl mx-auto px-4 md:px-8 py-12">
         {/* Header card */}

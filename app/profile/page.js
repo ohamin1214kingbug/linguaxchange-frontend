@@ -3,8 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
-import LanguageSwitcher from '../../components/LanguageSwitcher'
-import { logout } from '../../lib/auth'
+import Navbar from '../../components/Navbar'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -144,16 +143,7 @@ export default function ProfilePage() {
 
   return (
     <main className="min-h-screen bg-cream">
-      <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
-        <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
-        <div className="flex gap-6 items-center">
-          <a href="/classes" className="text-navy/70 font-medium hover:text-navy">{t('common.exploreShort')}</a>
-          <a href="/dashboard" className="text-navy/70 font-medium hover:text-navy">{t('common.dashboard')}</a>
-          <a href="/profile" className="text-brand-red font-bold">{t('common.profile')}</a>
-          <LanguageSwitcher />
-          <button onClick={() => window.confirm(t('common.logoutConfirm')) && logout()} className="text-navy/70 font-medium hover:text-navy">{t('common.logout')}</button>
-        </div>
-      </nav>
+      <Navbar />
 
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">{t('profile.yourProfile')}</h1>

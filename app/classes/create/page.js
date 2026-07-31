@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
-import LanguageSwitcher from '../../../components/LanguageSwitcher'
+import Navbar from '../../../components/Navbar'
 import DateTimePicker from '../../../components/DateTimePicker'
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
@@ -120,14 +120,7 @@ export default function CreateClass() {
 
   return (
     <main className="min-h-screen bg-cream">
-      <nav className="flex items-center justify-between px-8 py-4 border-b border-navy/10 bg-white">
-        <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
-        <div className="flex items-center gap-4">
-          <a href="/classes" className="text-navy/70 font-medium hover:text-navy">{t('common.explore')}</a>
-          <LanguageSwitcher />
-          <a href="/dashboard" className="text-navy/70 font-medium hover:text-navy">{t('common.backToDashboard')}</a>
-        </div>
-      </nav>
+      <Navbar />
 
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">{t('classes.createClass')}</h1>

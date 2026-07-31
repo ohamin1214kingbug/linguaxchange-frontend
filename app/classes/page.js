@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
-import LanguageSwitcher from '../../components/LanguageSwitcher'
+import Navbar from '../../components/Navbar'
 import { formatInTimezone, asUtcDate } from '../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
@@ -18,9 +18,7 @@ export default function Classes() {
   const [joining, setJoining] = useState(null)
   const [message, setMessage] = useState('')
   const [messageOk, setMessageOk] = useState(false)
-  const [credits, setCredits] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
-  const [showCreditsTip, setShowCreditsTip] = useState(false)
   const [joinedClassIds, setJoinedClassIds] = useState(new Set())
 
   // Unfiltered, fetched once — used only to populate the teacher dropdown so
@@ -39,9 +37,6 @@ export default function Classes() {
     if (stored && token) {
       const u = JSON.parse(stored)
       setCurrentUser(u)
-      fetch(`${API}/api/credits`, { headers: { Authorization: `Bearer ${token}` } })
-        .then(r => r.json())
-        .then(d => setCredits(d?.balance ?? null))
       fetchJoinedClassIds(token)
     }
   }, [])
@@ -107,9 +102,7 @@ export default function Classes() {
       } else {
         setMessage(t('classes.successfullyJoined'))
         setMessageOk(true)
-        fetch(`${API}/api/credits`, { headers: { Authorization: `Bearer ${token}` } })
-          .then(r => r.json())
-          .then(d => setCredits(d?.balance ?? null))
+        window.dispatchEvent(new Event('credits-changed'))
         fetchJoinedClassIds(token)
       }
     } catch (e) {
@@ -133,35 +126,13 @@ export default function Classes() {
 
   return (
     <main className="min-h-screen bg-cream">
-      <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
-        <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
-        <div className="flex gap-3 md:gap-4 items-center">
-          <a href="/dashboard" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.dashboard')}</a>
-          <LanguageSwitcher />
-          {credits !== null && (
-            <div className="relative">
-              <button onClick={() => setShowCreditsTip(o => !o)}
-                className="bg-brand-yellow/15 text-navy px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-yellow">
-                ⚡ {credits} {t('common.credits')}
-              </button>
-              {showCreditsTip && (
-                <>
-                  <div className="fixed inset-0 z-10" onClick={() => setShowCreditsTip(false)} />
-                  <div className="absolute right-0 mt-2 bg-white border-2 border-navy rounded-xl z-20 w-56 shadow-lg overflow-hidden">
-                    <p className="px-4 py-3 text-sm font-medium text-navy/80 border-b border-navy/10">{t('common.creditsTip')}</p>
-                    <a href="/classes" className="block px-4 py-2.5 text-sm font-bold text-navy hover:bg-cream transition-colors">{t('classes.browseClasses')} →</a>
-                    <a href="/classes/create" className="block px-4 py-2.5 text-sm font-bold text-navy hover:bg-cream transition-colors">{t('classes.createClass')} →</a>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-          <a href="/classes/create" className="bg-brand-red text-white px-3 md:px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">+ {t('classes.createClass')}</a>
-        </div>
-      </nav>
+      <Navbar />
 
       <div className="max-w-4xl mx-auto px-4 md:px-8 py-8 md:py-12">
-        <h1 className="font-display font-extrabold text-2xl md:text-3xl text-navy mb-6 md:mb-8">{t('classes.browseClasses')}</h1>
+        <div className="flex items-center justify-between gap-4 mb-6 md:mb-8">
+          <h1 className="font-display font-extrabold text-2xl md:text-3xl text-navy">{t('classes.browseClasses')}</h1>
+          <a href="/classes/create" className="bg-brand-red text-white px-3 md:px-4 py-2 rounded-full text-sm font-bold border-2 border-navy whitespace-nowrap">+ {t('classes.createClass')}</a>
+        </div>
 
         {message && (
           <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${messageOk ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>
