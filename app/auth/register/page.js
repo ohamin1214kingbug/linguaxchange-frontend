@@ -26,6 +26,18 @@ const COUNTRY_CODES = getCountries().filter(code => countryNamesEn[code] && !EXC
 const TOTAL_STEPS = 5
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
+// Hand-drawn SVG, not the emoji glyph — a plain icon that looks the same
+// everywhere instead of whatever the visitor's OS/browser emoji font is.
+function EyeIcon({ crossed }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" />
+      <circle cx="12" cy="12" r="3" />
+      {crossed && <line x1="3" y1="3" x2="21" y2="21" />}
+    </svg>
+  )
+}
+
 export default function Register() {
   const router = useRouter()
   const { t, language } = useLanguage()
@@ -325,7 +337,7 @@ export default function Register() {
                 <button type="button" onClick={() => setShowPassword(v => !v)}
                   aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-navy/40 hover:text-navy transition-colors">
-                  {showPassword ? '🙈' : '👁️'}
+                  <EyeIcon crossed={showPassword} />
                 </button>
               </div>
               {form.password.length > 0 && (
@@ -342,7 +354,7 @@ export default function Register() {
                 <button type="button" onClick={() => setShowConfirmPassword(v => !v)}
                   aria-label={showConfirmPassword ? t('auth.hidePassword') : t('auth.showPassword')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-navy/40 hover:text-navy transition-colors">
-                  {showConfirmPassword ? '🙈' : '👁️'}
+                  <EyeIcon crossed={showConfirmPassword} />
                 </button>
               </div>
               {confirmPassword.length > 0 && confirmPassword !== form.password && (
