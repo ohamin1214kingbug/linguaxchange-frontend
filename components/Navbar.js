@@ -169,7 +169,9 @@ export default function Navbar() {
                       <p className="font-bold text-navy text-sm">{user.first_name} {user.last_name}</p>
                     </div>
                     <a href="/" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.home')}</a>
+                    <a href="/dashboard" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('common.dashboard')}</a>
                     <a href="/dashboard" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.myClasses')}</a>
+                    <a href="/profile" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('common.profile')}</a>
                     <span className="flex items-center justify-between px-4 py-2.5 text-sm font-medium text-navy/30 cursor-not-allowed">
                       {t('nav.savedTeachers')}
                       <span className="text-[10px] bg-navy/5 px-2 py-0.5 rounded-full">{t('nav.comingSoon')}</span>
