@@ -388,11 +388,6 @@ export default function Register() {
               <PhoneNumberField value={phone} language={language}
                 onChange={value => { setPhone(value || ''); setOtpSent(false); setPhoneVerified(false) }}
                 disabled={phoneVerified}/>
-              {phone && !isValidPhoneNumber(phone) ? (
-                <p className="text-brand-red text-xs mt-1 font-medium">{t('auth.errorInvalidPhone')}</p>
-              ) : (
-                <p className="text-navy/40 text-xs mt-1">{t('auth.phoneNumberHint')}</p>
-              )}
             </div>
 
             {phoneVerified ? (
