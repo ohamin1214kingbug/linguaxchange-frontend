@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../../components/LanguageSwitcher'
-import PhoneNumberField from '../../../components/PhoneNumberField'
+import PhoneNumberField, { isValidPhoneNumber } from '../../../components/PhoneNumberField'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -121,7 +121,11 @@ export default function VerifyPhone() {
             <PhoneNumberField value={phone} language={language}
               onChange={value => { setPhone(value || ''); setOtpSent(false); setPhoneVerified(false) }}
               disabled={phoneVerified}/>
-            <p className="text-navy/40 text-xs mt-1">{t('auth.phoneNumberHint')}</p>
+            {phone && !isValidPhoneNumber(phone) ? (
+              <p className="text-brand-red text-xs mt-1 font-medium">{t('auth.errorInvalidPhone')}</p>
+            ) : (
+              <p className="text-navy/40 text-xs mt-1">{t('auth.phoneNumberHint')}</p>
+            )}
           </div>
 
           {phoneVerified ? (
@@ -139,7 +143,7 @@ export default function VerifyPhone() {
               </button>
             </>
           ) : !otpSent ? (
-            <button onClick={sendOtp} disabled={otpLoading || !phone}
+            <button onClick={sendOtp} disabled={otpLoading || !isValidPhoneNumber(phone || '')}
               className="w-full bg-navy text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-navy/90 transition-colors disabled:opacity-50">
               {otpLoading ? t('auth.sendingCode') : t('auth.sendCode')}
             </button>

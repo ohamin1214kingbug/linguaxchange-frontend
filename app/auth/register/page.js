@@ -5,7 +5,7 @@ import { supabase } from '../../../lib/supabase'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../../components/LanguageSwitcher'
 import { syncTimezone } from '../../../lib/timezone'
-import PhoneNumberField from '../../../components/PhoneNumberField'
+import PhoneNumberField, { isValidPhoneNumber } from '../../../components/PhoneNumberField'
 import { getCountries } from 'react-phone-number-input/input'
 import countryNamesEn from 'react-phone-number-input/locale/en'
 import countryNamesKo from 'react-phone-number-input/locale/ko'
@@ -388,7 +388,11 @@ export default function Register() {
               <PhoneNumberField value={phone} language={language}
                 onChange={value => { setPhone(value || ''); setOtpSent(false); setPhoneVerified(false) }}
                 disabled={phoneVerified}/>
-              <p className="text-navy/40 text-xs mt-1">{t('auth.phoneNumberHint')}</p>
+              {phone && !isValidPhoneNumber(phone) ? (
+                <p className="text-brand-red text-xs mt-1 font-medium">{t('auth.errorInvalidPhone')}</p>
+              ) : (
+                <p className="text-navy/40 text-xs mt-1">{t('auth.phoneNumberHint')}</p>
+              )}
             </div>
 
             {phoneVerified ? (
@@ -400,7 +404,7 @@ export default function Register() {
                 </button>
               </div>
             ) : !otpSent ? (
-              <button onClick={sendOtp} disabled={otpLoading || !phone}
+              <button onClick={sendOtp} disabled={otpLoading || !isValidPhoneNumber(phone || '')}
                 className="w-full bg-navy text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-navy/90 transition-colors disabled:opacity-50">
                 {otpLoading ? t('auth.sendingCode') : t('auth.sendCode')}
               </button>
