@@ -7,7 +7,11 @@ import LanguageSwitcher from '../../../components/LanguageSwitcher'
 import { syncTimezone } from '../../../lib/timezone'
 import PhoneNumberField from '../../../components/PhoneNumberField'
 import { getCountries } from 'react-phone-number-input/input'
-import countryNames from 'react-phone-number-input/locale/en'
+import countryNamesEn from 'react-phone-number-input/locale/en'
+import countryNamesKo from 'react-phone-number-input/locale/ko'
+import countryNamesEs from 'react-phone-number-input/locale/es'
+import countryNamesDe from 'react-phone-number-input/locale/de'
+import countryNamesPt from 'react-phone-number-input/locale/pt'
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
@@ -16,10 +20,8 @@ const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 // magic filter buried in the render.
 const EXCLUDED_NATIONALITIES = new Set(['KP', 'IR', 'SY', 'CU'])
 
-const NATIONALITIES = getCountries()
-  .filter(code => countryNames[code] && !EXCLUDED_NATIONALITIES.has(code))
-  .map(code => countryNames[code])
-  .sort((a, b) => a.localeCompare(b))
+const COUNTRY_NAMES_BY_LANG = { EN: countryNamesEn, KO: countryNamesKo, ES: countryNamesEs, DE: countryNamesDe, PT: countryNamesPt }
+const COUNTRY_CODES = getCountries().filter(code => countryNamesEn[code] && !EXCLUDED_NATIONALITIES.has(code))
 
 const TOTAL_STEPS = 5
 const API = 'https://linguaxchange-backend-production.up.railway.app'
@@ -39,6 +41,17 @@ export default function Register() {
   const [verifyLoading, setVerifyLoading] = useState(false)
   const [phoneVerified, setPhoneVerified] = useState(false)
   const [verifiedToken, setVerifiedToken] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [confirmPassword, setConfirmPassword] = useState('')
+
+  // The stored value is always the English name (matches existing data and
+  // what every other page already expects) — only the label shown here is
+  // translated, sorted in that language's own alphabetical order.
+  const localizedCountryNames = COUNTRY_NAMES_BY_LANG[language] || countryNamesEn
+  const NATIONALITIES = [...COUNTRY_CODES].sort((a, b) =>
+    (localizedCountryNames[a] || countryNamesEn[a]).localeCompare(localizedCountryNames[b] || countryNamesEn[b], language.toLowerCase())
+  )
 
   const LANGUAGES = [
     { code: 'KO', flag: '🇰🇷', name: t('home.langKorean') },
@@ -86,6 +99,10 @@ export default function Register() {
     }
     if (form.password.length < 8) {
       setError(t('auth.errorPasswordLength'))
+      return false
+    }
+    if (form.password !== confirmPassword) {
+      setError(t('auth.errorPasswordMismatch'))
       return false
     }
     if (!form.email.includes('@')) {
@@ -302,8 +319,15 @@ export default function Register() {
             </div>
             <div>
               <label className="block text-sm font-bold text-navy mb-1">{t('auth.password')}</label>
-              <input name="password" type="password" onChange={handleChange} value={form.password}
-                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" placeholder={t('auth.minCharacters')}/>
+              <div className="relative">
+                <input name="password" type={showPassword ? 'text' : 'password'} onChange={handleChange} value={form.password}
+                  className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 pr-11 focus:border-brand-red focus:outline-none transition-colors" placeholder={t('auth.minCharacters')}/>
+                <button type="button" onClick={() => setShowPassword(v => !v)}
+                  aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-navy/40 hover:text-navy transition-colors">
+                  {showPassword ? '🙈' : '👁️'}
+                </button>
+              </div>
               {form.password.length > 0 && (
                 <p className={`text-xs mt-1 font-medium ${form.password.length >= 8 ? 'text-brand-teal' : 'text-brand-red'}`}>
                   {form.password.length >= 8 ? t('auth.strongEnough') : t('auth.moreCharactersNeeded', { n: 8 - form.password.length })}
@@ -311,12 +335,27 @@ export default function Register() {
               )}
             </div>
             <div>
+              <label className="block text-sm font-bold text-navy mb-1">{t('auth.confirmPassword')}</label>
+              <div className="relative">
+                <input type={showConfirmPassword ? 'text' : 'password'} onChange={e => setConfirmPassword(e.target.value)} value={confirmPassword}
+                  className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 pr-11 focus:border-brand-red focus:outline-none transition-colors" placeholder={t('auth.minCharacters')}/>
+                <button type="button" onClick={() => setShowConfirmPassword(v => !v)}
+                  aria-label={showConfirmPassword ? t('auth.hidePassword') : t('auth.showPassword')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-navy/40 hover:text-navy transition-colors">
+                  {showConfirmPassword ? '🙈' : '👁️'}
+                </button>
+              </div>
+              {confirmPassword.length > 0 && confirmPassword !== form.password && (
+                <p className="text-xs mt-1 font-medium text-brand-red">{t('auth.errorPasswordMismatch')}</p>
+              )}
+            </div>
+            <div>
               <label className="block text-sm font-bold text-navy mb-1">{t('auth.nationality')}</label>
               <select name="nationality" onChange={handleChange} value={form.nationality}
                 className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors bg-white">
                 <option value="" disabled>{t('auth.selectNationality')}</option>
-                {NATIONALITIES.map(name => (
-                  <option key={name} value={name}>{name}</option>
+                {NATIONALITIES.map(code => (
+                  <option key={code} value={countryNamesEn[code]}>{localizedCountryNames[code] || countryNamesEn[code]}</option>
                 ))}
               </select>
             </div>
