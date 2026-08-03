@@ -36,6 +36,15 @@ const SCORE_STYLE = {
   5: { dot: 'bg-brand-green border-brand-green', text: 'text-brand-green', key: 'excellent' },
 }
 
+// Mirrors MIN_SKILLS in the backend's utils/studentFeedback.js. The server
+// rejects anything below it regardless; this only stops the pointless round
+// trip and tells the teacher why the button is dim.
+const MIN_SKILLS = 3
+
+// One-tap phrases that append to the comment box. Keys, not sentences, so
+// they translate with everything else.
+const COMMENT_CHIPS = ['chipPronunciation', 'chipVocabulary', 'chipGrammar', 'chipListening', 'chipConfidence', 'chipConjugations']
+
 // Inline paths rather than an icon package — seven glyphs don't justify a
 // dependency, and these inherit currentColor so they tint with the score.
 const ICON_PATHS = {
@@ -141,9 +150,20 @@ function RateStudents({ sessionId, t }) {
   const setSkill = (studentId, skill, value) =>
     setDrafts(d => ({ ...d, [studentId]: { ...d[studentId], [skill]: value } }))
 
+  // Appends rather than replaces, so chips stack into a sentence, and clamps
+  // to the same 300 chars the column enforces.
+  const appendChip = (studentId, phrase) => {
+    const current = drafts[studentId]?.comment || ''
+    const next = (current ? `${current.trimEnd()} ` : '') + phrase
+    setSkill(studentId, 'comment', next.slice(0, 300))
+  }
+
   const submit = async (studentId) => {
     const draft = drafts[studentId] || {}
-    if (SKILLS.every(s => draft[s] == null)) { setMsg(t('feedback.rateAtLeastOne')); return }
+    if (SKILLS.filter(s => draft[s] != null).length < MIN_SKILLS) {
+      setMsg(t('feedback.rateAtLeastThree', { n: MIN_SKILLS }))
+      return
+    }
     setMsg('')
     setSaving(studentId)
     try {
@@ -177,29 +197,58 @@ function RateStudents({ sessionId, t }) {
 
       {open && rows?.map(({ student }) => {
         const draft = drafts[student.id] || {}
+        const rated = SKILLS.filter(s => draft[s] != null).length
+        const ready = rated >= MIN_SKILLS
+        const comment = draft.comment || ''
         return (
           <div key={student.id} className="mt-3 bg-cream rounded-xl p-4 border-2 border-navy/10">
             <div className="flex items-center justify-between gap-3 mb-1">
               <p className="text-sm font-bold text-navy">{student.first_name} {student.last_name || ''}</p>
-              <span className="text-navy/40 text-xs font-bold">{SKILLS.filter(s => draft[s] != null).length}/7</span>
+              <span className="text-navy/40 text-xs font-bold">{rated}/{SKILLS.length}</span>
             </div>
-            <p className="text-[10px] font-extrabold text-brand-red uppercase tracking-wide mb-2">{t('feedback.skillEvaluation')}</p>
+            <p className="text-[10px] font-extrabold text-brand-red uppercase tracking-wide">{t('feedback.skillEvaluation')}</p>
+            <p className="text-navy/40 text-[11px] mb-2">{t('feedback.rateAtLeastThree', { n: MIN_SKILLS })}</p>
             <div>
               {SKILLS.map(s => (
                 <SkillRow key={s} skill={s} value={draft[s]} onChange={v => setSkill(student.id, s, v)} t={t} />
               ))}
             </div>
+
+            <div className="flex items-center gap-3 mt-3">
+              <div className="flex-1 h-1.5 bg-navy/10 rounded-full overflow-hidden">
+                <div className={`h-full rounded-full transition-all ${ready ? 'bg-brand-green' : 'bg-brand-yellow'}`}
+                  style={{ width: `${(rated / SKILLS.length) * 100}%` }} />
+              </div>
+              <span className="text-navy/40 text-[11px] font-bold">{t('feedback.ratedCount', { n: rated, total: SKILLS.length })}</span>
+            </div>
+
+            <p className="text-[10px] font-extrabold text-brand-blue uppercase tracking-wide mt-4 mb-2">{t('feedback.teacherComment')}</p>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {COMMENT_CHIPS.map(key => (
+                <button key={key} type="button" onClick={() => appendChip(student.id, t(`feedback.${key}`))}
+                  className="border-2 border-navy/15 text-navy/70 rounded-full px-3 py-1 text-[11px] font-medium hover:border-navy/40 hover:text-navy transition-colors">
+                  + {t(`feedback.${key}`)}
+                </button>
+              ))}
+            </div>
             <textarea
-              value={draft.comment || ''}
+              value={comment}
               maxLength={300}
               onChange={e => setSkill(student.id, 'comment', e.target.value)}
               placeholder={t('feedback.commentPlaceholder', { name: student.first_name })}
               rows={2}
-              className="w-full mt-3 border-2 border-navy/20 rounded-xl px-3 py-2 text-sm resize-none focus:border-brand-red focus:outline-none transition-colors"/>
-            <button onClick={() => submit(student.id)} disabled={saving === student.id}
-              className="mt-2 bg-brand-red text-white px-4 py-1.5 rounded-full text-xs font-bold border-2 border-navy disabled:opacity-50">
-              {saving === student.id ? t('feedback.saving') : t('feedback.submit')}
-            </button>
+              className="w-full border-2 border-navy/20 rounded-xl px-3 py-2 text-sm resize-none focus:border-brand-red focus:outline-none transition-colors"/>
+            <p className="text-navy/30 text-[10px] mt-1">{comment.length}/300</p>
+
+            <div className="flex items-center justify-between gap-3 mt-2">
+              <span className={`text-[11px] font-medium ${ready ? 'text-brand-green' : 'text-navy/40'}`}>
+                {ready ? t('feedback.readyToSubmit') : t('feedback.rateAtLeastThree', { n: MIN_SKILLS })}
+              </span>
+              <button onClick={() => submit(student.id)} disabled={saving === student.id || !ready}
+                className="bg-brand-red text-white px-4 py-1.5 rounded-full text-xs font-bold border-2 border-navy disabled:opacity-40 disabled:cursor-not-allowed">
+                {saving === student.id ? t('feedback.saving') : t('feedback.submit')}
+              </button>
+            </div>
           </div>
         )
       })}
