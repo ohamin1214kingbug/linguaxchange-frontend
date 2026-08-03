@@ -25,20 +25,72 @@ const SKILL_LABEL = {
   fluency: 'fluency', grammar: 'grammar', listening: 'listening', confidence: 'confidence'
 }
 
+// Score -> colour + word, so a rating reads at a glance instead of forcing
+// the reader to count dots. Class strings are literal because Tailwind only
+// sees what it can find in the source, never an interpolated name.
+const SCORE_STYLE = {
+  1: { dot: 'bg-brand-red border-brand-red', text: 'text-brand-red', key: 'poor' },
+  2: { dot: 'bg-brand-yellow border-brand-yellow', text: 'text-brand-yellow', key: 'fair' },
+  3: { dot: 'bg-brand-blue border-brand-blue', text: 'text-brand-blue', key: 'good' },
+  4: { dot: 'bg-brand-teal border-brand-teal', text: 'text-brand-teal', key: 'veryGood' },
+  5: { dot: 'bg-brand-green border-brand-green', text: 'text-brand-green', key: 'excellent' },
+}
+
+// Inline paths rather than an icon package — seven glyphs don't justify a
+// dependency, and these inherit currentColor so they tint with the score.
+const ICON_PATHS = {
+  vocabulary: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></>,
+  pronunciation: <><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line x1="12" y1="19" x2="12" y2="22" /></>,
+  phrase_formation: <><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="14" y2="12" /><line x1="4" y1="17" x2="18" y2="17" /></>,
+  fluency: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />,
+  grammar: <><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></>,
+  listening: <><path d="M3 18v-6a9 9 0 0 1 18 0v6" /><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" /></>,
+  confidence: <><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></>,
+}
+
+function SkillIcon({ name, className }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={`flex-shrink-0 ${className}`}>
+      {ICON_PATHS[name]}
+    </svg>
+  )
+}
+
 function Dots({ value, onChange, readOnly }) {
+  const filled = SCORE_STYLE[value]?.dot || ''
   return (
     <span className="flex gap-1.5 flex-shrink-0">
       {[1, 2, 3, 4, 5].map(n => {
         const on = (value || 0) >= n
         return readOnly ? (
-          <span key={n} className={`w-3 h-3 rounded-full ${on ? 'bg-brand-teal' : 'bg-navy/15'}`} />
+          <span key={n} className={`w-3 h-3 rounded-full border-2 ${on ? filled : 'bg-white border-navy/20'}`} />
         ) : (
           <button key={n} type="button" onClick={() => onChange(value === n ? null : n)}
             aria-label={`${n}/5`}
-            className={`w-4 h-4 rounded-full border-2 transition-colors ${on ? 'bg-brand-teal border-brand-teal' : 'bg-white border-navy/20 hover:border-navy/50'}`} />
+            className={`w-4 h-4 rounded-full border-2 transition-colors ${on ? filled : 'bg-white border-navy/20 hover:border-navy/50'}`} />
         )
       })}
     </span>
+  )
+}
+
+// One row of the evaluation, shared by the teacher's editor and the
+// student's read-only view so the two can't drift apart.
+function SkillRow({ skill, value, onChange, readOnly, t }) {
+  const style = SCORE_STYLE[value]
+  return (
+    <div className="flex items-center gap-3 py-2 border-b border-navy/5 last:border-0">
+      <SkillIcon name={skill} className={style ? style.text : 'text-navy/25'} />
+      <div className="min-w-0 flex-1">
+        <p className="text-navy text-xs font-bold leading-tight">{t(`feedback.${SKILL_LABEL[skill]}`)}</p>
+        <p className="text-navy/40 text-[11px] leading-tight">{t(`feedback.${SKILL_LABEL[skill]}Hint`)}</p>
+      </div>
+      <Dots value={value} onChange={onChange} readOnly={readOnly} />
+      <span className={`w-16 text-right text-[10px] font-extrabold uppercase leading-tight ${style ? style.text : 'text-navy/20'}`}>
+        {style ? t(`feedback.${style.key}`) : '—'}
+      </span>
+    </div>
   )
 }
 
@@ -48,13 +100,10 @@ function FeedbackSummary({ feedback, t }) {
   if (!rated.length && !feedback.comment) return null
   return (
     <div className="mt-3 bg-cream rounded-xl p-4 border-2 border-navy/10">
-      <p className="text-xs font-bold text-navy mb-2">{t('feedback.received')}</p>
-      <div className="space-y-1.5">
+      <p className="text-xs font-extrabold text-brand-red uppercase tracking-wide mb-2">{t('feedback.received')}</p>
+      <div>
         {rated.map(s => (
-          <div key={s} className="flex items-center justify-between gap-4">
-            <span className="text-navy/60 text-xs">{t(`feedback.${SKILL_LABEL[s]}`)}</span>
-            <Dots value={feedback[s]} readOnly />
-          </div>
+          <SkillRow key={s} skill={s} value={feedback[s]} readOnly t={t} />
         ))}
       </div>
       {feedback.comment && <p className="text-navy/70 text-xs mt-3 italic">“{feedback.comment}”</p>}
@@ -130,13 +179,14 @@ function RateStudents({ sessionId, t }) {
         const draft = drafts[student.id] || {}
         return (
           <div key={student.id} className="mt-3 bg-cream rounded-xl p-4 border-2 border-navy/10">
-            <p className="text-sm font-bold text-navy mb-3">{student.first_name} {student.last_name || ''}</p>
-            <div className="space-y-2">
+            <div className="flex items-center justify-between gap-3 mb-1">
+              <p className="text-sm font-bold text-navy">{student.first_name} {student.last_name || ''}</p>
+              <span className="text-navy/40 text-xs font-bold">{SKILLS.filter(s => draft[s] != null).length}/7</span>
+            </div>
+            <p className="text-[10px] font-extrabold text-brand-red uppercase tracking-wide mb-2">{t('feedback.skillEvaluation')}</p>
+            <div>
               {SKILLS.map(s => (
-                <div key={s} className="flex items-center justify-between gap-4">
-                  <span className="text-navy/70 text-xs">{t(`feedback.${SKILL_LABEL[s]}`)}</span>
-                  <Dots value={draft[s]} onChange={v => setSkill(student.id, s, v)} />
-                </div>
+                <SkillRow key={s} skill={s} value={draft[s]} onChange={v => setSkill(student.id, s, v)} t={t} />
               ))}
             </div>
             <textarea
