@@ -17,9 +17,151 @@ function hasFinished(sessionDate, durationMinutes) {
   return Date.now() > end
 }
 
-function Row({ flag, title, level, when, meta, badge, badgeTone }) {
+// Column names on student_feedback, in display order. The label for each
+// comes from i18n so this list stays the single source of truth.
+const SKILLS = ['vocabulary', 'pronunciation', 'phrase_formation', 'fluency', 'grammar', 'listening', 'confidence']
+const SKILL_LABEL = {
+  vocabulary: 'vocabulary', pronunciation: 'pronunciation', phrase_formation: 'phraseFormation',
+  fluency: 'fluency', grammar: 'grammar', listening: 'listening', confidence: 'confidence'
+}
+
+function Dots({ value, onChange, readOnly }) {
   return (
-    <div className="py-4 border-b border-navy/10 last:border-0 flex items-start justify-between gap-4">
+    <span className="flex gap-1.5 flex-shrink-0">
+      {[1, 2, 3, 4, 5].map(n => {
+        const on = (value || 0) >= n
+        return readOnly ? (
+          <span key={n} className={`w-3 h-3 rounded-full ${on ? 'bg-brand-teal' : 'bg-navy/15'}`} />
+        ) : (
+          <button key={n} type="button" onClick={() => onChange(value === n ? null : n)}
+            aria-label={`${n}/5`}
+            className={`w-4 h-4 rounded-full border-2 transition-colors ${on ? 'bg-brand-teal border-brand-teal' : 'bg-white border-navy/20 hover:border-navy/50'}`} />
+        )
+      })}
+    </span>
+  )
+}
+
+// Read-only view of feedback a student received, shown under their own class.
+function FeedbackSummary({ feedback, t }) {
+  const rated = SKILLS.filter(s => feedback[s] != null)
+  if (!rated.length && !feedback.comment) return null
+  return (
+    <div className="mt-3 bg-cream rounded-xl p-4 border-2 border-navy/10">
+      <p className="text-xs font-bold text-navy mb-2">{t('feedback.received')}</p>
+      <div className="space-y-1.5">
+        {rated.map(s => (
+          <div key={s} className="flex items-center justify-between gap-4">
+            <span className="text-navy/60 text-xs">{t(`feedback.${SKILL_LABEL[s]}`)}</span>
+            <Dots value={feedback[s]} readOnly />
+          </div>
+        ))}
+      </div>
+      {feedback.comment && <p className="text-navy/70 text-xs mt-3 italic">“{feedback.comment}”</p>}
+    </div>
+  )
+}
+
+// Teacher-side panel: loads the roster for one session and lets each student
+// be scored. Loaded lazily on expand so the history page itself stays one
+// request per section no matter how many classes are listed.
+function RateStudents({ sessionId, t }) {
+  const [open, setOpen] = useState(false)
+  const [rows, setRows] = useState(null)
+  const [drafts, setDrafts] = useState({})
+  const [saving, setSaving] = useState(null)
+  const [msg, setMsg] = useState('')
+
+  const load = () => {
+    const token = localStorage.getItem('token')
+    fetch(`${API}/api/student-feedback/session/${sessionId}`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(data => {
+        const list = Array.isArray(data) ? data : []
+        setRows(list)
+        setDrafts(Object.fromEntries(list.map(r => [r.student.id, { ...(r.feedback || {}), comment: r.feedback?.comment || '' }])))
+      })
+      .catch(() => setRows([]))
+  }
+
+  const toggle = () => {
+    if (!open && rows === null) load()
+    setOpen(o => !o)
+  }
+
+  const setSkill = (studentId, skill, value) =>
+    setDrafts(d => ({ ...d, [studentId]: { ...d[studentId], [skill]: value } }))
+
+  const submit = async (studentId) => {
+    const draft = drafts[studentId] || {}
+    if (SKILLS.every(s => draft[s] == null)) { setMsg(t('feedback.rateAtLeastOne')); return }
+    setMsg('')
+    setSaving(studentId)
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${API}/api/student-feedback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          class_session_id: sessionId,
+          student_id: studentId,
+          ...Object.fromEntries(SKILLS.map(s => [s, draft[s] ?? null])),
+          comment: draft.comment || ''
+        })
+      })
+      const data = await res.json()
+      setMsg(res.ok ? t('feedback.saved') : (data.error || t('common.connectionError')))
+    } catch {
+      setMsg(t('common.connectionError'))
+    }
+    setSaving(null)
+  }
+
+  return (
+    <div className="pb-4">
+      <button onClick={toggle} className="text-brand-red text-xs font-bold hover:underline">
+        {open ? t('feedback.hide') : t('feedback.rateStudents')}
+      </button>
+
+      {open && rows === null && <p className="text-navy/40 text-xs mt-2">{t('common.loading')}</p>}
+      {open && rows?.length === 0 && <p className="text-navy/40 text-xs mt-2">{t('feedback.noStudents')}</p>}
+
+      {open && rows?.map(({ student }) => {
+        const draft = drafts[student.id] || {}
+        return (
+          <div key={student.id} className="mt-3 bg-cream rounded-xl p-4 border-2 border-navy/10">
+            <p className="text-sm font-bold text-navy mb-3">{student.first_name} {student.last_name || ''}</p>
+            <div className="space-y-2">
+              {SKILLS.map(s => (
+                <div key={s} className="flex items-center justify-between gap-4">
+                  <span className="text-navy/70 text-xs">{t(`feedback.${SKILL_LABEL[s]}`)}</span>
+                  <Dots value={draft[s]} onChange={v => setSkill(student.id, s, v)} />
+                </div>
+              ))}
+            </div>
+            <textarea
+              value={draft.comment || ''}
+              maxLength={300}
+              onChange={e => setSkill(student.id, 'comment', e.target.value)}
+              placeholder={t('feedback.commentPlaceholder', { name: student.first_name })}
+              rows={2}
+              className="w-full mt-3 border-2 border-navy/20 rounded-xl px-3 py-2 text-sm resize-none focus:border-brand-red focus:outline-none transition-colors"/>
+            <button onClick={() => submit(student.id)} disabled={saving === student.id}
+              className="mt-2 bg-brand-red text-white px-4 py-1.5 rounded-full text-xs font-bold border-2 border-navy disabled:opacity-50">
+              {saving === student.id ? t('feedback.saving') : t('feedback.submit')}
+            </button>
+          </div>
+        )
+      })}
+
+      {open && msg && <p className="text-navy/60 text-xs mt-2 font-medium">{msg}</p>}
+    </div>
+  )
+}
+
+function Row({ flag, title, level, when, meta, badge, badgeTone, divider = true }) {
+  return (
+    <div className={`py-4 ${divider ? 'border-b border-navy/10 last:border-0' : ''} flex items-start justify-between gap-4`}>
       <div className="min-w-0">
         <p className="text-navy text-sm font-bold truncate">
           {flag} {title}
@@ -40,6 +182,7 @@ export default function History() {
   const [user, setUser] = useState(null)
   const [taken, setTaken] = useState([])
   const [taught, setTaught] = useState([])
+  const [feedbackBySession, setFeedbackBySession] = useState({})
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -73,6 +216,11 @@ export default function History() {
       setTaught(sessions)
       setLoading(false)
     })
+
+    fetch(`${API}/api/student-feedback/mine`, { headers })
+      .then(r => r.json())
+      .then(d => setFeedbackBySession(Object.fromEntries((Array.isArray(d) ? d : []).map(f => [f.class_session_id, f]))))
+      .catch(() => {})
   }, [])
 
   if (!user) return (
@@ -100,18 +248,23 @@ export default function History() {
               ) : taken.map(e => {
                 const cls = e.class_sessions.classes
                 const teacher = cls?.teacher
+                const received = feedbackBySession[e.class_session_id]
                 return (
-                  <Row key={e.id}
-                    flag={FLAGS[cls?.language_code] || ''}
-                    title={cls?.title || '-'}
-                    level={cls?.level}
-                    when={formatInTimezone(e.class_sessions.session_date, user.timezone)}
-                    meta={teacher ? t('history.withTeacher', { name: `${teacher.first_name} ${teacher.last_name || ''}`.trim() }) : ''}
-                    badge={e.status === 'attended' ? t('dashboard.attended') : t('history.notConfirmed')}
-                    badgeTone={e.status === 'attended'
-                      ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
-                      : 'bg-navy/5 text-navy/40 border-navy/10'}
-                  />
+                  <div key={e.id} className="border-b border-navy/10 last:border-0 pb-2 last:pb-0">
+                    <Row
+                      flag={FLAGS[cls?.language_code] || ''}
+                      title={cls?.title || '-'}
+                      level={cls?.level}
+                      when={formatInTimezone(e.class_sessions.session_date, user.timezone)}
+                      meta={teacher ? t('history.withTeacher', { name: `${teacher.first_name} ${teacher.last_name || ''}`.trim() }) : ''}
+                      badge={e.status === 'attended' ? t('dashboard.attended') : t('history.notConfirmed')}
+                      badgeTone={e.status === 'attended'
+                        ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
+                        : 'bg-navy/5 text-navy/40 border-navy/10'}
+                      divider={false}
+                    />
+                    {received && <FeedbackSummary feedback={received} t={t} />}
+                  </div>
                 )
               })}
             </div>
@@ -123,16 +276,20 @@ export default function History() {
               {taught.length === 0 ? (
                 <p className="text-navy/40 text-sm">{t('history.noneTaught')}</p>
               ) : taught.map(s => (
-                <Row key={s.id}
-                  flag={FLAGS[s.cls.language_code] || ''}
-                  title={s.cls.title}
-                  level={s.cls.level}
-                  when={formatInTimezone(s.session_date, user.timezone)}
-                  badge={s.status === 'cancelled' ? t('history.cancelled') : t('history.done')}
-                  badgeTone={s.status === 'cancelled'
-                    ? 'bg-brand-red/10 text-brand-red border-brand-red/30'
-                    : 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'}
-                />
+                <div key={s.id} className="border-b border-navy/10 last:border-0">
+                  <Row
+                    flag={FLAGS[s.cls.language_code] || ''}
+                    title={s.cls.title}
+                    level={s.cls.level}
+                    when={formatInTimezone(s.session_date, user.timezone)}
+                    badge={s.status === 'cancelled' ? t('history.cancelled') : t('history.done')}
+                    badgeTone={s.status === 'cancelled'
+                      ? 'bg-brand-red/10 text-brand-red border-brand-red/30'
+                      : 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'}
+                    divider={false}
+                  />
+                  {s.status !== 'cancelled' && <RateStudents sessionId={s.id} t={t} />}
+                </div>
               ))}
             </div>
           </>
