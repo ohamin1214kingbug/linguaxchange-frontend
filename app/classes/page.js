@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
+import ClassRequests from '../../components/ClassRequests'
 import { formatInTimezone, asUtcDate } from '../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
@@ -11,6 +12,7 @@ export default function Classes() {
   const [classes, setClasses] = useState([])
   const [teacherOptions, setTeacherOptions] = useState([])
   const [loading, setLoading] = useState(true)
+  const [tab, setTab] = useState('classes')
   const [filter, setFilter] = useState('all')
   const [levelFilter, setLevelFilter] = useState('all')
   const [teacherFilter, setTeacherFilter] = useState('all')
@@ -140,6 +142,15 @@ export default function Classes() {
           </div>
         )}
 
+        <div className="flex gap-1 mb-6 bg-white border-2 border-navy rounded-full p-1 w-fit">
+          {[['classes', t('requests.tabClasses')], ['requests', t('requests.tabRequests')]].map(([key, label]) => (
+            <button key={key} onClick={() => setTab(key)}
+              className={`px-4 md:px-5 py-2 rounded-full text-sm font-bold transition-colors ${tab === key ? 'bg-navy text-white' : 'text-navy/60 hover:text-navy'}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+
         <div className="flex gap-3 mb-4 flex-wrap">
           {['all', 'KO', 'ES', 'DE', 'EN', 'PT', 'FR', 'IT'].map(lang => (
             <button key={lang} onClick={() => setFilter(lang)}
@@ -158,6 +169,10 @@ export default function Classes() {
           ))}
         </div>
 
+        {tab === 'requests' ? (
+          <ClassRequests language={filter} level={levelFilter} currentUser={currentUser} langs={LANGS} />
+        ) : (
+        <>
         <div className="flex gap-3 mb-8 flex-wrap">
           <input value={search} onChange={e => setSearch(e.target.value)}
             placeholder={t('classes.searchPlaceholder')}
@@ -235,6 +250,8 @@ export default function Classes() {
             </p>
           )}
         </div>
+        </>
+        )}
       </div>
     </main>
   )

@@ -19,9 +19,11 @@ function timeAgo(iso, t) {
 // A live class is the one place a notification should skip the dashboard
 // and drop the user straight into the call.
 function notificationHref(n) {
-  return n.type === 'class_started' && n.class_session_id
-    ? `/classroom/${n.class_session_id}`
-    : '/dashboard'
+  if (n.type === 'class_started' && n.class_session_id) return `/classroom/${n.class_session_id}`
+  // Someone answered a request you posted or backed — the class is on the
+  // browse page waiting to be joined, not on your dashboard yet.
+  if (n.type === 'request_fulfilled') return '/classes'
+  return '/dashboard'
 }
 
 // Tailwind's scanner needs literal class strings, not interpolated ones —
@@ -97,7 +99,7 @@ export default function Navbar() {
         <LanguageSwitcher />
 
         {!user && (
-          <a href="/auth/login" className="text-navy/70 font-medium hover:text-navy">{t('common.login')}</a>
+          <a href="/auth/login" className="text-navy/70 font-medium hover:text-navy">{t('common.signIn')}</a>
         )}
 
         {user && (

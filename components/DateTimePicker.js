@@ -10,7 +10,7 @@ function pad(n) {
 // "YYYY-MM-DDTHH:mm" in local wall-clock time — same contract the native
 // <input type="datetime-local"> this replaces used to produce, so the
 // parent form's `new Date(value).toISOString()` submit logic needs no change.
-function toLocalValue(date) {
+export function toLocalValue(date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 

@@ -1,9 +1,10 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import Navbar from '../../../components/Navbar'
-import DateTimePicker from '../../../components/DateTimePicker'
+import DateTimePicker, { toLocalValue } from '../../../components/DateTimePicker'
+import { asUtcDate } from '../../../lib/timezone'
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
@@ -56,6 +57,29 @@ export default function CreateClass() {
     t('classes.topicWriting'),
   ]
 
+  // Arrived here from a student's request on the browse board — prefill what
+  // they asked for so answering it is a couple of clicks. Read off
+  // window.location rather than useSearchParams(), which would drag a
+  // Suspense boundary into an otherwise plain client page. Nothing is
+  // locked: the teacher can change any of it, which is what "the time is
+  // negotiable" means in practice.
+  const [requestId, setRequestId] = useState(null)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (!params.get('request')) return
+    setRequestId(params.get('request'))
+    const preferred = params.get('preferred_time')
+    setForm(f => ({
+      ...f,
+      language_code: params.get('language_code') || f.language_code,
+      level: params.get('level') || f.level,
+      custom_topic: params.get('topic') || f.custom_topic,
+      title: params.get('topic') || f.title,
+      max_students: parseInt(params.get('max_students')) || f.max_students,
+      scheduled_at: preferred ? toLocalValue(asUtcDate(preferred)) : f.scheduled_at
+    }))
+  }, [])
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
@@ -93,6 +117,16 @@ export default function CreateClass() {
         if (data.field === 'scheduled_at') setDateTimeError(data.error)
         else setError(data.error || t('auth.errorSomethingWrong'))
       } else {
+        // Close the request this class answers and notify everyone who asked
+        // for it. Best-effort: the class exists either way, and a failed
+        // link-up isn't worth blocking the success screen over.
+        if (requestId) {
+          await fetch(`https://linguaxchange-backend-production.up.railway.app/api/class-requests/${requestId}/fulfill`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ class_id: data.id })
+          }).catch(() => {})
+        }
         setPublishedImmediately(data.status === 'approved')
         setSuccess(true)
       }
