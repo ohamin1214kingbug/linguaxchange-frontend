@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../components/LanguageSwitcher'
+import Navbar from '../components/Navbar'
 
 export default function Home() {
   const { t } = useLanguage()
@@ -30,25 +31,25 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-cream">
 
-      <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10">
-        <a href="/" className="flex items-center gap-2">
-          <span className="text-2xl">🌐</span>
-          <span className="font-display font-bold text-xl text-navy">Lingua<span className="text-brand-red">Xchange</span></span>
-        </a>
-        <div className="flex gap-3 md:gap-6 items-center">
-          <a href="/classes" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.explore')}</a>
-          {isLoggedIn ? (
-            <a href="/profile" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.profile')}</a>
-          ) : (
-            <a href="/auth/login" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.signIn')}</a>
-          )}
-          <LanguageSwitcher />
-          <a href={isLoggedIn ? '/dashboard' : '/auth/register'}
-            className="bg-brand-red text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full text-sm md:text-base font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">
-            {isLoggedIn ? t('common.dashboard') : t('common.joinFree')}
+      {isLoggedIn ? (
+        <Navbar />
+      ) : (
+        <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10">
+          <a href="/" className="flex items-center gap-2">
+            <span className="text-2xl">🌐</span>
+            <span className="font-display font-bold text-xl text-navy">Lingua<span className="text-brand-red">Xchange</span></span>
           </a>
-        </div>
-      </nav>
+          <div className="flex gap-3 md:gap-6 items-center">
+            <a href="/classes" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.explore')}</a>
+            <a href="/auth/login" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.signIn')}</a>
+            <LanguageSwitcher />
+            <a href="/auth/register"
+              className="bg-brand-red text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full text-sm md:text-base font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">
+              {t('common.joinFree')}
+            </a>
+          </div>
+        </nav>
+      )}
 
       {/* Hero */}
       <section className="relative overflow-hidden px-4 md:px-8 pt-16 pb-20 md:pt-24 md:pb-28">
