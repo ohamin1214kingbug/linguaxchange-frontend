@@ -151,12 +151,16 @@ function RateStudents({ sessionId, t }) {
     setDrafts(d => ({ ...d, [studentId]: { ...d[studentId], [skill]: value } }))
 
   // Appends rather than replaces, so chips stack into a sentence, and clamps
-  // to the same 300 chars the column enforces.
-  const appendChip = (studentId, phrase) => {
-    const current = drafts[studentId]?.comment || ''
-    const next = (current ? `${current.trimEnd()} ` : '') + phrase
-    setSkill(studentId, 'comment', next.slice(0, 300))
-  }
+  // to the same 300 chars the column enforces. Reads the previous comment
+  // inside the updater rather than from the render closure — two chips tapped
+  // in the same tick would otherwise both build on the pre-click value and
+  // the second would silently drop the first.
+  const appendChip = (studentId, phrase) =>
+    setDrafts(d => {
+      const current = d[studentId]?.comment || ''
+      const next = (current ? `${current.trimEnd()} ` : '') + phrase
+      return { ...d, [studentId]: { ...d[studentId], comment: next.slice(0, 300) } }
+    })
 
   const submit = async (studentId) => {
     const draft = drafts[studentId] || {}
