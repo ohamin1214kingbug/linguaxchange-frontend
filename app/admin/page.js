@@ -7,6 +7,7 @@ export default function Admin() {
   const [tab, setTab] = useState('users')
   const [users, setUsers] = useState([])
   const [classes, setClasses] = useState([])
+  const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
 
   const API = 'https://linguaxchange-backend-production.up.railway.app'
@@ -16,6 +17,7 @@ export default function Admin() {
     if (!token) { router.push('/auth/login'); return }
     fetchUsers()
     fetchClasses()
+    fetchReports()
   }, [])
 
   const fetchUsers = async () => {
@@ -39,6 +41,27 @@ export default function Admin() {
       const data = await res.json()
       setClasses(Array.isArray(data) ? data : [])
     } catch (e) { console.error(e) }
+  }
+
+  const fetchReports = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${API}/api/reports`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      setReports(Array.isArray(data) ? data : [])
+    } catch (e) { console.error(e) }
+  }
+
+  const setReportStatus = async (id, status) => {
+    const token = localStorage.getItem('token')
+    await fetch(`${API}/api/reports/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ status })
+    })
+    fetchReports()
   }
 
   const approveUser = async (id) => {
@@ -85,6 +108,8 @@ export default function Admin() {
   const approvedUsers = users.filter(u => u.is_approved)
   const pendingClasses = classes.filter(c => c.status === 'pending')
   const approvedClasses = classes.filter(c => c.status === 'approved')
+  const pendingReports = reports.filter(r => r.status === 'pending')
+  const handledReports = reports.filter(r => r.status !== 'pending')
 
   return (
     <main className="min-h-screen bg-cream">
@@ -97,7 +122,7 @@ export default function Admin() {
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">Admin Dashboard</h1>
         <p className="text-navy/60 mb-8">Manage users and classes</p>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           <div className="bg-white rounded-2xl p-4 border-2 border-navy text-center">
             <p className="font-display font-extrabold text-3xl text-brand-yellow">{pendingUsers.length}</p>
             <p className="text-navy/60 text-sm font-medium">Pending users</p>
@@ -114,6 +139,10 @@ export default function Admin() {
             <p className="font-display font-extrabold text-3xl text-brand-red">{approvedClasses.length}</p>
             <p className="text-navy/60 text-sm font-medium">Active classes</p>
           </div>
+          <div className="bg-white rounded-2xl p-4 border-2 border-navy text-center">
+            <p className="font-display font-extrabold text-3xl text-brand-yellow">{pendingReports.length}</p>
+            <p className="text-navy/60 text-sm font-medium">Open reports</p>
+          </div>
         </div>
 
         <div className="flex gap-3 mb-6">
@@ -124,6 +153,10 @@ export default function Admin() {
           <button onClick={() => setTab('classes')}
             className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'classes' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
             📚 Classes
+          </button>
+          <button onClick={() => setTab('reports')}
+            className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'reports' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
+            🚩 Reports
           </button>
         </div>
 
@@ -240,6 +273,63 @@ export default function Admin() {
             {pendingClasses.length === 0 && approvedClasses.length === 0 && (
               <p className="text-navy/40 text-center py-12">No classes yet</p>
             )}
+          </div>
+        )}
+
+        {tab === 'reports' && !loading && (
+          <div className="space-y-4">
+            {pendingReports.length > 0 && (
+              <>
+                <h2 className="font-display font-bold text-navy">⏳ Open reports</h2>
+                {pendingReports.map(report => (
+                  <div key={report.id} className="bg-white rounded-2xl p-5 border-2 border-brand-yellow">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-bold text-navy">
+                          {report.reported_type === 'user' ? '👤 User' : '📚 Class'} #{report.reported_id}
+                        </p>
+                        <p className="text-navy/60 text-sm mt-1">{report.reason}</p>
+                        <p className="text-navy/40 text-xs mt-2">
+                          Reported by {report.reporter?.first_name} {report.reporter?.last_name} ({report.reporter?.email}) · {new Date(report.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex gap-2 flex-shrink-0">
+                        <button onClick={() => setReportStatus(report.id, 'resolved')}
+                          className="bg-brand-teal text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy whitespace-nowrap">
+                          ✓ Resolve
+                        </button>
+                        <button onClick={() => setReportStatus(report.id, 'rejected')}
+                          className="bg-brand-red/10 text-brand-red px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-red/30 whitespace-nowrap">
+                          ✗ Dismiss
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+            {handledReports.length > 0 && (
+              <>
+                <h2 className="font-display font-bold text-navy mt-6">✅ Handled</h2>
+                {handledReports.map(report => (
+                  <div key={report.id} className="bg-white rounded-2xl p-5 border-2 border-navy/10">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-bold text-navy">
+                          {report.reported_type === 'user' ? '👤 User' : '📚 Class'} #{report.reported_id}
+                        </p>
+                        <p className="text-navy/60 text-sm mt-1">{report.reason}</p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold border-2 whitespace-nowrap ${
+                        report.status === 'resolved' ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-navy/5 text-navy/50 border-navy/10'}`}>
+                        {report.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+            {reports.length === 0 && <p className="text-navy/40 text-center py-12">No reports yet</p>}
           </div>
         )}
       </div>

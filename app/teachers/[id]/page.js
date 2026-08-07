@@ -49,6 +49,9 @@ export default function TeacherProfile() {
   const [message, setMessage] = useState('')
   const [messageOk, setMessageOk] = useState(false)
   const [viewerTimezone, setViewerTimezone] = useState(null)
+  const [reporting, setReporting] = useState(false)
+  const [reportReason, setReportReason] = useState('')
+  const [reportSent, setReportSent] = useState(false)
 
   const LANGS = {
     KO: { flag: '🇰🇷', name: t('home.langKorean') },
@@ -112,6 +115,30 @@ export default function TeacherProfile() {
     setJoining(null)
   }
 
+  const submitReport = async () => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      window.location.href = '/auth/login'
+      return
+    }
+    if (!reportReason.trim()) return
+    try {
+      const res = await fetch(`${API}/api/reports`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ report_type: 'user', reported_id: parseInt(id), reason: reportReason.trim() })
+      })
+      if (res.ok) {
+        setReportSent(true)
+        setReporting(false)
+        setReportReason('')
+      }
+    } catch (e) {
+      // best-effort — the report form itself shows nothing on failure, matching
+      // how quiet the rest of this page already is about network errors
+    }
+  }
+
   const avgRating = reviews.length > 0
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
     : null
@@ -131,6 +158,32 @@ export default function TeacherProfile() {
       <div className="max-w-3xl mx-auto px-4 md:px-8 py-12">
         {/* Header card */}
         <div className="bg-white rounded-2xl p-8 border-2 border-navy mb-6">
+          <div className="flex justify-end">
+            {reportSent ? (
+              <span className="text-navy/40 text-xs">{t('teacher.reportSent')}</span>
+            ) : (
+              <button onClick={() => setReporting(o => !o)}
+                className="text-navy/40 text-xs font-medium hover:text-brand-red">
+                🚩 {t('teacher.report')}
+              </button>
+            )}
+          </div>
+          {reporting && (
+            <div className="mb-4 bg-cream border-2 border-navy/10 rounded-xl p-4">
+              <textarea value={reportReason} onChange={e => setReportReason(e.target.value)} rows={3} maxLength={500}
+                placeholder={t('teacher.reportReasonPlaceholder')}
+                className="w-full border-2 border-navy/20 rounded-xl px-3 py-2 text-sm focus:border-brand-red focus:outline-none transition-colors"/>
+              <div className="flex gap-2 justify-end mt-2">
+                <button onClick={() => setReporting(false)} className="text-navy/50 text-sm font-bold px-3 py-1.5">
+                  {t('teacher.reportCancel')}
+                </button>
+                <button onClick={submitReport} disabled={!reportReason.trim()}
+                  className="bg-brand-red text-white px-4 py-1.5 rounded-full text-sm font-bold border-2 border-navy disabled:opacity-50">
+                  {t('teacher.reportSubmit')}
+                </button>
+              </div>
+            </div>
+          )}
           <div className="flex items-start gap-6">
             {teacher.photo_url ? (
               <img src={teacher.photo_url} alt={teacher.first_name}
