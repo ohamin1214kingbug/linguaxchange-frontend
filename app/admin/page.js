@@ -2,6 +2,10 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
+// A user's DB id is already permanent and unique — no new column needed,
+// just a friendlier alphabet-led format for admins to reference in reports.
+const userCode = id => 'U' + String(id).padStart(6, '0')
+
 export default function Admin() {
   const router = useRouter()
   const [tab, setTab] = useState('users')
@@ -176,7 +180,7 @@ export default function Admin() {
                         </div>
                         <div>
                           <p className="font-bold text-navy">{user.first_name} {user.last_name}</p>
-                          <p className="text-navy/60 text-sm">{user.email}</p>
+                          <p className="text-navy/60 text-sm">{user.email} · <span className="font-mono font-bold">{userCode(user.id)}</span></p>
                           <p className="text-navy/40 text-xs">{user.nationality} · {new Date(user.created_at).toLocaleDateString()}</p>
                         </div>
                       </div>
@@ -208,7 +212,7 @@ export default function Admin() {
                         </div>
                         <div>
                           <p className="font-bold text-navy">{user.first_name} {user.last_name}</p>
-                          <p className="text-navy/60 text-sm">{user.email}</p>
+                          <p className="text-navy/60 text-sm">{user.email} · <span className="font-mono font-bold">{userCode(user.id)}</span></p>
                           <p className="text-navy/40 text-xs">{user.nationality}</p>
                         </div>
                       </div>
@@ -286,11 +290,13 @@ export default function Admin() {
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="font-bold text-navy">
-                          {report.reported_type === 'user' ? '👤 User' : '📚 Class'} #{report.reported_id}
+                          {report.reported_type === 'user'
+                            ? <>👤 User <span className="font-mono">{userCode(report.reported_id)}</span></>
+                            : <>📚 Class #{report.reported_id}</>}
                         </p>
                         <p className="text-navy/60 text-sm mt-1">{report.reason}</p>
                         <p className="text-navy/40 text-xs mt-2">
-                          Reported by {report.reporter?.first_name} {report.reporter?.last_name} ({report.reporter?.email}) · {new Date(report.created_at).toLocaleDateString()}
+                          Reported by {report.reporter?.first_name} {report.reporter?.last_name} <span className="font-mono">{userCode(report.reporter_id)}</span> ({report.reporter?.email}) · {new Date(report.created_at).toLocaleDateString()}
                         </p>
                       </div>
                       <div className="flex gap-2 flex-shrink-0">
@@ -316,7 +322,9 @@ export default function Admin() {
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="font-bold text-navy">
-                          {report.reported_type === 'user' ? '👤 User' : '📚 Class'} #{report.reported_id}
+                          {report.reported_type === 'user'
+                            ? <>👤 User <span className="font-mono">{userCode(report.reported_id)}</span></>
+                            : <>📚 Class #{report.reported_id}</>}
                         </p>
                         <p className="text-navy/60 text-sm mt-1">{report.reason}</p>
                       </div>
