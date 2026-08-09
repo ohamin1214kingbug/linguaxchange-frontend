@@ -9,6 +9,11 @@ const API = 'https://linguaxchange-backend-production.up.railway.app'
 
 const BADGE_KEYS = { first_class: 'firstClass', five_taught: 'fiveTaught', polyglot: 'polyglot' }
 
+// Same permanent id-derived code shown to admins in the reports queue —
+// lets a user quote it themselves instead of admins being the only ones
+// who can see it.
+const userCode = id => 'U' + String(id).padStart(6, '0')
+
 function BadgeRow({ badges, t }) {
   if (!badges || badges.length === 0) return null
   return (
@@ -148,10 +153,13 @@ export default function ProfilePage() {
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">{t('profile.yourProfile')}</h1>
         <p className="text-navy/60 mb-2">{t('profile.howOthersSeeYou')}</p>
-        <p className="text-navy/40 text-sm mb-8">
+        <p className="text-navy/40 text-sm mb-1">
           {profile.longest_streak > 0
             ? `${t('profile.longestStreak')}: ${t('profile.weeksCount', { n: profile.longest_streak })}`
             : t('profile.noStreakYet')}
+        </p>
+        <p className="text-navy/40 text-sm mb-8 font-mono">
+          {t('profile.yourCode', { code: userCode(profile.id) })}
         </p>
 
         <BadgeRow badges={profile.badges} t={t} />
