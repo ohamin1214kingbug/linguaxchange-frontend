@@ -9,6 +9,7 @@ const userCode = id => 'U' + String(id).padStart(6, '0')
 export default function Admin() {
   const router = useRouter()
   const [tab, setTab] = useState('users')
+  const [userSearch, setUserSearch] = useState('')
   const [users, setUsers] = useState([])
   const [classes, setClasses] = useState([])
   const [reports, setReports] = useState([])
@@ -108,8 +109,13 @@ export default function Admin() {
     fetchClasses()
   }
 
-  const pendingUsers = users.filter(u => !u.is_approved)
-  const approvedUsers = users.filter(u => u.is_approved)
+  const matchesUserSearch = u => {
+    const q = userSearch.trim().toLowerCase()
+    if (!q) return true
+    return [userCode(u.id), u.first_name, u.last_name, u.email].some(v => v?.toLowerCase().includes(q))
+  }
+  const pendingUsers = users.filter(u => !u.is_approved && matchesUserSearch(u))
+  const approvedUsers = users.filter(u => u.is_approved && matchesUserSearch(u))
   const pendingClasses = classes.filter(c => c.status === 'pending')
   const approvedClasses = classes.filter(c => c.status === 'approved')
   const pendingReports = reports.filter(r => r.status === 'pending')
@@ -167,6 +173,10 @@ export default function Admin() {
         {loading && <p className="text-navy/40">Loading...</p>}
 
         {tab === 'users' && !loading && (
+          <>
+          <input value={userSearch} onChange={e => setUserSearch(e.target.value)}
+            placeholder="Find a user by code, name, or email..."
+            className="w-full border-2 border-navy/20 rounded-full px-4 py-2 text-sm mb-4 focus:border-brand-red focus:outline-none transition-colors"/>
           <div className="space-y-4">
             {pendingUsers.length > 0 && (
               <>
@@ -222,8 +232,11 @@ export default function Admin() {
                 ))}
               </>
             )}
-            {users.length === 0 && <p className="text-navy/40 text-center py-12">No users yet</p>}
+            {pendingUsers.length === 0 && approvedUsers.length === 0 && (
+              <p className="text-navy/40 text-center py-12">{users.length === 0 ? 'No users yet' : 'No users match your search'}</p>
+            )}
           </div>
+          </>
         )}
 
         {tab === 'classes' && !loading && (
