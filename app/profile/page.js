@@ -153,14 +153,14 @@ export default function ProfilePage() {
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">{t('profile.yourProfile')}</h1>
         <p className="text-navy/60 mb-2">{t('profile.howOthersSeeYou')}</p>
-        <p className="text-navy/40 text-sm mb-1">
+        <p className="text-navy/40 text-sm mb-4">
           {profile.longest_streak > 0
             ? `${t('profile.longestStreak')}: ${t('profile.weeksCount', { n: profile.longest_streak })}`
             : t('profile.noStreakYet')}
         </p>
-        <p className="text-navy/40 text-sm mb-8 font-mono">
+        <span className="inline-block bg-brand-teal/10 text-brand-teal px-3 py-1 rounded-full text-sm font-bold font-mono border-2 border-brand-teal/30 mb-8">
           {t('profile.yourCode', { code: userCode(profile.id) })}
-        </p>
+        </span>
 
         <BadgeRow badges={profile.badges} t={t} />
 
