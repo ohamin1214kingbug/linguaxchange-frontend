@@ -52,6 +52,8 @@ export default function TeacherProfile() {
   const [reporting, setReporting] = useState(false)
   const [reportReason, setReportReason] = useState('')
   const [reportSent, setReportSent] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [savingTeacher, setSavingTeacher] = useState(false)
 
   const LANGS = {
     KO: { flag: '🇰🇷', name: t('home.langKorean') },
@@ -65,8 +67,13 @@ export default function TeacherProfile() {
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
+    const token = localStorage.getItem('token')
     if (stored) setViewerTimezone(JSON.parse(stored).timezone)
-  }, [])
+    if (!stored || !token) return
+    fetch(`${API}/api/saved-teachers`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(list => setSaved(Array.isArray(list) && list.some(t => String(t.id) === String(id))))
+  }, [id])
 
   useEffect(() => {
     if (!id) return
@@ -139,6 +146,27 @@ export default function TeacherProfile() {
     }
   }
 
+  const toggleSaved = async () => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      window.location.href = '/auth/login'
+      return
+    }
+    setSavingTeacher(true)
+    if (saved) {
+      await fetch(`${API}/api/saved-teachers/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
+      setSaved(false)
+    } else {
+      const res = await fetch(`${API}/api/saved-teachers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ teacher_id: parseInt(id) })
+      })
+      if (res.ok) setSaved(true)
+    }
+    setSavingTeacher(false)
+  }
+
   const avgRating = reviews.length > 0
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
     : null
@@ -158,7 +186,11 @@ export default function TeacherProfile() {
       <div className="max-w-3xl mx-auto px-4 md:px-8 py-12">
         {/* Header card */}
         <div className="bg-white rounded-2xl p-8 border-2 border-navy mb-6">
-          <div className="flex justify-end">
+          <div className="flex justify-end items-center gap-4">
+            <button onClick={toggleSaved} disabled={savingTeacher}
+              className={`text-xs font-bold disabled:opacity-50 ${saved ? 'text-brand-red' : 'text-navy/40 hover:text-brand-red'}`}>
+              {saved ? `❤️ ${t('teacher.savedLabel')}` : `🤍 ${t('teacher.saveLabel')}`}
+            </button>
             {reportSent ? (
               <span className="text-navy/40 text-xs">{t('teacher.reportSent')}</span>
             ) : (

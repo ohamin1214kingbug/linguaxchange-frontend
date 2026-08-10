@@ -174,10 +174,7 @@ export default function Navbar() {
                     <a href="/profile" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('common.profile')}</a>
                     <a href="/dashboard" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('common.dashboard')}</a>
                     <a href="/history" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.myClasses')}</a>
-                    <span className="flex items-center justify-between px-4 py-2.5 text-sm font-medium text-navy/30 cursor-not-allowed">
-                      {t('nav.savedTeachers')}
-                      <span className="text-[10px] bg-navy/5 px-2 py-0.5 rounded-full">{t('nav.comingSoon')}</span>
-                    </span>
+                    <a href="/saved-teachers" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.savedTeachers')}</a>
                     <a href="/profile" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.settings')}</a>
                     <button onClick={() => window.confirm(t('common.logoutConfirm')) && logout()}
                       className="block w-full text-left px-4 py-2.5 text-sm font-medium text-brand-red hover:bg-cream transition-colors border-t border-navy/10">
