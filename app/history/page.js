@@ -128,7 +128,11 @@ function RateStudents({ sessionId, t }) {
   const [rows, setRows] = useState(null)
   const [drafts, setDrafts] = useState({})
   const [saving, setSaving] = useState(null)
-  const [msg, setMsg] = useState('')
+  // Holds { studentId, key } — a translation KEY, not a rendered string.
+  // Storing t(...) output here meant a saved confirmation kept the language
+  // it was created in even after the user switched. Server errors have no
+  // key to translate, so they ride along as { text }.
+  const [msg, setMsg] = useState(null)
 
   const load = () => {
     const token = localStorage.getItem('token')
@@ -165,10 +169,10 @@ function RateStudents({ sessionId, t }) {
   const submit = async (studentId) => {
     const draft = drafts[studentId] || {}
     if (SKILLS.filter(s => draft[s] != null).length < MIN_SKILLS) {
-      setMsg(t('feedback.rateAtLeastThree', { n: MIN_SKILLS }))
+      setMsg({ studentId, key: 'feedback.rateAtLeastThree' })
       return
     }
-    setMsg('')
+    setMsg(null)
     setSaving(studentId)
     try {
       const token = localStorage.getItem('token')
@@ -183,9 +187,11 @@ function RateStudents({ sessionId, t }) {
         })
       })
       const data = await res.json()
-      setMsg(res.ok ? t('feedback.saved') : (data.error || t('common.connectionError')))
+      setMsg(res.ok
+        ? { studentId, key: 'feedback.saved' }
+        : (data.error ? { studentId, text: data.error } : { studentId, key: 'common.connectionError' }))
     } catch {
-      setMsg(t('common.connectionError'))
+      setMsg({ studentId, key: 'common.connectionError' })
     }
     setSaving(null)
   }
@@ -253,11 +259,16 @@ function RateStudents({ sessionId, t }) {
                 {saving === student.id ? t('feedback.saving') : t('feedback.submit')}
               </button>
             </div>
+
+            {msg?.studentId === student.id && (
+              <p className={`text-xs mt-2 font-bold text-right ${
+                msg.key === 'feedback.saved' ? 'text-brand-teal' : 'text-brand-red'}`}>
+                {msg.text || t(msg.key, { n: MIN_SKILLS })}
+              </p>
+            )}
           </div>
         )
       })}
-
-      {open && msg && <p className="text-navy/60 text-xs mt-2 font-medium">{msg}</p>}
     </div>
   )
 }
