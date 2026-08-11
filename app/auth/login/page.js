@@ -32,7 +32,7 @@ function LoginForm() {
       })
       const data = await response.json()
       if (!response.ok) {
-        setError(data.error || t('auth.errorSomethingWrong'))
+        setError(data.error || 'auth.errorSomethingWrong')
       } else {
         localStorage.setItem('token', data.token)
         localStorage.setItem('user', JSON.stringify(data.user))
@@ -40,7 +40,7 @@ function LoginForm() {
         router.push('/dashboard')
       }
     } catch (err) {
-      setError(t('common.connectionError'))
+      setError('common.connectionError')
     }
     setLoading(false)
   }
@@ -71,7 +71,7 @@ function LoginForm() {
         )}
 
         {error && (
-          <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{error}</div>
+          <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{t(error)}</div>
         )}
 
         <button onClick={handleGoogleLogin}

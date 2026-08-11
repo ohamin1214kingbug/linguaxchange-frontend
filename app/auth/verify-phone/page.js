@@ -41,12 +41,12 @@ export default function VerifyPhone() {
       })
       const data = await response.json()
       if (!response.ok) {
-        setError(data.error || t('auth.errorSendCode'))
+        setError(data.error || 'auth.errorSendCode')
       } else {
         setOtpSent(true)
       }
     } catch (err) {
-      setError(t('common.connectionError'))
+      setError('common.connectionError')
     }
     setOtpLoading(false)
   }
@@ -62,13 +62,13 @@ export default function VerifyPhone() {
       })
       const data = await response.json()
       if (!response.ok) {
-        setError(data.error || t('auth.errorInvalidCode'))
+        setError(data.error || 'auth.errorInvalidCode')
       } else {
         setPhoneVerified(true)
         setVerifiedToken(data.verified_token)
       }
     } catch (err) {
-      setError(t('common.connectionError'))
+      setError('common.connectionError')
     }
     setVerifyLoading(false)
   }
@@ -87,14 +87,14 @@ export default function VerifyPhone() {
       })
       const data = await response.json()
       if (!response.ok) {
-        setError(data.error || t('auth.errorSomethingWrong'))
+        setError(data.error || 'auth.errorSomethingWrong')
       } else {
         const stored = JSON.parse(localStorage.getItem('user') || '{}')
         localStorage.setItem('user', JSON.stringify({ ...stored, ...data.user }))
         router.push('/dashboard')
       }
     } catch (err) {
-      setError(t('common.connectionError'))
+      setError('common.connectionError')
     }
     setFinishLoading(false)
   }
@@ -112,7 +112,7 @@ export default function VerifyPhone() {
         <p className="text-navy/60 mb-6">{t('auth.verifyPhoneRequiredSubtitle')}</p>
 
         {error && (
-          <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{error}</div>
+          <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{t(error)}</div>
         )}
 
         <div className="space-y-4">

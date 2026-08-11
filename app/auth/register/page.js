@@ -106,19 +106,19 @@ export default function Register() {
 
   const validateStep1 = () => {
     if (!form.first_name || !form.last_name || !form.email || !form.nationality) {
-      setError(t('auth.errorFillAllFields'))
+      setError('auth.errorFillAllFields')
       return false
     }
     if (form.password.length < 8) {
-      setError(t('auth.errorPasswordLength'))
+      setError('auth.errorPasswordLength')
       return false
     }
     if (form.password !== confirmPassword) {
-      setError(t('auth.errorPasswordMismatch'))
+      setError('auth.errorPasswordMismatch')
       return false
     }
     if (!form.email.includes('@')) {
-      setError(t('auth.errorValidEmail'))
+      setError('auth.errorValidEmail')
       return false
     }
     return true
@@ -126,7 +126,7 @@ export default function Register() {
 
   const validateStep2 = () => {
     if (!phoneVerified) {
-      setError(t('auth.errorPhoneNotVerified'))
+      setError('auth.errorPhoneNotVerified')
       return false
     }
     return true
@@ -134,11 +134,11 @@ export default function Register() {
 
   const validateStep3 = () => {
     if (!photo) {
-      setError(t('auth.errorUploadPhoto'))
+      setError('auth.errorUploadPhoto')
       return false
     }
     if (!form.bio || form.bio.length < 20) {
-      setError(t('auth.errorBioLength'))
+      setError('auth.errorBioLength')
       return false
     }
     return true
@@ -146,15 +146,15 @@ export default function Register() {
 
   const validateStep4 = () => {
     if (!form.teach_language) {
-      setError(t('auth.errorSelectTeachLanguage'))
+      setError('auth.errorSelectTeachLanguage')
       return false
     }
     if (!form.teach_level) {
-      setError(t('auth.errorSelectTeachLevel'))
+      setError('auth.errorSelectTeachLevel')
       return false
     }
     if (form.learn_languages.length === 0) {
-      setError(t('auth.errorSelectLearnLanguage'))
+      setError('auth.errorSelectLearnLanguage')
       return false
     }
     return true
@@ -162,11 +162,11 @@ export default function Register() {
 
   const validateStep5 = () => {
     if (form.has_certificate === null) {
-      setError(t('auth.errorSelectCertificate'))
+      setError('auth.errorSelectCertificate')
       return false
     }
     if (!form.has_certificate && !form.certificate_explanation) {
-      setError(t('auth.errorExplainLevel'))
+      setError('auth.errorExplainLevel')
       return false
     }
     return true
@@ -203,12 +203,12 @@ export default function Register() {
       })
       const data = await response.json()
       if (!response.ok) {
-        setError(data.error || t('auth.errorSendCode'))
+        setError(data.error || 'auth.errorSendCode')
       } else {
         setOtpSent(true)
       }
     } catch (err) {
-      setError(t('common.connectionError'))
+      setError('common.connectionError')
     }
     setOtpLoading(false)
   }
@@ -224,13 +224,13 @@ export default function Register() {
       })
       const data = await response.json()
       if (!response.ok) {
-        setError(data.error || t('auth.errorInvalidCode'))
+        setError(data.error || 'auth.errorInvalidCode')
       } else {
         setPhoneVerified(true)
         setVerifiedToken(data.verified_token)
       }
     } catch (err) {
-      setError(t('common.connectionError'))
+      setError('common.connectionError')
     }
     setVerifyLoading(false)
   }
@@ -256,7 +256,7 @@ export default function Register() {
       })
       const data = await response.json()
       if (!response.ok) {
-        setError(data.error || t('auth.errorSomethingWrong'))
+        setError(data.error || 'auth.errorSomethingWrong')
       } else {
         localStorage.setItem('token', data.token)
         localStorage.setItem('user', JSON.stringify(data.user))
@@ -264,7 +264,7 @@ export default function Register() {
         router.push('/dashboard')
       }
     } catch (err) {
-      setError(t('common.connectionError'))
+      setError('common.connectionError')
     }
     setLoading(false)
   }
@@ -289,7 +289,7 @@ export default function Register() {
         <StepIndicator />
 
         {error && (
-          <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{error}</div>
+          <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{t(error)}</div>
         )}
 
         {/* STEP 1 - Basic info */}

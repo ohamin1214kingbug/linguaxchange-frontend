@@ -142,11 +142,11 @@ export default function Dashboard() {
         setEditingClassId(null)
         fetchTeachingClasses(user.id)
       } else {
-        setMessage(data.error || t('dashboard.errorEditClass'))
+        setMessage(data.error || 'dashboard.errorEditClass')
         setMessageOk(false)
       }
     } catch (e) {
-      setMessage(t('common.connectionError'))
+      setMessage('common.connectionError')
       setMessageOk(false)
     }
     setSavingEdit(false)
@@ -163,15 +163,15 @@ export default function Dashboard() {
       })
       const data = await res.json()
       if (res.ok) {
-        setMessage(t('dashboard.classCancelledMsg'))
+        setMessage('dashboard.classCancelledMsg')
         setMessageOk(true)
         fetchTeachingClasses(user.id)
       } else {
-        setMessage(data.error || t('dashboard.errorCancelClass'))
+        setMessage(data.error || 'dashboard.errorCancelClass')
         setMessageOk(false)
       }
     } catch (e) {
-      setMessage(t('common.connectionError'))
+      setMessage('common.connectionError')
       setMessageOk(false)
     }
     setCancellingClassId(null)
@@ -195,11 +195,11 @@ export default function Dashboard() {
         fetchCredits()
         if (data.refunded) window.dispatchEvent(new Event('credits-changed'))
       } else {
-        setMessage(data.error || t('dashboard.errorCancelEnroll'))
+        setMessage(data.error || 'dashboard.errorCancelEnroll')
         setMessageOk(false)
       }
     } catch (e) {
-      setMessage(t('common.connectionError'))
+      setMessage('common.connectionError')
       setMessageOk(false)
     }
     setCancellingEnrollmentId(null)
@@ -217,18 +217,18 @@ export default function Dashboard() {
         }
       })
       if (res.ok) {
-        setMessage(t('dashboard.attendanceConfirmed'))
+        setMessage('dashboard.attendanceConfirmed')
         setMessageOk(true)
         fetchEnrollments()
         fetchCredits()
         fetchTransactions()
       } else {
         const data = await res.json()
-        setMessage(data.error || t('dashboard.errorConfirmAttendance'))
+        setMessage(data.error || 'dashboard.errorConfirmAttendance')
         setMessageOk(false)
       }
     } catch (e) {
-      setMessage(t('common.connectionError'))
+      setMessage('common.connectionError')
       setMessageOk(false)
     }
     setConfirming(null)
@@ -254,7 +254,7 @@ export default function Dashboard() {
               ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
               : 'bg-brand-red/10 text-brand-red border-brand-red/30'
           }`}>
-            {message}
+            {t(message)}
           </div>
         )}
 

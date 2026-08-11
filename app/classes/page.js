@@ -99,16 +99,16 @@ export default function Classes() {
       })
       const data = await res.json()
       if (!res.ok) {
-        setMessage(data.error || t('classes.errorJoinClass'))
+        setMessage(data.error || 'classes.errorJoinClass')
         setMessageOk(false)
       } else {
-        setMessage(t('classes.successfullyJoined'))
+        setMessage('classes.successfullyJoined')
         setMessageOk(true)
         window.dispatchEvent(new Event('credits-changed'))
         fetchJoinedClassIds(token)
       }
     } catch (e) {
-      setMessage(t('common.connectionError'))
+      setMessage('common.connectionError')
       setMessageOk(false)
     }
     setJoining(null)
@@ -138,7 +138,7 @@ export default function Classes() {
 
         {message && (
           <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${messageOk ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>
-            {message}
+            {t(message)}
           </div>
         )}
 

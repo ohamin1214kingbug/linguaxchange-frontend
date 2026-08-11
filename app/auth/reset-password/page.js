@@ -20,8 +20,8 @@ function ResetPasswordForm() {
 
   const handleSubmit = async () => {
     setError('')
-    if (password.length < 8) return setError(t('auth.errorPasswordLength'))
-    if (password !== confirmPassword) return setError(t('auth.errorPasswordsMatch'))
+    if (password.length < 8) return setError('auth.errorPasswordLength')
+    if (password !== confirmPassword) return setError('auth.errorPasswordsMatch')
     setLoading(true)
     try {
       const response = await fetch(`${API}/api/auth/reset-password`, {
@@ -31,13 +31,13 @@ function ResetPasswordForm() {
       })
       const data = await response.json()
       if (!response.ok) {
-        setError(data.error || t('auth.errorSomethingWrong'))
+        setError(data.error || 'auth.errorSomethingWrong')
       } else {
         setSuccess(true)
         setTimeout(() => router.push('/auth/login'), 2000)
       }
     } catch (err) {
-      setError(t('common.connectionError'))
+      setError('common.connectionError')
     }
     setLoading(false)
   }
@@ -69,7 +69,7 @@ function ResetPasswordForm() {
       <p className="text-navy/60 mb-8">{t('auth.setNewPasswordSubtitle')}</p>
 
       {error && (
-        <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{error}</div>
+        <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{t(error)}</div>
       )}
 
       <div className="space-y-4">

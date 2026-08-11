@@ -14,7 +14,7 @@ export default function ForgotPassword() {
 
   const handleSubmit = async () => {
     setError('')
-    if (!email) return setError(t('auth.errorEnterEmail'))
+    if (!email) return setError('auth.errorEnterEmail')
     setLoading(true)
     try {
       const response = await fetch(`${API}/api/auth/forgot-password`, {
@@ -26,10 +26,10 @@ export default function ForgotPassword() {
         setSubmitted(true)
       } else {
         const data = await response.json()
-        setError(data.error || t('auth.errorSomethingWrong'))
+        setError(data.error || 'auth.errorSomethingWrong')
       }
     } catch (err) {
-      setError(t('common.connectionError'))
+      setError('common.connectionError')
     }
     setLoading(false)
   }
@@ -61,7 +61,7 @@ export default function ForgotPassword() {
         <p className="text-navy/60 mb-8">{t('auth.resetPasswordSubtitle')}</p>
 
         {error && (
-          <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{error}</div>
+          <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{t(error)}</div>
         )}
 
         <div className="space-y-4">

@@ -50,16 +50,16 @@ export default function SavedTeachers() {
     setSearchError('')
     setFound(null)
     const id = codeToId(code.trim())
-    if (!id) { setSearchError(t('savedTeachers.invalidCode')); return }
+    if (!id) { setSearchError('savedTeachers.invalidCode'); return }
     setSearching(true)
     try {
       const res = await fetch(`${API}/api/users/${id}`)
-      if (!res.ok) { setSearchError(t('savedTeachers.notFound')); return }
+      if (!res.ok) { setSearchError('savedTeachers.notFound'); return }
       const user = await res.json()
-      if (!user.teach_language) { setSearchError(t('savedTeachers.notATeacher')); return }
+      if (!user.teach_language) { setSearchError('savedTeachers.notATeacher'); return }
       setFound(user)
     } catch (e) {
-      setSearchError(t('common.connectionError'))
+      setSearchError('common.connectionError')
     }
     setSearching(false)
   }
@@ -77,7 +77,7 @@ export default function SavedTeachers() {
       fetchSaved()
     } else {
       const data = await res.json()
-      setSearchError(data.error || t('common.connectionError'))
+      setSearchError(data.error || 'common.connectionError')
     }
     setBusy(false)
   }
@@ -115,7 +115,7 @@ export default function SavedTeachers() {
             </button>
           </div>
 
-          {searchError && <p className="text-brand-red text-sm font-medium mt-3">{searchError}</p>}
+          {searchError && <p className="text-brand-red text-sm font-medium mt-3">{t(searchError)}</p>}
 
           {found && (
             <div className="flex items-center justify-between gap-4 mt-4 p-4 bg-cream rounded-xl border-2 border-navy/10">

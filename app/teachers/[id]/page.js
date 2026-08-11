@@ -109,14 +109,14 @@ export default function TeacherProfile() {
       })
       const data = await res.json()
       if (res.ok) {
-        setMessage(t('classes.successfullyJoined'))
+        setMessage('classes.successfullyJoined')
         setMessageOk(true)
       } else {
-        setMessage(data.error || t('classes.errorJoinClass'))
+        setMessage(data.error || 'classes.errorJoinClass')
         setMessageOk(false)
       }
     } catch (e) {
-      setMessage(t('common.connectionError'))
+      setMessage('common.connectionError')
       setMessageOk(false)
     }
     setJoining(null)
@@ -267,7 +267,7 @@ export default function TeacherProfile() {
 
             {message && (
               <div className={`px-4 py-3 rounded-xl mb-4 text-sm font-medium border-2 ${messageOk ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>
-                {message}
+                {t(message)}
               </div>
             )}
 

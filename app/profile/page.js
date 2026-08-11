@@ -93,6 +93,9 @@ export default function ProfilePage() {
     const path = `avatars/${user.id}.${ext}`
     const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
     if (error) {
+      // Stays a rendered string rather than a key: half of it is the raw
+      // Supabase error, which has nothing to translate. t() passes unknown
+      // strings through untouched, so rendering t(message) still works.
       setMessage(t('profile.photoUploadFailed') + error.message)
       setMessageOk(false)
       setUploading(false)
@@ -128,15 +131,15 @@ export default function ProfilePage() {
       })
       const data = await res.json()
       if (!res.ok) {
-        setMessage(data.error || t('profile.saveFailed'))
+        setMessage(data.error || 'profile.saveFailed')
         setMessageOk(false)
       } else {
         localStorage.setItem('user', JSON.stringify({ ...user, first_name: data.first_name }))
-        setMessage(t('profile.profileSaved'))
+        setMessage('profile.profileSaved')
         setMessageOk(true)
       }
     } catch (e) {
-      setMessage(t('common.connectionError'))
+      setMessage('common.connectionError')
       setMessageOk(false)
     }
     setSaving(false)
@@ -170,7 +173,7 @@ export default function ProfilePage() {
               ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
               : 'bg-brand-red/10 text-brand-red border-brand-red/30'
           }`}>
-            {message}
+            {t(message)}
           </div>
         )}
 

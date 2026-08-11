@@ -70,7 +70,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
       })
       if (!res) return
       const data = await res.json()
-      if (!res.ok) setError(data.error || t('common.connectionError'))
+      if (!res.ok) setError(data.error || 'common.connectionError')
       else {
         setShowForm(false)
         setPosted(true)
@@ -78,7 +78,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
         load()
       }
     } catch (e) {
-      setError(t('common.connectionError'))
+      setError('common.connectionError')
     }
     setBusy(null)
   }
@@ -138,7 +138,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
       {showForm && (
         <div className="bg-white border-2 border-navy rounded-2xl p-5 md:p-6 mb-8 space-y-4">
           {error && (
-            <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 px-4 py-3 rounded-xl text-sm font-medium">{error}</div>
+            <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 px-4 py-3 rounded-xl text-sm font-medium">{t(error)}</div>
           )}
 
           <div>

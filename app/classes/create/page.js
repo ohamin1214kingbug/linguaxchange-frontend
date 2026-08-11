@@ -87,16 +87,16 @@ export default function CreateClass() {
   const handleSubmit = async () => {
     setError('')
     setDateTimeError('')
-    if (!form.language_code) return setError(t('classes.errorSelectLanguage'))
-    if (!form.level) return setError(t('classes.errorSelectLevel'))
-    if (!form.topic && !form.custom_topic) return setError(t('classes.errorSelectTopic'))
-    if (!form.title) return setError(t('classes.errorClassTitle'))
-    if (!form.scheduled_at) return setDateTimeError(t('classes.errorDateTime'))
+    if (!form.language_code) return setError('classes.errorSelectLanguage')
+    if (!form.level) return setError('classes.errorSelectLevel')
+    if (!form.topic && !form.custom_topic) return setError('classes.errorSelectTopic')
+    if (!form.title) return setError('classes.errorClassTitle')
+    if (!form.scheduled_at) return setDateTimeError('classes.errorDateTime')
     // Re-check on submit, not just at picker-selection time — the tab may
     // have been left open long enough for a previously-valid pick to lapse.
-    if (new Date(form.scheduled_at).getTime() <= Date.now()) return setDateTimeError(t('classes.errorDateTimePast'))
-    if (form.format === 'recurring' && !form.recurrence_type) return setError(t('classes.errorFrequency'))
-    if (form.format === 'recurring' && !form.recurrence_end_date) return setError(t('classes.errorRecursUntil'))
+    if (new Date(form.scheduled_at).getTime() <= Date.now()) return setDateTimeError('classes.errorDateTimePast')
+    if (form.format === 'recurring' && !form.recurrence_type) return setError('classes.errorFrequency')
+    if (form.format === 'recurring' && !form.recurrence_end_date) return setError('classes.errorRecursUntil')
     setLoading(true)
     try {
       const token = localStorage.getItem('token')
@@ -115,7 +115,7 @@ export default function CreateClass() {
       const data = await response.json()
       if (!response.ok) {
         if (data.field === 'scheduled_at') setDateTimeError(data.error)
-        else setError(data.error || t('auth.errorSomethingWrong'))
+        else setError(data.error || 'auth.errorSomethingWrong')
       } else {
         // Close the request this class answers and notify everyone who asked
         // for it. Best-effort: the class exists either way, and a failed
@@ -131,7 +131,7 @@ export default function CreateClass() {
         setSuccess(true)
       }
     } catch (err) {
-      setError(t('common.connectionError'))
+      setError('common.connectionError')
     }
     setLoading(false)
   }
@@ -161,7 +161,7 @@ export default function CreateClass() {
         <p className="text-navy/60 mb-8">{t('classes.fillDetails')}</p>
 
         {error && (
-          <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-6 text-sm font-medium">{error}</div>
+          <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-6 text-sm font-medium">{t(error)}</div>
         )}
 
         <div className="bg-white rounded-2xl p-6 border-2 border-navy space-y-6">
@@ -231,7 +231,7 @@ export default function CreateClass() {
               {t('classes.dateTime')} <span className="text-navy/40 font-normal">{t('classes.dateTimeHint')}</span>
             </label>
             <DateTimePicker value={form.scheduled_at} onChange={val => { setDateTimeError(''); setForm({ ...form, scheduled_at: val }) }} t={t} />
-            {dateTimeError && <p className="text-brand-red text-sm font-medium mt-1.5">{dateTimeError}</p>}
+            {dateTimeError && <p className="text-brand-red text-sm font-medium mt-1.5">{t(dateTimeError)}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
