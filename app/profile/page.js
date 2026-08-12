@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '../../lib/supabase'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
 
@@ -89,21 +88,35 @@ export default function ProfilePage() {
     const file = e.target.files[0]
     if (!file) return
     setUploading(true)
-    const ext = file.name.split('.').pop()
-    const path = `avatars/${user.id}.${ext}`
-    const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
-    if (error) {
-      // Stays a rendered string rather than a key: half of it is the raw
-      // Supabase error, which has nothing to translate. t() passes unknown
-      // strings through untouched, so rendering t(message) still works.
-      setMessage(t('profile.photoUploadFailed') + error.message)
+    try {
+      const image = await new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result)
+        reader.onerror = reject
+        reader.readAsDataURL(file)
+      })
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${API}/api/users/${user.id}/avatar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ image })
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        // Stays a rendered string rather than a key: half of it is the raw
+        // backend error, which has nothing to translate. t() passes unknown
+        // strings through untouched, so rendering t(message) still works.
+        setMessage(t('profile.photoUploadFailed') + data.error)
+        setMessageOk(false)
+        return
+      }
+      setForm(f => ({ ...f, photo_url: data.photo_url }))
+    } catch (e) {
+      setMessage(t('profile.photoUploadFailed') + e.message)
       setMessageOk(false)
+    } finally {
       setUploading(false)
-      return
     }
-    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
-    setForm(f => ({ ...f, photo_url: publicUrl }))
-    setUploading(false)
   }
 
   const toggleLearnLanguage = (code) => {
