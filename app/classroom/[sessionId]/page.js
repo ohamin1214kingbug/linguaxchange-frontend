@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
+import { useLanguage } from '../../../lib/i18n/LanguageContext'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -20,6 +21,7 @@ function loadJitsiScript(domain) {
 export default function Classroom() {
   const router = useRouter()
   const { sessionId } = useParams()
+  const { t } = useLanguage()
   const [status, setStatus] = useState('connecting')
   const [error, setError] = useState('')
   const [topic, setTopic] = useState('')
@@ -51,7 +53,7 @@ export default function Classroom() {
 
         if (!res.ok) {
           if (!cancelled) {
-            setError(data.error || 'Could not join this class')
+            setError(data.error || 'classroom.errorJoin')
             setStatus('error')
           }
           return
@@ -88,7 +90,7 @@ export default function Classroom() {
       } catch (e) {
         console.error(e)
         if (!cancelled) {
-          setError('Could not connect to the video call')
+          setError('classroom.errorConnect')
           setStatus('error')
         }
       }
@@ -105,21 +107,21 @@ export default function Classroom() {
   return (
     <main className="min-h-screen bg-navy-dark text-white flex flex-col">
       <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-        <span className="font-display font-bold">{topic || 'Class'}</span>
+        <span className="font-display font-bold">{topic || t('classroom.title')}</span>
         <a href="/dashboard" className="text-white/50 hover:text-white text-sm font-medium">
-          ← Back to dashboard
+          ← {t('classroom.backToDashboard')}
         </a>
       </div>
 
       {status === 'connecting' && (
         <div className="flex-1 flex items-center justify-center text-white/40 font-medium">
-          Connecting to class...
+          {t('classroom.connecting')}
         </div>
       )}
 
       {status === 'error' && (
         <div className="flex-1 flex items-center justify-center">
-          <div className="bg-brand-red/20 text-white border-2 border-brand-red/40 px-6 py-4 rounded-xl text-sm font-medium">{error}</div>
+          <div className="bg-brand-red/20 text-white border-2 border-brand-red/40 px-6 py-4 rounded-xl text-sm font-medium">{t(error)}</div>
         </div>
       )}
 
