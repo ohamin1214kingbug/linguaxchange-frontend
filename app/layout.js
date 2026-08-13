@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import { Baloo_2, Inter } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "../lib/i18n/LanguageContext";
@@ -42,6 +43,7 @@ export default function RootLayout({ children }) {
         <ServiceWorkerRegister />
         <AuthTabSync />
         <LanguageProvider>{children}</LanguageProvider>
+        <Analytics />
       </body>
     </html>
   );
