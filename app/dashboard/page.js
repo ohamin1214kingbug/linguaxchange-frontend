@@ -300,7 +300,7 @@ export default function Dashboard() {
                         </p>
                         <p className="text-navy/40 text-xs mt-0.5">
                           {scheduledAt
-                            ? formatInTimezone(scheduledAt, user.timezone)
+                            ? formatInTimezone(scheduledAt, user.timezone, user.time_format)
                             : t('dashboard.noTimeSet')}
                           {' · '}
                           {enrollment.status === 'attended'
@@ -404,7 +404,7 @@ export default function Dashboard() {
                         <div>
                           <p className="text-navy text-sm font-bold">{cls.title}</p>
                           <p className="text-navy/40 text-xs mt-0.5">
-                            {scheduledAt ? formatInTimezone(scheduledAt, user.timezone) : t('dashboard.noTimeSet')}
+                            {scheduledAt ? formatInTimezone(scheduledAt, user.timezone, user.time_format) : t('dashboard.noTimeSet')}
                           </p>
                           {session && !isClassOver && !isLive && (
                             <a href={`/classroom/${session.id}`}

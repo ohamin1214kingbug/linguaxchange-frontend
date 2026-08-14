@@ -236,7 +236,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
               {req.details && <p className="text-navy/60 text-sm mb-2 whitespace-pre-line">{req.details}</p>}
 
               <p className="text-brand-red text-xs font-bold mb-1">
-                🗓️ {formatInTimezone(req.preferred_time, currentUser?.timezone)}
+                🗓️ {formatInTimezone(req.preferred_time, currentUser?.timezone, currentUser?.time_format)}
               </p>
               <p className="text-navy/40 text-xs mb-4">
                 👥 {t('requests.studentsWanted', { n: req.max_students })}

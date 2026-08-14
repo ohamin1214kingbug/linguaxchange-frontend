@@ -49,6 +49,7 @@ export default function TeacherProfile() {
   const [message, setMessage] = useState('')
   const [messageOk, setMessageOk] = useState(false)
   const [viewerTimezone, setViewerTimezone] = useState(null)
+  const [viewerTimeFormat, setViewerTimeFormat] = useState(null)
   const [reporting, setReporting] = useState(false)
   const [reportReason, setReportReason] = useState('')
   const [reportSent, setReportSent] = useState(false)
@@ -68,7 +69,11 @@ export default function TeacherProfile() {
   useEffect(() => {
     const stored = localStorage.getItem('user')
     const token = localStorage.getItem('token')
-    if (stored) setViewerTimezone(JSON.parse(stored).timezone)
+    if (stored) {
+      const viewer = JSON.parse(stored)
+      setViewerTimezone(viewer.timezone)
+      setViewerTimeFormat(viewer.time_format)
+    }
     if (!stored || !token) return
     fetch(`${API}/api/saved-teachers`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())
@@ -284,7 +289,7 @@ export default function TeacherProfile() {
                     {cls.description && <p className="text-navy/40 text-xs mt-0.5">{cls.description}</p>}
                     {cls.class_sessions?.[0]?.session_date && (
                       <p className="text-brand-red text-xs font-bold mt-1">
-                        🗓️ {formatInTimezone(cls.class_sessions[0].session_date, viewerTimezone)}
+                        🗓️ {formatInTimezone(cls.class_sessions[0].session_date, viewerTimezone, viewerTimeFormat)}
                       </p>
                     )}
                   </div>

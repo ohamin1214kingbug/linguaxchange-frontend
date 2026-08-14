@@ -369,7 +369,7 @@ export default function History() {
                       flag={FLAGS[cls?.language_code] || ''}
                       title={cls?.title || '-'}
                       level={cls?.level}
-                      when={formatInTimezone(e.class_sessions.session_date, user.timezone)}
+                      when={formatInTimezone(e.class_sessions.session_date, user.timezone, user.time_format)}
                       meta={teacher ? t('history.withTeacher', { name: `${teacher.first_name} ${teacher.last_name || ''}`.trim() }) : ''}
                       badge={e.status === 'attended' ? t('dashboard.attended') : t('history.notConfirmed')}
                       badgeTone={e.status === 'attended'
@@ -395,7 +395,7 @@ export default function History() {
                     flag={FLAGS[s.cls.language_code] || ''}
                     title={s.cls.title}
                     level={s.cls.level}
-                    when={formatInTimezone(s.session_date, user.timezone)}
+                    when={formatInTimezone(s.session_date, user.timezone, user.time_format)}
                     badge={s.status === 'cancelled' ? t('history.cancelled') : t('history.done')}
                     badgeTone={s.status === 'cancelled'
                       ? 'bg-brand-red/10 text-brand-red border-brand-red/30'

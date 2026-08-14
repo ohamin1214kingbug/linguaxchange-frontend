@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
+import { detectTimezone } from '../../lib/timezone'
 import Navbar from '../../components/Navbar'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
@@ -12,6 +13,19 @@ const BADGE_KEYS = { first_class: 'firstClass', five_taught: 'fiveTaught', polyg
 // lets a user quote it themselves instead of admins being the only ones
 // who can see it.
 const userCode = id => 'U' + String(id).padStart(6, '0')
+
+// Native IANA list — no library, no hardcoded table to go stale when a
+// country changes its zones. A plain <select> is type-to-jump searchable,
+// so it covers the "searchable dropdown" need without a combobox widget.
+// ponytail: falls back to just the detected zone on browsers without
+// supportedValuesOf; swap in a combobox if 400 options proves unwieldy.
+const TIMEZONES = (() => {
+  try {
+    return Intl.supportedValuesOf('timeZone')
+  } catch (e) {
+    return []
+  }
+})()
 
 function BadgeRow({ badges, t }) {
   if (!badges || badges.length === 0) return null
@@ -39,12 +53,17 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState(null)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [pw, setPw] = useState({ current: '', next: '', confirm: '' })
+  const [changingPw, setChangingPw] = useState(false)
+  const [pwMessage, setPwMessage] = useState('')
+  const [pwOk, setPwOk] = useState(false)
   const [message, setMessage] = useState('')
   const [messageOk, setMessageOk] = useState(false)
   const [form, setForm] = useState({
     first_name: '', last_name: '', nationality: '', bio: '',
     photo_url: '', teach_language: '', teach_level: '',
-    learn_languages: [], has_certificate: null, certificate_explanation: ''
+    learn_languages: [], has_certificate: null, certificate_explanation: '',
+    timezone: '', timezone_source: 'auto', time_format: ''
   })
 
   const LANGUAGES = [
@@ -79,7 +98,10 @@ export default function ProfilePage() {
           teach_level: data.teach_level || '',
           learn_languages: data.learn_languages || [],
           has_certificate: data.has_certificate ?? null,
-          certificate_explanation: data.certificate_explanation || ''
+          certificate_explanation: data.certificate_explanation || '',
+          timezone: data.timezone || detectTimezone() || '',
+          timezone_source: data.timezone_source || 'auto',
+          time_format: data.time_format || ''
         })
       })
   }, [])
@@ -129,6 +151,48 @@ export default function ProfilePage() {
     }))
   }
 
+  const handleChangePassword = async () => {
+    setPwMessage('')
+    if (pw.next !== pw.confirm) {
+      setPwMessage('profile.passwordsDontMatch')
+      setPwOk(false)
+      return
+    }
+    if (pw.next.length < 8) {
+      setPwMessage('profile.passwordTooShort')
+      setPwOk(false)
+      return
+    }
+    setChangingPw(true)
+    try {
+      const res = await fetch(`${API}/api/auth/change-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ current_password: pw.current, new_password: pw.next })
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setPwMessage(data.error || 'profile.passwordChangeFailed')
+        setPwOk(false)
+      } else {
+        // The old token died with the password change; the server issues a
+        // replacement so this device stays signed in. Storing it is what
+        // keeps the next request from 401-ing.
+        if (data.token) localStorage.setItem('token', data.token)
+        setPw({ current: '', next: '', confirm: '' })
+        setPwMessage('profile.passwordChanged')
+        setPwOk(true)
+      }
+    } catch (e) {
+      setPwMessage('common.connectionError')
+      setPwOk(false)
+    }
+    setChangingPw(false)
+  }
+
   const handleSave = async () => {
     setSaving(true)
     setMessage('')
@@ -147,7 +211,13 @@ export default function ProfilePage() {
         setMessage(data.error || 'profile.saveFailed')
         setMessageOk(false)
       } else {
-        localStorage.setItem('user', JSON.stringify({ ...user, first_name: data.first_name }))
+        localStorage.setItem('user', JSON.stringify({
+          ...user,
+          first_name: data.first_name,
+          timezone: data.timezone,
+          timezone_source: data.timezone_source,
+          time_format: data.time_format
+        }))
         setMessage('profile.profileSaved')
         setMessageOk(true)
       }
@@ -333,10 +403,83 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* Display preferences */}
+        <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-8">
+          <h2 className="font-display font-bold text-navy mb-4">{t('profile.displayPrefs')}</h2>
+
+          <label className="block text-sm font-bold text-navy mb-1.5">{t('profile.timezoneLabel')}</label>
+          <select value={form.timezone}
+            onChange={e => setForm(f => ({ ...f, timezone: e.target.value, timezone_source: 'manual' }))}
+            className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 text-navy focus:border-brand-red focus:outline-none transition-colors">
+            {!TIMEZONES.includes(form.timezone) && form.timezone && (
+              <option value={form.timezone}>{form.timezone}</option>
+            )}
+            {TIMEZONES.map(tz => <option key={tz} value={tz}>{tz}</option>)}
+          </select>
+
+          {form.timezone_source === 'manual' ? (
+            <div className="flex items-center justify-between gap-3 mt-2">
+              <p className="text-navy/50 text-xs">{t('profile.timezoneManualNote')}</p>
+              <button type="button"
+                onClick={() => setForm(f => ({ ...f, timezone: detectTimezone() || f.timezone, timezone_source: 'auto' }))}
+                className="text-brand-red text-xs font-bold hover:underline whitespace-nowrap">
+                {t('profile.timezoneReset')}
+              </button>
+            </div>
+          ) : (
+            <p className="text-navy/50 text-xs mt-2">{t('profile.timezoneAutoNote')}</p>
+          )}
+
+          <label className="block text-sm font-bold text-navy mb-1.5 mt-5">{t('profile.timeFormatLabel')}</label>
+          <select value={form.time_format}
+            onChange={e => setForm(f => ({ ...f, time_format: e.target.value }))}
+            className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 text-navy focus:border-brand-red focus:outline-none transition-colors">
+            <option value="">{t('profile.timeFormatAuto')}</option>
+            <option value="12h">{t('profile.timeFormat12h')}</option>
+            <option value="24h">{t('profile.timeFormat24h')}</option>
+          </select>
+        </div>
+
         <button onClick={handleSave} disabled={saving}
           className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
           {saving ? t('profile.saving') : t('profile.saveProfile')}
         </button>
+
+        {/* Password — its own endpoint and its own button, deliberately not
+            part of the profile save: it needs the current password and
+            hands back a fresh token. */}
+        <div className="bg-white rounded-2xl p-6 border-2 border-navy mt-8">
+          <h2 className="font-display font-bold text-navy mb-1">{t('profile.changePassword')}</h2>
+          <p className="text-navy/50 text-xs mb-4">{t('profile.changePasswordNote')}</p>
+
+          {pwMessage && (
+            <div className={`px-4 py-3 rounded-xl mb-4 text-sm font-medium border-2 ${pwOk
+              ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
+              : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>
+              {t(pwMessage)}
+            </div>
+          )}
+
+          <div className="space-y-3">
+            <input type="password" value={pw.current} autoComplete="current-password"
+              onChange={e => setPw(p => ({ ...p, current: e.target.value }))}
+              placeholder={t('profile.currentPassword')}
+              className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 text-navy focus:border-brand-red focus:outline-none transition-colors"/>
+            <input type="password" value={pw.next} autoComplete="new-password"
+              onChange={e => setPw(p => ({ ...p, next: e.target.value }))}
+              placeholder={t('profile.newPassword')}
+              className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 text-navy focus:border-brand-red focus:outline-none transition-colors"/>
+            <input type="password" value={pw.confirm} autoComplete="new-password"
+              onChange={e => setPw(p => ({ ...p, confirm: e.target.value }))}
+              placeholder={t('profile.confirmPassword')}
+              className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 text-navy focus:border-brand-red focus:outline-none transition-colors"/>
+          </div>
+
+          <button onClick={handleChangePassword} disabled={changingPw}
+            className="w-full mt-4 bg-navy text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-navy/90 disabled:opacity-50 transition-colors">
+            {changingPw ? t('profile.changingPassword') : t('profile.changePassword')}
+          </button>
+        </div>
       </div>
     </main>
   )

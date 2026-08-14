@@ -202,7 +202,7 @@ export default function Classes() {
                   {cls.description && <p className="text-navy/60 text-sm mb-2">{cls.description}</p>}
                   {cls.class_sessions?.[0]?.session_date && (
                     <p className="text-brand-red text-xs font-bold mb-1">
-                      🗓️ {formatInTimezone(cls.class_sessions[0].session_date, currentUser?.timezone)}
+                      🗓️ {formatInTimezone(cls.class_sessions[0].session_date, currentUser?.timezone, currentUser?.time_format)}
                     </p>
                   )}
                   <p className="text-navy/40 text-xs">
