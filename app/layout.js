@@ -16,9 +16,13 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const title = "LinguaXchange";
+const description = "Learn by teaching, teach by learning.";
+
 export const metadata = {
-  title: "LinguaXchange",
-  description: "Learn by teaching, teach by learning.",
+  metadataBase: new URL("https://linguaxchange.com"),
+  title,
+  description,
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -26,6 +30,19 @@ export const metadata = {
   },
   icons: {
     apple: "/icons/icon-192.png",
+  },
+  openGraph: {
+    title,
+    description,
+    url: "https://linguaxchange.com",
+    siteName: title,
+    images: [{ url: "/icons/icon-512.png", width: 512, height: 512 }],
+  },
+  twitter: {
+    card: "summary",
+    title,
+    description,
+    images: ["/icons/icon-512.png"],
   },
 };
 
