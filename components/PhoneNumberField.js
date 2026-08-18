@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import PhoneInput, { isValidPhoneNumber, parsePhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
-import { getExampleNumber } from 'libphonenumber-js'
+import { getExampleNumber, getCountryCallingCode } from 'libphonenumber-js'
 import examples from 'libphonenumber-js/examples.mobile.json'
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import countryNamesEn from 'react-phone-number-input/locale/en'
@@ -29,6 +29,19 @@ const COUNTRY_LABELS_BY_LANGUAGE = { EN: countryNamesEn, KO: countryNamesKo, ES:
 
 export { isValidPhoneNumber }
 
+// Picking a country sets the value to that country's dial code alone
+// ("+86"), before a single digit is typed. That is the picker reporting the
+// selection, not user input — counting it as input flashed a red "invalid
+// number" the instant someone switched country, which reads as the country
+// being rejected outright.
+function isDialCodeOnly(value, country) {
+  try {
+    return value === '+' + getCountryCallingCode(country)
+  } catch {
+    return false // no country selected, or one libphonenumber doesn't know
+  }
+}
+
 // The hint below the field carries the whole explanation of what to type,
 // so both callers get it identically. Three states, because "enter your
 // number" alone left people guessing:
@@ -36,7 +49,7 @@ export { isValidPhoneNumber }
 //   invalid -> say so, with the leading-zero gotcha spelled out
 //   valid   -> echo the exact number we'll text, so there's no ambiguity
 function PhoneHint({ value, country, t }) {
-  if (value) {
+  if (value && !isDialCodeOnly(value, country)) {
     if (!isValidPhoneNumber(value)) {
       return <p className="text-brand-red text-xs mt-1 font-medium">{t('auth.errorInvalidPhone')}</p>
     }
