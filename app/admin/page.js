@@ -30,6 +30,7 @@ export default function Admin() {
   const router = useRouter()
   const [tab, setTab] = useState('users')
   const [userSearch, setUserSearch] = useState('')
+  const [creditSearch, setCreditSearch] = useState('')
   const [creditAmounts, setCreditAmounts] = useState({})
   const [creditMessages, setCreditMessages] = useState({})
   const [users, setUsers] = useState([])
@@ -148,13 +149,15 @@ export default function Admin() {
     fetchClasses()
   }
 
-  const matchesUserSearch = u => {
-    const q = userSearch.trim().toLowerCase()
+  const matchesSearch = (u, query) => {
+    const q = query.trim().toLowerCase()
     if (!q) return true
     return [userCode(u.id), u.first_name, u.last_name, u.email].some(v => v?.toLowerCase().includes(q))
   }
+  const matchesUserSearch = u => matchesSearch(u, userSearch)
   const pendingUsers = users.filter(u => !u.is_approved && matchesUserSearch(u))
   const approvedUsers = users.filter(u => u.is_approved && matchesUserSearch(u))
+  const creditSearchResults = users.filter(u => matchesSearch(u, creditSearch))
   const pendingClasses = classes.filter(c => c.status === 'pending')
   const approvedClasses = classes.filter(c => c.status === 'approved')
   const pendingReports = reports.filter(r => r.status === 'pending')
@@ -206,6 +209,10 @@ export default function Admin() {
           <button onClick={() => setTab('reports')}
             className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'reports' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
             🚩 Reports
+          </button>
+          <button onClick={() => setTab('credits')}
+            className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'credits' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
+            💰 Credits
           </button>
         </div>
 
@@ -397,6 +404,44 @@ export default function Admin() {
             )}
             {reports.length === 0 && <p className="text-navy/40 text-center py-12">No reports yet</p>}
           </div>
+        )}
+
+        {tab === 'credits' && !loading && (
+          <>
+          <input value={creditSearch} onChange={e => setCreditSearch(e.target.value)}
+            placeholder="Find a user by code, name, or email..."
+            className="w-full border-2 border-navy/20 rounded-full px-4 py-2 text-sm mb-4 focus:border-brand-red focus:outline-none transition-colors"/>
+          <div className="space-y-3">
+            {creditSearchResults.map(user => (
+              <div key={user.id} className="bg-white rounded-2xl p-4 border-2 border-navy/10 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 flex-shrink-0">
+                  <div className="w-10 h-10 bg-brand-yellow/30 rounded-full flex items-center justify-center text-navy font-display font-bold border-2 border-navy">
+                    {user.first_name?.[0]}{user.last_name?.[0]}
+                  </div>
+                  <div>
+                    <p className="font-bold text-navy text-sm">{user.first_name} {user.last_name}</p>
+                    <p className="text-navy/50 text-xs">{user.email} · <span className="font-mono font-bold">{userCode(user.id)}</span></p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input type="number" min="1" value={creditAmounts[user.id] || ''}
+                    onChange={e => setCreditAmounts(a => ({ ...a, [user.id]: e.target.value }))}
+                    onKeyDown={e => e.key === 'Enter' && addCredit(user.id)}
+                    placeholder="Amount"
+                    className="w-24 border-2 border-navy/20 rounded-full px-3 py-1.5 text-sm focus:border-brand-red focus:outline-none transition-colors"/>
+                  <button onClick={() => addCredit(user.id)}
+                    className="bg-brand-yellow/20 text-navy px-4 py-1.5 rounded-full text-sm font-bold border-2 border-navy/20 hover:border-navy transition-colors whitespace-nowrap">
+                    Add
+                  </button>
+                  {creditMessages[user.id] && <span className="text-navy/50 text-xs whitespace-nowrap">{creditMessages[user.id]}</span>}
+                </div>
+              </div>
+            ))}
+            {creditSearchResults.length === 0 && (
+              <p className="text-navy/40 text-center py-12">{users.length === 0 ? 'No users yet' : 'No users match your search'}</p>
+            )}
+          </div>
+          </>
         )}
       </div>
     </main>
