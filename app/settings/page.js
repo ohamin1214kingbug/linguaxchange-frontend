@@ -23,10 +23,20 @@ const TIMEZONES = (() => {
 const field = 'w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 text-navy focus:border-brand-red focus:outline-none transition-colors'
 const card = 'bg-white rounded-2xl p-6 border-2 border-navy mb-6'
 
+// Reuses each section's own title as its tab label — one less place for
+// copy to drift out of sync.
+const TABS = [
+  { key: 'prefs', label: 'settings.displayPrefs' },
+  { key: 'password', label: 'settings.changePassword' },
+  { key: 'data', label: 'settings.yourData' },
+  { key: 'danger', label: 'settings.deleteAccount' }
+]
+
 export default function SettingsPage() {
   const router = useRouter()
   const { t } = useLanguage()
   const [user, setUser] = useState(null)
+  const [tab, setTab] = useState('prefs')
   const [prefs, setPrefs] = useState({ timezone: '', timezone_source: 'auto', time_format: '', low_credit_nudge: true })
   const [savingPrefs, setSavingPrefs] = useState(false)
   const [prefsMessage, setPrefsMessage] = useState('')
@@ -191,9 +201,23 @@ export default function SettingsPage() {
     <main className="min-h-screen bg-cream">
       <Navbar />
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
-        <h1 className="font-display font-extrabold text-3xl text-navy mb-8">{t('settings.title')}</h1>
+        <h1 className="font-display font-extrabold text-3xl text-navy mb-6">{t('settings.title')}</h1>
+
+        <div className="flex gap-2 mb-8 overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+          {TABS.map(tb => (
+            <button key={tb.key} type="button" onClick={() => setTab(tb.key)}
+              className={`px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap border-2 transition-colors ${
+                tab === tb.key
+                  ? tb.key === 'danger' ? 'bg-brand-red text-white border-navy' : 'bg-navy text-white border-navy'
+                  : 'bg-white text-navy/60 border-navy/20 hover:border-navy hover:text-navy'
+              }`}>
+              {t(tb.label)}
+            </button>
+          ))}
+        </div>
 
         {/* Display preferences */}
+        {tab === 'prefs' && (
         <div className={card}>
           <h2 className="font-display font-bold text-navy mb-4">{t('settings.displayPrefs')}</h2>
 
@@ -246,8 +270,10 @@ export default function SettingsPage() {
             {savingPrefs ? t('settings.saving') : t('settings.savePrefs')}
           </button>
         </div>
+        )}
 
         {/* Password */}
+        {tab === 'password' && (
         <div className={card}>
           <h2 className="font-display font-bold text-navy mb-1">{t('settings.changePassword')}</h2>
           <p className="text-navy/50 text-xs mb-4">{t('settings.changePasswordNote')}</p>
@@ -272,8 +298,10 @@ export default function SettingsPage() {
             {changingPw ? t('settings.changingPassword') : t('settings.changePassword')}
           </button>
         </div>
+        )}
 
         {/* Your data */}
+        {tab === 'data' && (
         <div className={card}>
           <h2 className="font-display font-bold text-navy mb-1">{t('settings.yourData')}</h2>
           <p className="text-navy/50 text-xs mb-4">{t('settings.exportNote')}</p>
@@ -282,8 +310,10 @@ export default function SettingsPage() {
             {exporting ? t('settings.exporting') : t('settings.exportData')}
           </button>
         </div>
+        )}
 
         {/* Danger zone */}
+        {tab === 'danger' && (
         <div className="bg-white rounded-2xl p-6 border-2 border-brand-red">
           <h2 className="font-display font-bold text-brand-red mb-1">{t('settings.deleteAccount')}</h2>
           <p className="text-navy/60 text-xs mb-4 whitespace-pre-line">{t('settings.deleteExplain')}</p>
@@ -308,6 +338,7 @@ export default function SettingsPage() {
             {deleting ? t('settings.deleting') : t('settings.deleteAccount')}
           </button>
         </div>
+        )}
       </div>
     </main>
   )
