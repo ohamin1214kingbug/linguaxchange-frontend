@@ -27,7 +27,7 @@ export default function SettingsPage() {
   const router = useRouter()
   const { t } = useLanguage()
   const [user, setUser] = useState(null)
-  const [prefs, setPrefs] = useState({ timezone: '', timezone_source: 'auto', time_format: '' })
+  const [prefs, setPrefs] = useState({ timezone: '', timezone_source: 'auto', time_format: '', low_credit_nudge: true })
   const [savingPrefs, setSavingPrefs] = useState(false)
   const [prefsMessage, setPrefsMessage] = useState('')
   const [prefsOk, setPrefsOk] = useState(false)
@@ -53,7 +53,11 @@ export default function SettingsPage() {
       .then(data => setPrefs({
         timezone: data.timezone || detectTimezone() || '',
         timezone_source: data.timezone_source || 'auto',
-        time_format: data.time_format || ''
+        time_format: data.time_format || '',
+        // Opt-out, not opt-in: absent/undefined (rows from before this
+        // preference existed) reads as enabled, matching the column's own
+        // DEFAULT and the backend's nudgeEnabledFromPrefs.
+        low_credit_nudge: data.notification_preferences?.low_credit_nudge !== false
       }))
   }, [])
 
@@ -66,7 +70,12 @@ export default function SettingsPage() {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
         // time_format '' means "no preference"; the column is nullable and
         // NULL is what the formatters read as "follow the locale".
-        body: JSON.stringify({ ...prefs, time_format: prefs.time_format || null })
+        body: JSON.stringify({
+          timezone: prefs.timezone,
+          timezone_source: prefs.timezone_source,
+          time_format: prefs.time_format || null,
+          notification_preferences: { low_credit_nudge: prefs.low_credit_nudge }
+        })
       })
       const data = await res.json()
       if (!res.ok) {
@@ -79,12 +88,14 @@ export default function SettingsPage() {
           ...user,
           timezone: data.timezone,
           timezone_source: data.timezone_source,
-          time_format: data.time_format
+          time_format: data.time_format,
+          notification_preferences: data.notification_preferences
         }))
         setPrefs({
           timezone: data.timezone || '',
           timezone_source: data.timezone_source || 'auto',
-          time_format: data.time_format || ''
+          time_format: data.time_format || '',
+          low_credit_nudge: data.notification_preferences?.low_credit_nudge !== false
         })
         setPrefsMessage('settings.prefsSaved')
         setPrefsOk(true)
@@ -221,6 +232,14 @@ export default function SettingsPage() {
             <option value="12h">{t('settings.timeFormat12h')}</option>
             <option value="24h">{t('settings.timeFormat24h')}</option>
           </select>
+
+          <label className="flex items-center gap-2.5 mt-5 cursor-pointer select-none">
+            <input type="checkbox" checked={prefs.low_credit_nudge}
+              onChange={e => setPrefs(p => ({ ...p, low_credit_nudge: e.target.checked }))}
+              className="w-4 h-4 accent-brand-red"/>
+            <span className="text-sm font-bold text-navy">{t('settings.lowCreditNudgeLabel')}</span>
+          </label>
+          <p className="text-navy/50 text-xs mt-1">{t('settings.lowCreditNudgeNote')}</p>
 
           <button onClick={savePrefs} disabled={savingPrefs}
             className="w-full mt-5 bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
