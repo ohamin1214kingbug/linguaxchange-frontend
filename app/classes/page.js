@@ -220,7 +220,7 @@ export default function Classes() {
                 </div>
                 <div className="flex-shrink-0 flex flex-col items-end gap-2">
                   {cls.teacher?.id === currentUser?.id ? (
-                    <a href={`/teachers/${cls.teacher.id}`}
+                    <a href={`/classes/${cls.id}`}
                       className="bg-navy/5 text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-navy/10 transition-colors">
                       {t('classes.yourClass')}
                     </a>
