@@ -23,21 +23,21 @@ const TIMEZONES = (() => {
 const field = 'w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 text-navy focus:border-brand-red focus:outline-none transition-colors'
 const card = 'bg-white rounded-2xl p-6 border-2 border-navy mb-6'
 
-// Reuses each section's own title as its tab label — one less place for
-// copy to drift out of sync.
-const TABS = [
-  { key: 'prefs', label: 'settings.displayPrefs' },
-  { key: 'password', label: 'settings.changePassword' },
-  { key: 'data', label: 'settings.yourData' },
-  { key: 'danger', label: 'settings.deleteAccount' }
-]
+// Same options as the create-class form (app/classes/create/page.js) — a
+// saved default has to offer exactly what that form can accept.
+const DURATIONS = [30, 45, 60, 90]
+const MAX_STUDENTS_OPTIONS = [3, 4, 5, 6, 7, 8, 9, 10]
 
 export default function SettingsPage() {
   const router = useRouter()
   const { t } = useLanguage()
   const [user, setUser] = useState(null)
   const [tab, setTab] = useState('prefs')
-  const [prefs, setPrefs] = useState({ timezone: '', timezone_source: 'auto', time_format: '', low_credit_nudge: true })
+  const [hasTaught, setHasTaught] = useState(false)
+  const [prefs, setPrefs] = useState({
+    timezone: '', timezone_source: 'auto', time_format: '', low_credit_nudge: true,
+    default_class_duration_minutes: '', default_max_students: ''
+  })
   const [savingPrefs, setSavingPrefs] = useState(false)
   const [prefsMessage, setPrefsMessage] = useState('')
   const [prefsOk, setPrefsOk] = useState(false)
@@ -67,8 +67,20 @@ export default function SettingsPage() {
         // Opt-out, not opt-in: absent/undefined (rows from before this
         // preference existed) reads as enabled, matching the column's own
         // DEFAULT and the backend's nudgeEnabledFromPrefs.
-        low_credit_nudge: data.notification_preferences?.low_credit_nudge !== false
+        low_credit_nudge: data.notification_preferences?.low_credit_nudge !== false,
+        default_class_duration_minutes: data.default_class_duration_minutes || '',
+        default_max_students: data.default_max_students || ''
       }))
+
+    // No role column exists — teach_language is required at signup, so
+    // it's true for everyone and useless as a gate. The dashboard's own
+    // "My Classes" list already uses this same query as its real signal
+    // for "has this person actually taught", so this reuses it rather
+    // than inventing a second way to ask the same question.
+    fetch(`${API}/api/classes?teacher_id=${u.id}`)
+      .then(r => r.json())
+      .then(data => setHasTaught(Array.isArray(data) && data.length > 0))
+      .catch(() => {})
   }, [])
 
   const savePrefs = async () => {
@@ -84,7 +96,11 @@ export default function SettingsPage() {
           timezone: prefs.timezone,
           timezone_source: prefs.timezone_source,
           time_format: prefs.time_format || null,
-          notification_preferences: { low_credit_nudge: prefs.low_credit_nudge }
+          notification_preferences: { low_credit_nudge: prefs.low_credit_nudge },
+          // '' means "no saved default"; the column is nullable and NULL is
+          // what the create-class form reads as "fall back to its own default".
+          default_class_duration_minutes: prefs.default_class_duration_minutes || null,
+          default_max_students: prefs.default_max_students || null
         })
       })
       const data = await res.json()
@@ -99,13 +115,17 @@ export default function SettingsPage() {
           timezone: data.timezone,
           timezone_source: data.timezone_source,
           time_format: data.time_format,
-          notification_preferences: data.notification_preferences
+          notification_preferences: data.notification_preferences,
+          default_class_duration_minutes: data.default_class_duration_minutes,
+          default_max_students: data.default_max_students
         }))
         setPrefs({
           timezone: data.timezone || '',
           timezone_source: data.timezone_source || 'auto',
           time_format: data.time_format || '',
-          low_credit_nudge: data.notification_preferences?.low_credit_nudge !== false
+          low_credit_nudge: data.notification_preferences?.low_credit_nudge !== false,
+          default_class_duration_minutes: data.default_class_duration_minutes || '',
+          default_max_students: data.default_max_students || ''
         })
         setPrefsMessage('settings.prefsSaved')
         setPrefsOk(true)
@@ -204,7 +224,13 @@ export default function SettingsPage() {
         <h1 className="font-display font-extrabold text-3xl text-navy mb-6">{t('settings.title')}</h1>
 
         <div className="flex gap-2 mb-8 overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
-          {TABS.map(tb => (
+          {[
+            { key: 'prefs', label: 'settings.displayPrefs' },
+            ...(hasTaught ? [{ key: 'teaching', label: 'settings.teachingDefaults' }] : []),
+            { key: 'password', label: 'settings.changePassword' },
+            { key: 'data', label: 'settings.yourData' },
+            { key: 'danger', label: 'settings.deleteAccount' }
+          ].map(tb => (
             <button key={tb.key} type="button" onClick={() => setTab(tb.key)}
               className={`px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap border-2 transition-colors ${
                 tab === tb.key
@@ -264,6 +290,39 @@ export default function SettingsPage() {
             <span className="text-sm font-bold text-navy">{t('settings.lowCreditNudgeLabel')}</span>
           </label>
           <p className="text-navy/50 text-xs mt-1">{t('settings.lowCreditNudgeNote')}</p>
+
+          <button onClick={savePrefs} disabled={savingPrefs}
+            className="w-full mt-5 bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
+            {savingPrefs ? t('settings.saving') : t('settings.savePrefs')}
+          </button>
+        </div>
+        )}
+
+        {/* Teaching defaults */}
+        {tab === 'teaching' && (
+        <div className={card}>
+          <h2 className="font-display font-bold text-navy mb-1">{t('settings.teachingDefaults')}</h2>
+          <p className="text-navy/50 text-xs mb-4">{t('settings.teachingDefaultsNote')}</p>
+
+          {prefsMessage && (
+            <div className={`px-4 py-3 rounded-xl mb-4 text-sm font-medium border-2 ${prefsOk
+              ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
+              : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>{t(prefsMessage)}</div>
+          )}
+
+          <label className="block text-sm font-bold text-navy mb-1.5">{t('classes.duration')}</label>
+          <select value={prefs.default_class_duration_minutes} className={field}
+            onChange={e => setPrefs(p => ({ ...p, default_class_duration_minutes: e.target.value }))}>
+            <option value="">{t('settings.noDefaultOption')}</option>
+            {DURATIONS.map(n => <option key={n} value={n}>{t(`classes.minutes${n}`)}</option>)}
+          </select>
+
+          <label className="block text-sm font-bold text-navy mb-1.5 mt-5">{t('classes.maxStudentsLabel')}</label>
+          <select value={prefs.default_max_students} className={field}
+            onChange={e => setPrefs(p => ({ ...p, default_max_students: e.target.value }))}>
+            <option value="">{t('settings.noDefaultOption')}</option>
+            {MAX_STUDENTS_OPTIONS.map(n => <option key={n} value={n}>{t('classes.studentsCount', { n })}</option>)}
+          </select>
 
           <button onClick={savePrefs} disabled={savingPrefs}
             className="w-full mt-5 bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">

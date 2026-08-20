@@ -80,6 +80,32 @@ export default function CreateClass() {
     }))
   }, [])
 
+  // Prefills from the teacher's own saved defaults (Settings → Teaching
+  // defaults), if they've set any — a starting point, not a lock, so every
+  // field here stays editable same as everything else in the form.
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    const stored = localStorage.getItem('user')
+    if (!token || !stored) return
+    const { id } = JSON.parse(stored)
+    fetch(`https://linguaxchange-backend-production.up.railway.app/api/users/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(r => r.json())
+      .then(data => {
+        // A request-answer link (above) already specifies its own
+        // max_students for that specific ask — that beats the teacher's
+        // general-purpose default.
+        const params = new URLSearchParams(window.location.search)
+        setForm(f => ({
+          ...f,
+          duration_minutes: data.default_class_duration_minutes || f.duration_minutes,
+          max_students: (!params.get('max_students') && data.default_max_students) || f.max_students
+        }))
+      })
+      .catch(() => {})
+  }, [])
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
