@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import Navbar from '../../../components/Navbar'
-import { formatInTimezone, asUtcDate } from '../../../lib/timezone'
+import { formatInTimezone } from '../../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -131,19 +131,12 @@ export default function ClassDetail() {
     </main>
   )
 
-  // Mirrors the backend's own edit rule (utils/classCancellation.js
-  // hasFutureSession): once every session is past or cancelled, the class is
-  // frozen. Without this the editor would render for a past class and every
-  // save would bounce off a 400.
-  //
-  // asUtcDate, not new Date(): session_date comes back without a Z suffix,
-  // which JS would otherwise parse as local time and shift an upcoming
-  // session into the past (or vice versa) by the viewer's UTC offset.
-  const hasFutureSession = (cls.class_sessions || []).some(
-    s => s.status === 'scheduled' && asUtcDate(s.session_date) > new Date()
-  )
+  // Materials stay editable after the class has happened — a recap or
+  // homework handed out afterwards is normal teaching. Only a cancelled
+  // class closes the door, which the backend enforces; the teacher would
+  // have no route to it here anyway.
   const isTeacher = currentUser?.id === cls.teacher?.id
-  const canEditMaterials = isTeacher && hasFutureSession
+  const canEditMaterials = isTeacher && cls.status !== 'cancelled'
 
   return (
     <main className="min-h-screen bg-cream">
@@ -258,9 +251,6 @@ export default function ClassDetail() {
                   className={`flex items-center gap-2 text-brand-red text-sm font-bold hover:underline ${cls.materials ? 'mt-3' : ''}`}>
                   📄 {t('classDetail.pdfOpen')}
                 </a>
-              )}
-              {isTeacher && !hasFutureSession && (
-                <p className="text-navy/40 text-xs mt-3 border-t border-navy/10 pt-3">{t('classDetail.materialsLocked')}</p>
               )}
             </>
           )}
