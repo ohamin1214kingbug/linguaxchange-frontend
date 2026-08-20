@@ -19,6 +19,7 @@ export default function ClassDetail() {
   const [materials, setMaterials] = useState('')
   const [savingMaterials, setSavingMaterials] = useState(false)
   const [materialsMessage, setMaterialsMessage] = useState('')
+  const [uploadingPdf, setUploadingPdf] = useState(false)
 
   const LANGS = {
     KO: { flag: '🇰🇷', name: t('home.langKorean') },
@@ -70,6 +71,50 @@ export default function ClassDetail() {
       setMaterialsMessage(t('common.connectionError'))
     }
     setSavingMaterials(false)
+  }
+
+  // Sends { pdf: dataUrl } to upload, or { pdf: null } to remove. Same
+  // base64-in-JSON shape the avatar upload uses, so the browser never needs
+  // the Supabase anon key.
+  const sendPdf = async (pdf) => {
+    setUploadingPdf(true)
+    setMaterialsMessage('')
+    try {
+      const res = await fetch(`${API}/api/classes/${id}/materials-pdf`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
+        body: JSON.stringify({ pdf })
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setCls(c => ({ ...c, lesson_plan_url: data.lesson_plan_url }))
+        setMaterialsMessage(t(pdf ? 'classDetail.pdfUploaded' : 'classDetail.pdfRemoved'))
+      } else {
+        setMaterialsMessage(data.error || t('classDetail.pdfUploadFailed'))
+      }
+    } catch (e) {
+      setMaterialsMessage(t('common.connectionError'))
+    }
+    setUploadingPdf(false)
+  }
+
+  const onPickPdf = (e) => {
+    const file = e.target.files?.[0]
+    // Reset the input so picking the same filename twice still fires change.
+    e.target.value = ''
+    if (!file) return
+    if (file.type !== 'application/pdf') {
+      setMaterialsMessage(t('classDetail.pdfOnly'))
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setMaterialsMessage(t('classDetail.pdfTooLarge'))
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => sendPdf(reader.result)
+    reader.onerror = () => setMaterialsMessage(t('classDetail.pdfUploadFailed'))
+    reader.readAsDataURL(file)
   }
 
   if (loading) return (
@@ -174,12 +219,46 @@ export default function ClassDetail() {
                 className="w-full mt-3 bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
                 {savingMaterials ? t('settings.saving') : t('classDetail.saveMaterials')}
               </button>
+
+              <div className="mt-5 border-t border-navy/10 pt-4">
+                <p className="font-display font-bold text-navy text-sm mb-1">{t('classDetail.pdfTitle')}</p>
+                <p className="text-navy/50 text-xs mb-3">{t('classDetail.pdfNote')}</p>
+
+                {cls.lesson_plan_url && (
+                  <a href={cls.lesson_plan_url} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-brand-red text-sm font-bold hover:underline mb-3">
+                    📄 {t('classDetail.pdfOpen')}
+                  </a>
+                )}
+
+                <div className="flex gap-2">
+                  <label className={`flex-1 text-center bg-white text-navy py-2.5 rounded-full font-bold text-sm border-2 border-navy transition-colors ${uploadingPdf ? 'opacity-50' : 'hover:bg-cream cursor-pointer'}`}>
+                    {uploadingPdf
+                      ? t('classDetail.pdfUploading')
+                      : cls.lesson_plan_url ? t('classDetail.pdfReplace') : t('classDetail.pdfUpload')}
+                    <input type="file" accept="application/pdf" onChange={onPickPdf}
+                      disabled={uploadingPdf} className="hidden"/>
+                  </label>
+                  {cls.lesson_plan_url && (
+                    <button onClick={() => sendPdf(null)} disabled={uploadingPdf}
+                      className="px-4 py-2.5 rounded-full font-bold text-sm border-2 border-brand-red/30 bg-brand-red/10 text-brand-red disabled:opacity-50 transition-colors">
+                      {t('classDetail.pdfRemove')}
+                    </button>
+                  )}
+                </div>
+              </div>
             </>
           ) : (
             <>
               {cls.materials
                 ? <p className="text-navy/70 text-sm whitespace-pre-line">{cls.materials}</p>
-                : <p className="text-navy/40 text-sm">{t('classDetail.noMaterials')}</p>}
+                : !cls.lesson_plan_url && <p className="text-navy/40 text-sm">{t('classDetail.noMaterials')}</p>}
+              {cls.lesson_plan_url && (
+                <a href={cls.lesson_plan_url} target="_blank" rel="noopener noreferrer"
+                  className={`flex items-center gap-2 text-brand-red text-sm font-bold hover:underline ${cls.materials ? 'mt-3' : ''}`}>
+                  📄 {t('classDetail.pdfOpen')}
+                </a>
+              )}
               {isTeacher && !hasFutureSession && (
                 <p className="text-navy/40 text-xs mt-3 border-t border-navy/10 pt-3">{t('classDetail.materialsLocked')}</p>
               )}
