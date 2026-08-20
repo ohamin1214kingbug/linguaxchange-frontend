@@ -10,15 +10,18 @@ const userCode = id => 'U' + String(id).padStart(6, '0')
 // widget doesn't get written out twice.
 function CreditControl({ amount, message, onAmountChange, onSubmit }) {
   return (
-    <div className="flex items-center gap-2 mt-3 border-t border-navy/10 pt-3">
-      <input type="number" min="1" value={amount} onChange={onAmountChange}
-        placeholder="Credits" onKeyDown={e => e.key === 'Enter' && onSubmit()}
-        className="w-24 border-2 border-navy/20 rounded-full px-3 py-1.5 text-sm focus:border-brand-red focus:outline-none transition-colors"/>
-      <button onClick={onSubmit}
-        className="bg-brand-yellow/20 text-navy px-4 py-1.5 rounded-full text-sm font-bold border-2 border-navy/20 hover:border-navy transition-colors">
-        💰 Add credit
-      </button>
-      {message && <span className="text-navy/50 text-xs">{message}</span>}
+    <div className="mt-3 border-t border-navy/10 pt-3">
+      <p className="font-display font-bold text-navy text-xs mb-1.5">💰 Add token</p>
+      <div className="flex items-center gap-2">
+        <input type="number" min="1" value={amount} onChange={onAmountChange}
+          placeholder="Amount" onKeyDown={e => e.key === 'Enter' && onSubmit()}
+          className="w-24 border-2 border-navy/20 rounded-full px-3 py-1.5 text-sm focus:border-brand-red focus:outline-none transition-colors"/>
+        <button onClick={onSubmit}
+          className="bg-brand-yellow/20 text-navy px-4 py-1.5 rounded-full text-sm font-bold border-2 border-navy/20 hover:border-navy transition-colors">
+          Add
+        </button>
+        {message && <span className="text-navy/50 text-xs">{message}</span>}
+      </div>
     </div>
   )
 }
