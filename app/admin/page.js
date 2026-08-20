@@ -6,10 +6,29 @@ import { useRouter } from 'next/navigation'
 // just a friendlier alphabet-led format for admins to reference in reports.
 const userCode = id => 'U' + String(id).padStart(6, '0')
 
+// Shared by both the pending and approved user cards below, so the same
+// widget doesn't get written out twice.
+function CreditControl({ amount, message, onAmountChange, onSubmit }) {
+  return (
+    <div className="flex items-center gap-2 mt-3 border-t border-navy/10 pt-3">
+      <input type="number" min="1" value={amount} onChange={onAmountChange}
+        placeholder="Credits" onKeyDown={e => e.key === 'Enter' && onSubmit()}
+        className="w-24 border-2 border-navy/20 rounded-full px-3 py-1.5 text-sm focus:border-brand-red focus:outline-none transition-colors"/>
+      <button onClick={onSubmit}
+        className="bg-brand-yellow/20 text-navy px-4 py-1.5 rounded-full text-sm font-bold border-2 border-navy/20 hover:border-navy transition-colors">
+        💰 Add credit
+      </button>
+      {message && <span className="text-navy/50 text-xs">{message}</span>}
+    </div>
+  )
+}
+
 export default function Admin() {
   const router = useRouter()
   const [tab, setTab] = useState('users')
   const [userSearch, setUserSearch] = useState('')
+  const [creditAmounts, setCreditAmounts] = useState({})
+  const [creditMessages, setCreditMessages] = useState({})
   const [users, setUsers] = useState([])
   const [classes, setClasses] = useState([])
   const [reports, setReports] = useState([])
@@ -83,6 +102,23 @@ export default function Admin() {
       method: 'POST', headers: { Authorization: `Bearer ${token}` }
     })
     fetchUsers()
+  }
+
+  const addCredit = async (id) => {
+    const amount = parseInt(creditAmounts[id])
+    if (!Number.isInteger(amount) || amount <= 0) {
+      setCreditMessages(m => ({ ...m, [id]: 'Enter a positive whole number' }))
+      return
+    }
+    const token = localStorage.getItem('token')
+    const res = await fetch(`${API}/api/admin/users/${id}/credit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ amount })
+    })
+    const data = await res.json()
+    setCreditMessages(m => ({ ...m, [id]: res.ok ? `Balance now ${data.balance}` : (data.error || 'Could not add credit') }))
+    if (res.ok) setCreditAmounts(a => ({ ...a, [id]: '' }))
   }
 
   const approveClass = async (id) => {
@@ -206,6 +242,9 @@ export default function Admin() {
                       </div>
                     </div>
                     {user.bio && <p className="text-navy/60 text-sm mt-3 border-t border-navy/10 pt-3">{user.bio}</p>}
+                    <CreditControl amount={creditAmounts[user.id] || ''} message={creditMessages[user.id]}
+                      onAmountChange={e => setCreditAmounts(a => ({ ...a, [user.id]: e.target.value }))}
+                      onSubmit={() => addCredit(user.id)}/>
                   </div>
                 ))}
               </>
@@ -228,6 +267,9 @@ export default function Admin() {
                       </div>
                       <span className="bg-brand-teal/10 text-brand-teal px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-teal/30">Approved</span>
                     </div>
+                    <CreditControl amount={creditAmounts[user.id] || ''} message={creditMessages[user.id]}
+                      onAmountChange={e => setCreditAmounts(a => ({ ...a, [user.id]: e.target.value }))}
+                      onSubmit={() => addCredit(user.id)}/>
                   </div>
                 ))}
               </>
