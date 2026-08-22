@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import Navbar from '../../../components/Navbar'
-import { formatInTimezone, asUtcDate } from '../../../lib/timezone'
+import { formatInTimezone } from '../../../lib/timezone'
+import { nextSessionDate, lastSessionDate } from '../../../lib/classSchedule'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -175,23 +176,6 @@ export default function TeacherProfile() {
   const avgRating = reviews.length > 0
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
     : null
-
-  // A session keeps status 'scheduled' after it happens, so "upcoming" has
-  // to be decided by the clock, not the status. asUtcDate, not new Date():
-  // session_date arrives without a Z suffix, which JS would read as local
-  // time and shift a class across the boundary by the viewer's UTC offset.
-  const nextSessionDate = cls => {
-    const upcoming = (cls.class_sessions || [])
-      .filter(s => s.status === 'scheduled' && asUtcDate(s.session_date) > new Date())
-      .map(s => asUtcDate(s.session_date))
-    return upcoming.length ? new Date(Math.min(...upcoming)) : null
-  }
-  const lastSessionDate = cls => {
-    const past = (cls.class_sessions || [])
-      .filter(s => s.status !== 'cancelled')
-      .map(s => asUtcDate(s.session_date))
-    return past.length ? new Date(Math.max(...past)) : null
-  }
 
   const upcomingClasses = classes.filter(c => nextSessionDate(c))
   const pastClasses = classes

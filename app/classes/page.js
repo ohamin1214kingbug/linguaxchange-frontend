@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
 import ClassRequests from '../../components/ClassRequests'
-import { formatInTimezone, asUtcDate } from '../../lib/timezone'
+import { formatInTimezone } from '../../lib/timezone'
+import { hasUpcomingSession } from '../../lib/classSchedule'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -68,11 +69,13 @@ export default function Classes() {
       fetch(`${API}/api/classes?${params.toString()}`)
         .then(res => res.json())
         .then(data => {
-          const now = new Date()
-          const upcoming = (Array.isArray(data) ? data : []).filter(cls =>
-            (cls.class_sessions || []).some(s => s.status === 'scheduled' && asUtcDate(s.session_date) > now)
-          )
-          setClasses(upcoming)
+          // The API deliberately returns finished classes too (they're still
+          // valid search hits) — browse is the surface that drops them.
+          //
+          // Wrapped, not passed by reference: .filter hands the callback the
+          // index as its second argument, which would land in `now` and make
+          // every date compare greater than 0.
+          setClasses((Array.isArray(data) ? data : []).filter(cls => hasUpcomingSession(cls)))
           setLoading(false)
         })
     }, 300)
