@@ -76,6 +76,8 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
         setShowForm(false)
         setPosted(true)
         setForm({ language_code: '', level: '', topic: '', details: '', max_students: DEFAULT_CLASS_SIZE, preferred_time: '', time_flexible: true })
+        // Posting spends a credit, so the navbar counter is now stale.
+        window.dispatchEvent(new Event('credits-changed'))
         load()
       }
     } catch (e) {
@@ -99,7 +101,11 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
     if (!window.confirm(t('requests.confirmWithdraw'))) return
     setBusy(req.id)
     const res = await authed(`/api/class-requests/${req.id}`, { method: 'DELETE' })
-    if (res) load()
+    if (res) {
+      // Withdrawing an unanswered request hands the credit back.
+      window.dispatchEvent(new Event('credits-changed'))
+      load()
+    }
     setBusy(null)
   }
 
@@ -196,6 +202,8 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
               className="mt-0.5 w-4 h-4 accent-brand-red"/>
             <span className="text-sm text-navy font-medium">{t('requests.flexibleLabel')}</span>
           </label>
+
+          <p className="text-navy/50 text-xs">{t('requests.costNote')}</p>
 
           <button onClick={submit} disabled={busy === 'form'}
             className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
