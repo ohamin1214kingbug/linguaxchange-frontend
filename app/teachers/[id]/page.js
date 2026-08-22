@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import Navbar from '../../../components/Navbar'
-import { formatInTimezone } from '../../../lib/timezone'
+import { formatInTimezone, asUtcDate } from '../../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -176,6 +176,47 @@ export default function TeacherProfile() {
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
     : null
 
+  // A session keeps status 'scheduled' after it happens, so "upcoming" has
+  // to be decided by the clock, not the status. asUtcDate, not new Date():
+  // session_date arrives without a Z suffix, which JS would read as local
+  // time and shift a class across the boundary by the viewer's UTC offset.
+  const nextSessionDate = cls => {
+    const upcoming = (cls.class_sessions || [])
+      .filter(s => s.status === 'scheduled' && asUtcDate(s.session_date) > new Date())
+      .map(s => asUtcDate(s.session_date))
+    return upcoming.length ? new Date(Math.min(...upcoming)) : null
+  }
+  const lastSessionDate = cls => {
+    const past = (cls.class_sessions || [])
+      .filter(s => s.status !== 'cancelled')
+      .map(s => asUtcDate(s.session_date))
+    return past.length ? new Date(Math.max(...past)) : null
+  }
+
+  const upcomingClasses = classes.filter(c => nextSessionDate(c))
+  const pastClasses = classes
+    .filter(c => !nextSessionDate(c))
+    .sort((a, b) => (lastSessionDate(b) || 0) - (lastSessionDate(a) || 0))
+
+  // Plain function, not a nested component: a component declared inside
+  // another gets a fresh identity every render and remounts its subtree.
+  const classSummary = (cls, date, muted) => (
+    <div>
+      <div className="flex items-center gap-2 mb-1">
+        <span>{LANGS[cls.language_code]?.flag}</span>
+        <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{cls.level}</span>
+        <span className="text-navy/40 text-xs">{cls.duration_minutes} {t('classes.min')}</span>
+      </div>
+      <p className="font-bold text-navy text-sm">{cls.title}</p>
+      {cls.description && <p className="text-navy/40 text-xs mt-0.5">{cls.description}</p>}
+      {date && (
+        <p className={`text-xs font-bold mt-1 ${muted ? 'text-navy/40' : 'text-brand-red'}`}>
+          🗓️ {formatInTimezone(date.toISOString(), viewerTimezone, viewerTimeFormat)}
+        </p>
+      )}
+    </div>
+  )
+
   if (loading) return (
     <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">{t('common.loading')}</div>
   )
@@ -266,7 +307,7 @@ export default function TeacherProfile() {
         </div>
 
         {/* Upcoming classes */}
-        {classes.length > 0 && (
+        {upcomingClasses.length > 0 && (
           <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
             <h2 className="font-display font-bold text-navy mb-4">{t('teacher.upcomingClasses')}</h2>
 
@@ -277,27 +318,29 @@ export default function TeacherProfile() {
             )}
 
             <div className="space-y-3">
-              {classes.map(cls => (
+              {upcomingClasses.map(cls => (
                 <div key={cls.id} className="flex items-center justify-between py-3 border-b border-navy/10 last:border-0">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span>{LANGS[cls.language_code]?.flag}</span>
-                      <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{cls.level}</span>
-                      <span className="text-navy/40 text-xs">{cls.duration_minutes} {t('classes.min')}</span>
-                    </div>
-                    <p className="font-bold text-navy text-sm">{cls.title}</p>
-                    {cls.description && <p className="text-navy/40 text-xs mt-0.5">{cls.description}</p>}
-                    {cls.class_sessions?.[0]?.session_date && (
-                      <p className="text-brand-red text-xs font-bold mt-1">
-                        🗓️ {formatInTimezone(cls.class_sessions[0].session_date, viewerTimezone, viewerTimeFormat)}
-                      </p>
-                    )}
-                  </div>
+                  {classSummary(cls, nextSessionDate(cls))}
                   <button onClick={() => joinClass(cls)}
                     disabled={joining === cls.id}
                     className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors flex-shrink-0 ml-4">
                     {joining === cls.id ? t('classes.joining') : t('teacher.join')}
                   </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Already taught — no Join button; these can't be joined any more. */}
+        {pastClasses.length > 0 && (
+          <div className="bg-white rounded-2xl p-6 border-2 border-navy/15 mb-6">
+            <h2 className="font-display font-bold text-navy mb-1">{t('teacher.pastClasses')}</h2>
+            <p className="text-navy/50 text-xs mb-4">{t('teacher.pastClassesNote')}</p>
+            <div className="space-y-3">
+              {pastClasses.map(cls => (
+                <div key={cls.id} className="py-3 border-b border-navy/10 last:border-0 opacity-70">
+                  {classSummary(cls, lastSessionDate(cls), true)}
                 </div>
               ))}
             </div>
