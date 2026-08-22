@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import { detectTimezone } from '../../lib/timezone'
 import Navbar from '../../components/Navbar'
+import { CLASS_SIZE_OPTIONS } from '../../lib/classSize'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -26,7 +27,7 @@ const card = 'bg-white rounded-2xl p-6 border-2 border-navy mb-6'
 // Same options as the create-class form (app/classes/create/page.js) — a
 // saved default has to offer exactly what that form can accept.
 const DURATIONS = [30, 45, 60, 90]
-const MAX_STUDENTS_OPTIONS = [3, 4, 5, 6, 7, 8, 9, 10]
+const MAX_STUDENTS_OPTIONS = CLASS_SIZE_OPTIONS
 
 export default function SettingsPage() {
   const router = useRouter()

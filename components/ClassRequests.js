@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import DateTimePicker from './DateTimePicker'
 import { formatInTimezone, asUtcDate } from '../lib/timezone'
+import { CLASS_SIZE_OPTIONS, DEFAULT_CLASS_SIZE } from '../lib/classSize'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
@@ -27,7 +28,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
   const [posted, setPosted] = useState(false)
   const [form, setForm] = useState({
     language_code: '', level: '', topic: '', details: '',
-    max_students: 4, preferred_time: '', time_flexible: true
+    max_students: DEFAULT_CLASS_SIZE, preferred_time: '', time_flexible: true
   })
 
   const load = () => {
@@ -74,7 +75,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
       else {
         setShowForm(false)
         setPosted(true)
-        setForm({ language_code: '', level: '', topic: '', details: '', max_students: 4, preferred_time: '', time_flexible: true })
+        setForm({ language_code: '', level: '', topic: '', details: '', max_students: DEFAULT_CLASS_SIZE, preferred_time: '', time_flexible: true })
         load()
       }
     } catch (e) {
@@ -178,7 +179,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
             <div>
               <label className={label}>{t('requests.sizeLabel')}</label>
               <select value={form.max_students} onChange={e => setForm({ ...form, max_students: parseInt(e.target.value) })} className={field}>
-                {[1, 2, 3, 4, 6, 8, 10, 15, 20].map(n => (
+                {CLASS_SIZE_OPTIONS.map(n => (
                   <option key={n} value={n}>{t('classes.studentsCount', { n })}</option>
                 ))}
               </select>

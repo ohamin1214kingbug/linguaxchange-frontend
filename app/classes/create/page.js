@@ -5,6 +5,7 @@ import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import Navbar from '../../../components/Navbar'
 import DateTimePicker, { toLocalValue } from '../../../components/DateTimePicker'
 import { asUtcDate } from '../../../lib/timezone'
+import { CLASS_SIZE_OPTIONS, DEFAULT_CLASS_SIZE } from '../../../lib/classSize'
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
@@ -26,7 +27,7 @@ export default function CreateClass() {
     format: 'one-time',
     recurrence_type: '',
     recurrence_end_date: '',
-    max_students: 6,
+    max_students: DEFAULT_CLASS_SIZE,
     duration_minutes: 60,
     materials: '',
     scheduled_at: '',
@@ -275,7 +276,7 @@ export default function CreateClass() {
               <label className="block text-sm font-bold text-navy mb-1">{t('classes.maxStudentsLabel')}</label>
               <select name="max_students" onChange={handleChange} value={form.max_students}
                 className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors">
-                {[3,4,5,6,7,8,9,10].map(n => (
+                {CLASS_SIZE_OPTIONS.map(n => (
                   <option key={n} value={n}>{t('classes.studentsCount', { n })}</option>
                 ))}
               </select>
