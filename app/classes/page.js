@@ -5,6 +5,7 @@ import Navbar from '../../components/Navbar'
 import ClassRequests from '../../components/ClassRequests'
 import { formatInTimezone } from '../../lib/timezone'
 import { hasUpcomingSession } from '../../lib/classSchedule'
+import { fetchJoinedClassIds } from '../../lib/enrollments'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -40,21 +41,9 @@ export default function Classes() {
     if (stored && token) {
       const u = JSON.parse(stored)
       setCurrentUser(u)
-      fetchJoinedClassIds(token)
+      fetchJoinedClassIds(token).then(setJoinedClassIds)
     }
   }, [])
-
-  const fetchJoinedClassIds = (token) => {
-    fetch(`${API}/api/enrollments`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json())
-      .then(data => {
-        const ids = (Array.isArray(data) ? data : [])
-          .filter(e => e.status === 'confirmed')
-          .map(e => e.class_sessions?.classes?.id)
-          .filter(Boolean)
-        setJoinedClassIds(new Set(ids))
-      })
-  }
 
   // Debounced so typing in the search box doesn't fire a request per keystroke.
   useEffect(() => {
@@ -108,7 +97,7 @@ export default function Classes() {
         setMessage('classes.successfullyJoined')
         setMessageOk(true)
         window.dispatchEvent(new Event('credits-changed'))
-        fetchJoinedClassIds(token)
+        fetchJoinedClassIds(token).then(setJoinedClassIds)
       }
     } catch (e) {
       setMessage('common.connectionError')

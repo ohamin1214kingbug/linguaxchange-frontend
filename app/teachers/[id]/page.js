@@ -5,6 +5,7 @@ import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import Navbar from '../../../components/Navbar'
 import { formatInTimezone } from '../../../lib/timezone'
 import { nextSessionDate, lastSessionDate } from '../../../lib/classSchedule'
+import { fetchJoinedClassIds } from '../../../lib/enrollments'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -56,6 +57,8 @@ export default function TeacherProfile() {
   const [reportSent, setReportSent] = useState(false)
   const [saved, setSaved] = useState(false)
   const [savingTeacher, setSavingTeacher] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
+  const [joinedClassIds, setJoinedClassIds] = useState(new Set())
 
   const LANGS = {
     KO: { flag: '🇰🇷', name: t('home.langKorean') },
@@ -74,11 +77,13 @@ export default function TeacherProfile() {
       const viewer = JSON.parse(stored)
       setViewerTimezone(viewer.timezone)
       setViewerTimeFormat(viewer.time_format)
+      setCurrentUser(viewer)
     }
     if (!stored || !token) return
     fetch(`${API}/api/saved-teachers`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())
       .then(list => setSaved(Array.isArray(list) && list.some(t => String(t.id) === String(id))))
+    fetchJoinedClassIds(token).then(setJoinedClassIds)
   }, [id])
 
   useEffect(() => {
@@ -102,6 +107,9 @@ export default function TeacherProfile() {
       window.location.href = '/auth/login'
       return
     }
+    // Joining spends a credit, so it gets the same confirmation browse
+    // already asks for — this page was taking the credit on a single click.
+    if (!window.confirm(t('classes.confirmJoin'))) return
     setJoining(cls.id)
     setMessage('')
     try {
@@ -117,6 +125,10 @@ export default function TeacherProfile() {
       if (res.ok) {
         setMessage('classes.successfullyJoined')
         setMessageOk(true)
+        // Navbar reads the balance from its own fetch — without this the
+        // credit badge sits stale until the next navigation.
+        window.dispatchEvent(new Event('credits-changed'))
+        fetchJoinedClassIds(token).then(setJoinedClassIds)
       } else {
         setMessage(data.error || 'classes.errorJoinClass')
         setMessageOk(false)
@@ -305,11 +317,25 @@ export default function TeacherProfile() {
               {upcomingClasses.map(cls => (
                 <div key={cls.id} className="flex items-center justify-between py-3 border-b border-navy/10 last:border-0">
                   {classSummary(cls, nextSessionDate(cls))}
-                  <button onClick={() => joinClass(cls)}
-                    disabled={joining === cls.id}
-                    className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors flex-shrink-0 ml-4">
-                    {joining === cls.id ? t('classes.joining') : t('teacher.join')}
-                  </button>
+                  {/* Same three states browse shows. Offering Join on a class
+                      you already joined (or teach yourself) only ever earned
+                      a rejection from POST /api/enrollments. */}
+                  {String(cls.teacher_id) === String(currentUser?.id) ? (
+                    <a href={`/classes/${cls.id}`}
+                      className="bg-navy/5 text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-navy/10 transition-colors flex-shrink-0 ml-4 whitespace-nowrap">
+                      {t('classes.yourClass')}
+                    </a>
+                  ) : joinedClassIds.has(cls.id) ? (
+                    <span className="bg-brand-teal/10 text-brand-teal px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-teal/30 flex-shrink-0 ml-4 whitespace-nowrap">
+                      {t('classes.joined')}
+                    </span>
+                  ) : (
+                    <button onClick={() => joinClass(cls)}
+                      disabled={joining === cls.id}
+                      className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors flex-shrink-0 ml-4">
+                      {joining === cls.id ? t('classes.joining') : t('teacher.join')}
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
