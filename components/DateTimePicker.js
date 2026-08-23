@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { isSameDay, startOfDay, buildCalendarGrid } from '../lib/calendarGrid'
 
 const SLOT_INTERVAL_MINUTES = 30
 
@@ -12,29 +13,6 @@ function pad(n) {
 // parent form's `new Date(value).toISOString()` submit logic needs no change.
 export function toLocalValue(date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
-}
-
-function isSameDay(a, b) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
-}
-
-function startOfDay(date) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
-}
-
-// 6x7 grid covering the full weeks touching this month, Monday-first.
-function buildCalendarGrid(viewDate) {
-  const year = viewDate.getFullYear()
-  const month = viewDate.getMonth()
-  const firstOfMonth = new Date(year, month, 1)
-  // getDay(): 0=Sun..6=Sat -> convert to Monday-first offset (0=Mon..6=Sun)
-  const leadingBlanks = (firstOfMonth.getDay() + 6) % 7
-  const gridStart = new Date(year, month, 1 - leadingBlanks)
-
-  return Array.from({ length: 42 }, (_, i) => {
-    const d = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + i)
-    return { date: d, inCurrentMonth: d.getMonth() === month }
-  })
 }
 
 function buildTimeSlots(selectedDate, now) {

@@ -3,19 +3,12 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
-import { formatInTimezone, asUtcDate } from '../../lib/timezone'
+import { formatInTimezone } from '../../lib/timezone'
+import { hasFinished } from '../../lib/classSchedule'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
 const FLAGS = { KO: '🇰🇷', ES: '🇪🇸', DE: '🇩🇪', EN: '🇬🇧', PT: '🇧🇷', FR: '🇫🇷', IT: '🇮🇹' }
-
-// A session belongs in the history once it has finished, not merely started —
-// otherwise a class you're sitting in right now would jump to the archive.
-function hasFinished(sessionDate, durationMinutes) {
-  if (!sessionDate) return false
-  const end = asUtcDate(sessionDate).getTime() + (durationMinutes || 60) * 60 * 1000
-  return Date.now() > end
-}
 
 // Column names on student_feedback, in display order. The label for each
 // comes from i18n so this list stays the single source of truth.

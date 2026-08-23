@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import LanguageSwitcher from './LanguageSwitcher'
+import StreakCalendar from './StreakCalendar'
 import { logout } from '../lib/auth'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
@@ -104,12 +105,7 @@ export default function Navbar() {
 
         {user && (
           <>
-            {!!streak && (
-              <a href="/history" title={t('nav.viewStudyHistory')}
-                className="hidden sm:inline-block bg-brand-red/10 text-brand-red px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-red/30 hover:bg-brand-red/20 transition-colors">
-                {t('dashboard.weekStreak', { n: streak })}
-              </a>
-            )}
+            {!!streak && <StreakCalendar userId={user.id} streakCount={streak} />}
             {credits !== null && (
               <div className="relative">
                 <button onClick={() => setShowCreditsTip(o => !o)}
