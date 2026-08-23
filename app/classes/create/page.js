@@ -257,9 +257,13 @@ export default function CreateClass() {
 
           <div>
             <label className="block text-sm font-bold text-navy mb-1">{t('classes.classTitle')}</label>
-            <input name="title" type="text" onChange={handleChange} value={form.title}
-              className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors"
-              placeholder={t('classes.classTitlePlaceholder')}/>
+            {requestId ? (
+              <p className="w-full border-2 border-navy/10 bg-cream rounded-xl px-4 py-2.5 text-navy">{form.title}</p>
+            ) : (
+              <input name="title" type="text" onChange={handleChange} value={form.title}
+                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors"
+                placeholder={t('classes.classTitlePlaceholder')}/>
+            )}
           </div>
 
           <div>
@@ -301,6 +305,7 @@ export default function CreateClass() {
             )}
           </div>
 
+          {!requestId && (
           <div>
             <label className="block text-sm font-bold text-navy mb-1">{t('classes.format')}</label>
             <div className="flex gap-3">
@@ -320,6 +325,7 @@ export default function CreateClass() {
               </button>
             </div>
           </div>
+          )}
 
           {form.format === 'recurring' && (
             <div className="space-y-4">
