@@ -222,7 +222,8 @@ export default function SettingsPage() {
     <main className="min-h-screen bg-cream">
       <Navbar />
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
-        <h1 className="font-display font-extrabold text-3xl text-navy mb-6">{t('settings.title')}</h1>
+        <h1 className="font-display font-extrabold text-3xl text-navy mb-1">{t('settings.title')}</h1>
+        <p className="text-navy/50 text-sm mb-6">{t('settings.signedInAs', { email: user.email })}</p>
 
         <div className="flex gap-2 mb-8 overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
           {[
