@@ -7,6 +7,18 @@ import { formatInTimezone, asUtcDate } from '../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
+// Was computed inline, separately, in both the enrolled-classes list and the
+// teaching-classes list. A third caller (the live-class banner below) is
+// what made copying it a third time worth stopping to share instead.
+function sessionTiming(session, durationMinutes, now = new Date()) {
+  const scheduledAt = session?.session_date ? asUtcDate(session.session_date) : null
+  const durationMs = (durationMinutes || 60) * 60 * 1000
+  const classEndTime = scheduledAt ? new Date(scheduledAt.getTime() + durationMs) : null
+  const isClassOver = classEndTime ? now > classEndTime : true
+  const isLive = scheduledAt && !isClassOver && now >= scheduledAt
+  return { scheduledAt, isClassOver, isLive }
+}
+
 function RatingForm({ classSessionId }) {
   const { t } = useLanguage()
   const [rating, setRating] = useState(0)
@@ -234,6 +246,18 @@ export default function Dashboard() {
     setConfirming(null)
   }
 
+  // Whichever class — teaching or attending — is live right now, if any.
+  // Teaching checked first: if a teacher is also enrolled as a student
+  // somewhere (unusual, but not prevented), the class they're expected to
+  // run is the more urgent one to surface.
+  const liveTeaching = teachingClasses.find(cls => sessionTiming(cls.class_sessions?.[0], cls.duration_minutes).isLive)
+  const liveEnrollment = enrollments.find(e => sessionTiming(e.class_sessions, e.class_sessions?.classes?.duration_minutes).isLive)
+  const live = liveTeaching
+    ? { role: 'teaching', title: liveTeaching.title, sessionId: liveTeaching.class_sessions?.[0]?.id }
+    : liveEnrollment
+      ? { role: 'attending', title: liveEnrollment.class_sessions?.classes?.title, sessionId: liveEnrollment.class_session_id }
+      : null
+
   if (!user) return (
     <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">{t('common.loading')}</div>
   )
@@ -247,6 +271,27 @@ export default function Dashboard() {
           {t('dashboard.welcomeBack', { name: user.first_name })}
         </h1>
         <p className="text-navy/60 mb-8">{t('dashboard.accountOverview')}</p>
+
+        {/* Unmissable on purpose — a class in progress is time-sensitive in
+            a way nothing else on this page is, so it sits above every other
+            card rather than waiting inside the list further down. */}
+        {live && (
+          <a href={`/classroom/${live.sessionId}`}
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 bg-red-600 text-white rounded-2xl px-6 py-5 border-2 border-navy animate-pulse shadow-[0_0_24px_6px_rgba(220,38,38,0.5)] hover:bg-red-700 transition-colors">
+            <div>
+              <p className="flex items-center gap-2 font-extrabold text-sm tracking-wide uppercase mb-1">
+                <span className="w-2.5 h-2.5 bg-white rounded-full" /> {t('dashboard.liveNow')}
+              </p>
+              <p className="font-display font-bold text-xl">{live.title}</p>
+              <p className="text-white/80 text-sm">
+                {live.role === 'teaching' ? t('dashboard.liveBannerTeaching') : t('dashboard.liveBannerAttending')}
+              </p>
+            </div>
+            <span className="flex-shrink-0 bg-white text-red-600 font-extrabold px-6 py-3 rounded-full text-center">
+              {live.role === 'teaching' ? t('dashboard.startClass') : t('dashboard.joinMeeting')}
+            </span>
+          </a>
+        )}
 
         {message && (
           <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${
@@ -279,11 +324,7 @@ export default function Dashboard() {
               {enrollments.map(enrollment => {
                 const session = enrollment.class_sessions
                 const cls = session?.classes
-                const scheduledAt = session?.session_date ? asUtcDate(session.session_date) : null
-                const durationMs = (cls?.duration_minutes || 60) * 60 * 1000
-                const classEndTime = scheduledAt ? new Date(scheduledAt.getTime() + durationMs) : null
-                const isClassOver = classEndTime ? new Date() > classEndTime : true
-                const isLive = scheduledAt && !isClassOver && new Date() >= scheduledAt
+                const { scheduledAt, isClassOver, isLive } = sessionTiming(session, cls?.duration_minutes)
 
                 return (
                   <div key={enrollment.id} className="py-4 border-b border-navy/10 last:border-0">
@@ -361,11 +402,7 @@ export default function Dashboard() {
             <div className="space-y-1">
               {teachingClasses.map(cls => {
                 const session = cls.class_sessions?.[0]
-                const scheduledAt = session?.session_date ? asUtcDate(session.session_date) : null
-                const durationMs = (cls.duration_minutes || 60) * 60 * 1000
-                const classEndTime = scheduledAt ? new Date(scheduledAt.getTime() + durationMs) : null
-                const isClassOver = classEndTime ? new Date() > classEndTime : true
-                const isLive = scheduledAt && !isClassOver && new Date() >= scheduledAt
+                const { scheduledAt, isClassOver, isLive } = sessionTiming(session, cls.duration_minutes)
 
                 return (
                   <div key={cls.id} className="py-4 border-b border-navy/10 last:border-0">
