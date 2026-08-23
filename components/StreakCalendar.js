@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useLanguage } from '../lib/i18n/LanguageContext'
-import { isSameDay, buildCalendarGrid } from '../lib/calendarGrid'
+import { isSameDay, startOfDay, buildCalendarGrid } from '../lib/calendarGrid'
 import { asUtcDate } from '../lib/timezone'
 import { hasFinished } from '../lib/classSchedule'
 
@@ -79,6 +79,16 @@ export default function StreakCalendar({ userId, streakCount }) {
 
   const countedThisWeek = activityDates.some(d => weekStartUTC(d) === weekStartUTC(now))
 
+  // Mon-first current week, local calendar days — same day-boundary
+  // convention as the month grid below, so a day lit up here is lit up
+  // there too.
+  const today = startOfDay(now)
+  const mondayOffset = (now.getDay() + 6) % 7
+  const thisWeek = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - mondayOffset + i)
+    return { date: d, active: activityDates.some(a => isSameDay(a, d)), isToday: isSameDay(d, now) }
+  })
+
   return (
     <div className="relative">
       <button onClick={toggle}
@@ -97,6 +107,19 @@ export default function StreakCalendar({ userId, streakCount }) {
               <p className="text-navy/60 text-xs mt-0.5">
                 {countedThisWeek ? t('nav.streakCountedThisWeek') : t('nav.streakKeepGoing')}
               </p>
+              <div className="flex justify-between mt-3">
+                {thisWeek.map(({ date, active, isToday }, i) => (
+                  <div key={i} className="flex flex-col items-center gap-1">
+                    <span className="text-[10px] font-bold text-navy/40">{weekdayLabels[i]}</span>
+                    <div className={`h-6 w-6 rounded-full flex items-center justify-center text-[11px] ${
+                      active ? 'bg-brand-red text-white font-bold'
+                      : isToday ? 'border-2 border-brand-red/50 text-navy font-bold'
+                      : 'bg-navy/5 text-navy/30'}`}>
+                      {active ? '🔥' : date.getDate()}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="p-4">
