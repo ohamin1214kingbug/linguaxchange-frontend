@@ -193,6 +193,20 @@ export default function CreateClass() {
 
         <div className="bg-white rounded-2xl p-6 border-2 border-navy space-y-6">
 
+          {requestId ? (
+            // Language, level, and class size are what the student actually
+            // asked for — changing them here would fulfill their request
+            // with a different class than the one they signed up for
+            // (routes/classRequests.js's /fulfill has no check that catches
+            // that mismatch, so the only guard is not offering the option).
+            <div className="bg-cream rounded-xl px-4 py-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
+              <span className="text-navy/50">{t('classes.answeringRequest')}</span>
+              <span className="font-bold text-navy">
+                {LANGUAGES.find(l => l.code === form.language_code)?.flag} {LANGUAGES.find(l => l.code === form.language_code)?.name} · {form.level} · {t('classes.studentsCount', { n: form.max_students })}
+              </span>
+            </div>
+          ) : (
+          <>
           <div>
             <label className="block text-sm font-bold text-navy mb-3">{t('classes.languageTeach')}</label>
             <div className="grid grid-cols-5 gap-2">
@@ -223,6 +237,8 @@ export default function CreateClass() {
               ))}
             </div>
           </div>
+          </>
+          )}
 
           <div>
             <label className="block text-sm font-bold text-navy mb-3">{t('classes.topic')}</label>
@@ -261,7 +277,7 @@ export default function CreateClass() {
             {dateTimeError && <p className="text-brand-red text-sm font-medium mt-1.5">{t(dateTimeError)}</p>}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className={requestId ? '' : 'grid grid-cols-2 gap-4'}>
             <div>
               <label className="block text-sm font-bold text-navy mb-1">{t('classes.duration')}</label>
               <select name="duration_minutes" onChange={handleChange} value={form.duration_minutes}
@@ -272,6 +288,7 @@ export default function CreateClass() {
                 <option value={90}>{t('classes.minutes90')}</option>
               </select>
             </div>
+            {!requestId && (
             <div>
               <label className="block text-sm font-bold text-navy mb-1">{t('classes.maxStudentsLabel')}</label>
               <select name="max_students" onChange={handleChange} value={form.max_students}
@@ -281,6 +298,7 @@ export default function CreateClass() {
                 ))}
               </select>
             </div>
+            )}
           </div>
 
           <div>
