@@ -105,9 +105,10 @@ export default function Navbar() {
         {user && (
           <>
             {!!streak && (
-              <span className="hidden sm:inline-block bg-brand-red/10 text-brand-red px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-red/30">
+              <a href="/history" title={t('nav.viewStudyHistory')}
+                className="hidden sm:inline-block bg-brand-red/10 text-brand-red px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-red/30 hover:bg-brand-red/20 transition-colors">
                 {t('dashboard.weekStreak', { n: streak })}
-              </span>
+              </a>
             )}
             {credits !== null && (
               <div className="relative">
