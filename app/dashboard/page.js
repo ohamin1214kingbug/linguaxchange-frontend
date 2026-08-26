@@ -19,16 +19,32 @@ function sessionTiming(session, durationMinutes, now = new Date()) {
   return { scheduledAt, isClassOver, isLive }
 }
 
-function RatingForm({ classSessionId }) {
+function Stars({ rating }) {
+  return (
+    <span className="text-lg leading-none">
+      {[1,2,3,4,5].map(i => (
+        <span key={i} className={rating >= i ? 'text-brand-yellow' : 'text-navy/20'}>★</span>
+      ))}
+    </span>
+  )
+}
+
+// `existingReview` comes from GET /api/reviews/mine, not from local state:
+// success used to live only in this component, so a reload brought the empty
+// form back and made a saved review look like it never went through.
+function RatingForm({ classSessionId, existingReview, onReviewed }) {
   const { t } = useLanguage()
   const [rating, setRating] = useState(0)
   const [comment, setComment] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   const submitRating = async () => {
+    setError('')
+    setSaving(true)
     try {
       const token = localStorage.getItem('token')
-      await fetch(`${API}/api/reviews`, {
+      const res = await fetch(`${API}/api/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,16 +56,24 @@ function RatingForm({ classSessionId }) {
           comment
         })
       })
-      setSubmitted(true)
+      const data = await res.json().catch(() => ({}))
+      // Was unconditional: every rejection (already reviewed, didn't attend,
+      // expired token) still rendered "Review submitted!" and dropped what
+      // the student had written.
+      if (!res.ok) setError(data.error || 'dashboard.reviewFailed')
+      else onReviewed({ class_session_id: classSessionId, rating, comment })
     } catch (e) {
-      console.error(e)
+      setError('common.connectionError')
     }
+    setSaving(false)
   }
 
-  if (submitted) return (
-    <p className="text-brand-teal text-sm mt-2 bg-brand-teal/10 px-3 py-2 rounded-xl font-medium">
-      {t('dashboard.reviewSubmitted')}
-    </p>
+  if (existingReview) return (
+    <div className="mt-3 flex items-center gap-2 text-sm">
+      <span className="text-brand-teal font-bold">{t('dashboard.reviewSubmitted')}</span>
+      <Stars rating={existingReview.rating} />
+      {existingReview.comment && <span className="text-navy/50 italic truncate">"{existingReview.comment}"</span>}
+    </div>
   )
 
   return (
@@ -57,7 +81,7 @@ function RatingForm({ classSessionId }) {
       <p className="text-sm font-bold text-navy mb-2">{t('dashboard.rateThisClass')}</p>
       <div className="flex gap-1 mb-3">
         {[1,2,3,4,5].map(star => (
-          <button key={star} onClick={() => setRating(star)}
+          <button key={star} type="button" onClick={() => setRating(star)}
             className={`text-2xl transition-colors ${rating >= star ? 'text-brand-yellow' : 'text-navy/20'}`}>
             ★
           </button>
@@ -69,9 +93,10 @@ function RatingForm({ classSessionId }) {
         rows={2}
         placeholder={t('dashboard.writeReviewPlaceholder')}
         className="w-full border-2 border-navy/20 rounded-xl px-3 py-2 text-sm resize-none mb-2 focus:border-brand-red focus:outline-none transition-colors"/>
-      <button onClick={submitRating} disabled={rating === 0}
+      {error && <p className="text-brand-red text-xs font-medium mb-2">{t(error)}</p>}
+      <button onClick={submitRating} disabled={rating === 0 || saving}
         className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy disabled:opacity-40 disabled:border-navy/20">
-        {t('dashboard.submitReview')}
+        {saving ? t('dashboard.submittingReview') : t('dashboard.submitReview')}
       </button>
     </div>
   )
@@ -93,6 +118,7 @@ export default function Dashboard() {
   const [savingEdit, setSavingEdit] = useState(false)
   const [cancellingClassId, setCancellingClassId] = useState(null)
   const [cancellingEnrollmentId, setCancellingEnrollmentId] = useState(null)
+  const [myReviews, setMyReviews] = useState([])
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
@@ -103,6 +129,7 @@ export default function Dashboard() {
     fetchCredits()
     fetchTransactions()
     fetchEnrollments()
+    fetchMyReviews()
     fetchTeachingClasses(parsedUser.id)
   }, [])
 
@@ -124,6 +151,13 @@ export default function Dashboard() {
     fetch(`${API}/api/enrollments`, { headers: authHeaders() })
       .then(res => res.json())
       .then(data => setEnrollments(Array.isArray(data) ? data : []))
+  }
+
+  const fetchMyReviews = () => {
+    fetch(`${API}/api/reviews/mine`, { headers: authHeaders() })
+      .then(res => res.json())
+      .then(data => setMyReviews(Array.isArray(data) ? data : []))
+      .catch(() => {})
   }
 
   const fetchTeachingClasses = (teacherId) => {
@@ -258,6 +292,19 @@ export default function Dashboard() {
       ? { role: 'attending', title: liveEnrollment.class_sessions?.classes?.title, sessionId: liveEnrollment.class_session_id }
       : null
 
+  // Same upcoming/past split the teacher profile and /history already use.
+  // Everything was in one undivided list, so a class from last month sat
+  // between two you still have to show up for.
+  const isEnrollmentOver = (e) => sessionTiming(e.class_sessions, e.class_sessions?.classes?.duration_minutes).isClassOver
+  const upcomingEnrollments = enrollments.filter(e => !isEnrollmentOver(e))
+  const pastEnrollments = enrollments.filter(isEnrollmentOver)
+
+  const isTeachingOver = (c) => sessionTiming(c.class_sessions?.[0], c.duration_minutes).isClassOver
+  const upcomingTeaching = teachingClasses.filter(c => !isTeachingOver(c))
+  const pastTeaching = teachingClasses.filter(isTeachingOver)
+
+  const reviewFor = (sessionId) => myReviews.find(r => r.class_session_id === sessionId)
+
   if (!user) return (
     <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">{t('common.loading')}</div>
   )
@@ -316,12 +363,16 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* My enrolled classes */}
+        {/* My enrolled classes — upcoming first, finished ones below and
+            muted, so what you still have to show up for reads first. */}
         {enrollments.length > 0 && (
           <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
             <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.myClasses')}</h2>
+            {[[upcomingEnrollments, 'teacher.upcomingClasses'], [pastEnrollments, 'dashboard.pastClassesTaken']].map(([group, heading]) => group.length > 0 && (
+            <div key={heading} className="mb-4 last:mb-0">
+            <p className="text-navy/40 text-xs font-bold uppercase tracking-wide mb-1">{t(heading)}</p>
             <div className="space-y-1">
-              {enrollments.map(enrollment => {
+              {group.map(enrollment => {
                 const session = enrollment.class_sessions
                 const cls = session?.classes
                 const { scheduledAt, isClassOver, isLive } = sessionTiming(session, cls?.duration_minutes)
@@ -386,21 +437,28 @@ export default function Dashboard() {
 
                     {/* Rating form - shows after confirming attendance */}
                     {enrollment.status === 'attended' && (
-                      <RatingForm classSessionId={enrollment.class_session_id} />
+                      <RatingForm classSessionId={enrollment.class_session_id}
+                        existingReview={reviewFor(enrollment.class_session_id)}
+                        onReviewed={r => setMyReviews(rs => [...rs, r])} />
                     )}
                   </div>
                 )
               })}
             </div>
+            </div>
+            ))}
           </div>
         )}
 
-        {/* Classes I'm teaching */}
+        {/* Classes I'm teaching — same upcoming/finished split as above. */}
         {teachingClasses.length > 0 && (
           <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
             <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.classesTeaching')}</h2>
+            {[[upcomingTeaching, 'teacher.upcomingClasses'], [pastTeaching, 'teacher.pastClasses']].map(([group, heading]) => group.length > 0 && (
+            <div key={heading} className="mb-4 last:mb-0">
+            <p className="text-navy/40 text-xs font-bold uppercase tracking-wide mb-1">{t(heading)}</p>
             <div className="space-y-1">
-              {teachingClasses.map(cls => {
+              {group.map(cls => {
                 const session = cls.class_sessions?.[0]
                 const { scheduledAt, isClassOver, isLive } = sessionTiming(session, cls.duration_minutes)
 
@@ -470,6 +528,8 @@ export default function Dashboard() {
                 )
               })}
             </div>
+            </div>
+            ))}
           </div>
         )}
 
