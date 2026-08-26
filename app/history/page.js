@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
+import Tabs from '../../components/Tabs'
 import { formatInTimezone } from '../../lib/timezone'
 import { hasFinished } from '../../lib/classSchedule'
 
@@ -291,6 +292,7 @@ export default function History() {
   const [taught, setTaught] = useState([])
   const [feedbackBySession, setFeedbackBySession] = useState({})
   const [loading, setLoading] = useState(true)
+  const [tab, setTab] = useState('taken')
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
@@ -346,6 +348,15 @@ export default function History() {
 
         {!loading && (
           <>
+            {/* Counts stay on the tabs themselves — the two lists were
+                stacked, so the taught one started below however many
+                classes you'd taken. */}
+            <Tabs active={tab} onChange={setTab} tabs={[
+              { key: 'taken', label: `${t('history.taken')} (${taken.length})` },
+              { key: 'taught', label: `${t('history.taught')} (${taught.length})` }
+            ]} />
+
+            {tab === 'taken' && (
             <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
               <h2 className="font-display font-bold text-navy mb-4">
                 {t('history.taken')} <span className="text-navy/40 font-medium text-sm">({taken.length})</span>
@@ -375,7 +386,9 @@ export default function History() {
                 )
               })}
             </div>
+            )}
 
+            {tab === 'taught' && (
             <div className="bg-white rounded-2xl p-6 border-2 border-navy">
               <h2 className="font-display font-bold text-navy mb-4">
                 {t('history.taught')} <span className="text-navy/40 font-medium text-sm">({taught.length})</span>
@@ -399,6 +412,7 @@ export default function History() {
                 </div>
               ))}
             </div>
+            )}
           </>
         )}
       </div>

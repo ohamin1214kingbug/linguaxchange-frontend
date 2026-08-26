@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
+import Tabs from '../../components/Tabs'
 import { formatInTimezone, asUtcDate } from '../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
@@ -119,6 +120,7 @@ export default function Dashboard() {
   const [cancellingClassId, setCancellingClassId] = useState(null)
   const [cancellingEnrollmentId, setCancellingEnrollmentId] = useState(null)
   const [myReviews, setMyReviews] = useState([])
+  const [tab, setTab] = useState('enrolled')
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
@@ -363,11 +365,23 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* The three lists were stacked one under the other, so reaching
+            credit history meant scrolling past every class. One at a time,
+            same pill tabs settings uses. */}
+        <Tabs active={tab} onChange={setTab} tabs={[
+          { key: 'enrolled', label: t('dashboard.myClasses') },
+          { key: 'teaching', label: t('dashboard.classesTeaching') },
+          { key: 'credits', label: t('dashboard.creditHistory') }
+        ]} />
+
         {/* My enrolled classes — upcoming first, finished ones below and
             muted, so what you still have to show up for reads first. */}
-        {enrollments.length > 0 && (
+        {tab === 'enrolled' && (
           <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
             <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.myClasses')}</h2>
+            {enrollments.length === 0 && (
+              <p className="text-navy/40 text-sm">{t('history.noneTaken')}</p>
+            )}
             {[[upcomingEnrollments, 'teacher.upcomingClasses'], [pastEnrollments, 'dashboard.pastClassesTaken']].map(([group, heading]) => group.length > 0 && (
             <div key={heading} className="mb-4 last:mb-0">
             <p className="text-navy/40 text-xs font-bold uppercase tracking-wide mb-1">{t(heading)}</p>
@@ -451,9 +465,12 @@ export default function Dashboard() {
         )}
 
         {/* Classes I'm teaching — same upcoming/finished split as above. */}
-        {teachingClasses.length > 0 && (
+        {tab === 'teaching' && (
           <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
             <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.classesTeaching')}</h2>
+            {teachingClasses.length === 0 && (
+              <p className="text-navy/40 text-sm">{t('history.noneTaught')}</p>
+            )}
             {[[upcomingTeaching, 'teacher.upcomingClasses'], [pastTeaching, 'teacher.pastClasses']].map(([group, heading]) => group.length > 0 && (
             <div key={heading} className="mb-4 last:mb-0">
             <p className="text-navy/40 text-xs font-bold uppercase tracking-wide mb-1">{t(heading)}</p>
@@ -534,6 +551,7 @@ export default function Dashboard() {
         )}
 
         {/* Credit history */}
+        {tab === 'credits' && (
         <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
           <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.creditHistory')}</h2>
           {transactions.length === 0 ? (
@@ -558,6 +576,7 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+        )}
 
         {/* Quick actions */}
         <div className="bg-white rounded-2xl p-6 border-2 border-navy">

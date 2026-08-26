@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
+import Tabs from '../../components/Tabs'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -38,6 +39,7 @@ export default function ProfilePage() {
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [tab, setTab] = useState('basic')
   const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState('')
   const [messageOk, setMessageOk] = useState(false)
@@ -197,6 +199,16 @@ export default function ProfilePage() {
           </div>
         )}
 
+        {/* Four stacked cards meant scrolling past the photo picker to
+            reach what you teach. Same pill tabs settings uses; Save stays
+            below them since one button still submits the whole form. */}
+        <Tabs active={tab} onChange={setTab} tabs={[
+          { key: 'basic', label: t('profile.basicInfo') },
+          { key: 'teaching', label: t('profile.teaching') },
+          { key: 'learning', label: t('profile.languagesWantLearn') }
+        ]} />
+
+        {tab === 'basic' && (<>
         {/* Photo */}
         <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
           <h2 className="font-display font-bold text-navy mb-4">{t('profile.profilePhoto')}</h2>
@@ -252,7 +264,10 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        </>)}
+
         {/* Teaching */}
+        {tab === 'teaching' && (
         <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
           <h2 className="font-display font-bold text-navy mb-4">{t('profile.teaching')}</h2>
           <div className="space-y-4">
@@ -317,7 +332,10 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        )}
+
         {/* Learning */}
+        {tab === 'learning' && (
         <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-8">
           <h2 className="font-display font-bold text-navy mb-4">{t('profile.languagesWantLearn')}</h2>
           <div className="flex flex-wrap gap-2">
@@ -332,6 +350,8 @@ export default function ProfilePage() {
             ))}
           </div>
         </div>
+
+        )}
 
         <button onClick={handleSave} disabled={saving}
           className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
