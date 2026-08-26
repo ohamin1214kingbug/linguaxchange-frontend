@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import LanguageSwitcher from './LanguageSwitcher'
 import StreakCalendar from './StreakCalendar'
@@ -8,17 +7,6 @@ import { logout } from '../lib/auth'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 const NOTIFICATIONS_POLL_MS = 30 * 1000
-
-// The sections you actually move between. These used to live only inside the
-// avatar dropdown, so reaching your own dashboard took a click to open a menu
-// that gave no clue which section you were already in — and on mobile the one
-// visible link (Explore) was hidden entirely, leaving no text links at all.
-const SECTIONS = [
-  { href: '/classes', label: 'common.exploreShort' },
-  { href: '/dashboard', label: 'common.dashboard' },
-  { href: '/history', label: 'nav.myClasses' },
-  { href: '/saved-teachers', label: 'nav.savedTeachers' }
-]
 
 function timeAgo(iso, t) {
   const minutes = Math.floor((Date.now() - new Date(iso).getTime()) / 60000)
@@ -55,7 +43,6 @@ function Avatar({ user, size = 'sm' }) {
 
 export default function Navbar() {
   const { t } = useLanguage()
-  const pathname = usePathname()
   const [user, setUser] = useState(null)
   const [credits, setCredits] = useState(null)
   const [streak, setStreak] = useState(null)
@@ -105,24 +92,11 @@ export default function Navbar() {
 
   const unreadCount = notifications.filter(n => !n.read_at).length
 
-  // Signed out there's nothing personal to navigate to, so Explore is the
-  // only section that means anything.
-  const sections = user ? SECTIONS : SECTIONS.slice(0, 1)
-
   return (
-    <>
     <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
       <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
       <div className="flex gap-3 md:gap-4 items-center">
-        {sections.map(s => (
-          <a key={s.href} href={s.href}
-            className={`hidden md:block font-medium transition-colors ${
-              pathname === s.href
-                ? 'text-brand-red font-bold'
-                : 'text-navy/70 hover:text-navy'}`}>
-            {t(s.label)}
-          </a>
-        ))}
+        <a href="/classes" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.exploreShort')}</a>
         <LanguageSwitcher />
 
         {!user && (
@@ -193,11 +167,11 @@ export default function Navbar() {
                       <Avatar user={user} size="md" />
                       <p className="font-bold text-navy text-sm">{user.first_name} {user.last_name}</p>
                     </div>
-                    {/* Dashboard/My classes/Saved teachers moved out to the
-                        bar itself — leaving them here too would give the same
-                        page two doors and neither would show you're on it.
-                        Home is the logo. What's left is account-level. */}
+                    <a href="/" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.home')}</a>
                     <a href="/profile" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('common.profile')}</a>
+                    <a href="/dashboard" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('common.dashboard')}</a>
+                    <a href="/history" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.myClasses')}</a>
+                    <a href="/saved-teachers" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.savedTeachers')}</a>
                     <a href="/settings" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.settings')}</a>
                     <button onClick={() => window.confirm(t('common.logoutConfirm')) && logout()}
                       className="block w-full text-left px-4 py-2.5 text-sm font-medium text-brand-red hover:bg-cream transition-colors border-t border-navy/10">
@@ -211,21 +185,5 @@ export default function Navbar() {
         )}
       </div>
     </nav>
-
-    {/* Below md the icons alone fill the bar, so the sections get their own
-        row rather than a burger menu — one tap instead of two, and the
-        current section is still visible. Scrolls if the labels outgrow it. */}
-    <div className="md:hidden flex gap-4 px-4 py-2.5 border-b border-navy/10 bg-white overflow-x-auto">
-      {sections.map(s => (
-        <a key={s.href} href={s.href}
-          className={`whitespace-nowrap text-sm font-medium transition-colors ${
-            pathname === s.href
-              ? 'text-brand-red font-bold'
-              : 'text-navy/70'}`}>
-          {t(s.label)}
-        </a>
-      ))}
-    </div>
-    </>
   )
 }
