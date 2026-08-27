@@ -28,21 +28,16 @@ export const metadata = {
     statusBarStyle: "default",
     title: "Lingua",
   },
-  icons: {
-    apple: "/icons/icon-192.png",
-  },
   openGraph: {
     title,
     description,
     url: "https://linguaxchange.com",
     siteName: title,
-    images: [{ url: "/icons/icon-512.png", width: 512, height: 512 }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title,
     description,
-    images: ["/icons/icon-512.png"],
   },
 };
 
