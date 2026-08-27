@@ -7,6 +7,9 @@ import { logout } from '../lib/auth'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 const NOTIFICATIONS_POLL_MS = 30 * 1000
+// Mirrors LOW_CREDIT_THRESHOLD in the backend's utils/lowCreditNudge.js — the
+// balance at which it already emails "you're running low".
+const LOW_BANANAS = 1
 
 function timeAgo(iso, t) {
   const minutes = Math.floor((Date.now() - new Date(iso).getTime()) / 60000)
@@ -59,16 +62,30 @@ export default function Navbar() {
     setUser(parsedUser)
 
     const headers = { Authorization: `Bearer ${token}` }
+
+    // A 401 means the token is genuinely dead — expired, revoked by a logout
+    // or password reset, or invalidated by a JWT_SECRET rotation. A network
+    // blip throws instead, so it never lands here.
+    //
+    // This is why the balance "disappeared": every authed call was 401ing, and
+    // `d?.balance ?? null` turned that into null, which hides the badge. The
+    // page still looked signed in because the streak comes from
+    // GET /api/users/:id, which is public and kept working. Sign the dead
+    // session out instead of rendering a half-broken navbar.
+    const authed = (path) =>
+      fetch(`${API}${path}`, { headers }).then(r => {
+        if (r.status === 401) { logout(); return null }
+        return r.json()
+      })
+
     const fetchCredits = () => {
-      fetch(`${API}/api/credits`, { headers }).then(r => r.json()).then(d => setCredits(d?.balance ?? null))
+      authed('/api/credits').then(d => d && setCredits(d.balance ?? 0))
     }
     fetchCredits()
     fetch(`${API}/api/users/${parsedUser.id}`, { headers }).then(r => r.json()).then(d => setStreak(d?.current_streak ?? 0))
 
     const fetchNotifications = () => {
-      fetch(`${API}/api/notifications`, { headers })
-        .then(r => r.json())
-        .then(d => setNotifications(Array.isArray(d) ? d : []))
+      authed('/api/notifications').then(d => setNotifications(Array.isArray(d) ? d : []))
     }
     fetchNotifications()
     const interval = setInterval(fetchNotifications, NOTIFICATIONS_POLL_MS)
@@ -91,6 +108,11 @@ export default function Navbar() {
   }
 
   const unreadCount = notifications.filter(n => !n.read_at).length
+  // "1 bananas" reads wrong, and the count shows in both the tooltip and the
+  // dropdown heading — so pick the wording once.
+  const bananaLabel = credits === 1
+    ? t('common.bananasCountOne')
+    : t('common.bananasCount', { n: credits })
 
   return (
     <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
@@ -108,17 +130,35 @@ export default function Navbar() {
             {!!streak && <StreakCalendar userId={user.id} streakCount={streak} />}
             {credits !== null && (
               <div className="relative">
+                {/* Low state mirrors LOW_CREDIT_THRESHOLD in the backend's
+                    utils/lowCreditNudge.js rather than inventing a number, so
+                    the badge turns amber at exactly the balance that already
+                    triggers the low-balance email. */}
                 <button onClick={() => setShowCreditsTip(o => !o)}
-                  className="bg-brand-yellow/15 text-navy px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-yellow">
-                  ⚡ {credits} {t('common.credits')}
+                  title={bananaLabel}
+                  className={`px-3 py-1 rounded-full text-sm font-bold border-2 transition-colors ${
+                    credits <= LOW_BANANAS
+                      ? 'bg-brand-red/10 text-brand-red border-brand-red/40 hover:bg-brand-red/20'
+                      : 'bg-brand-yellow/15 text-navy border-brand-yellow hover:bg-brand-yellow/25'}`}>
+                  🍌 {credits}
                 </button>
                 {showCreditsTip && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setShowCreditsTip(false)} />
-                    <div className="absolute right-0 mt-2 bg-white border-2 border-navy rounded-xl z-20 w-56 shadow-lg overflow-hidden">
-                      <p className="px-4 py-3 text-sm font-medium text-navy/80 border-b border-navy/10">{t('common.creditsTip')}</p>
-                      <a href="/classes" className="block px-4 py-2.5 text-sm font-bold text-navy hover:bg-cream transition-colors">{t('classes.browseClasses')} →</a>
+                    <div className="absolute right-0 mt-2 bg-white border-2 border-navy rounded-xl z-20 w-64 shadow-lg overflow-hidden">
+                      <div className="px-4 py-3 border-b border-navy/10">
+                        <p className="font-display font-extrabold text-navy">
+                          {bananaLabel}
+                        </p>
+                        <p className="text-navy/60 text-xs mt-0.5">
+                          {credits <= LOW_BANANAS ? t('common.bananasLow') : t('common.creditsTip')}
+                        </p>
+                      </div>
+                      {/* Teaching is the only way to earn, so it leads when
+                          you're low — browsing costs a banana you don't have. */}
                       <a href="/classes/create" className="block px-4 py-2.5 text-sm font-bold text-navy hover:bg-cream transition-colors">{t('classes.createClass')} →</a>
+                      <a href="/classes" className="block px-4 py-2.5 text-sm font-bold text-navy hover:bg-cream transition-colors">{t('classes.browseClasses')} →</a>
+                      <a href="/dashboard" className="block px-4 py-2.5 text-sm font-medium text-navy/70 hover:bg-cream transition-colors border-t border-navy/10">{t('dashboard.creditHistory')} →</a>
                     </div>
                   </>
                 )}
