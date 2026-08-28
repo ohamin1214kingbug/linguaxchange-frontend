@@ -6,22 +6,9 @@ import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../../components/LanguageSwitcher'
 import { syncTimezone } from '../../../lib/timezone'
 import PhoneNumberField, { isValidPhoneNumber } from '../../../components/PhoneNumberField'
-import { getCountries } from 'react-phone-number-input/input'
-import countryNamesEn from 'react-phone-number-input/locale/en'
-import countryNamesKo from 'react-phone-number-input/locale/ko'
-import countryNamesEs from 'react-phone-number-input/locale/es'
-import countryNamesDe from 'react-phone-number-input/locale/de'
-import countryNamesPt from 'react-phone-number-input/locale/pt'
+import { countryOptions } from '../../../lib/countries'
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
-
-// Comprehensively-sanctioned countries excluded from signup — named
-// explicitly here so the list is easy to see and adjust, rather than a
-// magic filter buried in the render.
-const EXCLUDED_NATIONALITIES = new Set(['KP', 'IR', 'SY', 'CU'])
-
-const COUNTRY_NAMES_BY_LANG = { EN: countryNamesEn, KO: countryNamesKo, ES: countryNamesEs, DE: countryNamesDe, PT: countryNamesPt }
-const COUNTRY_CODES = getCountries().filter(code => countryNamesEn[code] && !EXCLUDED_NATIONALITIES.has(code))
 
 const TOTAL_STEPS = 5
 const API = 'https://linguaxchange-backend-production.up.railway.app'
@@ -60,10 +47,7 @@ export default function Register() {
   // The stored value is always the English name (matches existing data and
   // what every other page already expects) — only the label shown here is
   // translated, sorted in that language's own alphabetical order.
-  const localizedCountryNames = COUNTRY_NAMES_BY_LANG[language] || countryNamesEn
-  const NATIONALITIES = [...COUNTRY_CODES].sort((a, b) =>
-    (localizedCountryNames[a] || countryNamesEn[a]).localeCompare(localizedCountryNames[b] || countryNamesEn[b], language.toLowerCase())
-  )
+  const NATIONALITIES = countryOptions(language)
 
   const LANGUAGES = [
     { code: 'KO', flag: '🇰🇷', name: t('home.langKorean') },
@@ -366,8 +350,8 @@ export default function Register() {
               <select name="nationality" onChange={handleChange} value={form.nationality}
                 className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors bg-white">
                 <option value="" disabled>{t('auth.selectNationality')}</option>
-                {NATIONALITIES.map(code => (
-                  <option key={code} value={countryNamesEn[code]}>{localizedCountryNames[code] || countryNamesEn[code]}</option>
+                {NATIONALITIES.map(c => (
+                  <option key={c.value} value={c.value}>{c.label}</option>
                 ))}
               </select>
             </div>

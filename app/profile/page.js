@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
 import Tabs from '../../components/Tabs'
+import { countryOptions } from '../../lib/countries'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -35,7 +36,8 @@ function BadgeRow({ badges, t }) {
 
 export default function ProfilePage() {
   const router = useRouter()
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
+  const countries = countryOptions(language)
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [saving, setSaving] = useState(false)
@@ -249,8 +251,20 @@ export default function ProfilePage() {
             </div>
             <div>
               <label className="block text-sm font-bold text-navy mb-1">{t('auth.nationality')}</label>
-              <input value={form.nationality} onChange={e => setForm(f => ({ ...f, nationality: e.target.value }))}
-                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" placeholder={t('profile.nationalityPlaceholder')}/>
+              <select value={form.nationality} onChange={e => setForm(f => ({ ...f, nationality: e.target.value }))}
+                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 bg-white focus:border-brand-red focus:outline-none transition-colors">
+                <option value="" disabled>{t('auth.selectNationality')}</option>
+                {/* Anything typed before this was a dropdown ("Korean") matches
+                    no option, and a select with no match renders blank — which
+                    would quietly wipe the value on the next save. Same escape
+                    hatch the timezone select in /settings uses. */}
+                {form.nationality && !countries.some(c => c.value === form.nationality) && (
+                  <option value={form.nationality}>{form.nationality}</option>
+                )}
+                {countries.map(c => (
+                  <option key={c.value} value={c.value}>{c.label}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-sm font-bold text-navy mb-1">
