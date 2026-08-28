@@ -295,6 +295,27 @@ export default function TeacherProfile() {
                 )}
               </div>
               <BadgeRow badges={teacher.badges} t={t} />
+
+              {/* GET /api/users/:id already returned learn_languages and
+                  certificate_explanation — this page just never rendered
+                  them, so half of what a teacher fills in on /profile was
+                  invisible to the people deciding whether to book them. */}
+              {teacher.certificate_explanation && (
+                <p className="text-navy/60 text-sm mt-2 italic">{teacher.certificate_explanation}</p>
+              )}
+
+              {teacher.learn_languages?.length > 0 && (
+                <div className="flex items-center gap-2 mt-3 flex-wrap">
+                  <span className="text-navy/50 text-sm">{t('teacher.wantsToLearn')}</span>
+                  {teacher.learn_languages.map(code => LANGS[code] && (
+                    <span key={code}
+                      className="bg-brand-teal/10 text-navy px-2.5 py-1 rounded-full text-xs font-bold border-2 border-brand-teal/30">
+                      {LANGS[code].flag} {LANGS[code].name}
+                    </span>
+                  ))}
+                </div>
+              )}
+
               {teacher.bio && (
                 <p className="text-navy/70 mt-4 leading-relaxed">{teacher.bio}</p>
               )}
