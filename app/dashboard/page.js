@@ -121,6 +121,7 @@ export default function Dashboard() {
   const [cancellingEnrollmentId, setCancellingEnrollmentId] = useState(null)
   const [myReviews, setMyReviews] = useState([])
   const [tab, setTab] = useState('enrolled')
+  const [profile, setProfile] = useState(null)
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
@@ -133,6 +134,11 @@ export default function Dashboard() {
     fetchEnrollments()
     fetchMyReviews()
     fetchTeachingClasses(parsedUser.id)
+    // The cached localStorage user only carries what login returned, so the
+    // public profile is fetched fresh — it's the same data a stranger sees
+    // on /teachers/:id, which is exactly what the nudge below is about.
+    fetch(`${API}/api/users/${parsedUser.id}`)
+      .then(r => r.json()).then(setProfile).catch(() => {})
   }, [])
 
   const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
@@ -307,6 +313,16 @@ export default function Dashboard() {
 
   const reviewFor = (sessionId) => myReviews.find(r => r.class_session_id === sessionId)
 
+  // Exactly the fields that render on /teachers/:id. Anything blank here is a
+  // blank space a student sees while deciding whether to book you, and until
+  // now nothing in the app told you it was blank. No dismiss button on
+  // purpose: filling the field is what makes this go away.
+  const missingProfileFields = profile ? [
+    !profile.photo_url && 'profile.profilePhoto',
+    !profile.bio?.trim() && 'profile.bio',
+    !profile.nationality?.trim() && 'auth.nationality'
+  ].filter(Boolean) : []
+
   if (!user) return (
     <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">{t('common.loading')}</div>
   )
@@ -350,6 +366,21 @@ export default function Dashboard() {
           }`}>
             {t(message)}
           </div>
+        )}
+
+        {missingProfileFields.length > 0 && (
+          <a href="/profile"
+            className="flex items-start gap-3 mb-6 bg-brand-yellow/10 border-2 border-brand-yellow rounded-2xl px-5 py-4 hover:bg-brand-yellow/20 transition-colors">
+            <span className="text-xl leading-none mt-0.5">👋</span>
+            <div>
+              <p className="font-display font-bold text-navy">{t('dashboard.completeProfileTitle')}</p>
+              <p className="text-navy/60 text-sm mt-0.5">
+                {t('dashboard.completeProfileNote', {
+                  fields: missingProfileFields.map(k => t(k)).join(', ')
+                })}
+              </p>
+            </div>
+          </a>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-10">
