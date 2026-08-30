@@ -36,15 +36,23 @@ export default function Home() {
       ) : (
         <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10">
           <a href="/" className="flex items-center gap-2">
-            <span className="text-2xl">🌐</span>
-            <span className="font-display font-bold text-xl text-navy">Lingua<span className="text-brand-red">Xchange</span></span>
+            {/* Decorative only, and the first thing to go when the nav got a
+                fourth item — the wordmark carries the brand on its own. */}
+            <span className="hidden sm:inline text-2xl">🌐</span>
+            <span className="font-display font-bold text-lg sm:text-xl text-navy">Lingua<span className="text-brand-red">Xchange</span></span>
           </a>
-          <div className="flex gap-3 md:gap-6 items-center">
+          <div className="flex gap-2 sm:gap-3 md:gap-6 items-center">
             <a href="/classes" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.explore')}</a>
+            {/* Not hidden below sm, unlike its neighbours: the homepage is
+                where strangers land, and it is the one logged-out page that
+                renders this nav instead of components/Navbar.js — so without
+                a link here the study guides are reachable only by URL for
+                exactly the audience they were written for. */}
+            <a href="/resources" className="text-navy/70 font-medium hover:text-navy">{t('nav.resources')}</a>
             <a href="/auth/login" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.signIn')}</a>
             <LanguageSwitcher />
             <a href="/auth/register"
-              className="bg-brand-red text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full text-sm md:text-base font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">
+              className="bg-brand-red text-white px-3 py-2 sm:px-4 md:px-5 md:py-2.5 rounded-full text-sm md:text-base font-bold whitespace-nowrap border-2 border-navy hover:bg-brand-red-dark transition-colors">
               {t('common.joinFree')}
             </a>
           </div>
@@ -169,6 +177,7 @@ export default function Home() {
 
       <footer className="text-center py-8 text-navy/40 text-sm border-t border-navy/10 space-y-2">
         <div className="flex justify-center gap-4">
+          <a href="/resources" className="hover:text-navy/70">{t('nav.resources')}</a>
           <a href="/legal/privacy" className="hover:text-navy/70">Privacy Policy</a>
           <a href="/legal/terms" className="hover:text-navy/70">Terms of Service</a>
         </div>
