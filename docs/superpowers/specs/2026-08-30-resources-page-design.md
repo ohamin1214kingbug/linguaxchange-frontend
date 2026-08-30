@@ -18,7 +18,7 @@ It is therefore built as a growth asset first and a product feature second. Ever
 - Learner audience only ("what to study at this level")
 - Admin creates and manages every resource; users never upload
 - Public read with no authentication
-- A resource is either a hosted PDF or a curated outbound link
+- Each resource is a guide LinguaXchange writes and hosts, optionally linking to the official exam syllabus it aligns with
 
 **Out of scope for v1**
 
@@ -31,17 +31,26 @@ It is therefore built as a growth asset first and a product feature second. Ever
 
 - `hreflang` / `alternates.languages` in `app/layout.js`. The site has five full translations and currently claims none of them to search engines. Same SEO effort, unrelated feature.
 
-## Content risk
+## Content source and licence
 
-The Spanish source material comes from a third-party website whose licence is not yet established. This is the highest-risk part of the feature and it is a legal question, not a technical one.
+The candidate source was UNED's *prueba libre* syllabus pages for Spanish A1, A2 and B1. Checked 2026-08-30, both findings were disqualifying:
 
-The design removes the risk from the critical path: a resource row can point at a hosted PDF **or** at an external URL. Curated links can ship immediately regardless of licence. A PDF is only hosted once its licence is confirmed as public domain, Creative Commons, or owned outright.
+- The pages carry no PDFs at all. They are HTML syllabus pages, so there was never a file to host.
+- The footer reads "© 2024 UNED. ALL RIGHTS RESERVED" — no open licence of any kind.
+
+So none of that material can be hosted, and reproducing the syllabus prose is out. Retyping the same topic list in the same order is also out: in the EU the selection and arrangement of a syllabus can attract database right independently of copyright.
+
+**LinguaXchange writes its own guides.** What a CEFR level covers is fact — present indicative, greetings, nationalities — and facts carry no copyright. Guides are written upward from the CEFR descriptors rather than downward from any one institution's page, which keeps clear of the database-right problem as well.
+
+This is not merely the safe option, it is the better one. A page of outbound links has no unique content and ranks for nothing, which would abandon the reason this feature is being built first. Guides we own are indexable, quotable and attributable to us.
+
+Each guide names the official exam syllabus it aligns with and links to it. Naming a public university's public exam as a reference is ordinary nominative use, and it supplies exactly the credibility a university partnership needs.
 
 Rules:
 
 - Never host third-party material without a confirmed licence.
-- When hosting CC or public-domain material, `attribution` is required and rendered on the page.
-- When the licence is unknown or restrictive, set `source_url` and leave `pdf_url` null. The page links out.
+- `source_url` is a reference link, not a content source. Nothing is copied from it.
+- `attribution` stays empty for material we wrote. It is only for third-party material under a confirmed open licence, and it renders on the page when set.
 
 ## Data model
 
@@ -53,9 +62,9 @@ create table resources (
   audience text not null default 'learner',
   title text not null,
   description text,
-  pdf_url text,                          -- hosted copy, null when linking out
-  source_url text,                       -- external original, null when hosted
-  attribution text,                      -- required when pdf_url is set from a CC source
+  pdf_url text,                          -- our hosted guide; required to publish
+  source_url text,                       -- optional official syllabus we align with
+  attribution text,                      -- only for third-party material under an open licence
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (language_code, level, audience)
@@ -67,7 +76,13 @@ RLS is enabled with no policies, matching every other table in this project: the
 
 The unique constraint on `(language_code, level, audience)` is what makes the public grid a simple lookup and prevents duplicate cells.
 
-A row with neither `pdf_url` nor `source_url` is incomplete and is not rendered publicly.
+A row without `pdf_url` is incomplete and is not rendered publicly. `source_url` is optional and independent — a row may carry both.
+
+## Where the guides come from
+
+The guide text is written and version-controlled as Markdown in `docs/resources/{language}-{level}.md` — `es-a1.md`, `es-a2.md`, `es-b1.md` are already drafted. Markdown is the editable source of truth; the PDF is a build output.
+
+Converting Markdown to PDF is a manual step for now: export once per guide and upload through the admin tab. Three guides do not justify a conversion pipeline, and the upload endpoint does not care how the file was produced. Automate it if the guide count grows past roughly a dozen or the guides start changing often.
 
 ## Storage
 
@@ -104,7 +119,7 @@ Rather than copy that logic a second time, extract the shared parts (decode, val
 
 **`/resources`** — a language × level grid. In v1 only the Spanish row has content. Cells backed by a row are links; cells without one render greyed and unlinked, so sparse coverage reads as deliberate rather than broken. This matters: the grid will be mostly empty for a long time.
 
-**`/resources/[language]/[level]`** — title, description, language and level chips, and a primary action that is either "Download PDF" (hosted) or "Open resource" (outbound, `rel="noopener"`). Attribution renders beneath when present. Per-page `metadata` sets title, description and Open Graph tags.
+**`/resources/[language]/[level]`** — title, description, language and level chips, and "Download PDF" as the primary action. When `source_url` is set, a secondary "Official exam syllabus" link renders beneath it (`rel="noopener"`), clearly subordinate to the guide itself. Attribution renders below that when present. Per-page `metadata` sets title, description and Open Graph tags.
 
 **`app/sitemap.js`** currently returns four hardcoded URLs. It becomes dynamic, fetching resources and emitting one entry per complete row alongside the existing static paths. This is the mechanism by which the feature actually reaches search engines; without it the pages exist but are undiscoverable.
 
@@ -114,9 +129,9 @@ Rather than copy that logic a second time, extract the shared parts (decode, val
 
 A fifth tab in `/admin`, alongside users, classes, reports and credits, following the same pill-tab pattern already in that file.
 
-The form carries: language select, level select, title, description, an either/or between PDF upload and source URL, and attribution. Below it, a list of existing resources with replace and delete.
+The form carries: language select, level select, title, description, PDF upload, an optional source URL, and an optional attribution. Below it, a list of existing resources with replace and delete.
 
-Validation worth enforcing in the UI, not only the API: a resource needs exactly one of PDF or source URL, and hosted PDFs sourced externally need attribution.
+Validation worth enforcing in the UI, not only the API: a resource cannot be published without a PDF, and any resource carrying `attribution` must say which licence permits it.
 
 ## Internationalisation
 
@@ -138,13 +153,13 @@ Resource titles and descriptions are admin-entered content and are **not** trans
 
 - upload a real PDF through the admin tab, then download it in a logged-out browser
 - confirm the new URL appears in `/sitemap.xml`
-- confirm a row with only `source_url` renders an outbound link rather than a download
+- confirm a row with both `pdf_url` and `source_url` renders the download first and the syllabus link second
 - confirm an empty grid cell is not a link
 
 ## Risks
 
-**Content is the bottleneck, not the code.** The build is roughly a day. Writing or sourcing three good A1–B1 guides is the long pole. Do not ship the page with a single document in it; an almost-empty resources page reads worse than no resources page.
+**Content is the bottleneck, not the code.** The build is roughly a day. Writing three good A1–B1 guides is the long pole. Do not ship the page with a single document in it; an almost-empty resources page reads worse than no resources page.
 
-**Licence uncertainty on the Spanish source.** Handled by the link-out path above, but it must be resolved before anything is hosted.
+**Guide quality is the whole bet.** Because the guides are ours, nothing else props them up: a thin guide is a page that ranks for nothing and embarrasses us in front of a university. They need to be genuinely useful to a learner deciding what to study next.
 
 **The sitemap change is the feature.** If `app/sitemap.js` is left static, the pages are built and then never found, and the entire justification for building this first evaporates.
