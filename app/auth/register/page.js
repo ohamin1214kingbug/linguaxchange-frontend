@@ -7,6 +7,7 @@ import LanguageSwitcher from '../../../components/LanguageSwitcher'
 import { syncTimezone } from '../../../lib/timezone'
 import PhoneNumberField, { isValidPhoneNumber } from '../../../components/PhoneNumberField'
 import { countryOptions } from '../../../lib/countries'
+import { languageOptions } from '../../../lib/languages'
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
@@ -49,15 +50,7 @@ export default function Register() {
   // translated, sorted in that language's own alphabetical order.
   const NATIONALITIES = countryOptions(language)
 
-  const LANGUAGES = [
-    { code: 'KO', flag: '🇰🇷', name: t('home.langKorean') },
-    { code: 'ES', flag: '🇪🇸', name: t('home.langSpanish') },
-    { code: 'DE', flag: '🇩🇪', name: t('home.langGerman') },
-    { code: 'EN', flag: '🇬🇧', name: t('home.langEnglish') },
-    { code: 'PT', flag: '🇧🇷', name: t('home.langPortuguese') },
-    { code: 'FR', flag: '🇫🇷', name: t('home.langFrench') },
-    { code: 'IT', flag: '🇮🇹', name: t('home.langItalian') },
-  ]
+  const LANGUAGES = languageOptions(t)
 
   const [form, setForm] = useState({
     first_name: '', last_name: '', email: '',

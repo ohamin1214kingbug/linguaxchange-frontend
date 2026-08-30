@@ -843,7 +843,9 @@ Delete the inline `const LANGUAGES = [ ... ]` array (around line 36) and replace
 cd /Users/kinghamin/linguaxchange-frontend && grep -rn "langKorean" --include="*.js" app lib components | grep -v node_modules
 ```
 
-Expected: only `lib/languages.js` and `lib/i18n/translations.js` appear. Any page still listing the languages inline should have been converted.
+Expected: `lib/languages.js`, `lib/i18n/translations.js`, and the two pages just converted no longer appearing with an inline array.
+
+Six other files also match, and that is correct — leave every one of them alone. They hold the same data in different shapes: `app/profile/page.js` uses the same `{code, flag, name}` array; `app/classes/page.js`, `app/classes/[id]/page.js`, `app/teachers/[id]/page.js` and `app/saved-teachers/page.js` use a `KO: { flag, name }` lookup map; `app/page.js` adds `greeting` and `color` for the homepage cards. Consolidating those needs a second export and is a separate change — this task only shares what the resources grid needs.
 
 - [ ] **Step 5: Build**
 

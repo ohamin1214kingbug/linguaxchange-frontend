@@ -6,6 +6,7 @@ import Navbar from '../../../components/Navbar'
 import DateTimePicker, { toLocalValue } from '../../../components/DateTimePicker'
 import { asUtcDate } from '../../../lib/timezone'
 import { CLASS_SIZE_OPTIONS, DEFAULT_CLASS_SIZE } from '../../../lib/classSize'
+import { languageOptions } from '../../../lib/languages'
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
@@ -33,15 +34,7 @@ export default function CreateClass() {
     scheduled_at: '',
   })
 
-  const LANGUAGES = [
-    { code: 'KO', flag: '🇰🇷', name: t('home.langKorean') },
-    { code: 'ES', flag: '🇪🇸', name: t('home.langSpanish') },
-    { code: 'DE', flag: '🇩🇪', name: t('home.langGerman') },
-    { code: 'EN', flag: '🇬🇧', name: t('home.langEnglish') },
-    { code: 'PT', flag: '🇧🇷', name: t('home.langPortuguese') },
-    { code: 'FR', flag: '🇫🇷', name: t('home.langFrench') },
-    { code: 'IT', flag: '🇮🇹', name: t('home.langItalian') },
-  ]
+  const LANGUAGES = languageOptions(t)
 
   const TOPICS = [
     t('classes.topicFreeConversation'),
