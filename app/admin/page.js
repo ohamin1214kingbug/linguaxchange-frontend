@@ -102,6 +102,16 @@ export default function Admin() {
     } catch (e) { console.error(e) }
   }
 
+  // Not every failure arrives as JSON. An oversized body is rejected by
+  // body-parser before the route runs, and a proxy error page is HTML — in
+  // both cases res.json() throws and the real reason is lost, leaving a bare
+  // "failed" with no clue. Fall back to the status code so the message at
+  // least says something true.
+  const readError = async (res, fallback) => {
+    const data = await res.json().catch(() => ({}))
+    return data.error || `${fallback} (HTTP ${res.status})`
+  }
+
   const saveResource = async () => {
     setResourceMessage('')
     try {
@@ -111,8 +121,7 @@ export default function Admin() {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(resourceForm),
       })
-      const data = await res.json()
-      if (!res.ok) { setResourceMessage(data.error || 'Could not save'); return }
+      if (!res.ok) { setResourceMessage(await readError(res, 'Could not save')); return }
       setResourceMessage('Saved. Now upload the PDF below.')
       fetchResources()
     } catch (e) { setResourceMessage('Could not save') }
@@ -123,6 +132,9 @@ export default function Admin() {
   const uploadResourcePdf = async (id, file) => {
     setResourceMessage('')
     const reader = new FileReader()
+    // Without this, an unreadable file leaves the message box empty forever —
+    // indistinguishable from nothing having happened.
+    reader.onerror = () => setResourceMessage('Could not read that file')
     reader.onload = async () => {
       try {
         const token = localStorage.getItem('token')
@@ -131,8 +143,7 @@ export default function Admin() {
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ pdf: reader.result }),
         })
-        const data = await res.json()
-        if (!res.ok) { setResourceMessage(data.error || 'Upload failed'); return }
+        if (!res.ok) { setResourceMessage(await readError(res, 'Upload failed')); return }
         setResourceMessage('PDF uploaded.')
         fetchResources()
       } catch (e) { setResourceMessage('Upload failed') }
@@ -142,14 +153,18 @@ export default function Admin() {
 
   const deleteResource = async (id) => {
     if (!window.confirm('Delete this resource and its PDF?')) return
+    setResourceMessage('')
     try {
       const token = localStorage.getItem('token')
-      await fetch(`${API}/api/resources/${id}`, {
+      const res = await fetch(`${API}/api/resources/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       })
+      // Refreshing after a failed delete makes the row reappear with no
+      // explanation, which reads as the button being broken.
+      if (!res.ok) { setResourceMessage(await readError(res, 'Could not delete')); return }
       fetchResources()
-    } catch (e) { console.error(e) }
+    } catch (e) { setResourceMessage('Could not delete') }
   }
 
   const setReportStatus = async (id, status) => {
