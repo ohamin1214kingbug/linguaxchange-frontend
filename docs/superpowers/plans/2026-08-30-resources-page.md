@@ -1646,6 +1646,8 @@ Expected: the message "That file is not a valid PDF" or "Expected a PDF file", a
 
 - [ ] **Step 5: Verify the public path logged out**
 
+Note on ordering: the detail page sets `revalidate = 3600`, and **a 404 is cached like any other response**. Any URL visited before its row is seeded will keep returning 404 for up to an hour after you create the guide. So seed and upload first, and only then visit the public URLs. If a page 404s right after you published it, wait out the hour or redeploy rather than assuming the upload failed.
+
 In a private browser window, with no session:
 
 - `/resources` shows four linked cells on the Spanish row and dashes everywhere else
