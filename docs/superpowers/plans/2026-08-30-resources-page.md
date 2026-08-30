@@ -28,6 +28,8 @@
 
 Foundation for everything else. No unit test: this is schema, verified by querying it.
 
+**The production database is already partway through this task.** An earlier version of the table — without `source_url` and `attribution` — was created by hand before the spec was amended. The migration below is therefore written to be idempotent: it creates what is missing and leaves what exists alone, so it is correct both against the current production database and against a fresh environment, and safe to run more than once.
+
 **Files:**
 - Create: `backend:migrations/add_resources_table.sql`
 
@@ -39,7 +41,7 @@ Foundation for everything else. No unit test: this is schema, verified by queryi
 -- audience ships in v1 even though only 'learner' is used, so the
 -- teacher-facing guides ("what to teach", "how to teach") need a data entry
 -- rather than a migration later.
-create table resources (
+create table if not exists resources (
   id serial primary key,
   language_code text not null,
   level text not null,
@@ -47,33 +49,51 @@ create table resources (
   title text not null,
   description text,
   pdf_url text,
-  source_url text,
-  attribution text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   unique (language_code, level, audience)
 );
 
+-- Added after the first hand-run of this table, when the design changed from
+-- hosting third-party PDFs to writing our own guides: source_url is the
+-- official syllabus a guide aligns with, attribution is reserved for
+-- third-party material under a confirmed open licence.
+--
+-- Separate statements rather than columns in the create above, because the
+-- table already exists in production and create-if-not-exists would skip them
+-- silently.
+alter table resources add column if not exists source_url text;
+alter table resources add column if not exists attribution text;
+
 -- Matches every other table in this project: the backend holds the
 -- service-role key and the frontend never queries Supabase directly, so
 -- enabling RLS with no policies closes the anon-key hole outright.
 alter table resources enable row level security;
+
+-- The bucket lives here rather than being clicked together in the dashboard,
+-- so the storage config is recorded next to the table it serves and a second
+-- environment can be brought up from one file.
+--
+-- public = true is the point of the feature: a logged-out visitor and a
+-- crawler both have to fetch the PDF without a token. Writes are safe anyway,
+-- because uploads come from the backend on the service-role key.
+--
+-- No storage policy is added, and none should be. This matches the existing
+-- class-materials bucket.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('resources', 'resources', true, 10485760, array['application/pdf'])
+on conflict (id) do nothing;
 ```
+
+`10485760` is 10 × 1024 × 1024. The `on conflict` clause makes the file safe to re-run.
 
 - [ ] **Step 2: Run the migration**
 
-Paste the file into the Supabase SQL editor and run it. The human partner does this — do not ask for the database password or connection string.
+Paste the whole file into the Supabase SQL editor and run it — one paste creates both the table and the bucket. The human partner does this; never ask for the database password or connection string.
 
-- [ ] **Step 3: Create the storage bucket**
+If the `insert into storage.buckets` line errors on an unknown column, the Storage schema has changed. Do not guess at the column names — create the bucket through the dashboard instead (Storage → New bucket → name `resources`, Public on, file size limit 10MB, allowed MIME type `application/pdf`) and drop that statement from the file.
 
-In Supabase Storage, create a bucket named exactly `resources`:
-- Public: **on**
-- Allowed MIME types: `application/pdf`
-- File size limit: `10MB`
-
-These mirror the existing `class-materials` bucket. The backend re-checks both independently, so a mismatch here fails with a useful message rather than silently.
-
-- [ ] **Step 4: Verify**
+- [ ] **Step 3: Verify the table**
 
 Run in the Supabase SQL editor:
 
@@ -84,7 +104,17 @@ where table_name = 'resources'
 order by ordinal_position;
 ```
 
-Expected: 11 rows, with `pdf_url`, `source_url`, `attribution` and `description` all `YES` under `is_nullable`.
+Expected: 11 rows, with `pdf_url`, `source_url`, `attribution` and `description` all `YES` under `is_nullable`. If `source_url` or `attribution` is missing, the `alter` statements did not run — the create-if-not-exists on its own will not add them to a table that already exists.
+
+- [ ] **Step 4: Verify the bucket against the one that already works**
+
+```sql
+select id, public, file_size_limit, allowed_mime_types
+from storage.buckets
+where id in ('class-materials', 'resources');
+```
+
+Expected: two rows whose `public`, `file_size_limit` and `allowed_mime_types` all match. `class-materials` is serving PDFs in production, so it is the reference — if the new row differs from it, fix the new row rather than reasoning about which value is right.
 
 - [ ] **Step 5: Commit**
 
