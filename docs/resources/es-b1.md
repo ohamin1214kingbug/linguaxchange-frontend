@@ -85,7 +85,7 @@ You are ready when the subjunctive appears in your speech without being planned,
 
 ## Next step
 
-B2 is where Spanish moves from familiar topics to abstract ones, and from expressing opinions to defending them under challenge. A B2 guide is planned.
+B2 is where Spanish moves from familiar topics to abstract ones, and from expressing opinions to defending them under challenge. See the Spanish B2 guide.
 
 ---
 

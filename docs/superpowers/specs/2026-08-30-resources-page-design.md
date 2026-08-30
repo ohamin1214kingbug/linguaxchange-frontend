@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-30
 **Status:** Approved for planning
-**Scope:** Spanish, levels A1–B1, learner audience. One admin-managed resource per (language, level, audience).
+**Scope:** Spanish, levels A1–B2, learner audience. One admin-managed resource per (language, level, audience).
 
 ## Why this first
 
@@ -14,7 +14,7 @@ It is therefore built as a growth asset first and a product feature second. Ever
 
 **In scope for v1**
 
-- Spanish only, levels A1, A2, B1
+- Spanish only, levels A1, A2, B1, B2
 - Learner audience only ("what to study at this level")
 - Admin creates and manages every resource; users never upload
 - Public read with no authentication
@@ -80,7 +80,7 @@ A row without `pdf_url` is incomplete and is not rendered publicly. `source_url`
 
 ## Where the guides come from
 
-The guide text is written and version-controlled as Markdown in `docs/resources/{language}-{level}.md` — `es-a1.md`, `es-a2.md`, `es-b1.md` are already drafted. Markdown is the editable source of truth; the PDF is a build output.
+The guide text is written and version-controlled as Markdown in `docs/resources/{language}-{level}.md` — `es-a1.md`, `es-a2.md`, `es-b1.md`, `es-b2.md` are already drafted. Markdown is the editable source of truth; the PDF is a build output.
 
 Converting Markdown to PDF is a manual step for now: export once per guide and upload through the admin tab. Three guides do not justify a conversion pipeline, and the upload endpoint does not care how the file was produced. Automate it if the guide count grows past roughly a dozen or the guides start changing often.
 
@@ -96,7 +96,8 @@ New `routes/resources.js`, mounted at `/api/resources` in `index.js`.
 
 | Route | Auth | Purpose |
 | --- | --- | --- |
-| `GET /api/resources` | public | List every complete resource |
+| `GET /api/resources` | public | List every published resource |
+| `GET /api/resources/all` | admin | List every resource, drafts included |
 | `GET /api/resources/:lang/:level` | public | One resource, for the detail page |
 | `POST /api/resources` | admin | Create or update a row |
 | `POST /api/resources/:id/pdf` | admin | Upload or clear the PDF |
@@ -135,7 +136,9 @@ Validation worth enforcing in the UI, not only the API: a resource cannot be pub
 
 ## Internationalisation
 
-Page chrome — headings, buttons, empty states, the grid labels — follows the existing pattern in `lib/i18n/translations.js` with keys added to all five languages (EN, KO, ES, DE, PT).
+Page chrome on the grid page — headings, buttons, empty states, the grid labels — follows the existing pattern in `lib/i18n/translations.js` with keys added to all five languages (EN, KO, ES, DE, PT).
+
+The detail page is the exception, and is English-only. It has to be server-rendered so a crawler sees the content without running JavaScript, and this project's translation layer is a client-side React context that a server component cannot call. Translating it means moving i18n server-side, which is a larger change than this feature. The page's own chrome is kept minimal so the untranslated surface stays small.
 
 Resource titles and descriptions are admin-entered content and are **not** translated. A Korean visitor will see Korean UI wrapped around an English or Spanish title. This is a known seam, accepted for v1 on the grounds that the resources are themselves language-specific and the audience for a Spanish A1 guide is reading Spanish or English anyway. If the page set grows past a handful of languages, revisit.
 
@@ -158,7 +161,7 @@ Resource titles and descriptions are admin-entered content and are **not** trans
 
 ## Risks
 
-**Content is the bottleneck, not the code.** The build is roughly a day. Writing three good A1–B1 guides is the long pole. Do not ship the page with a single document in it; an almost-empty resources page reads worse than no resources page.
+**Content is the bottleneck, not the code.** The build is roughly a day. Writing four good A1–B2 guides is the long pole. Do not ship the page with a single document in it; an almost-empty resources page reads worse than no resources page.
 
 **Guide quality is the whole bet.** Because the guides are ours, nothing else props them up: a thin guide is a page that ranks for nothing and embarrasses us in front of a university. They need to be genuinely useful to a learner deciding what to study next.
 
