@@ -20,7 +20,7 @@ export default function Resources() {
     fetch(`${API}/api/resources`)
       .then(r => r.json())
       .then(d => setResources(Array.isArray(d) ? d : []))
-      .catch(() => {})
+      .catch(e => console.warn('resources: could not load', e.message))
       .finally(() => setLoading(false))
   }, [])
 
