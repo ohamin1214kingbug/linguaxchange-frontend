@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { languageOptions, LEVELS } from '../../lib/languages'
+import { useLanguage } from '../../lib/i18n/LanguageContext'
 
 // A user's DB id is already permanent and unique — no new column needed,
 // just a friendlier alphabet-led format for admins to reference in reports.
@@ -37,6 +39,12 @@ export default function Admin() {
   const [classes, setClasses] = useState([])
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
+  const { t } = useLanguage()
+  const [resources, setResources] = useState([])
+  const [resourceForm, setResourceForm] = useState({
+    language_code: 'ES', level: 'A1', title: '', description: '', source_url: '', attribution: '',
+  })
+  const [resourceMessage, setResourceMessage] = useState('')
 
   const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -46,6 +54,7 @@ export default function Admin() {
     fetchUsers()
     fetchClasses()
     fetchReports()
+    fetchResources()
   }, [])
 
   const fetchUsers = async () => {
@@ -79,6 +88,67 @@ export default function Admin() {
       })
       const data = await res.json()
       setReports(Array.isArray(data) ? data : [])
+    } catch (e) { console.error(e) }
+  }
+
+  const fetchResources = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${API}/api/resources/all`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      setResources(Array.isArray(data) ? data : [])
+    } catch (e) { console.error(e) }
+  }
+
+  const saveResource = async () => {
+    setResourceMessage('')
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${API}/api/resources`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(resourceForm),
+      })
+      const data = await res.json()
+      if (!res.ok) { setResourceMessage(data.error || 'Could not save'); return }
+      setResourceMessage('Saved. Now upload the PDF below.')
+      fetchResources()
+    } catch (e) { setResourceMessage('Could not save') }
+  }
+
+  // Base64 in a JSON body, matching how class materials are uploaded, so the
+  // browser never needs the Supabase anon key.
+  const uploadResourcePdf = async (id, file) => {
+    setResourceMessage('')
+    const reader = new FileReader()
+    reader.onload = async () => {
+      try {
+        const token = localStorage.getItem('token')
+        const res = await fetch(`${API}/api/resources/${id}/pdf`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pdf: reader.result }),
+        })
+        const data = await res.json()
+        if (!res.ok) { setResourceMessage(data.error || 'Upload failed'); return }
+        setResourceMessage('PDF uploaded.')
+        fetchResources()
+      } catch (e) { setResourceMessage('Upload failed') }
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const deleteResource = async (id) => {
+    if (!window.confirm('Delete this resource and its PDF?')) return
+    try {
+      const token = localStorage.getItem('token')
+      await fetch(`${API}/api/resources/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      fetchResources()
     } catch (e) { console.error(e) }
   }
 
@@ -213,6 +283,10 @@ export default function Admin() {
           <button onClick={() => setTab('credits')}
             className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'credits' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
             💰 Credits
+          </button>
+          <button onClick={() => setTab('resources')}
+            className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'resources' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
+            📄 Resources
           </button>
         </div>
 
@@ -441,6 +515,78 @@ export default function Admin() {
               <p className="text-navy/40 text-center py-12">{users.length === 0 ? 'No users yet' : 'No users match your search'}</p>
             )}
           </div>
+          </>
+        )}
+
+        {tab === 'resources' && !loading && (
+          <>
+            <div className="bg-white border-2 border-navy/15 rounded-xl p-5 mb-6">
+              <p className="font-display font-bold text-navy mb-3">Add or update a guide</p>
+              <div className="flex flex-wrap gap-2 mb-3">
+                <select value={resourceForm.language_code}
+                  onChange={e => setResourceForm({ ...resourceForm, language_code: e.target.value })}
+                  className="border-2 border-navy/20 rounded-full px-3 py-2 text-sm focus:border-brand-red focus:outline-none">
+                  {languageOptions(t).map(l => <option key={l.code} value={l.code}>{l.flag} {l.name}</option>)}
+                </select>
+                <select value={resourceForm.level}
+                  onChange={e => setResourceForm({ ...resourceForm, level: e.target.value })}
+                  className="border-2 border-navy/20 rounded-full px-3 py-2 text-sm focus:border-brand-red focus:outline-none">
+                  {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
+                </select>
+              </div>
+              <input value={resourceForm.title}
+                onChange={e => setResourceForm({ ...resourceForm, title: e.target.value })}
+                placeholder="Title, e.g. Spanish A1 — What to Study"
+                className="w-full border-2 border-navy/20 rounded-full px-4 py-2 text-sm mb-2 focus:border-brand-red focus:outline-none"/>
+              <textarea value={resourceForm.description}
+                onChange={e => setResourceForm({ ...resourceForm, description: e.target.value })}
+                placeholder="Short description shown on the page and in search results"
+                rows={2}
+                className="w-full border-2 border-navy/20 rounded-2xl px-4 py-2 text-sm mb-2 focus:border-brand-red focus:outline-none"/>
+              <input value={resourceForm.source_url}
+                onChange={e => setResourceForm({ ...resourceForm, source_url: e.target.value })}
+                placeholder="Official syllabus URL (optional)"
+                className="w-full border-2 border-navy/20 rounded-full px-4 py-2 text-sm mb-2 focus:border-brand-red focus:outline-none"/>
+              <input value={resourceForm.attribution}
+                onChange={e => setResourceForm({ ...resourceForm, attribution: e.target.value })}
+                placeholder="Attribution — only for third-party material under an open licence"
+                className="w-full border-2 border-navy/20 rounded-full px-4 py-2 text-sm mb-3 focus:border-brand-red focus:outline-none"/>
+              <div className="flex items-center gap-3">
+                <button onClick={saveResource}
+                  className="bg-brand-red text-white px-5 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red/90 transition-colors">
+                  Save
+                </button>
+                {resourceMessage && <span className="text-navy/60 text-sm">{resourceMessage}</span>}
+              </div>
+            </div>
+
+            {resources.length === 0 && <p className="text-navy/40">No resources yet.</p>}
+            {resources.map(r => (
+              <div key={r.id} className="bg-white border-2 border-navy/15 rounded-xl p-4 mb-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-bold text-navy">{r.title}</p>
+                    <p className="text-navy/50 text-sm">{r.language_code} · {r.level} · {r.audience}</p>
+                    {/* A row with no PDF is a draft and is hidden from the
+                        public list, so say so rather than looking published. */}
+                    <p className={`text-xs mt-1 ${r.pdf_url ? 'text-navy/40' : 'text-brand-red font-bold'}`}>
+                      {r.pdf_url ? 'Published' : 'Draft — no PDF uploaded, not public'}
+                    </p>
+                  </div>
+                  <button onClick={() => deleteResource(r.id)}
+                    className="text-brand-red text-sm font-bold hover:underline whitespace-nowrap">Delete</button>
+                </div>
+                <div className="mt-3 border-t border-navy/10 pt-3 flex items-center gap-3 flex-wrap">
+                  <input type="file" accept="application/pdf"
+                    onChange={e => e.target.files[0] && uploadResourcePdf(r.id, e.target.files[0])}
+                    className="text-sm"/>
+                  {r.pdf_url && (
+                    <a href={r.pdf_url} target="_blank" rel="noopener noreferrer"
+                      className="text-navy/60 text-sm underline hover:text-navy">View current PDF</a>
+                  )}
+                </div>
+              </div>
+            ))}
           </>
         )}
       </div>
