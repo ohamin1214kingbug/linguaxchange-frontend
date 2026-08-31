@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 .env
 node_modules
+
+# Guide PDFs are build outputs — the Markdown in docs/resources is the source
+docs/resources/pdf/
