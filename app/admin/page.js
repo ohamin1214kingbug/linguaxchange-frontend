@@ -45,6 +45,7 @@ export default function Admin() {
     language_code: 'ES', level: 'A1', title: '', description: '', source_url: '', attribution: '',
   })
   const [resourceMessage, setResourceMessage] = useState('')
+  const [uploadingId, setUploadingId] = useState(null)
 
   const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -131,10 +132,14 @@ export default function Admin() {
   // browser never needs the Supabase anon key.
   const uploadResourcePdf = async (id, file) => {
     setResourceMessage('')
+    setUploadingId(id)
     const reader = new FileReader()
     // Without this, an unreadable file leaves the message box empty forever —
     // indistinguishable from nothing having happened.
-    reader.onerror = () => setResourceMessage('Could not read that file')
+    reader.onerror = () => {
+      setUploadingId(null)
+      setResourceMessage('Could not read that file')
+    }
     reader.onload = async () => {
       try {
         const token = localStorage.getItem('token')
@@ -146,7 +151,11 @@ export default function Admin() {
         if (!res.ok) { setResourceMessage(await readError(res, 'Upload failed')); return }
         setResourceMessage('PDF uploaded.')
         fetchResources()
-      } catch (e) { setResourceMessage('Upload failed') }
+      } catch (e) {
+        setResourceMessage('Upload failed')
+      } finally {
+        setUploadingId(null)
+      }
     }
     reader.readAsDataURL(file)
   }
@@ -536,7 +545,13 @@ export default function Admin() {
         {tab === 'resources' && !loading && (
           <>
             <div className="bg-white border-2 border-navy/15 rounded-xl p-5 mb-6">
-              <p className="font-display font-bold text-navy mb-3">Add or update a guide</p>
+              <p className="font-display font-bold text-navy mb-1">Add or update a guide</p>
+              {/* One row per language + level. Saving with a level already in
+                  the list below updates that row rather than adding one, which
+                  is not obvious from a form that keeps its values. */}
+              <p className="text-navy/50 text-xs mb-3">
+                Save once per level, then upload that level&apos;s PDF from its card below.
+              </p>
               <div className="flex flex-wrap gap-2 mb-3">
                 <select value={resourceForm.language_code}
                   onChange={e => setResourceForm({ ...resourceForm, language_code: e.target.value })}
@@ -569,7 +584,7 @@ export default function Admin() {
               <div className="flex items-center gap-3">
                 <button onClick={saveResource}
                   className="bg-brand-red text-white px-5 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red/90 transition-colors">
-                  Save
+                  Save {languageOptions(t).find(l => l.code === resourceForm.language_code)?.name || resourceForm.language_code} {resourceForm.level}
                 </button>
                 {resourceMessage && <span className="text-navy/60 text-sm">{resourceMessage}</span>}
               </div>
@@ -592,9 +607,19 @@ export default function Admin() {
                     className="text-brand-red text-sm font-bold hover:underline whitespace-nowrap">Delete</button>
                 </div>
                 <div className="mt-3 border-t border-navy/10 pt-3 flex items-center gap-3 flex-wrap">
-                  <input type="file" accept="application/pdf"
-                    onChange={e => e.target.files[0] && uploadResourcePdf(r.id, e.target.files[0])}
-                    className="text-sm"/>
+                  <label className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border-2 transition-colors ${
+                    uploadingId === r.id
+                      ? 'bg-navy/5 text-navy/40 border-navy/20 cursor-wait'
+                      : r.pdf_url
+                        ? 'bg-white text-navy border-navy/30 hover:border-navy cursor-pointer'
+                        : 'bg-brand-red text-white border-navy hover:bg-brand-red/90 cursor-pointer'}`}>
+                    {uploadingId === r.id
+                      ? 'Uploading…'
+                      : r.pdf_url ? '↻ Replace PDF' : '⬆ Upload PDF'}
+                    <input type="file" accept="application/pdf" className="hidden"
+                      disabled={uploadingId === r.id}
+                      onChange={e => e.target.files[0] && uploadResourcePdf(r.id, e.target.files[0])}/>
+                  </label>
                   {r.pdf_url && (
                     <a href={r.pdf_url} target="_blank" rel="noopener noreferrer"
                       className="text-navy/60 text-sm underline hover:text-navy">View current PDF</a>
