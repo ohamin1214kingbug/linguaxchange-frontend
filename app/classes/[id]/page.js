@@ -1,16 +1,8 @@
 import ClassDetailClient from './ClassDetailClient'
+import { LANGUAGE_NAMES_EN as LANGUAGE_NAMES } from '../../../lib/languages'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 const SITE = 'https://linguaxchange.com'
-
-// English names only. This runs on the server, where the translation context —
-// a client-side React provider — does not exist. The visitor still sees their
-// own language once the client component hydrates; this text is for the
-// crawler and the link preview, both of which read English.
-const LANGUAGE_NAMES = {
-  KO: 'Korean', ES: 'Spanish', DE: 'German', EN: 'English',
-  PT: 'Portuguese', FR: 'French', IT: 'Italian',
-}
 
 // A class fills up, gets cancelled, or is edited, so a long cache would serve a
 // stale seat count. Five minutes stays honest without making every crawl hit
