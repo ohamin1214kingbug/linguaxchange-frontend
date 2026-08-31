@@ -1,3 +1,5 @@
+import { hasUpcomingSession } from '../lib/classSchedule'
+
 const BASE = 'https://linguaxchange.com'
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -41,10 +43,15 @@ export default async function sitemap() {
   try {
     const res = await fetch(`${API}/api/classes`, { next: { revalidate: 3600 } })
     const data = await res.json()
-    classEntries = (Array.isArray(data) ? data : []).map(c => ({
-      url: `${BASE}/classes/${c.id}`,
-      lastModified: new Date(),
-    }))
+    // Only classes someone can still join. A finished class still renders, but
+    // submitting it for indexing invites people to a session that has already
+    // happened, and the browse page it is linked from has already dropped it.
+    classEntries = (Array.isArray(data) ? data : [])
+      .filter(c => hasUpcomingSession(c))
+      .map(c => ({
+        url: `${BASE}/classes/${c.id}`,
+        lastModified: new Date(),
+      }))
   } catch (e) {
     console.warn('sitemap: could not fetch classes', e.message)
   }
