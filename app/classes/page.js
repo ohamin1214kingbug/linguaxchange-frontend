@@ -36,6 +36,18 @@ export default function Classes() {
         setTeacherOptions(unique)
       })
 
+    // Arrived from a study guide, which links here already narrowed to that
+    // language and level. Read off window.location rather than
+    // useSearchParams(), which would drag a Suspense boundary into an
+    // otherwise plain client page — the same call the class creation page
+    // makes. Unknown values are harmless: they return no classes, and the
+    // dropdowns still let the visitor widen the search.
+    const params = new URLSearchParams(window.location.search)
+    const lang = params.get('language')
+    const level = params.get('level')
+    if (lang) setFilter(lang.toUpperCase())
+    if (level) setLevelFilter(level.toUpperCase())
+
     const stored = localStorage.getItem('user')
     const token = localStorage.getItem('token')
     if (stored && token) {

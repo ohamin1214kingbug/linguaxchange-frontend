@@ -81,6 +81,25 @@ export default async function ResourceDetail({ params }) {
         {resource.attribution && (
           <p className="mt-6 text-navy/40 text-xs leading-relaxed">{resource.attribution}</p>
         )}
+
+        {/* The reason this page is worth ranking. Someone reading about what
+            to study at this level is the best-qualified visitor the site
+            gets, and without this the page hands them a PDF and says
+            goodbye. Pre-filtered to the level they were just reading about. */}
+        <div className="mt-12 pt-8 border-t border-navy/10">
+          <p className="font-display font-extrabold text-xl text-navy mb-2">
+            Practise this level with a real person
+          </p>
+          <p className="text-navy/60 text-sm leading-relaxed mb-4">
+            Reading about a grammar point is not the same as using it under pressure.
+            LinguaXchange runs small group classes where you teach what you know and
+            learn what you don&apos;t — no subscription.
+          </p>
+          <a href={`/classes?language=${resource.language_code}&level=${resource.level}`}
+            className="inline-block bg-navy text-white px-6 py-3 rounded-full font-bold border-2 border-navy hover:bg-navy/90 transition-colors">
+            See {resource.level} classes →
+          </a>
+        </div>
       </div>
     </main>
   )
