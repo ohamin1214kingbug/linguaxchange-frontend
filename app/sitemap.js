@@ -30,5 +30,24 @@ export default async function sitemap() {
     console.warn('sitemap: could not fetch resources', e.message)
   }
 
-  return [...staticEntries, ...resourceEntries]
+  // Each class is now a server-rendered page with its own title and
+  // description, so it is worth indexing individually — "Spanish B1
+  // conversation" is something a person actually searches for, which the
+  // browse page's filter UI is not.
+  //
+  // GET /api/classes only ever returns approved classes, so nothing pending or
+  // rejected leaks into the sitemap.
+  let classEntries = []
+  try {
+    const res = await fetch(`${API}/api/classes`, { next: { revalidate: 3600 } })
+    const data = await res.json()
+    classEntries = (Array.isArray(data) ? data : []).map(c => ({
+      url: `${BASE}/classes/${c.id}`,
+      lastModified: new Date(),
+    }))
+  } catch (e) {
+    console.warn('sitemap: could not fetch classes', e.message)
+  }
+
+  return [...staticEntries, ...resourceEntries, ...classEntries]
 }
