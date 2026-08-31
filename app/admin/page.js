@@ -113,6 +113,23 @@ export default function Admin() {
     return data.error || `${fallback} (HTTP ${res.status})`
   }
 
+  // The form is the only editor, and it posts every field. Without a way to
+  // load a row into it, correcting one word meant retyping the rest or
+  // silently blanking it — validateResource turns '' into null and the upsert
+  // writes that over what was there.
+  const editResource = (r) => {
+    setResourceForm({
+      language_code: r.language_code,
+      level: r.level,
+      title: r.title || '',
+      description: r.description || '',
+      source_url: r.source_url || '',
+      attribution: r.attribution || '',
+    })
+    setResourceMessage(`Editing ${r.language_code} ${r.level} — saving overwrites it.`)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const saveResource = async () => {
     setResourceMessage('')
     try {
@@ -603,8 +620,12 @@ export default function Admin() {
                       {r.pdf_url ? 'Published' : 'Draft — no PDF uploaded, not public'}
                     </p>
                   </div>
-                  <button onClick={() => deleteResource(r.id)}
-                    className="text-brand-red text-sm font-bold hover:underline whitespace-nowrap">Delete</button>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <button onClick={() => editResource(r)}
+                      className="text-navy text-sm font-bold hover:underline whitespace-nowrap">Edit</button>
+                    <button onClick={() => deleteResource(r.id)}
+                      className="text-brand-red text-sm font-bold hover:underline whitespace-nowrap">Delete</button>
+                  </div>
                 </div>
                 <div className="mt-3 border-t border-navy/10 pt-3 flex items-center gap-3 flex-wrap">
                   <label className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border-2 transition-colors ${

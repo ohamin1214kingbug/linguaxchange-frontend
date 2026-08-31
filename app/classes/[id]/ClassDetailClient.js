@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import Navbar from '../../../components/Navbar'
-import { formatInTimezone } from '../../../lib/timezone'
+import { formatInTimezone, utcLabel } from '../../../lib/timezone'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -22,6 +22,15 @@ export default function ClassDetailClient({ initialClass = null }) {
   const [currentUser, setCurrentUser] = useState(null)
   const [loading, setLoading] = useState(!initialClass)
   const [materials, setMaterials] = useState(initialClass?.materials || '')
+  // Session times are formatted in UTC on the server and on the first client
+  // render, so the two agree exactly and there is no hydration mismatch to
+  // suppress. After mount the viewer's own timezone applies.
+  //
+  // This has to be driven by state rather than left to React's hydration
+  // repair: a logged-out visitor arriving from search triggers no other state
+  // update at all — no stored user, no token, no stored language, and the class
+  // already in hand — so nothing else would ever re-render the page.
+  const [mounted, setMounted] = useState(false)
   const [savingMaterials, setSavingMaterials] = useState(false)
   const [materialsMessage, setMaterialsMessage] = useState('')
   const [uploadingPdf, setUploadingPdf] = useState(false)
@@ -37,6 +46,7 @@ export default function ClassDetailClient({ initialClass = null }) {
   }
 
   useEffect(() => {
+    setMounted(true)
     const stored = localStorage.getItem('user')
     if (stored) setCurrentUser(JSON.parse(stored))
 
@@ -191,12 +201,8 @@ export default function ClassDetailClient({ initialClass = null }) {
                   .sort((a, b) => new Date(a.session_date) - new Date(b.session_date))
                   .map(s => (
                     <li key={s.id} className="text-sm flex items-center gap-2">
-                      {/* The server has no idea what timezone the reader is in, so it
-                          formats in its own and the browser reformats on hydration.
-                          The texts are meant to differ — this is the sanctioned way
-                          to say so rather than a warning to silence. */}
-                      <span suppressHydrationWarning className={s.status === 'cancelled' ? 'text-navy/30 line-through' : 'text-brand-red font-bold'}>
-                        🗓️ {formatInTimezone(s.session_date, currentUser?.timezone, currentUser?.time_format)}
+                      <span className={s.status === 'cancelled' ? 'text-navy/30 line-through' : 'text-brand-red font-bold'}>
+                        🗓️ {mounted ? formatInTimezone(s.session_date, currentUser?.timezone, currentUser?.time_format) : utcLabel(s.session_date)}
                       </span>
                       {s.status === 'cancelled' && <span className="text-navy/40 text-xs">{t('classDetail.cancelled')}</span>}
                     </li>
@@ -279,8 +285,8 @@ export default function ClassDetailClient({ initialClass = null }) {
               {roster.sessions.map(s => (
                 <div key={s.id}>
                   <div className="flex items-center justify-between gap-3 mb-2">
-                    <p suppressHydrationWarning className="text-navy font-bold text-sm">
-                      🗓️ {formatInTimezone(s.session_date, currentUser?.timezone, currentUser?.time_format)}
+                    <p className="text-navy font-bold text-sm">
+                      🗓️ {mounted ? formatInTimezone(s.session_date, currentUser?.timezone, currentUser?.time_format) : utcLabel(s.session_date)}
                     </p>
                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border-2 ${
                       s.students.length >= roster.max_students

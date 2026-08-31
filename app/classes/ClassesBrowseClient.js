@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
 import ClassRequests from '../../components/ClassRequests'
-import { formatInTimezone } from '../../lib/timezone'
+import { formatInTimezone, utcLabel } from '../../lib/timezone'
 import { hasUpcomingSession } from '../../lib/classSchedule'
 import { fetchJoinedClassIds } from '../../lib/enrollments'
 
@@ -29,6 +29,9 @@ export default function ClassesBrowseClient({ initialClasses = [] }) {
   const [messageOk, setMessageOk] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
   const [joinedClassIds, setJoinedClassIds] = useState(new Set())
+  // Session times render in UTC on the server and on the first client render so
+  // the two agree, then switch to the viewer's timezone once mounted.
+  const [mounted, setMounted] = useState(false)
 
   // Unfiltered, fetched once — used only to populate the teacher dropdown so
   // picking a teacher doesn't shrink the dropdown's own option list.
@@ -40,6 +43,8 @@ export default function ClassesBrowseClient({ initialClasses = [] }) {
         const unique = Array.from(new Map(teachers.map(tch => [tch.id, tch])).values())
         setTeacherOptions(unique)
       })
+
+    setMounted(true)
 
     // Arrived from a study guide, which links here already narrowed to that
     // language and level. Read off window.location rather than
@@ -217,8 +222,8 @@ export default function ClassesBrowseClient({ initialClasses = [] }) {
                   </h3>
                   {cls.description && <p className="text-navy/60 text-sm mb-2">{cls.description}</p>}
                   {cls.class_sessions?.[0]?.session_date && (
-                    <p suppressHydrationWarning className="text-brand-red text-xs font-bold mb-1">
-                      🗓️ {formatInTimezone(cls.class_sessions[0].session_date, currentUser?.timezone, currentUser?.time_format)}
+                    <p className="text-brand-red text-xs font-bold mb-1">
+                      🗓️ {mounted ? formatInTimezone(cls.class_sessions[0].session_date, currentUser?.timezone, currentUser?.time_format) : utcLabel(cls.class_sessions[0].session_date)}
                     </p>
                   )}
                   <p className="text-navy/40 text-xs">
