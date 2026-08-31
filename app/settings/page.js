@@ -53,6 +53,14 @@ export default function SettingsPage() {
   const [deleting, setDeleting] = useState(false)
   const [delMessage, setDelMessage] = useState('')
 
+  const [uniEmail, setUniEmail] = useState('')
+  const [uniDomains, setUniDomains] = useState([])
+  const [uniBusy, setUniBusy] = useState(false)
+  const [uniMessage, setUniMessage] = useState('')
+  const [recordToken, setRecordToken] = useState(null)
+  const [recordBusy, setRecordBusy] = useState(false)
+  const [copied, setCopied] = useState(false)
+
   useEffect(() => {
     const stored = localStorage.getItem('user')
     const token = localStorage.getItem('token')
@@ -82,7 +90,76 @@ export default function SettingsPage() {
       .then(r => r.json())
       .then(data => setHasTaught(Array.isArray(data) && data.length > 0))
       .catch(() => {})
+
+    fetch(`${API}/api/university/domains`)
+      .then(r => r.json())
+      .then(d => setUniDomains(Array.isArray(d) ? d : []))
+      .catch(e => console.warn('universities: could not load', e.message))
   }, [])
+
+  // Not every failure comes back as JSON — a proxy error page is HTML, and
+  // res.json() then throws, losing the real status.
+  const readError = async (res, fallback) => {
+    const data = await res.json().catch(() => ({}))
+    return data.error || `${fallback} (HTTP ${res.status})`
+  }
+
+  const sendUniVerification = async () => {
+    setUniBusy(true)
+    setUniMessage('')
+    try {
+      const res = await fetch(`${API}/api/university/verify`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: uniEmail }),
+      })
+      setUniMessage(res.ok ? t('university.sent') : await readError(res, 'Could not send'))
+    } catch (e) {
+      setUniMessage('Could not send')
+    } finally {
+      setUniBusy(false)
+    }
+  }
+
+  // The endpoint returns the token it generated rather than reading back what
+  // the row ended up holding, so two racing calls both return 200 while only
+  // one token persists — the loser copies a link that 404s forever. A
+  // double-click is the realistic trigger, so the guard belongs here.
+  const createRecordLink = async () => {
+    if (recordBusy) return
+    setRecordBusy(true)
+    try {
+      const res = await fetch(`${API}/api/records/share`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      })
+      if (!res.ok) { setUniMessage(await readError(res, 'Could not create the link')); return }
+      const data = await res.json()
+      setRecordToken(data.token)
+      setCopied(false)
+    } catch (e) {
+      setUniMessage('Could not create the link')
+    } finally {
+      setRecordBusy(false)
+    }
+  }
+
+  const revokeRecordLink = async () => {
+    if (recordBusy) return
+    setRecordBusy(true)
+    try {
+      const res = await fetch(`${API}/api/records/share`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      })
+      if (!res.ok) { setUniMessage(await readError(res, 'Could not revoke the link')); return }
+      setRecordToken(null)
+    } catch (e) {
+      setUniMessage('Could not revoke the link')
+    } finally {
+      setRecordBusy(false)
+    }
+  }
 
   const savePrefs = async () => {
     setSavingPrefs(true)
@@ -228,6 +305,7 @@ export default function SettingsPage() {
         <div className="flex gap-2 mb-8 overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
           {[
             { key: 'prefs', label: 'settings.displayPrefs' },
+            { key: 'university', label: 'university.title' },
             ...(hasTaught ? [{ key: 'teaching', label: 'settings.teachingDefaults' }] : []),
             { key: 'password', label: 'settings.changePassword' },
             { key: 'data', label: 'settings.yourData' },
@@ -399,6 +477,76 @@ export default function SettingsPage() {
             {deleting ? t('settings.deleting') : t('settings.deleteAccount')}
           </button>
         </div>
+        )}
+
+        {tab === 'university' && (
+          <div className="space-y-6">
+            <div className="bg-white border-2 border-navy/15 rounded-xl p-5">
+              <p className="font-display font-bold text-navy mb-1">{t('university.title')}</p>
+              <p className="text-navy/60 text-sm mb-4">{t('university.subtitle')}</p>
+
+              {user.university_verified_at ? (
+                <p className="text-brand-teal font-bold text-sm">
+                  🎓 {user.university_domain} · {t('university.verifiedAt', {
+                    date: new Date(user.university_verified_at).toLocaleDateString()
+                  })}
+                </p>
+              ) : (
+                <>
+                  <label className="block text-navy/70 text-sm font-bold mb-1">{t('university.emailLabel')}</label>
+                  <input type="email" value={uniEmail} onChange={e => setUniEmail(e.target.value)}
+                    placeholder={uniDomains[0] ? `you@${uniDomains[0].domain}` : ''}
+                    className="w-full border-2 border-navy/20 rounded-full px-4 py-2 text-sm mb-3 focus:border-brand-red focus:outline-none"/>
+                  <button onClick={sendUniVerification} disabled={uniBusy || !uniEmail.trim()}
+                    className="bg-brand-red text-white px-5 py-2 rounded-full text-sm font-bold border-2 border-navy disabled:opacity-50 hover:bg-brand-red-dark transition-colors">
+                    {uniBusy ? t('university.sending') : t('university.send')}
+                  </button>
+                  {/* Naming the supported universities up front saves someone
+                      typing an address that can never work. */}
+                  {uniDomains.length > 0 && (
+                    <p className="text-navy/40 text-xs mt-3">{uniDomains.map(d => d.name).join(' · ')}</p>
+                  )}
+                </>
+              )}
+              {uniMessage && <p className="text-navy/60 text-sm mt-3">{uniMessage}</p>}
+            </div>
+
+            <div className="bg-white border-2 border-navy/15 rounded-xl p-5">
+              <p className="font-display font-bold text-navy mb-1">{t('university.recordTitle')}</p>
+              <p className="text-navy/60 text-sm mb-4">{t('university.recordSubtitle')}</p>
+
+              {recordToken ? (
+                <>
+                  <input readOnly value={`${window.location.origin}/record/${recordToken}`}
+                    onFocus={e => e.target.select()}
+                    className="w-full border-2 border-navy/20 rounded-full px-4 py-2 text-xs mb-3 text-navy/70"/>
+                  <div className="flex gap-2 flex-wrap">
+                    <button onClick={() => {
+                      navigator.clipboard?.writeText(`${window.location.origin}/record/${recordToken}`)
+                      setCopied(true)
+                    }}
+                      className="bg-navy text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
+                      {copied ? t('university.recordCopied') : t('university.recordCopy')}
+                    </button>
+                    <button onClick={createRecordLink} disabled={recordBusy}
+                      className="bg-white text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy/30 hover:border-navy disabled:opacity-50">
+                      {t('university.recordRotate')}
+                    </button>
+                    <button onClick={revokeRecordLink} disabled={recordBusy}
+                      className="text-brand-red text-sm font-bold hover:underline px-2 disabled:opacity-50">
+                      {t('university.recordRevoke')}
+                    </button>
+                  </div>
+                  <p className="text-navy/40 text-xs mt-3">{t('university.recordRotateNote')}</p>
+                </>
+              ) : (
+                <button onClick={createRecordLink} disabled={recordBusy}
+                  className="bg-brand-red text-white px-5 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
+                  {t('university.recordCreate')}
+                </button>
+              )}
+            </div>
+          </div>
         )}
       </div>
     </main>
