@@ -24,7 +24,7 @@ export const metadata = {
 }
 
 export default async function ResourcesPage() {
-  let resources = []
+  let resources = null
   try {
     const res = await fetch(`${API}/api/resources`, { next: { revalidate: 3600 } })
     if (res.ok) {
@@ -32,9 +32,12 @@ export default async function ResourcesPage() {
       resources = Array.isArray(data) ? data : []
     }
   } catch (e) {
-    // The client fetches on mount when handed an empty list, so a failure here
-    // costs the crawler its links but never blocks a visitor.
+    // The client refetches when the server never got an answer, so a failure
+    // here costs the crawler its links but never blocks a visitor.
     console.warn('resources: server fetch failed', e.message)
   }
-  return <ResourcesGridClient initialResources={resources} />
+  // Same distinction the classes page needs: an empty result is not the same
+  // as no result. Without it, a grid with no published guides would render its
+  // loading state to crawlers rather than its empty state.
+  return <ResourcesGridClient initialResources={resources || []} serverFetched={resources !== null} />
 }

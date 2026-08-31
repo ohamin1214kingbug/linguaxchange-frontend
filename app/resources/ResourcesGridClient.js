@@ -16,15 +16,15 @@ const GRID_LEVELS = LEVELS.slice(0, 4)
 // "Loading" and contained no link to any guide — leaving the four
 // server-rendered guide pages with no internal inbound links at all, findable
 // only through the sitemap.
-export default function ResourcesGridClient({ initialResources = [] }) {
+export default function ResourcesGridClient({ initialResources = [], serverFetched = false }) {
   const { t } = useLanguage()
   const [resources, setResources] = useState(initialResources)
-  const [loading, setLoading] = useState(!initialResources.length)
+  const [loading, setLoading] = useState(!serverFetched)
 
   useEffect(() => {
     // The server already fetched this; refetching would only repeat a request
     // whose answer is already on screen.
-    if (initialResources.length) return
+    if (serverFetched) return
     fetch(`${API}/api/resources`)
       .then(r => r.json())
       .then(d => setResources(Array.isArray(d) ? d : []))

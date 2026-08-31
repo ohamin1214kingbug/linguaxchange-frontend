@@ -24,7 +24,7 @@ async function getClasses(searchParams) {
     const res = await fetch(`${API}/api/classes?${params.toString()}`, {
       next: { revalidate: 300 },
     })
-    if (!res.ok) return []
+    if (!res.ok) return null
     const data = await res.json()
     // The same filter the client applies. Without it the server would render
     // classes that already finished — pages advertising sessions a visitor
@@ -35,7 +35,7 @@ async function getClasses(searchParams) {
     // The client fetches on mount regardless, so a failure here costs the
     // crawler its content but never blocks a real visitor.
     console.warn('classes: server fetch failed', e.message)
-    return []
+    return null
   }
 }
 
@@ -58,5 +58,20 @@ export const metadata = {
 export default async function ClassesPage({ searchParams }) {
   const sp = await searchParams
   const classes = await getClasses(sp)
-  return <ClassesBrowseClient initialClasses={classes} />
+  // serverFetched tells the client the difference between "the server looked
+  // and there is nothing" and "the server never got an answer". Without it a
+  // legitimately empty result looks identical to no data, and the page renders
+  // its loading state to crawlers forever — on exactly the filtered URLs the
+  // study guides link to.
+  // The filters go down as props rather than being read from window.location
+  // in an effect: the server already parsed them, and without them its render
+  // says a generic "No classes yet" where it should name what was searched for.
+  return (
+    <ClassesBrowseClient
+      initialClasses={classes || []}
+      serverFetched={classes !== null}
+      initialLanguage={sp?.language ? String(sp.language).toUpperCase() : 'all'}
+      initialLevel={sp?.level ? String(sp.level).toUpperCase() : 'all'}
+    />
+  )
 }

@@ -14,14 +14,14 @@ const API = 'https://linguaxchange-backend-production.up.railway.app'
 // the listings into the server-rendered HTML — a client component is still
 // prerendered on the server, but the useEffect that fetches them never runs
 // during that pass, so this page used to ship an empty list to crawlers.
-export default function ClassesBrowseClient({ initialClasses = [] }) {
+export default function ClassesBrowseClient({ initialClasses = [], serverFetched = false, initialLanguage = 'all', initialLevel = 'all' }) {
   const { t } = useLanguage()
   const [classes, setClasses] = useState(initialClasses)
   const [teacherOptions, setTeacherOptions] = useState([])
-  const [loading, setLoading] = useState(!initialClasses.length)
+  const [loading, setLoading] = useState(!serverFetched)
   const [tab, setTab] = useState('classes')
-  const [filter, setFilter] = useState('all')
-  const [levelFilter, setLevelFilter] = useState('all')
+  const [filter, setFilter] = useState(initialLanguage)
+  const [levelFilter, setLevelFilter] = useState(initialLevel)
   const [teacherFilter, setTeacherFilter] = useState('all')
   const [search, setSearch] = useState('')
   const [joining, setJoining] = useState(null)
@@ -50,18 +50,6 @@ export default function ClassesBrowseClient({ initialClasses = [] }) {
       })
 
     setMounted(true)
-
-    // Arrived from a study guide, which links here already narrowed to that
-    // language and level. Read off window.location rather than
-    // useSearchParams(), which would drag a Suspense boundary into an
-    // otherwise plain client page — the same call the class creation page
-    // makes. Unknown values are harmless: they return no classes, and the
-    // dropdowns still let the visitor widen the search.
-    const params = new URLSearchParams(window.location.search)
-    const lang = params.get('language')
-    const level = params.get('level')
-    if (lang) setFilter(lang.toUpperCase())
-    if (level) setLevelFilter(level.toUpperCase())
 
     const stored = localStorage.getItem('user')
     const token = localStorage.getItem('token')
