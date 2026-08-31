@@ -60,6 +60,11 @@ export default function SettingsPage() {
   const [recordToken, setRecordToken] = useState(null)
   const [recordBusy, setRecordBusy] = useState(false)
   const [copied, setCopied] = useState(false)
+  // The cached `user` in localStorage holds only id, email and first_name —
+  // that is all the login response returns — so the verified state has to come
+  // from the profile fetch, not from `user`. Reading it off `user` would show
+  // a verified member the "enter your address" form forever.
+  const [uniState, setUniState] = useState(null)
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
@@ -69,6 +74,13 @@ export default function SettingsPage() {
     setUser(u)
     fetch(`${API}/api/users/${u.id}`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())
+      .then(data => {
+        setUniState({
+          domain: data.university_domain || null,
+          verifiedAt: data.university_verified_at || null,
+        })
+        return data
+      })
       .then(data => setPrefs({
         timezone: data.timezone || detectTimezone() || '',
         timezone_source: data.timezone_source || 'auto',
@@ -90,6 +102,14 @@ export default function SettingsPage() {
       .then(r => r.json())
       .then(data => setHasTaught(Array.isArray(data) && data.length > 0))
       .catch(() => {})
+
+    // Without this, recordToken is null on every load and the button says
+    // "Create share link" even for someone who already has one — pressing it
+    // rotates the URL they already gave to a university office.
+    fetch(`${API}/api/records/share`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => d && setRecordToken(d.token))
+      .catch(e => console.warn('record link: could not load', e.message))
 
     fetch(`${API}/api/university/domains`)
       .then(r => r.json())
@@ -485,10 +505,10 @@ export default function SettingsPage() {
               <p className="font-display font-bold text-navy mb-1">{t('university.title')}</p>
               <p className="text-navy/60 text-sm mb-4">{t('university.subtitle')}</p>
 
-              {user.university_verified_at ? (
+              {uniState?.verifiedAt ? (
                 <p className="text-brand-teal font-bold text-sm">
-                  🎓 {user.university_domain} · {t('university.verifiedAt', {
-                    date: new Date(user.university_verified_at).toLocaleDateString()
+                  🎓 {uniState.domain} · {t('university.verifiedAt', {
+                    date: new Date(uniState.verifiedAt).toLocaleDateString()
                   })}
                 </p>
               ) : (
@@ -528,7 +548,8 @@ export default function SettingsPage() {
                       className="bg-navy text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
                       {copied ? t('university.recordCopied') : t('university.recordCopy')}
                     </button>
-                    <button onClick={createRecordLink} disabled={recordBusy}
+                    <button onClick={() => window.confirm(t('university.recordRotateNote')) && createRecordLink()}
+                      disabled={recordBusy}
                       className="bg-white text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy/30 hover:border-navy disabled:opacity-50">
                       {t('university.recordRotate')}
                     </button>
