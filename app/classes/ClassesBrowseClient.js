@@ -154,6 +154,23 @@ export default function ClassesBrowseClient({ initialClasses = [] }) {
 
   const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
+  // "Spanish B1", "Spanish", "B1", or empty when nothing is filtered — covers
+  // every combination without needing a separate string for each.
+  const emptyLabel = [
+    filter !== 'all' ? LANGS[filter]?.name : null,
+    levelFilter !== 'all' ? levelFilter : null,
+  ].filter(Boolean).join(' ')
+
+  // Carries whatever is filtered into the class form, so someone who can teach
+  // this level starts with it already chosen. Empty values are left out rather
+  // than sent blank.
+  const teachThisHref = '/classes/create?' + new URLSearchParams(
+    Object.fromEntries(Object.entries({
+      language_code: filter !== 'all' ? filter : '',
+      level: levelFilter !== 'all' ? levelFilter : '',
+    }).filter(([, v]) => v))
+  ).toString()
+
   return (
     <main className="min-h-screen bg-cream">
       <Navbar />
@@ -277,12 +294,30 @@ export default function ClassesBrowseClient({ initialClasses = [] }) {
               </div>
             </div>
           ))}
+          {/* A guide page links straight here already filtered to its own
+              language and level, so this is what its reader sees when nobody
+              teaches that combination yet. A grey line of text threw that
+              visitor away; asking for the class captures them instead, and the
+              request board is already one tab across with the same filters. */}
           {!loading && classes.length === 0 && (
-            <p className="text-navy/40 text-center py-12">
-              {(filter !== 'all' || levelFilter !== 'all' || teacherFilter !== 'all' || search.trim())
-                ? t('classes.noClassesMatch')
-                : t('classes.noClassesYet')}
-            </p>
+            <div className="bg-white border-2 border-navy rounded-2xl p-6 md:p-8 text-center">
+              <p className="font-display font-extrabold text-navy text-lg mb-2">
+                {emptyLabel
+                  ? t('classes.emptyFilteredTitle', { what: emptyLabel })
+                  : t('classes.emptyTitle')}
+              </p>
+              <p className="text-navy/60 text-sm mb-5 max-w-md mx-auto">{t('classes.emptyBody')}</p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button onClick={() => setTab('requests')}
+                  className="bg-brand-red text-white px-5 py-2.5 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">
+                  {t('classes.emptyRequestCta')}
+                </button>
+                <a href={teachThisHref}
+                  className="text-navy/70 text-sm font-bold hover:text-navy underline">
+                  {t('classes.emptyTeachCta')}
+                </a>
+              </div>
+            </div>
           )}
         </div>
         </>
