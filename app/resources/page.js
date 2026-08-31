@@ -1,85 +1,40 @@
-'use client'
-import { useState, useEffect } from 'react'
-import { useLanguage } from '../../lib/i18n/LanguageContext'
-import { languageOptions, LEVELS } from '../../lib/languages'
-import LanguageSwitcher from '../../components/LanguageSwitcher'
+import ResourcesGridClient from './ResourcesGridClient'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
+const SITE = 'https://linguaxchange.com'
 
-// Only the levels a guide could plausibly exist for. C1 and C2 are in the
-// schema but showing empty columns for them would make the grid look
-// abandoned rather than growing.
-const GRID_LEVELS = LEVELS.slice(0, 4)
+// Guides change rarely — a level's contents are stable for months — so this is
+// the same hour the sitemap uses.
+export const revalidate = 3600
 
-export default function Resources() {
-  const { t } = useLanguage()
-  const [resources, setResources] = useState([])
-  const [loading, setLoading] = useState(true)
+// English, like the guide pages themselves: this runs on the server, where the
+// translation context is a client-side React provider that does not exist. The
+// visitor still gets their own language once the grid hydrates.
+export const metadata = {
+  title: 'Free Spanish study guides | LinguaXchange',
+  description:
+    'What to study at every CEFR level, written by LinguaXchange. Free PDF guides for Spanish A1 to B2 — no account needed.',
+  alternates: { canonical: `${SITE}/resources` },
+  openGraph: {
+    title: 'Free study guides',
+    description: 'What to study at every level. Free PDF guides, no account needed.',
+    url: `${SITE}/resources`,
+    type: 'website',
+  },
+}
 
-  useEffect(() => {
-    fetch(`${API}/api/resources`)
-      .then(r => r.json())
-      .then(d => setResources(Array.isArray(d) ? d : []))
-      .catch(e => console.warn('resources: could not load', e.message))
-      .finally(() => setLoading(false))
-  }, [])
-
-  const languages = languageOptions(t)
-  const has = (code, level) =>
-    resources.some(r => r.language_code === code && r.level === level)
-
-  return (
-    <main className="min-h-screen bg-cream">
-      <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
-        <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
-        <LanguageSwitcher />
-      </nav>
-
-      <div className="max-w-4xl mx-auto px-4 md:px-8 py-12">
-        <h1 className="font-display font-extrabold text-3xl md:text-4xl text-navy mb-2">{t('resources.title')}</h1>
-        <p className="text-navy/60 mb-10 max-w-xl">{t('resources.subtitle')}</p>
-
-        {loading && <p className="text-navy/40">{t('common.loading')}</p>}
-
-        {!loading && (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr>
-                  <th className="text-left text-navy/40 text-xs font-bold uppercase tracking-wide pb-3 pr-4"></th>
-                  {GRID_LEVELS.map(level => (
-                    <th key={level} className="text-navy/40 text-xs font-bold uppercase tracking-wide pb-3 px-2">{level}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {languages.map(lang => (
-                  <tr key={lang.code} className="border-t border-navy/10">
-                    <td className="py-3 pr-4 font-bold text-navy whitespace-nowrap">
-                      <span className="mr-2">{lang.flag}</span>{lang.name}
-                    </td>
-                    {GRID_LEVELS.map(level => (
-                      <td key={level} className="py-3 px-2 text-center">
-                        {has(lang.code, level) ? (
-                          <a href={`/resources/${lang.code.toLowerCase()}/${level.toLowerCase()}`}
-                            className="inline-block bg-brand-yellow/20 text-navy border-2 border-navy px-4 py-1.5 rounded-full text-sm font-bold hover:bg-brand-yellow/40 transition-colors">
-                            {level}
-                          </a>
-                        ) : (
-                          // Greyed and unlinked rather than hidden, so sparse
-                          // coverage reads as a grid still filling up instead
-                          // of a broken page.
-                          <span className="inline-block text-navy/20 text-xs px-2 py-1.5" title={t('resources.comingSoon')}>—</span>
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    </main>
-  )
+export default async function ResourcesPage() {
+  let resources = []
+  try {
+    const res = await fetch(`${API}/api/resources`, { next: { revalidate: 3600 } })
+    if (res.ok) {
+      const data = await res.json()
+      resources = Array.isArray(data) ? data : []
+    }
+  } catch (e) {
+    // The client fetches on mount when handed an empty list, so a failure here
+    // costs the crawler its links but never blocks a visitor.
+    console.warn('resources: server fetch failed', e.message)
+  }
+  return <ResourcesGridClient initialResources={resources} />
 }

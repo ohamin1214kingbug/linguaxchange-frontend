@@ -32,6 +32,11 @@ export default function ClassesBrowseClient({ initialClasses = [] }) {
   // Session times render in UTC on the server and on the first client render so
   // the two agree, then switch to the viewer's timezone once mounted.
   const [mounted, setMounted] = useState(false)
+  // The server list now paints at hydration, before the enrollment check has
+  // returned. Until it does, joinedClassIds is empty and a class you are
+  // already in renders a Join button — clicking it fires a request the backend
+  // correctly rejects, showing an error for a reasonable action.
+  const [enrollmentsChecked, setEnrollmentsChecked] = useState(false)
 
   // Unfiltered, fetched once — used only to populate the teacher dropdown so
   // picking a teacher doesn't shrink the dropdown's own option list.
@@ -63,7 +68,16 @@ export default function ClassesBrowseClient({ initialClasses = [] }) {
     if (stored && token) {
       const u = JSON.parse(stored)
       setCurrentUser(u)
-      fetchJoinedClassIds(token).then(setJoinedClassIds)
+      fetchJoinedClassIds(token)
+        .then(setJoinedClassIds)
+        .finally(() => setEnrollmentsChecked(true))
+    } else {
+      // Nobody to check for. Starting false rather than true is deliberate: the
+      // server cannot know whether a token exists, so the safe default is the
+      // one that is never wrongly enabled. The cost is that the button is
+      // briefly disabled on first paint for everyone, cleared as soon as this
+      // effect runs.
+      setEnrollmentsChecked(true)
     }
   }, [])
 
@@ -253,7 +267,7 @@ export default function ClassesBrowseClient({ initialClasses = [] }) {
                     <>
                       <span className="text-navy/70 text-sm font-bold">{t('classes.oneCredit')}</span>
                       <button onClick={() => joinClass(cls)}
-                        disabled={joining === cls.id}
+                        disabled={joining === cls.id || !enrollmentsChecked}
                         className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
                         {joining === cls.id ? t('classes.joining') : t('classes.joinClass')}
                       </button>
