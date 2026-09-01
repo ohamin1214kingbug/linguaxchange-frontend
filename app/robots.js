@@ -17,6 +17,9 @@ export default function robots() {
         '/auth/',
         '/classroom/',
         '/teachers/',
+        // Participation records name a real person and list their activity.
+        // The link is shared deliberately by that person, never discovered.
+        '/record/',
       ],
     },
     sitemap: `${BASE}/sitemap.xml`,
