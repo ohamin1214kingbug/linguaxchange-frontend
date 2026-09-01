@@ -57,6 +57,7 @@ export default function SettingsPage() {
   const [uniDomains, setUniDomains] = useState([])
   const [uniBusy, setUniBusy] = useState(false)
   const [uniMessage, setUniMessage] = useState('')
+  const [uniSent, setUniSent] = useState(false)
   const [recordToken, setRecordToken] = useState(null)
   const [recordBusy, setRecordBusy] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -133,7 +134,13 @@ export default function SettingsPage() {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: uniEmail }),
       })
-      setUniMessage(res.ok ? t('university.sent') : await readError(res, 'Could not send'))
+      if (res.ok) {
+        setUniSent(true)
+        setUniMessage(t('university.sent'))
+      } else {
+        setUniSent(false)
+        setUniMessage(await readError(res, 'Could not send'))
+      }
     } catch (e) {
       setUniMessage('Could not send')
     } finally {
@@ -517,10 +524,25 @@ export default function SettingsPage() {
                   <input type="email" value={uniEmail} onChange={e => setUniEmail(e.target.value)}
                     placeholder={uniDomains[0] ? `you@${uniDomains[0].domain}` : ''}
                     className="w-full border-2 border-navy/20 rounded-full px-4 py-2 text-sm mb-3 focus:border-brand-red focus:outline-none"/>
-                  <button onClick={sendUniVerification} disabled={uniBusy || !uniEmail.trim()}
-                    className="bg-brand-red text-white px-5 py-2 rounded-full text-sm font-bold border-2 border-navy disabled:opacity-50 hover:bg-brand-red-dark transition-colors">
-                    {uniBusy ? t('university.sending') : t('university.send')}
-                  </button>
+                  {uniSent ? (
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <span className="inline-block bg-brand-teal/10 text-brand-teal px-5 py-2 rounded-full text-sm font-bold border-2 border-brand-teal/30">
+                        {t('university.sentButton')}
+                      </span>
+                      {/* Still reachable: the address may have been mistyped, or
+                          the mail may not arrive. A dead end here would leave
+                          the member with no way forward but a page reload. */}
+                      <button onClick={() => { setUniSent(false); setUniMessage('') }}
+                        className="text-navy/60 text-sm font-bold hover:text-navy underline">
+                        {t('university.resend')}
+                      </button>
+                    </div>
+                  ) : (
+                    <button onClick={sendUniVerification} disabled={uniBusy || !uniEmail.trim()}
+                      className="bg-brand-red text-white px-5 py-2 rounded-full text-sm font-bold border-2 border-navy disabled:opacity-50 hover:bg-brand-red-dark transition-colors">
+                      {uniBusy ? t('university.sending') : t('university.send')}
+                    </button>
+                  )}
                   {/* Naming the supported universities up front saves someone
                       typing an address that can never work. */}
                   {uniDomains.length > 0 && (
