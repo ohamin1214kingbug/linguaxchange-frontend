@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import PhoneInput, { isValidPhoneNumber, parsePhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 import { getExampleNumber, getCountryCallingCode } from 'libphonenumber-js'
@@ -11,9 +11,10 @@ import countryNamesEs from 'react-phone-number-input/locale/es'
 import countryNamesDe from 'react-phone-number-input/locale/de'
 import countryNamesPt from 'react-phone-number-input/locale/pt'
 
-// Maps the site's UI language to a sensible default country in the picker
-// (matches the flags already used for these languages elsewhere in the
-// app) so most users don't have to hunt for their own country first.
+// Fallback only. The UI language is NOT where someone's phone is: a Korean
+// living in Madrid reading the site in English was shown +44. This map is
+// used only when the browser reports no region at all, which happens for
+// bare tags like 'en'.
 const DEFAULT_COUNTRY_BY_LANGUAGE = {
   KO: 'KR',
   ES: 'ES',
@@ -72,10 +73,40 @@ function PhoneHint({ value, country, t }) {
   )
 }
 
+// The browser's own region, from its locale tags — 'es-ES' gives ES. Uses
+// Intl rather than a hand-rolled table, and walks every tag because the first
+// one may carry no region.
+function browserRegion() {
+  if (typeof navigator === 'undefined') return null
+  const tags = navigator.languages?.length ? navigator.languages : [navigator.language]
+  for (const tag of tags) {
+    try {
+      const region = new Intl.Locale(tag).region
+      if (region) return region
+    } catch (e) {
+      // Malformed tag. Try the next one rather than giving up.
+    }
+  }
+  return null
+}
+
 export default function PhoneNumberField({ value, onChange, language, disabled, placeholder }) {
   const { t } = useLanguage()
-  const defaultCountry = DEFAULT_COUNTRY_BY_LANGUAGE[language] || 'US'
-  const [country, setCountry] = useState(defaultCountry)
+  const languageCountry = DEFAULT_COUNTRY_BY_LANGUAGE[language] || 'US'
+  const [defaultCountry, setDefaultCountry] = useState(languageCountry)
+  const [country, setCountry] = useState(languageCountry)
+
+  // After mount, not during render: navigator does not exist on the server, so
+  // reading it while rendering would make the server and client disagree and
+  // break hydration.
+  useEffect(() => {
+    if (value) return  // never move the picker out from under a typed number
+    const region = browserRegion()
+    if (region && region !== languageCountry) {
+      setDefaultCountry(region)
+      setCountry(region)
+    }
+  }, [])
 
   return (
     <div className="phone-field">
