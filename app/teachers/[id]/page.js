@@ -274,6 +274,17 @@ export default function TeacherProfile() {
               {teacher.nationality && (
                 <p className="text-navy/50 text-sm mt-0.5">{teacher.nationality}</p>
               )}
+              {teacher?.university_verified_at && (
+                /* The date is the point: a university address keeps working after
+                   graduation, so the badge states when it was checked rather than
+                   implying the person is enrolled today. */
+                <p className="text-brand-teal font-bold text-sm mt-1">
+                  🎓 {teacher.university_domain}
+                  <span className="text-navy/40 font-medium">
+                    {' · '}{new Date(teacher.university_verified_at).toLocaleDateString()}
+                  </span>
+                </p>
+              )}
               <div className="flex items-center gap-3 mt-2 flex-wrap">
                 {teacher.teach_language && LANGS[teacher.teach_language] && (
                   <span className="bg-brand-red/10 text-navy px-3 py-1 rounded-full text-sm font-bold border-2 border-navy/10">

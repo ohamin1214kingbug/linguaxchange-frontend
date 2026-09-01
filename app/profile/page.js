@@ -173,6 +173,17 @@ export default function ProfilePage() {
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">{t('profile.yourProfile')}</h1>
         <p className="text-navy/60 mb-2">{t('profile.howOthersSeeYou')}</p>
+        {profile?.university_verified_at && (
+          /* The date is the point: a university address keeps working after
+             graduation, so the badge states when it was checked rather than
+             implying the person is enrolled today. */
+          <p className="text-brand-teal font-bold text-sm mt-1">
+            🎓 {profile.university_domain}
+            <span className="text-navy/40 font-medium">
+              {' · '}{new Date(profile.university_verified_at).toLocaleDateString()}
+            </span>
+          </p>
+        )}
         <p className="text-navy/40 text-sm mb-4">
           {profile.longest_streak > 0
             ? `${t('profile.longestStreak')}: ${t('profile.weeksCount', { n: profile.longest_streak })}`
