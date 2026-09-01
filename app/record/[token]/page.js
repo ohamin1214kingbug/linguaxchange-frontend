@@ -18,7 +18,16 @@ export const metadata = {
 }
 
 const hours = mins => (mins / 60).toFixed(mins % 60 === 0 ? 0 : 1)
-const day = iso => (iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : null)
+// timeZone pinned, not just locale. Without it the date is formatted in the
+// SERVER's zone: a session at 00:30 UTC renders as the previous day on any
+// host west of UTC. Vercel runs UTC today, so this changes nothing now — but
+// on a document a university is meant to trust, the date should not depend on
+// where the process happens to run.
+const day = iso => (iso
+  ? new Date(iso).toLocaleDateString('en-GB', {
+      day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC',
+    })
+  : null)
 
 export default async function RecordPage({ params }) {
   const { token } = await params
