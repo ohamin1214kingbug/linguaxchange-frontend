@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
-import { detectTimezone } from '../../lib/timezone'
+import { detectTimezone, formatDay } from '../../lib/timezone'
 import Navbar from '../../components/Navbar'
 import { CLASS_SIZE_OPTIONS } from '../../lib/classSize'
 
@@ -508,7 +508,7 @@ export default function SettingsPage() {
               {uniState?.verifiedAt ? (
                 <p className="text-brand-teal font-bold text-sm">
                   🎓 {uniState.domain} · {t('university.verifiedAt', {
-                    date: new Date(uniState.verifiedAt).toLocaleDateString()
+                    date: formatDay(uniState.verifiedAt)
                   })}
                 </p>
               ) : (

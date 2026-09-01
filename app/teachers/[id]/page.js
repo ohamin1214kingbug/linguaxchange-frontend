@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import Navbar from '../../../components/Navbar'
-import { formatInTimezone } from '../../../lib/timezone'
+import { formatInTimezone, formatDay } from '../../../lib/timezone'
 import { nextSessionDate, lastSessionDate } from '../../../lib/classSchedule'
 import { fetchJoinedClassIds } from '../../../lib/enrollments'
 
@@ -281,7 +281,7 @@ export default function TeacherProfile() {
                 <p className="text-brand-teal font-bold text-sm mt-1">
                   🎓 {teacher.university_domain}
                   <span className="text-navy/40 font-medium">
-                    {' · '}{new Date(teacher.university_verified_at).toLocaleDateString()}
+                    {' · '}{formatDay(teacher.university_verified_at)}
                   </span>
                 </p>
               )}

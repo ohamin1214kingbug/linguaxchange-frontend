@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { formatDay } from '../../lib/timezone'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
@@ -180,7 +181,7 @@ export default function ProfilePage() {
           <p className="text-brand-teal font-bold text-sm mt-1">
             🎓 {profile.university_domain}
             <span className="text-navy/40 font-medium">
-              {' · '}{new Date(profile.university_verified_at).toLocaleDateString()}
+              {' · '}{formatDay(profile.university_verified_at)}
             </span>
           </p>
         )}
