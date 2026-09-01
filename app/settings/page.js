@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { logout } from '../../lib/auth'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import { detectTimezone, formatDay } from '../../lib/timezone'
@@ -327,7 +328,19 @@ export default function SettingsPage() {
       <Navbar />
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
         <h1 className="font-display font-extrabold text-3xl text-navy mb-1">{t('settings.title')}</h1>
-        <p className="text-navy/50 text-sm mb-6">{t('settings.signedInAs', { email: user.email })}</p>
+        {/* The line that tells you which account you are in is the right place
+            to change it — this is exactly where someone notices they are signed
+            in as the wrong one. Confirms first, because switching is a logout
+            and an accidental click would otherwise end the session. */}
+        <p className="text-navy/50 text-sm mb-6">
+          {t('settings.signedInAs', { email: user.email })}
+          {' · '}
+          <button type="button"
+            onClick={() => window.confirm(t('common.logoutConfirm')) && logout('/auth/login')}
+            className="text-brand-red font-bold hover:underline">
+            {t('settings.switchAccount')}
+          </button>
+        </p>
 
         <div className="flex gap-2 mb-8 overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
           {[
