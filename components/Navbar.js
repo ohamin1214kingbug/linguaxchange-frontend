@@ -49,6 +49,7 @@ export default function Navbar() {
   const [user, setUser] = useState(null)
   const [credits, setCredits] = useState(null)
   const [streak, setStreak] = useState(null)
+  const [needsPhone, setNeedsPhone] = useState(false)
   const [notifications, setNotifications] = useState([])
   const [showCreditsTip, setShowCreditsTip] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
@@ -84,6 +85,12 @@ export default function Navbar() {
     fetchCredits()
     fetch(`${API}/api/users/${parsedUser.id}`, { headers }).then(r => r.json()).then(d => setStreak(d?.current_streak ?? 0))
 
+    // A Google sign-up is sent to /auth/verify-phone once, on its very first
+    // login (app/auth/callback/page.js gates on isNewUser). Skip it and there
+    // is no route back: nothing else in the app links there, so the account
+    // sits without its signup grant and without any way to claim it.
+    authed('/api/auth/me').then(d => d && setNeedsPhone(d.phone_verified === false))
+
     const fetchNotifications = () => {
       authed('/api/notifications').then(d => setNotifications(Array.isArray(d) ? d : []))
     }
@@ -115,6 +122,16 @@ export default function Navbar() {
     : t('common.bananasCount', { n: credits })
 
   return (
+    <>
+    {needsPhone && (
+      <div className="bg-brand-yellow/20 border-b-2 border-brand-yellow px-4 md:px-8 py-2.5 flex items-center justify-center gap-3 flex-wrap text-center">
+        <span className="text-navy text-sm font-medium">📱 {t('nav.verifyPhoneBanner')}</span>
+        <a href="/auth/verify-phone"
+          className="bg-navy text-white px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap hover:bg-navy/90 transition-colors">
+          {t('nav.verifyPhoneCta')}
+        </a>
+      </div>
+    )}
     <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
       <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
       <div className="flex gap-3 md:gap-4 items-center">
@@ -226,5 +243,6 @@ export default function Navbar() {
         )}
       </div>
     </nav>
+    </>
   )
 }
