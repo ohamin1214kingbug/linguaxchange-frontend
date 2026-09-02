@@ -121,29 +121,21 @@ export default function Navbar() {
     ? t('common.bananasCountOne')
     : t('common.bananasCount', { n: credits })
 
-  // The banana is the one invented concept on this site, and until now it was
-  // never explained anywhere — the homepage mentions "1 free banana" and
-  // leaves a stranger to guess. Shown once, on the first open of this menu,
-  // then never again.
+  // The banana is the one invented concept on this site, and the homepage
+  // mentions "1 free banana" without ever defining it. This panel is the
+  // definition, and it opens the credits menu.
   //
-  // Read in an effect rather than during render: localStorage does not exist
-  // on the server, and reading it while rendering would make the first client
-  // paint disagree with the server's and trip a hydration mismatch.
-  const [bananaExplained, setBananaExplained] = useState(true)
-  useEffect(() => {
-    try {
-      setBananaExplained(localStorage.getItem('bananaExplained') === '1')
-    } catch (e) {
-      // Private mode, or storage blocked. Treat as explained rather than
-      // showing the panel on every single open.
-      setBananaExplained(true)
-    }
-  }, [])
-
-  const dismissBananaExplainer = () => {
-    setBananaExplained(true)
-    try { localStorage.setItem('bananaExplained', '1') } catch (e) {}
-  }
+  // Deliberately not persisted. An earlier version remembered the dismissal
+  // in localStorage and showed the panel once ever; the site owner asked for
+  // it on every visit instead, on the grounds that almost nobody here has
+  // seen it yet and the explanation is the point. Plain component state
+  // resets on each page load, so the panel returns after every reload and
+  // stays dismissed while the visitor is on the page.
+  //
+  // The cost is a click for returning users on every load. Revisit if the
+  // site ever has enough repeat visitors for that to be the common case.
+  const [bananaExplained, setBananaExplained] = useState(false)
+  const dismissBananaExplainer = () => setBananaExplained(true)
 
   return (
     <>
