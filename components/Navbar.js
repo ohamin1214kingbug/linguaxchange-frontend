@@ -121,6 +121,30 @@ export default function Navbar() {
     ? t('common.bananasCountOne')
     : t('common.bananasCount', { n: credits })
 
+  // The banana is the one invented concept on this site, and until now it was
+  // never explained anywhere — the homepage mentions "1 free banana" and
+  // leaves a stranger to guess. Shown once, on the first open of this menu,
+  // then never again.
+  //
+  // Read in an effect rather than during render: localStorage does not exist
+  // on the server, and reading it while rendering would make the first client
+  // paint disagree with the server's and trip a hydration mismatch.
+  const [bananaExplained, setBananaExplained] = useState(true)
+  useEffect(() => {
+    try {
+      setBananaExplained(localStorage.getItem('bananaExplained') === '1')
+    } catch (e) {
+      // Private mode, or storage blocked. Treat as explained rather than
+      // showing the panel on every single open.
+      setBananaExplained(true)
+    }
+  }, [])
+
+  const dismissBananaExplainer = () => {
+    setBananaExplained(true)
+    try { localStorage.setItem('bananaExplained', '1') } catch (e) {}
+  }
+
   return (
     <>
     {needsPhone && (
@@ -164,19 +188,49 @@ export default function Navbar() {
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setShowCreditsTip(false)} />
                     <div className="absolute right-0 mt-2 bg-white border-2 border-navy rounded-xl z-20 w-64 shadow-lg overflow-hidden">
-                      <div className="px-4 py-3 border-b border-navy/10">
-                        <p className="font-display font-extrabold text-navy">
-                          {bananaLabel}
-                        </p>
-                        <p className="text-navy/60 text-xs mt-0.5">
-                          {credits <= LOW_BANANAS ? t('common.bananasLow') : t('common.creditsTip')}
-                        </p>
-                      </div>
-                      {/* Teaching is the only way to earn, so it leads when
-                          you're low — browsing costs a banana you don't have. */}
-                      <a href="/classes/create" className="block px-4 py-2.5 text-sm font-bold text-navy hover:bg-cream transition-colors">{t('classes.createClass')} →</a>
-                      <a href="/classes" className="block px-4 py-2.5 text-sm font-bold text-navy hover:bg-cream transition-colors">{t('classes.browseClasses')} →</a>
-                      <a href="/dashboard" className="block px-4 py-2.5 text-sm font-medium text-navy/70 hover:bg-cream transition-colors border-t border-navy/10">{t('dashboard.creditHistory')} →</a>
+                      {!bananaExplained ? (
+                        /* First open only. The links are deliberately not
+                           rendered yet: someone who has never been told what a
+                           banana is cannot make sense of "spend one to join",
+                           and a panel they can scroll past is a panel they
+                           will scroll past. */
+                        <div className="bg-brand-yellow/25 px-4 py-4 text-center">
+                          {/* The source PNG has no alpha, so the teal ground
+                              is baked in — cropped to a circle it reads as a
+                              deliberate badge rather than a pasted rectangle. */}
+                          <img src="/banana-monkey.png" alt=""
+                            className="w-16 h-16 rounded-full mx-auto mb-2 border-2 border-navy object-cover" />
+                          <p className="font-display font-extrabold text-navy text-sm">
+                            {t('common.bananaWhatTitle')}
+                          </p>
+                          <p className="text-navy text-xs mt-1.5 leading-relaxed">
+                            {t('common.bananaWhatRule')}
+                          </p>
+                          <p className="text-navy/60 text-xs mt-1">
+                            {t('common.bananaWhatNoMoney')}
+                          </p>
+                          <button onClick={dismissBananaExplainer}
+                            className="mt-3 w-full bg-navy text-white rounded-full py-2 text-sm font-bold hover:bg-navy/90 transition-colors">
+                            {t('common.bananaWhatGotIt')}
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="px-4 py-3 border-b border-navy/10">
+                            <p className="font-display font-extrabold text-navy">
+                              {bananaLabel}
+                            </p>
+                            <p className="text-navy/60 text-xs mt-0.5">
+                              {credits <= LOW_BANANAS ? t('common.bananasLow') : t('common.creditsTip')}
+                            </p>
+                          </div>
+                          {/* Teaching is the only way to earn, so it leads when
+                              you're low — browsing costs a banana you don't have. */}
+                          <a href="/classes/create" className="block px-4 py-2.5 text-sm font-bold text-navy hover:bg-cream transition-colors">{t('classes.createClass')} →</a>
+                          <a href="/classes" className="block px-4 py-2.5 text-sm font-bold text-navy hover:bg-cream transition-colors">{t('classes.browseClasses')} →</a>
+                          <a href="/dashboard" className="block px-4 py-2.5 text-sm font-medium text-navy/70 hover:bg-cream transition-colors border-t border-navy/10">{t('dashboard.creditHistory')} →</a>
+                        </>
+                      )}
                     </div>
                   </>
                 )}
