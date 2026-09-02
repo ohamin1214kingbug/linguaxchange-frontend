@@ -340,7 +340,7 @@ module.exports = {
 - [ ] **Step 4: Run the tests**
 
 Run: `npx jest tests/assignmentValidation.test.js`
-Expected: PASS, 12 tests
+Expected: PASS, 13 tests
 
 - [ ] **Step 5: Commit**
 
@@ -529,7 +529,7 @@ Add to the exports: `validateFeedback, CATEGORIES, MAX_NOTE, MAX_OVERALL, MAX_AN
 - [ ] **Step 4: Run the tests**
 
 Run: `npx jest tests/assignmentValidation.test.js`
-Expected: PASS, 25 tests
+Expected: PASS, 26 tests
 
 - [ ] **Step 5: Commit**
 
