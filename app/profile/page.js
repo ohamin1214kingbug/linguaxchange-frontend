@@ -1,4 +1,5 @@
 'use client'
+import { LEVELS, levelLabel } from '../../lib/languages'
 import { useState, useEffect } from 'react'
 import { formatDay } from '../../lib/timezone'
 import { useRouter } from 'next/navigation'
@@ -62,7 +63,10 @@ export default function ProfilePage() {
     { code: 'IT', flag: '🇮🇹', name: t('home.langItalian') },
   ]
 
-  const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', t('profile.native')]
+  // Built from the shared ladder rather than a seventh copy of it; the
+  // translated "Native" is appended here because lib/languages has no
+  // translator to call.
+  const LEVEL_OPTIONS = [...LEVELS, t('profile.native')]
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
@@ -315,13 +319,13 @@ export default function ProfilePage() {
               <div>
                 <label className="block text-sm font-bold text-navy mb-2">{t('profile.yourLevel')}</label>
                 <div className="flex gap-2 flex-wrap">
-                  {LEVELS.map(level => (
+                  {LEVEL_OPTIONS.map(level => (
                     <button key={level} onClick={() => setForm(f => ({ ...f, teach_level: level }))}
                       className={`px-4 py-2 rounded-full border-2 text-sm font-bold transition-colors
                         ${form.teach_level === level
                           ? 'border-navy bg-brand-red text-white'
                           : 'border-navy/15 text-navy hover:border-navy/40'}`}>
-                      {level}
+                      {LEVELS.includes(level) ? levelLabel(form.teach_language, level) : level}
                     </button>
                   ))}
                 </div>

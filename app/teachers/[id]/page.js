@@ -1,4 +1,5 @@
 'use client'
+import { levelLabel } from '../../../lib/languages'
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
@@ -200,7 +201,7 @@ export default function TeacherProfile() {
     <div>
       <div className="flex items-center gap-2 mb-1">
         <span>{LANGS[cls.language_code]?.flag}</span>
-        <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{cls.level}</span>
+        <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{levelLabel(cls.language_code, cls.level)}</span>
         <span className="text-navy/40 text-xs">{cls.duration_minutes} {t('classes.min')}</span>
       </div>
       <p className="font-bold text-navy text-sm">{cls.title}</p>

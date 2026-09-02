@@ -1,4 +1,5 @@
 'use client'
+import { levelLabel, LEVELS } from '../../lib/languages'
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
@@ -140,7 +141,9 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
     IT: { flag: '🇮🇹', name: t('home.langItalian') },
   }
 
-  const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+  // The level chips filter across every language at once, so they stay bare
+  // CEFR until Korean is the selected language — "B1 · TOPIK 3" on a chip that
+  // also matches Spanish classes would be claiming something false.
 
   // "Spanish B1", "Spanish", "B1", or empty when nothing is filtered — covers
   // every combination without needing a separate string for each.
@@ -197,7 +200,7 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
           {['all', ...LEVELS].map(level => (
             <button key={level} onClick={() => setLevelFilter(level)}
               className={`px-3 py-1.5 rounded-full text-xs font-bold border-2 transition-colors ${levelFilter === level ? 'bg-navy text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
-              {level === 'all' ? t('classes.allLevels') : level}
+              {level === 'all' ? t('classes.allLevels') : levelLabel(filter, level)}
             </button>
           ))}
         </div>
@@ -228,7 +231,7 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lg">{LANGS[cls.language_code]?.flag}</span>
-                    <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{cls.level}</span>
+                    <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{levelLabel(cls.language_code, cls.level)}</span>
                     <span className="bg-navy/5 text-navy/60 px-2 py-0.5 rounded-full text-xs font-medium">{cls.duration_minutes} {t('classes.min')}</span>
                   </div>
                   {/* The card's only link to the class for anyone who isn't its

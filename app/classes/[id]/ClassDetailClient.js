@@ -1,4 +1,5 @@
 'use client'
+import { levelLabel } from '../../../lib/languages'
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
@@ -165,7 +166,7 @@ export default function ClassDetailClient({ initialClass = null }) {
 
         <div className="flex items-center gap-2 mt-4 mb-1">
           <span className="text-lg">{LANGS[cls.language_code]?.flag}</span>
-          <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{cls.level}</span>
+          <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{levelLabel(cls.language_code, cls.level)}</span>
           <span className="bg-navy/5 text-navy/60 px-2 py-0.5 rounded-full text-xs font-medium">{cls.duration_minutes} {t('classes.min')}</span>
         </div>
         <h1 className="font-display font-extrabold text-3xl text-navy mb-6">{cls.title}</h1>

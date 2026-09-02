@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { levelLabel } from '../../../../lib/languages'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 const SITE = 'https://linguaxchange.com'
@@ -53,7 +54,7 @@ export default async function ResourceDetail({ params }) {
         <a href="/resources" className="text-brand-red font-bold text-sm hover:underline">← All study guides</a>
 
         <div className="flex gap-2 mt-6 mb-3">
-          <span className="bg-navy text-white text-xs font-bold px-3 py-1 rounded-full">{resource.level}</span>
+          <span className="bg-navy text-white text-xs font-bold px-3 py-1 rounded-full">{levelLabel(resource.language_code, resource.level)}</span>
           <span className="bg-white text-navy border-2 border-navy/20 text-xs font-bold px-3 py-1 rounded-full">{resource.language_code}</span>
         </div>
 
@@ -97,7 +98,7 @@ export default async function ResourceDetail({ params }) {
           </p>
           <a href={`/classes?language=${resource.language_code}&level=${resource.level}`}
             className="inline-block bg-navy text-white px-6 py-3 rounded-full font-bold border-2 border-navy hover:bg-navy/90 transition-colors">
-            See {resource.level} classes →
+            See {levelLabel(resource.language_code, resource.level)} classes →
           </a>
         </div>
       </div>

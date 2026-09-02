@@ -6,9 +6,8 @@ import Navbar from '../../../components/Navbar'
 import DateTimePicker, { toLocalValue } from '../../../components/DateTimePicker'
 import { asUtcDate } from '../../../lib/timezone'
 import { CLASS_SIZE_OPTIONS, DEFAULT_CLASS_SIZE } from '../../../lib/classSize'
-import { languageOptions } from '../../../lib/languages'
+import { languageOptions, LEVELS, levelLabel } from '../../../lib/languages'
 
-const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
 export default function CreateClass() {
   const router = useRouter()
@@ -195,7 +194,7 @@ export default function CreateClass() {
             <div className="bg-cream rounded-xl px-4 py-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
               <span className="text-navy/50">{t('classes.answeringRequest')}</span>
               <span className="font-bold text-navy">
-                {LANGUAGES.find(l => l.code === form.language_code)?.flag} {LANGUAGES.find(l => l.code === form.language_code)?.name} · {form.level} · {t('classes.studentsCount', { n: form.max_students })}
+                {LANGUAGES.find(l => l.code === form.language_code)?.flag} {LANGUAGES.find(l => l.code === form.language_code)?.name} · {levelLabel(form.language_code, form.level)} · {t('classes.studentsCount', { n: form.max_students })}
               </span>
             </div>
           ) : (
@@ -225,7 +224,7 @@ export default function CreateClass() {
                     ${form.level === level
                       ? 'border-navy bg-brand-red text-white'
                       : 'border-navy/15 text-navy hover:border-navy/40'}`}>
-                  {level}
+                  {levelLabel(form.language_code, level)}
                 </button>
               ))}
             </div>

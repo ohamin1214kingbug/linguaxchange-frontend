@@ -1,4 +1,5 @@
 'use client'
+import { LEVELS, levelLabel } from '../lib/languages'
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import DateTimePicker from './DateTimePicker'
@@ -6,7 +7,6 @@ import { formatInTimezone, asUtcDate } from '../lib/timezone'
 import { CLASS_SIZE_OPTIONS, DEFAULT_CLASS_SIZE } from '../lib/classSize'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
-const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
 // Mirrors utils/classRequests.js hoursLeft on the backend — the badge needs
 // it per-render, and asking the server for a countdown would be silly.
@@ -169,7 +169,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
               <label className={label}>{t('requests.levelLabel')}</label>
               <select value={form.level} onChange={e => setForm({ ...form, level: e.target.value })} className={field}>
                 <option value="">{t('requests.anyLevel')}</option>
-                {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
+                {LEVELS.map(l => <option key={l} value={l}>{levelLabel(form.language_code, l)}</option>)}
               </select>
             </div>
           </div>

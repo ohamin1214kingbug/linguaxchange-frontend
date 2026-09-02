@@ -7,9 +7,8 @@ import LanguageSwitcher from '../../../components/LanguageSwitcher'
 import { syncTimezone } from '../../../lib/timezone'
 import PhoneNumberField, { isValidPhoneNumber } from '../../../components/PhoneNumberField'
 import { countryOptions } from '../../../lib/countries'
-import { languageOptions } from '../../../lib/languages'
+import { languageOptions, LEVELS, levelLabel } from '../../../lib/languages'
 
-const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
 
 const TOTAL_STEPS = 5
 const API = 'https://linguaxchange-backend-production.up.railway.app'
@@ -482,7 +481,7 @@ export default function Register() {
                         ${form.teach_level === level
                           ? 'border-navy bg-brand-red text-white'
                           : 'border-navy/15 text-navy hover:border-navy/40'}`}>
-                      {level}
+                      {level === 'Native' ? level : levelLabel(form.teach_language, level)}
                     </button>
                   ))}
                 </div>
