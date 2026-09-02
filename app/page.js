@@ -49,10 +49,21 @@ export default function Home() {
                 a link here the study guides are reachable only by URL for
                 exactly the audience they were written for. */}
             <a href="/resources" className="text-navy/70 font-medium hover:text-navy">{t('nav.resources')}</a>
-            <a href="/auth/login" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.signIn')}</a>
+            {/* Sign in and Join free trade places at the sm breakpoint,
+                because five items do not fit at 375px and something has to
+                give.
+
+                Registering is already offered twice more on this page — the
+                hero's "Get started free" sits about 200px below this bar, and
+                the closing section repeats it. Signing in is offered nowhere
+                else. So below sm the nav spends its slot on the action that
+                has no other route, and a returning student on a phone can get
+                back into their account from the page a link drops them on.
+                Above sm both fit and both show. */}
+            <a href="/auth/login" className="text-navy/70 font-medium hover:text-navy">{t('common.signIn')}</a>
             <LanguageSwitcher />
             <a href="/auth/register"
-              className="bg-brand-red text-white px-3 py-2 sm:px-4 md:px-5 md:py-2.5 rounded-full text-sm md:text-base font-bold whitespace-nowrap border-2 border-navy hover:bg-brand-red-dark transition-colors">
+              className="hidden sm:block bg-brand-red text-white px-3 py-2 sm:px-4 md:px-5 md:py-2.5 rounded-full text-sm md:text-base font-bold whitespace-nowrap border-2 border-navy hover:bg-brand-red-dark transition-colors">
               {t('common.joinFree')}
             </a>
           </div>
