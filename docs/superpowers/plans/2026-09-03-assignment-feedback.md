@@ -1298,7 +1298,14 @@ git commit -m "Add the shared word-count rule and assignment translations"
 
 - [ ] **Step 1: Add the tab**
 
-In `app/classes/ClassesBrowseClient.js`, extend the tab strip:
+In `app/classes/ClassesBrowseClient.js`, add the import beside the existing
+component imports:
+
+```javascript
+import AssignmentBoard from '../../components/AssignmentBoard'
+```
+
+then extend the tab strip:
 
 ```javascript
 {[['classes', t('requests.tabClasses')],
