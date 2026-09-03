@@ -226,6 +226,14 @@ export default function Register() {
           last_name: form.last_name,
           nationality: form.nationality,
           bio: form.bio,
+          // These five were collected by this form and never sent, so the
+          // backend never saw them and four of the first five accounts ended
+          // up with no native language — no way to teach, and no supply.
+          teach_language: form.teach_language,
+          teach_level: form.teach_level,
+          learn_languages: form.learn_languages,
+          has_certificate: form.has_certificate,
+          certificate_explanation: form.certificate_explanation,
           phone_number: phone,
           verified_token: verifiedToken,
         })
