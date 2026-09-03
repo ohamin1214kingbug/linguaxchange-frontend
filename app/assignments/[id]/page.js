@@ -17,6 +17,9 @@ export default function AssignmentPage({ params }) {
   // almost never has it — this always ends up fetching, and that fetch is
   // the only source of truth, not a guess.
   const [teachLanguage, setTeachLanguage] = useState(undefined)
+  // Holds either a translation key or a raw server message; t() renders both
+  // (see LanguageContext), the same pattern the auth and settings pages use.
+  const [error, setError] = useState('')
 
   const load = () => {
     fetch(`${API}/api/assignments/${id}`)
@@ -50,12 +53,22 @@ export default function AssignmentPage({ params }) {
   const isStudent = user && user.id === request.student_id
   const canReview = user && teachLanguage !== undefined && teachLanguage === request.language_code
 
+  // The release can fail after the acknowledgement lands (500, retryable), and
+  // the reviewer's banana depends on the student clicking again — so the
+  // failure has to be visible instead of a silent reload that looks like success.
   const acknowledge = async () => {
-    await fetch(`${API}/api/assignments/${request.id}/acknowledge`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    })
-    load()
+    setError('')
+    try {
+      const res = await fetch(`${API}/api/assignments/${request.id}/acknowledge`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) { setError(data.error || 'common.connectionError'); return }
+      load()
+    } catch {
+      setError('common.connectionError')
+    }
   }
 
   return (
@@ -64,6 +77,10 @@ export default function AssignmentPage({ params }) {
       <main className="px-4 py-10 max-w-3xl mx-auto">
         <h1 className="font-display font-extrabold text-navy text-2xl mb-1">{request.prompt}</h1>
         <p className="text-navy/50 text-sm mb-6">{request.language_code}</p>
+
+        {error && (
+          <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{t(error)}</div>
+        )}
 
         {feedback ? (
           <FeedbackView request={request} feedback={feedback}
