@@ -100,7 +100,10 @@ export default function AnnotationEditor({ request, onSent }) {
         </div>
       ))}
 
-      <label className="block text-sm font-bold text-navy mb-2 mt-4">{t('assignments.overallLabel')}</label>
+      {/* 500 characters with no guidance was the one field in this flow shaped
+          like somewhere to paste a rewritten paragraph. Same hint as noteHint. */}
+      <label className="block text-sm font-bold text-navy mb-1 mt-4">{t('assignments.overallLabel')}</label>
+      <p className="text-navy/50 text-xs mb-2">{t('assignments.overallHint')}</p>
       <textarea value={overall} onChange={e => setOverall(e.target.value)} rows={3} maxLength={500}
         className="w-full border-2 border-navy/15 rounded-xl px-4 py-2.5 mb-4" />
 
