@@ -71,6 +71,21 @@ export default function AssignmentPage({ params }) {
     }
   }
 
+  const withdraw = async () => {
+    setError('')
+    try {
+      const res = await fetch(`${API}/api/assignments/${request.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) { setError(data.error || 'common.connectionError'); return }
+      window.location.href = '/classes'
+    } catch {
+      setError('common.connectionError')
+    }
+  }
+
   return (
     <>
       <Navbar />
@@ -87,7 +102,18 @@ export default function AssignmentPage({ params }) {
             canAcknowledge={isStudent && !feedback.acknowledged_at}
             onAcknowledge={acknowledge} />
         ) : isStudent ? (
-          <p className="text-navy/60">{t('assignments.awaiting')}</p>
+          // Withdrawal exists only while the request is open: once someone has
+          // written feedback the banana is theirs, and DELETE refuses it anyway.
+          <div>
+            <div className="bg-white border-2 border-navy rounded-2xl p-5 whitespace-pre-wrap leading-relaxed mb-4">
+              {request.body}
+            </div>
+            <p className="text-navy/60 mb-4">{t('assignments.awaiting')}</p>
+            <button onClick={withdraw}
+              className="border-2 border-navy text-navy px-5 py-2.5 rounded-full text-sm font-bold">
+              {t('assignments.withdraw')}
+            </button>
+          </div>
         ) : canReview ? (
           <AnnotationEditor request={request} onSent={load} />
         ) : (
