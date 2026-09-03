@@ -50,6 +50,7 @@ export default function Navbar() {
   const [credits, setCredits] = useState(null)
   const [streak, setStreak] = useState(null)
   const [needsPhone, setNeedsPhone] = useState(false)
+  const [needsNativeLanguage, setNeedsNativeLanguage] = useState(false)
   const [notifications, setNotifications] = useState([])
   const [showCreditsTip, setShowCreditsTip] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
@@ -89,7 +90,17 @@ export default function Navbar() {
     // login (app/auth/callback/page.js gates on isNewUser). Skip it and there
     // is no route back: nothing else in the app links there, so the account
     // sits without its signup grant and without any way to claim it.
-    authed('/api/auth/me').then(d => d && setNeedsPhone(d.phone_verified === false))
+    authed('/api/auth/me').then(d => {
+      if (!d) return
+      setNeedsPhone(d.phone_verified === false)
+      // A Google sign-up never sees the registration form, so it lands with no
+      // native language at all — and every teaching path on this site keys on
+      // that field. Four of the first five accounts were in this state, which
+      // is the same as the site having no supply. The registration form has
+      // always asked; this is the only route back for the people who never
+      // saw it.
+      setNeedsNativeLanguage(!d.teach_language)
+    })
 
     const fetchNotifications = () => {
       authed('/api/notifications').then(d => setNotifications(Array.isArray(d) ? d : []))
@@ -139,6 +150,17 @@ export default function Navbar() {
 
   return (
     <>
+    {/* Shown below the phone banner when both apply: verifying a phone is the
+        one that blocks the signup grant, so it goes first. */}
+    {!needsPhone && needsNativeLanguage && (
+      <div className="bg-brand-teal/15 border-b-2 border-brand-teal px-4 md:px-8 py-2.5 flex items-center justify-center gap-3 flex-wrap text-center">
+        <span className="text-navy text-sm font-medium">🗣️ {t('nav.completeProfileBanner')}</span>
+        <a href="/profile"
+          className="bg-navy text-white px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap hover:bg-navy/90 transition-colors">
+          {t('nav.completeProfileCta')}
+        </a>
+      </div>
+    )}
     {needsPhone && (
       <div className="bg-brand-yellow/20 border-b-2 border-brand-yellow px-4 md:px-8 py-2.5 flex items-center justify-center gap-3 flex-wrap text-center">
         <span className="text-navy text-sm font-medium">📱 {t('nav.verifyPhoneBanner')}</span>
