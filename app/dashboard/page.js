@@ -11,13 +11,23 @@ const API = 'https://linguaxchange-backend-production.up.railway.app'
 // Was computed inline, separately, in both the enrolled-classes list and the
 // teaching-classes list. A third caller (the live-class banner below) is
 // what made copying it a third time worth stopping to share instead.
-function sessionTiming(session, durationMinutes, now = new Date()) {
+// `canJoin` mirrors utils/classroomAccess.js on the backend, which is what
+// actually enforces this: the room needs a token, and the server refuses to
+// mint one outside the window. Kept in step here so the link never appears
+// on a door the server will hold shut.
+const TEACHER_EARLY_MS = 10 * 60 * 1000
+
+function sessionTiming(session, durationMinutes, isTeacher = false, now = new Date()) {
   const scheduledAt = session?.session_date ? asUtcDate(session.session_date) : null
   const durationMs = (durationMinutes || 60) * 60 * 1000
   const classEndTime = scheduledAt ? new Date(scheduledAt.getTime() + durationMs) : null
   const isClassOver = classEndTime ? now > classEndTime : true
   const isLive = scheduledAt && !isClassOver && now >= scheduledAt
-  return { scheduledAt, isClassOver, isLive }
+  const opensAt = scheduledAt && isTeacher
+    ? new Date(scheduledAt.getTime() - TEACHER_EARLY_MS)
+    : scheduledAt
+  const canJoin = !!opensAt && !isClassOver && now >= opensAt
+  return { scheduledAt, isClassOver, isLive, canJoin }
 }
 
 function Stars({ rating }) {
@@ -448,12 +458,6 @@ export default function Dashboard() {
                                 ? t('dashboard.liveNow')
                                 : t('dashboard.upcoming')}
                         </p>
-                        {!isClassOver && !isLive && (
-                          <a href={`/classroom/${enrollment.class_session_id}`}
-                            className="text-brand-red text-xs font-bold hover:underline">
-                            {t('dashboard.joinMeeting')}
-                          </a>
-                        )}
                       </div>
                       <div>
                         {enrollment.status !== 'attended' && isClassOver && (
@@ -508,14 +512,18 @@ export default function Dashboard() {
             <div className="space-y-1">
               {group.map(cls => {
                 const session = cls.class_sessions?.[0]
-                const { scheduledAt, isClassOver, isLive } = sessionTiming(session, cls.duration_minutes)
+                const { scheduledAt, isClassOver, isLive, canJoin } = sessionTiming(session, cls.duration_minutes, true)
 
                 return (
                   <div key={cls.id} className="py-4 border-b border-navy/10 last:border-0">
-                    {isLive && session && (
+                    {canJoin && session && (
                       <a href={`/classroom/${session.id}`}
-                        className="flex items-center justify-center gap-2 mb-3 bg-red-600 text-white font-extrabold text-sm tracking-wide px-4 py-2 rounded-xl animate-pulse shadow-[0_0_16px_4px_rgba(220,38,38,0.55)] hover:bg-red-700 transition-colors">
-                        <span className="w-2 h-2 bg-white rounded-full" /> {t('dashboard.liveNow')} · {t('dashboard.startClass')}
+                        className={`flex items-center justify-center gap-2 mb-3 font-extrabold text-sm tracking-wide px-4 py-2 rounded-xl transition-colors ${isLive
+                          ? 'bg-red-600 text-white animate-pulse shadow-[0_0_16px_4px_rgba(220,38,38,0.55)] hover:bg-red-700'
+                          : 'bg-navy text-white hover:opacity-90'}`}>
+                        {isLive
+                          ? <><span className="w-2 h-2 bg-white rounded-full" /> {t('dashboard.liveNow')} · {t('dashboard.startClass')}</>
+                          : t('dashboard.openClassroomEarly')}
                       </a>
                     )}
                     {editingClassId === cls.id ? (
