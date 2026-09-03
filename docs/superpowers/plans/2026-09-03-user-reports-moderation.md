@@ -60,7 +60,7 @@ The spec says admin delete "reuses `utils/accountDeletion.js` unchanged." Half t
 **Interfaces:**
 - Produces: `reports.category`, `reports.evidence_paths`, `users.suspended_until`, `users.suspension_reason`, private bucket `report-evidence`
 
-- [ ] **Step 1: Write the migration**
+- [x] **Step 1: Write the migration**
 
 ```sql
 -- Reporting and moderation, in one migration because the admin queue is
@@ -100,18 +100,18 @@ VALUES ('report-evidence', 'report-evidence', false)
 ON CONFLICT (id) DO UPDATE SET public = false;
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add migrations/add_report_evidence_and_suspension.sql
 git commit -m "Migration: report categories, evidence paths, account suspension"
 ```
 
-- [ ] **Step 3: Hand it to the user and STOP**
+- [x] **Step 3: Hand it to the user and STOP**
 
 Print the file and ask them to run it in the Supabase SQL editor. Do not start Task 2 until they confirm — every later task reads these columns.
 
-- [ ] **Step 4: Verify the columns landed**
+- [x] **Step 4: Verify the columns landed**
 
 ```bash
 node -e "
@@ -138,7 +138,7 @@ Expected: both lines list the new columns, no error.
 - Consumes: `users.suspended_until` (Task 1)
 - Produces: `isSuspended({ suspendedUntil, now }) -> { suspended: boolean, until: Date|null }`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `tests/suspension.test.js`:
 
@@ -179,12 +179,12 @@ describe('isSuspended', () => {
 })
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
 Run: `npx jest tests/suspension.test.js`
 Expected: FAIL, "Cannot find module '../utils/suspension'"
 
-- [ ] **Step 3: Write the helper**
+- [x] **Step 3: Write the helper**
 
 Create `utils/suspension.js`:
 
@@ -210,12 +210,12 @@ function isSuspended({ suspendedUntil, now = new Date() }) {
 module.exports = { isSuspended }
 ```
 
-- [ ] **Step 4: Run it and watch it pass**
+- [x] **Step 4: Run it and watch it pass**
 
 Run: `npx jest tests/suspension.test.js`
 Expected: PASS, 6 tests
 
-- [ ] **Step 5: Enforce it in requireAuth**
+- [x] **Step 5: Enforce it in requireAuth**
 
 In `middleware/auth.js` add the import:
 
@@ -245,12 +245,12 @@ After the `isTokenStillValid` check and before `req.userId = payload.userId`:
     }
 ```
 
-- [ ] **Step 6: Run the whole suite**
+- [x] **Step 6: Run the whole suite**
 
 Run: `npx jest --silent`
 Expected: everything passes. Nothing stubs this select today — if something breaks, read it rather than deleting it.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add utils/suspension.js tests/suspension.test.js middleware/auth.js
@@ -268,7 +268,7 @@ git commit -m "Lock a suspended account out of every authenticated route"
 - Consumes: `isSuspended` (Task 2), `sendEmail` from `utils/mailer.js`
 - Produces: `POST /api/admin/users/:id/suspend` `{ until, reason }`; `POST /api/admin/users/:id/unsuspend`
 
-- [ ] **Step 1: Add the import**
+- [x] **Step 1: Add the import**
 
 `routes/admin.js` already imports `fail` and builds the supabase client. Add:
 
@@ -276,7 +276,7 @@ git commit -m "Lock a suspended account out of every authenticated route"
 const { sendEmail } = require('../utils/mailer')
 ```
 
-- [ ] **Step 2: Write the endpoints**
+- [x] **Step 2: Write the endpoints**
 
 After the existing `POST /users/:id/credit` handler:
 
@@ -365,7 +365,7 @@ router.post('/users/:id/unsuspend', async (req, res) => {
 
 `token_valid_after` is deliberately not cleared on unsuspend. Bumping it logged them out; leaving it bumped just means they sign in again.
 
-- [ ] **Step 3: Expose the state to the dashboard**
+- [x] **Step 3: Expose the state to the dashboard**
 
 Replace `ADMIN_USER_COLUMNS` in `routes/admin.js` with:
 
@@ -373,12 +373,12 @@ Replace `ADMIN_USER_COLUMNS` in `routes/admin.js` with:
 const ADMIN_USER_COLUMNS = 'id, email, first_name, last_name, nationality, bio, photo_url, teach_language, teach_level, learn_languages, has_certificate, certificate_explanation, is_approved, approval_reason, current_streak, longest_streak, timezone, phone_number, phone_verified, google_id, created_at, suspended_until, suspension_reason, deleted_at'
 ```
 
-- [ ] **Step 4: Check it parses and the suite passes**
+- [x] **Step 4: Check it parses and the suite passes**
 
 Run: `node --check routes/admin.js && npx jest --silent`
 Expected: no output from `--check`, all tests pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add routes/admin.js
@@ -396,7 +396,7 @@ git commit -m "Let an admin suspend and unsuspend an account"
 - Consumes: `reports.category` (Task 1)
 - Produces: `CATEGORIES` array export; `validateReport` returns `category`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `tests/reports.test.js`:
 
@@ -440,12 +440,12 @@ describe('validateReport', () => {
 })
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
 Run: `npx jest tests/reports.test.js`
 Expected: FAIL — `CATEGORIES` is not exported.
 
-- [ ] **Step 3: Extend the validator**
+- [x] **Step 3: Extend the validator**
 
 In `utils/reports.js`, below the existing constants:
 
@@ -470,12 +470,12 @@ In `validateReport`, after the reason checks:
 
 Add `category` to the returned object and `CATEGORIES` to `module.exports`.
 
-- [ ] **Step 4: Run it and watch it pass**
+- [x] **Step 4: Run it and watch it pass**
 
 Run: `npx jest tests/reports.test.js`
 Expected: PASS, 7 tests
 
-- [ ] **Step 5: Store the category and block duplicates**
+- [x] **Step 5: Store the category and block duplicates**
 
 In `routes/reports.js`, replace the body of `POST /` after the validation check:
 
@@ -510,7 +510,7 @@ In `routes/reports.js`, replace the body of `POST /` after the validation check:
       .single()
 ```
 
-- [ ] **Step 6: Verify and commit**
+- [x] **Step 6: Verify and commit**
 
 Run: `node --check routes/reports.js && npx jest --silent`
 
@@ -530,7 +530,7 @@ git commit -m "Categorise reports and stop the same one being filed twice"
 - Consumes: bucket `report-evidence` (Task 1)
 - Produces: `decodeImage(dataUrl, { maxBytes }) -> { ok: true, buffer, mime, ext } | { ok: false, error }`, plus `MAX_IMAGE_BYTES` and `MAX_EVIDENCE`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `tests/imageUpload.test.js`:
 
@@ -590,12 +590,12 @@ describe('decodeImage', () => {
 })
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
 Run: `npx jest tests/imageUpload.test.js`
 Expected: FAIL, "Cannot find module '../utils/imageUpload'"
 
-- [ ] **Step 3: Write the helper**
+- [x] **Step 3: Write the helper**
 
 Create `utils/imageUpload.js`:
 
@@ -649,12 +649,12 @@ function decodeImage(dataUrl, { maxBytes = MAX_IMAGE_BYTES } = {}) {
 module.exports = { decodeImage, MAX_IMAGE_BYTES, MAX_EVIDENCE }
 ```
 
-- [ ] **Step 4: Run it and watch it pass**
+- [x] **Step 4: Run it and watch it pass**
 
 Run: `npx jest tests/imageUpload.test.js`
 Expected: PASS, 9 tests
 
-- [ ] **Step 5: Accept evidence on POST /api/reports**
+- [x] **Step 5: Accept evidence on POST /api/reports**
 
 In `routes/reports.js` add:
 
@@ -696,7 +696,7 @@ In `POST /`, replace the final `res.status(201).json(data)` with:
     res.status(201).json(data)
 ```
 
-- [ ] **Step 6: Add the signed-URL endpoint**
+- [x] **Step 6: Add the signed-URL endpoint**
 
 In `routes/reports.js`, before `module.exports`:
 
@@ -732,7 +732,7 @@ router.get('/:id/evidence/:index', requireAuth, requireAdmin, async (req, res) =
 })
 ```
 
-- [ ] **Step 7: Route the avatar upload through the same helper**
+- [x] **Step 7: Route the avatar upload through the same helper**
 
 `routes/users.js` decodes an avatar with its own regex and never checks the bytes — the same hole this helper closes, in a bucket that is public. Add `const { decodeImage } = require('../utils/imageUpload')` and replace the decode block in `POST /:id/avatar`:
 
@@ -745,7 +745,7 @@ router.get('/:id/evidence/:index', requireAuth, requireAdmin, async (req, res) =
 
 Delete the now-unused `AVATAR_MIME_EXT` map and update the upload call to use `decoded.buffer` and `decoded.mime`.
 
-- [ ] **Step 8: Verify and commit**
+- [x] **Step 8: Verify and commit**
 
 Run: `node --check routes/reports.js && node --check routes/users.js && npx jest --silent`
 
@@ -764,7 +764,7 @@ git commit -m "Attach image evidence to a report, stored privately"
 **Interfaces:**
 - Produces: every report in `GET /api/reports` gains `reported_user` (an object, or null for class reports)
 
-- [ ] **Step 1: Replace the GET handler**
+- [x] **Step 1: Replace the GET handler**
 
 ```javascript
 // Severity first, then age. A harassment report filed this morning outranks
@@ -822,7 +822,7 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
 })
 ```
 
-- [ ] **Step 2: Verify and commit**
+- [x] **Step 2: Verify and commit**
 
 Run: `node --check routes/reports.js && npx jest --silent`
 
@@ -844,7 +844,7 @@ git commit -m "Name the reported user in the admin queue, worst first"
 
 **Why this task exists:** the deletion *sequence* is not in `utils/accountDeletion.js`. It is inline in `routes/account.js:88-145`. An admin delete that skips it leaves a deleted teacher's students holding a phantom class, unrefunded.
 
-- [ ] **Step 1: Extract the sequence**
+- [x] **Step 1: Extract the sequence**
 
 Add to `utils/accountDeletion.js`:
 
@@ -913,7 +913,7 @@ async function deleteAccount(supabase, user, { notify = true } = {}) {
 module.exports = { anonymizedFields, OWN_DATA_DELETIONS, deleteAccount }
 ```
 
-- [ ] **Step 2: Point the self-service route at it**
+- [x] **Step 2: Point the self-service route at it**
 
 In `routes/account.js`, replace everything from the `// Cancel first` comment through the confirmation `sendEmail(...)` call with:
 
@@ -924,12 +924,12 @@ In `routes/account.js`, replace everything from the `// Cancel first` comment th
 
 Change the import to `const { anonymizedFields, OWN_DATA_DELETIONS, deleteAccount } = require('../utils/accountDeletion')`. Then run `grep -n "cancelClass\|hasFutureSession\|sendEmail" routes/account.js` and remove only the imports nothing else in the file still uses.
 
-- [ ] **Step 3: Run the suite**
+- [x] **Step 3: Run the suite**
 
 Run: `npx jest --silent`
 Expected: all pass. This is a refactor — a failure means the extraction changed behaviour. Read it; do not adjust the test to match.
 
-- [ ] **Step 4: Add the admin endpoint**
+- [x] **Step 4: Add the admin endpoint**
 
 In `routes/admin.js`:
 
@@ -969,7 +969,7 @@ router.post('/users/:id/delete', async (req, res) => {
 })
 ```
 
-- [ ] **Step 5: Verify and commit**
+- [x] **Step 5: Verify and commit**
 
 Run: `node --check routes/admin.js && node --check routes/account.js && npx jest --silent`
 
@@ -978,7 +978,7 @@ git add utils/accountDeletion.js routes/account.js routes/admin.js
 git commit -m "Share one deletion sequence between self-service and admin"
 ```
 
-- [ ] **Step 6: Merge and push the backend, then confirm the deploy**
+- [x] **Step 6: Merge and push the backend, then confirm the deploy**
 
 ```bash
 git checkout main && git merge --no-ff <branch> -m "Merge: reporting and moderation backend" && git push origin main
@@ -996,7 +996,7 @@ Poll `POST /api/admin/users/1/unsuspend` with a non-admin token until it answers
 **Interfaces:**
 - Consumes: `POST /api/reports` accepting `{ report_type, reported_id, reason, category, evidence[] }` (Tasks 4 and 5)
 
-- [ ] **Step 1: Add the copy in all five languages**
+- [x] **Step 1: Add the copy in all five languages**
 
 In `lib/i18n/translations.js`, inside the `teacher` namespace of each language block (en, ko, es, de, pt), add these keys. English shown; translate the rest. The category *values* stay English — they go to the API.
 
@@ -1012,7 +1012,7 @@ In `lib/i18n/translations.js`, inside the `teacher` namespace of each language b
       reportDuplicate: 'You already have a report about this open with us',
 ```
 
-- [ ] **Step 2: Add the state**
+- [x] **Step 2: Add the state**
 
 In `app/teachers/[id]/page.js`, beside the existing report state:
 
@@ -1022,7 +1022,7 @@ In `app/teachers/[id]/page.js`, beside the existing report state:
   const [reportError, setReportError] = useState('')
 ```
 
-- [ ] **Step 3: Add the file reader**
+- [x] **Step 3: Add the file reader**
 
 ```javascript
   // Read to a data URL and post as JSON, matching how avatars and class
@@ -1050,7 +1050,7 @@ In `app/teachers/[id]/page.js`, beside the existing report state:
   }
 ```
 
-- [ ] **Step 4: Send the new fields**
+- [x] **Step 4: Send the new fields**
 
 In `submitReport`, change the body:
 
@@ -1073,7 +1073,7 @@ and handle the duplicate response after the fetch:
       }
 ```
 
-- [ ] **Step 5: Render the picker and the attachments**
+- [x] **Step 5: Render the picker and the attachments**
 
 Inside the `{reporting && (...)}` block, above the existing textarea:
 
@@ -1110,7 +1110,7 @@ and below the textarea:
               {reportError && <p className="text-brand-red text-xs mt-2 font-bold">{reportError}</p>}
 ```
 
-- [ ] **Step 6: Build and commit**
+- [x] **Step 6: Build and commit**
 
 Run: `npx next build`
 Expected: "✓ Compiled successfully"
@@ -1130,7 +1130,7 @@ git commit -m "Let a report say what happened and show it"
 **Interfaces:**
 - Consumes: `GET /api/reports` with `reported_user` (Task 6), `GET /api/reports/:id/evidence/:index` (Task 5), `POST /api/admin/users/:id/{suspend,unsuspend,delete}` (Tasks 3 and 7)
 
-- [ ] **Step 1: Add the action functions**
+- [x] **Step 1: Add the action functions**
 
 Beside the existing `setReportStatus`:
 
@@ -1180,7 +1180,7 @@ Beside the existing `setReportStatus`:
   }
 ```
 
-- [ ] **Step 2: Add the enforcement control**
+- [x] **Step 2: Add the enforcement control**
 
 Beside `CreditControl`, so report cards and user cards can both use it:
 
@@ -1238,7 +1238,7 @@ function EnforcementControl({ user, confirmText, message, onConfirmChange, onSus
 }
 ```
 
-- [ ] **Step 3: Render it on the report cards**
+- [x] **Step 3: Render it on the report cards**
 
 In the pending-reports map, replace the reported-target line with the resolved name plus the category:
 
@@ -1278,7 +1278,7 @@ and after the reporter line, inside the same `<div>`:
                         )}
 ```
 
-- [ ] **Step 4: Show suspension state in the Users tab**
+- [x] **Step 4: Show suspension state in the Users tab**
 
 In `UserDetail`'s `rows` array, add as the first entry:
 
@@ -1288,7 +1288,7 @@ In `UserDetail`'s `rows` array, add as the first entry:
       : null],
 ```
 
-- [ ] **Step 5: Build and commit**
+- [x] **Step 5: Build and commit**
 
 Run: `npx next build`
 Expected: "✓ Compiled successfully"
@@ -1298,7 +1298,7 @@ git add app/admin/page.js
 git commit -m "Act on a report from the dashboard"
 ```
 
-- [ ] **Step 6: Merge and push the frontend**
+- [x] **Step 6: Merge and push the frontend**
 
 ```bash
 git checkout main && git merge --no-ff <branch> -m "Merge: reporting and moderation UI" && git push origin main
@@ -1310,11 +1310,11 @@ git checkout main && git merge --no-ff <branch> -m "Merge: reporting and moderat
 
 Unit tests cannot prove a private bucket is private or that a suspension kills a live session. These checks decide whether this is done. Each one writes real data; the last step puts it all back.
 
-- [ ] **Step 1: File a report with evidence**
+- [x] **Step 1: File a report with evidence**
 
 From a second real account, report a throwaway account through the UI with one screenshot attached. Confirm the row has `evidence_paths` populated and `category` set.
 
-- [ ] **Step 2: Prove the evidence is not public**
+- [x] **Step 2: Prove the evidence is not public**
 
 Take the stored path and try the public URL shape:
 
@@ -1326,25 +1326,34 @@ Expected: **400 or 404, never 200.** A 200 means the bucket is public and this t
 
 Then fetch `GET /api/reports/:id/evidence/0` as an admin and confirm the signed URL loads the image.
 
-- [ ] **Step 3: Prove a suspension kills a live session**
+- [x] **Step 3: Prove a suspension kills a live session**
 
 Mint a token for the throwaway account, confirm `GET /api/auth/me` returns 200. Suspend the account. Call `/api/auth/me` again **with the same token**.
 
 Expected: 403 carrying `suspended_until`. A 200 means `token_valid_after` was not bumped.
 
-- [ ] **Step 4: Prove unsuspend restores access**
+- [x] **Step 4: Prove unsuspend restores access**
 
 Unsuspend, mint a *fresh* token (the old one is dead by design), confirm 200.
 
-- [ ] **Step 5: Prove the duplicate guard works**
+- [x] **Step 5: Prove the duplicate guard works**
 
 File the same report twice. Expected: 409 on the second.
 
 - [ ] **Step 6: Prove admin delete does not strand students**
 
+> **NOT RUN.** Doing this for real means deleting a live account. The only
+> accounts on production belong to Hamin and one friend, and there is no
+> throwaway teacher with an enrolled student to spend. What was verified
+> instead: the admin route and the self-service route call the same
+> `deleteAccount`, so the refund path cannot diverge between them, and the
+> confirmation guard was exercised against production (a mismatched code and
+> an empty body both refused). The refund behaviour itself remains proven
+> only for the self-service path, which predates this work.
+
 On a throwaway teacher account with one student enrolled on a future class: note the student's balance, delete the teacher through the admin endpoint, then confirm the class is cancelled and the student's balance went **up** by the refund. If it did not, `deleteAccount` is not being called.
 
-- [ ] **Step 7: Clean up**
+- [x] **Step 7: Clean up**
 
 Delete the test report rows and their evidence objects, lift any suspension still standing, restore any balance the probes moved. Report exactly what was created and what was removed.
 
