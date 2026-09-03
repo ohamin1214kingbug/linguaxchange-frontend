@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
 import ClassRequests from '../../components/ClassRequests'
+import AssignmentBoard from '../../components/AssignmentBoard'
 import { formatInTimezone, utcLabel } from '../../lib/timezone'
 import { hasUpcomingSession } from '../../lib/classSchedule'
 import { fetchJoinedClassIds } from '../../lib/enrollments'
@@ -179,7 +180,9 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
         )}
 
         <div className="flex gap-1 mb-6 bg-white border-2 border-navy rounded-full p-1 w-fit">
-          {[['classes', t('requests.tabClasses')], ['requests', t('requests.tabRequests')]].map(([key, label]) => (
+          {[['classes', t('requests.tabClasses')],
+            ['requests', t('requests.tabRequests')],
+            ['assignments', t('assignments.tab')]].map(([key, label]) => (
             <button key={key} onClick={() => setTab(key)}
               className={`px-4 md:px-5 py-2 rounded-full text-sm font-bold transition-colors ${tab === key ? 'bg-navy text-white' : 'text-navy/60 hover:text-navy'}`}>
               {label}
@@ -205,7 +208,9 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
           ))}
         </div>
 
-        {tab === 'requests' ? (
+        {tab === 'assignments' ? (
+          <AssignmentBoard language={filter} currentUser={currentUser} langs={LANGS} />
+        ) : tab === 'requests' ? (
           <ClassRequests language={filter} level={levelFilter} currentUser={currentUser} langs={LANGS} />
         ) : (
         <>
