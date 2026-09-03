@@ -56,6 +56,9 @@ export default function TeacherProfile() {
   const [reporting, setReporting] = useState(false)
   const [reportReason, setReportReason] = useState('')
   const [reportSent, setReportSent] = useState(false)
+  const [reportCategory, setReportCategory] = useState('harassment')
+  const [reportImages, setReportImages] = useState([])
+  const [reportError, setReportError] = useState('')
   const [saved, setSaved] = useState(false)
   const [savingTeacher, setSavingTeacher] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
@@ -141,6 +144,30 @@ export default function TeacherProfile() {
     setJoining(null)
   }
 
+  // Read to a data URL and post as JSON, matching how avatars and class
+  // materials already upload: the browser never holds a Supabase key.
+  const attachImages = async event => {
+    const files = [...event.target.files].slice(0, 3 - reportImages.length)
+    if (!files.length) return
+    setReportError('')
+
+    for (const file of files) {
+      if (file.size > 5 * 1024 * 1024) {
+        setReportError(t('teacher.reportEvidenceTooBig'))
+        return
+      }
+    }
+
+    const encoded = await Promise.all(files.map(file => new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })))
+
+    setReportImages(current => [...current, ...encoded].slice(0, 3))
+  }
+
   const submitReport = async () => {
     const token = localStorage.getItem('token')
     if (!token) {
@@ -148,20 +175,33 @@ export default function TeacherProfile() {
       return
     }
     if (!reportReason.trim()) return
+    setReportError('')
     try {
       const res = await fetch(`${API}/api/reports`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ report_type: 'user', reported_id: parseInt(id), reason: reportReason.trim() })
+        body: JSON.stringify({
+          report_type: 'user',
+          reported_id: parseInt(id),
+          reason: reportReason.trim(),
+          category: reportCategory,
+          evidence: reportImages
+        })
       })
       if (res.ok) {
         setReportSent(true)
         setReporting(false)
         setReportReason('')
+        setReportImages([])
+        return
       }
+      // Unlike the rest of this page, a failed report does say so. Someone
+      // reporting harassment who is met with silence has no way to tell
+      // whether anyone heard them.
+      const data = await res.json().catch(() => ({}))
+      setReportError(data.error || t('teacher.reportFailed'))
     } catch (e) {
-      // best-effort — the report form itself shows nothing on failure, matching
-      // how quiet the rest of this page already is about network errors
+      setReportError(t('teacher.reportFailed'))
     }
   }
 
@@ -245,9 +285,34 @@ export default function TeacherProfile() {
           </div>
           {reporting && (
             <div className="mb-4 bg-cream border-2 border-navy/10 rounded-xl p-4">
+              <label className="block text-xs font-bold text-navy mb-1">{t('teacher.reportCategory')}</label>
+              <select value={reportCategory} onChange={e => setReportCategory(e.target.value)}
+                className="w-full border-2 border-navy/20 rounded-xl px-3 py-2 text-sm mb-3 focus:border-brand-red focus:outline-none transition-colors">
+                <option value="harassment">{t('teacher.reportCatHarassment')}</option>
+                <option value="inappropriate_content">{t('teacher.reportCatInappropriate')}</option>
+                <option value="spam_or_scam">{t('teacher.reportCatSpam')}</option>
+                <option value="no_show">{t('teacher.reportCatNoShow')}</option>
+                <option value="other">{t('teacher.reportCatOther')}</option>
+              </select>
               <textarea value={reportReason} onChange={e => setReportReason(e.target.value)} rows={3} maxLength={500}
                 placeholder={t('teacher.reportReasonPlaceholder')}
                 className="w-full border-2 border-navy/20 rounded-xl px-3 py-2 text-sm focus:border-brand-red focus:outline-none transition-colors"/>
+              <label className="block text-xs font-bold text-navy mt-3 mb-1">{t('teacher.reportEvidence')}</label>
+              <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={attachImages}
+                disabled={reportImages.length >= 3}
+                className="text-xs text-navy/60 file:mr-3 file:rounded-full file:border-2 file:border-navy/20 file:bg-white file:px-3 file:py-1 file:text-xs file:font-bold"/>
+              {reportImages.length > 0 && (
+                <div className="flex gap-2 mt-2">
+                  {reportImages.map((src, i) => (
+                    <div key={i} className="relative">
+                      <img src={src} alt="" className="w-16 h-16 object-cover rounded-lg border-2 border-navy/15"/>
+                      <button onClick={() => setReportImages(imgs => imgs.filter((_, j) => j !== i))}
+                        className="absolute -top-1.5 -right-1.5 bg-brand-red text-white w-5 h-5 rounded-full text-xs font-bold border-2 border-white">×</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {reportError && <p className="text-brand-red text-xs mt-2 font-bold">{reportError}</p>}
               <div className="flex gap-2 justify-end mt-2">
                 <button onClick={() => setReporting(false)} className="text-navy/50 text-sm font-bold px-3 py-1.5">
                   {t('teacher.reportCancel')}

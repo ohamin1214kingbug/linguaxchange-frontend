@@ -44,6 +44,9 @@ function UserDetail({ user, t }) {
     : String(user.learn_languages || '').split(',').map(l => l.trim()).filter(Boolean)
 
   const rows = [
+    ['Suspended', user.suspended_until && new Date(user.suspended_until) > new Date()
+      ? `until ${new Date(user.suspended_until).toLocaleDateString()} — ${user.suspension_reason || 'no reason recorded'}`
+      : null],
     ['Teaches', user.teach_language
       ? `${langName(user.teach_language)}${user.teach_level ? ` · ${levelLabel(user.teach_language, user.teach_level)}` : ''}`
       : null],
@@ -76,10 +79,64 @@ function UserDetail({ user, t }) {
   )
 }
 
+const CATEGORY_LABELS = {
+  harassment: '🚨 Harassment',
+  inappropriate_content: '⚠️ Inappropriate content',
+  spam_or_scam: '💸 Spam or scam',
+  no_show: '🕒 No-show',
+  other: '❓ Other'
+}
+
+// Suspend is reversible and Delete is not, so they do not look alike and
+// Delete does not fire on one click — it needs the user's own code typed in.
+function EnforcementControl({ user, confirmText, message, onConfirmChange, onSuspend, onUnsuspend, onDelete }) {
+  const code = 'U' + String(user.id).padStart(6, '0')
+  const suspendedUntil = user.suspended_until && new Date(user.suspended_until) > new Date()
+    ? new Date(user.suspended_until)
+    : null
+
+  return (
+    <div className="mt-3 border-t border-navy/10 pt-3">
+      {suspendedUntil ? (
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="bg-brand-red/10 text-brand-red px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-red/30">
+            Suspended until {suspendedUntil.toLocaleDateString()}
+          </span>
+          <button onClick={onUnsuspend} className="text-navy/60 hover:text-navy text-xs font-bold underline">
+            Lift the suspension
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="font-display font-bold text-navy text-xs">🚫 Suspend</span>
+          {[7, 30, 3650].map(days => (
+            <button key={days} onClick={() => onSuspend(days)}
+              className="bg-white text-navy px-3 py-1 rounded-full text-xs font-bold border-2 border-navy/20 hover:border-navy transition-colors">
+              {days === 3650 ? 'Permanent' : `${days} days`}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="flex items-center gap-2 mt-2 flex-wrap">
+        <span className="font-display font-bold text-brand-red text-xs">🗑 Delete</span>
+        <input value={confirmText || ''} onChange={onConfirmChange} placeholder={`Type ${code}`}
+          className="w-32 border-2 border-navy/20 rounded-full px-3 py-1 text-xs font-mono focus:border-brand-red focus:outline-none"/>
+        <button onClick={onDelete} disabled={confirmText !== code}
+          className="bg-brand-red text-white px-3 py-1 rounded-full text-xs font-bold border-2 border-navy disabled:opacity-30 disabled:cursor-not-allowed">
+          Delete permanently
+        </button>
+      </div>
+      {message && <p className="text-navy/60 text-xs mt-2">{message}</p>}
+    </div>
+  )
+}
+
 export default function Admin() {
   const router = useRouter()
   const [tab, setTab] = useState('users')
   const [openUser, setOpenUser] = useState(null)
+  const [confirmDelete, setConfirmDelete] = useState({})
+  const [actionMessage, setActionMessage] = useState({})
   const [userSearch, setUserSearch] = useState('')
   const [creditSearch, setCreditSearch] = useState('')
   const [creditAmounts, setCreditAmounts] = useState({})
@@ -240,6 +297,52 @@ export default function Admin() {
       if (!res.ok) { setResourceMessage(await readError(res, 'Could not delete')); return }
       fetchResources()
     } catch (e) { setResourceMessage('Could not delete') }
+  }
+
+  const suspendUser = async (userId, days, reason) => {
+    const until = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString()
+    const res = await fetch(`${API}/api/admin/users/${userId}/suspend`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
+      body: JSON.stringify({ until, reason })
+    })
+    const data = await res.json().catch(() => ({}))
+    setActionMessage(m => ({ ...m, [userId]: res.ok
+      ? `Suspended until ${new Date(data.suspended_until).toLocaleDateString()}`
+      : data.error || 'Could not suspend' }))
+    fetchUsers(); fetchReports()
+  }
+
+  const unsuspendUser = async userId => {
+    const res = await fetch(`${API}/api/admin/users/${userId}/unsuspend`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+    setActionMessage(m => ({ ...m, [userId]: res.ok ? 'Suspension lifted' : 'Could not lift it' }))
+    fetchUsers(); fetchReports()
+  }
+
+  const deleteUser = async userId => {
+    const res = await fetch(`${API}/api/admin/users/${userId}/delete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
+      body: JSON.stringify({ confirm: confirmDelete[userId] || '' })
+    })
+    const data = await res.json().catch(() => ({}))
+    setActionMessage(m => ({ ...m, [userId]: res.ok ? 'Account deleted' : data.error || 'Could not delete' }))
+    if (res.ok) setConfirmDelete(c => ({ ...c, [userId]: '' }))
+    fetchUsers(); fetchReports()
+  }
+
+  // The bucket is private, so the image has no URL until the server signs
+  // one. Opened on click rather than rendered inline: an <img> per report
+  // would sign every piece of evidence in the queue just to draw the page.
+  const openEvidence = async (reportId, index) => {
+    const res = await fetch(`${API}/api/reports/${reportId}/evidence/${index}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+    const data = await res.json().catch(() => ({}))
+    if (data.url) window.open(data.url, '_blank', 'noopener')
   }
 
   const setReportStatus = async (id, status) => {
@@ -526,16 +629,39 @@ export default function Admin() {
                 {pendingReports.map(report => (
                   <div key={report.id} className="bg-white rounded-2xl p-5 border-2 border-brand-yellow">
                     <div className="flex items-start justify-between gap-4">
-                      <div>
+                      <div className="min-w-0">
                         <p className="font-bold text-navy">
-                          {report.reported_type === 'user'
-                            ? <>👤 User <span className="font-mono">{userCode(report.reported_id)}</span></>
+                          {report.report_type === 'user'
+                            ? <>👤 {report.reported_user
+                                ? `${report.reported_user.first_name} ${report.reported_user.last_name}`
+                                : 'Unknown user'} <span className="font-mono text-navy/50">{userCode(report.reported_id)}</span></>
                             : <>📚 Class #{report.reported_id}</>}
                         </p>
+                        <p className="text-navy/50 text-xs font-bold mt-1">{CATEGORY_LABELS[report.category] || CATEGORY_LABELS.other}</p>
                         <p className="text-navy/60 text-sm mt-1">{report.reason}</p>
                         <p className="text-navy/40 text-xs mt-2">
                           Reported by {report.reporter?.first_name} {report.reporter?.last_name} <span className="font-mono">{userCode(report.reporter_id)}</span> ({report.reporter?.email}) · {new Date(report.created_at).toLocaleDateString()}
                         </p>
+                        {report.evidence_paths?.length > 0 && (
+                          <div className="flex gap-2 mt-2">
+                            {report.evidence_paths.map((_, i) => (
+                              <button key={i} onClick={() => openEvidence(report.id, i)}
+                                className="bg-cream text-navy px-3 py-1 rounded-full text-xs font-bold border-2 border-navy/20 hover:border-navy transition-colors">
+                                📎 Evidence {i + 1}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                        {report.reported_user && !report.reported_user.deleted_at && (
+                          <EnforcementControl
+                            user={report.reported_user}
+                            confirmText={confirmDelete[report.reported_user.id]}
+                            message={actionMessage[report.reported_user.id]}
+                            onConfirmChange={e => setConfirmDelete(c => ({ ...c, [report.reported_user.id]: e.target.value }))}
+                            onSuspend={days => suspendUser(report.reported_user.id, days, `Report #${report.id}: ${report.category || 'other'}`)}
+                            onUnsuspend={() => unsuspendUser(report.reported_user.id)}
+                            onDelete={() => deleteUser(report.reported_user.id)}/>
+                        )}
                       </div>
                       <div className="flex gap-2 flex-shrink-0">
                         <button onClick={() => setReportStatus(report.id, 'resolved')}
