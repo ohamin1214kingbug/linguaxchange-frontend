@@ -50,7 +50,7 @@ export default function Navbar() {
   const [credits, setCredits] = useState(null)
   const [streak, setStreak] = useState(null)
   const [needsPhone, setNeedsPhone] = useState(false)
-  const [needsNativeLanguage, setNeedsNativeLanguage] = useState(false)
+  const [profileIncomplete, setProfileIncomplete] = useState(false)
   const [notifications, setNotifications] = useState([])
   const [showCreditsTip, setShowCreditsTip] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
@@ -93,13 +93,16 @@ export default function Navbar() {
     authed('/api/auth/me').then(d => {
       if (!d) return
       setNeedsPhone(d.phone_verified === false)
-      // A Google sign-up never sees the registration form, so it lands with no
-      // native language at all — and every teaching path on this site keys on
-      // that field. Four of the first five accounts were in this state, which
-      // is the same as the site having no supply. The registration form has
-      // always asked; this is the only route back for the people who never
-      // saw it.
-      setNeedsNativeLanguage(!d.teach_language)
+      // True when either a native language or a bio is missing. A Google
+      // sign-up never sees the registration form — its row is created with an
+      // email, a name and a google_id — so it arrives with neither, and
+      // nothing in the app asked for them afterwards. Four of the first five
+      // accounts were in that state, which is the same as the site having no
+      // supply, since every teaching path keys on the language.
+      //
+      // The server derives the flag so this call does not carry a paragraph of
+      // bio prose on every page load to answer a yes/no question.
+      setProfileIncomplete(d.profile_incomplete === true)
     })
 
     const fetchNotifications = () => {
@@ -150,9 +153,11 @@ export default function Navbar() {
 
   return (
     <>
-    {/* Shown below the phone banner when both apply: verifying a phone is the
-        one that blocks the signup grant, so it goes first. */}
-    {!needsPhone && needsNativeLanguage && (
+    {/* Shown only when the phone banner is not: verifying a phone is what
+        unlocks the signup grant, so it takes priority when both apply.
+        Persistent rather than a modal — a dialog on first login is the version
+        people close, and this needs to still be there tomorrow. */}
+    {!needsPhone && profileIncomplete && (
       <div className="bg-brand-teal/15 border-b-2 border-brand-teal px-4 md:px-8 py-2.5 flex items-center justify-center gap-3 flex-wrap text-center">
         <span className="text-navy text-sm font-medium">🗣️ {t('nav.completeProfileBanner')}</span>
         <a href="/profile"
