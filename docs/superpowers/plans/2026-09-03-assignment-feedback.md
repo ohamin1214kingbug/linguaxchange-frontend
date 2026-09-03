@@ -340,7 +340,7 @@ module.exports = {
 - [ ] **Step 4: Run the tests**
 
 Run: `npx jest tests/assignmentValidation.test.js`
-Expected: PASS, 12 tests
+Expected: PASS, 13 tests
 
 - [ ] **Step 5: Commit**
 
@@ -529,7 +529,7 @@ Add to the exports: `validateFeedback, CATEGORIES, MAX_NOTE, MAX_OVERALL, MAX_AN
 - [ ] **Step 4: Run the tests**
 
 Run: `npx jest tests/assignmentValidation.test.js`
-Expected: PASS, 25 tests
+Expected: PASS, 26 tests
 
 - [ ] **Step 5: Commit**
 
@@ -1298,7 +1298,14 @@ git commit -m "Add the shared word-count rule and assignment translations"
 
 - [ ] **Step 1: Add the tab**
 
-In `app/classes/ClassesBrowseClient.js`, extend the tab strip:
+In `app/classes/ClassesBrowseClient.js`, add the import beside the existing
+component imports:
+
+```javascript
+import AssignmentBoard from '../../components/AssignmentBoard'
+```
+
+then extend the tab strip:
 
 ```javascript
 {[['classes', t('requests.tabClasses')],
