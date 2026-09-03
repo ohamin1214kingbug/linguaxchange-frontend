@@ -14,6 +14,7 @@ export default function AnnotationEditor({ request, onSent }) {
   const [draft, setDraft] = useState(null)
   const [overall, setOverall] = useState('')
   const [error, setError] = useState('')
+  const [sending, setSending] = useState(false)
   const ref = useRef(null)
 
   const onMouseUp = () => {
@@ -33,17 +34,24 @@ export default function AnnotationEditor({ request, onSent }) {
 
   const send = async () => {
     setError('')
-    const res = await fetch(`${API}/api/assignments/${request.id}/feedback`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-      body: JSON.stringify({ annotations, overall }),
-    })
-    const data = await res.json()
-    if (!res.ok) { setError(data.error); return }
-    onSent()
+    setSending(true)
+    try {
+      const res = await fetch(`${API}/api/assignments/${request.id}/feedback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ annotations, overall }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error); return }
+      onSent()
+    } catch (e) {
+      setError('Could not send your feedback')
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -69,7 +77,7 @@ export default function AnnotationEditor({ request, onSent }) {
           <label className="block text-xs font-bold text-navy mb-1">{t('assignments.noteLabel')}</label>
           <p className="text-navy/50 text-xs mb-2">{t('assignments.noteHint')}</p>
           <textarea value={draft.note} onChange={e => setDraft(d => ({ ...d, note: e.target.value }))}
-            rows={3} className="w-full border-2 border-navy/15 rounded-xl px-3 py-2 text-sm mb-3" />
+            rows={3} maxLength={300} className="w-full border-2 border-navy/15 rounded-xl px-3 py-2 text-sm mb-3" />
 
           <button onClick={() => { setAnnotations(a => [...a, draft]); setDraft(null) }}
             disabled={!draft.note.trim()}
@@ -80,9 +88,15 @@ export default function AnnotationEditor({ request, onSent }) {
       )}
 
       {annotations.map((a, i) => (
-        <div key={i} className="border-l-4 border-brand-red pl-3 mb-3">
-          <p className="text-navy font-bold text-sm">“{request.body.slice(a.start, a.end)}”</p>
-          <p className="text-navy/60 text-xs">{t(`assignments.category.${a.category}`)} — {a.note}</p>
+        <div key={i} className="border-l-4 border-brand-red pl-3 mb-3 flex items-start justify-between gap-2">
+          <div>
+            <p className="text-navy font-bold text-sm">“{request.body.slice(a.start, a.end)}”</p>
+            <p className="text-navy/60 text-xs">{t(`assignments.category.${a.category}`)} — {a.note}</p>
+          </div>
+          <button onClick={() => setAnnotations(list => list.filter((_, j) => j !== i))}
+            className="text-navy/40 hover:text-brand-red text-sm font-bold px-1">
+            ×
+          </button>
         </div>
       ))}
 
@@ -92,7 +106,7 @@ export default function AnnotationEditor({ request, onSent }) {
 
       {error && <p className="text-brand-red text-sm mb-3 font-bold">{error}</p>}
 
-      <button onClick={send} disabled={annotations.length === 0}
+      <button onClick={send} disabled={annotations.length === 0 || sending}
         className="bg-brand-red text-white px-5 py-2.5 rounded-full text-sm font-bold border-2 border-navy disabled:opacity-40">
         {t('assignments.submitFeedback')}
       </button>

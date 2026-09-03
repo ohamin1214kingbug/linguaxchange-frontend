@@ -12,6 +12,11 @@ export default function AssignmentPage({ params }) {
   const { t } = useLanguage()
   const [request, setRequest] = useState(null)
   const [user, setUser] = useState(null)
+  // undefined = not resolved yet (defaults to "can't review"); the login
+  // response never includes teach_language, so the cached `user` object
+  // almost never has it — this always ends up fetching, and that fetch is
+  // the only source of truth, not a guess.
+  const [teachLanguage, setTeachLanguage] = useState(undefined)
 
   const load = () => {
     fetch(`${API}/api/assignments/${id}`)
@@ -22,7 +27,20 @@ export default function AssignmentPage({ params }) {
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
-    if (stored) setUser(JSON.parse(stored))
+    if (stored) {
+      const u = JSON.parse(stored)
+      setUser(u)
+      if (u.teach_language !== undefined) {
+        setTeachLanguage(u.teach_language)
+      } else {
+        fetch(`${API}/api/users/${u.id}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        })
+          .then(r => (r.ok ? r.json() : null))
+          .then(data => setTeachLanguage(data ? data.teach_language ?? null : null))
+          .catch(() => setTeachLanguage(null))
+      }
+    }
     load()
   }, [id])
 
@@ -30,6 +48,7 @@ export default function AssignmentPage({ params }) {
 
   const feedback = (request.assignment_feedback || [])[0]
   const isStudent = user && user.id === request.student_id
+  const canReview = user && teachLanguage !== undefined && teachLanguage === request.language_code
 
   const acknowledge = async () => {
     await fetch(`${API}/api/assignments/${request.id}/acknowledge`, {
@@ -52,8 +71,19 @@ export default function AssignmentPage({ params }) {
             onAcknowledge={acknowledge} />
         ) : isStudent ? (
           <p className="text-navy/60">{t('assignments.awaiting')}</p>
-        ) : (
+        ) : canReview ? (
           <AnnotationEditor request={request} onSent={load} />
+        ) : (
+          <div>
+            <div className="bg-white border-2 border-navy rounded-2xl p-5 whitespace-pre-wrap leading-relaxed mb-4">
+              {request.body}
+            </div>
+            {!user ? (
+              <a href="/auth/login" className="text-brand-red font-bold hover:underline">{t('common.signIn')}</a>
+            ) : teachLanguage !== undefined ? (
+              <p className="text-navy/60">{t('assignments.notYourLanguage')}</p>
+            ) : null}
+          </div>
         )}
       </main>
     </>
