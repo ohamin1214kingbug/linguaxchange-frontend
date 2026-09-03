@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { languageOptions, LEVELS } from '../../lib/languages'
+import { languageOptions, LEVELS, levelLabel } from '../../lib/languages'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 
 // A user's DB id is already permanent and unique — no new column needed,
@@ -28,9 +28,58 @@ function CreditControl({ amount, message, onAmountChange, onSubmit }) {
   )
 }
 
+// Everything GET /api/admin/users already returns and the card was throwing
+// away. No new endpoint — the fields were fetched, parsed and then ignored.
+//
+// Behind a toggle rather than always open: the list is a scan-for-one-person
+// view first, and a dozen fields per card would bury the names.
+function UserDetail({ user, t }) {
+  const langName = code => {
+    const match = languageOptions(t).find(l => l.code === code)
+    return match ? `${match.flag} ${match.name}` : code
+  }
+
+  const learning = Array.isArray(user.learn_languages)
+    ? user.learn_languages
+    : String(user.learn_languages || '').split(',').map(l => l.trim()).filter(Boolean)
+
+  const rows = [
+    ['Teaches', user.teach_language
+      ? `${langName(user.teach_language)}${user.teach_level ? ` · ${levelLabel(user.teach_language, user.teach_level)}` : ''}`
+      : null],
+    ['Learning', learning.length ? learning.map(langName).join(', ') : null],
+    ['Certificate', user.has_certificate ? user.certificate_explanation || 'Claimed, no explanation given' : 'Not claimed'],
+    ['Phone', user.phone_number
+      ? `${user.phone_number} ${user.phone_verified ? '✅ verified' : '⚠️ unverified'}`
+      : 'None'],
+    ['Sign-in', user.google_id ? 'Google' : 'Email and password'],
+    ['Timezone', user.timezone],
+    ['Streak', `${user.current_streak || 0} now · ${user.longest_streak || 0} best`],
+    ['Joined', user.created_at ? new Date(user.created_at).toLocaleString() : null],
+    ['Approval note', user.approval_reason],
+  ].filter(([, value]) => value)
+
+  return (
+    <div className="mt-3 border-t border-navy/10 pt-3 space-y-2">
+      {user.bio
+        ? <p className="text-navy/70 text-sm italic">“{user.bio}”</p>
+        : <p className="text-navy/40 text-sm italic">No bio yet</p>}
+      <dl className="grid grid-cols-[7rem_1fr] gap-x-3 gap-y-1 text-sm">
+        {rows.map(([label, value]) => (
+          <div key={label} className="contents">
+            <dt className="text-navy/40 font-bold text-xs uppercase tracking-wide pt-0.5">{label}</dt>
+            <dd className="text-navy/80">{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  )
+}
+
 export default function Admin() {
   const router = useRouter()
   const [tab, setTab] = useState('users')
+  const [openUser, setOpenUser] = useState(null)
   const [userSearch, setUserSearch] = useState('')
   const [creditSearch, setCreditSearch] = useState('')
   const [creditAmounts, setCreditAmounts] = useState({})
@@ -366,7 +415,11 @@ export default function Admin() {
                         </button>
                       </div>
                     </div>
-                    {user.bio && <p className="text-navy/60 text-sm mt-3 border-t border-navy/10 pt-3">{user.bio}</p>}
+                    <button onClick={() => setOpenUser(openUser === user.id ? null : user.id)}
+                      className="mt-3 text-navy/50 hover:text-navy text-xs font-bold transition-colors">
+                      {openUser === user.id ? '▾ Hide details' : '▸ Details'}
+                    </button>
+                    {openUser === user.id && <UserDetail user={user} t={t} />}
                     <CreditControl amount={creditAmounts[user.id] || ''} message={creditMessages[user.id]}
                       onAmountChange={e => setCreditAmounts(a => ({ ...a, [user.id]: e.target.value }))}
                       onSubmit={() => addCredit(user.id)}/>
@@ -392,6 +445,11 @@ export default function Admin() {
                       </div>
                       <span className="bg-brand-teal/10 text-brand-teal px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-teal/30">Approved</span>
                     </div>
+                    <button onClick={() => setOpenUser(openUser === user.id ? null : user.id)}
+                      className="mt-3 text-navy/50 hover:text-navy text-xs font-bold transition-colors">
+                      {openUser === user.id ? '▾ Hide details' : '▸ Details'}
+                    </button>
+                    {openUser === user.id && <UserDetail user={user} t={t} />}
                     <CreditControl amount={creditAmounts[user.id] || ''} message={creditMessages[user.id]}
                       onAmountChange={e => setCreditAmounts(a => ({ ...a, [user.id]: e.target.value }))}
                       onSubmit={() => addCredit(user.id)}/>
