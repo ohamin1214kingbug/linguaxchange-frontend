@@ -25,6 +25,12 @@ export default function Classroom() {
   const [status, setStatus] = useState('connecting')
   const [error, setError] = useState('')
   const [topic, setTopic] = useState('')
+  const [participants, setParticipants] = useState([])
+  const [reporting, setReporting] = useState(false)
+  const [reportTarget, setReportTarget] = useState('')
+  const [reportCategory, setReportCategory] = useState('harassment')
+  const [reportReason, setReportReason] = useState('')
+  const [reportState, setReportState] = useState('')
 
   const apiRef = useRef(null)
   const containerRef = useRef(null)
@@ -60,6 +66,11 @@ export default function Classroom() {
         }
         if (cancelled) return
         setTopic(data.topic || '')
+        setParticipants(data.participants || [])
+        // One other person in the room is the common case — a private class,
+        // or a student reporting the teacher. Preselect them so reporting is
+        // two taps, not four.
+        if (data.participants?.length) setReportTarget(String(data.participants[0].id))
 
         await loadJitsiScript(data.domain)
         if (cancelled || !containerRef.current) return
@@ -104,14 +115,105 @@ export default function Classroom() {
     }
   }, [sessionId])
 
+  const submitReport = async () => {
+    const token = localStorage.getItem('token')
+    if (!token || !reportTarget || !reportReason.trim()) return
+    setReportState('sending')
+    try {
+      const res = await fetch(`${API}/api/reports`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          report_type: 'user',
+          reported_id: parseInt(reportTarget),
+          category: reportCategory,
+          // The class and session are stamped in automatically. Someone
+          // reporting mid-call should not have to remember which session
+          // they were in, and it is the detail that makes the report
+          // checkable afterwards.
+          reason: `[During class: ${topic || 'untitled'}, session ${sessionId}] ${reportReason.trim()}`
+        })
+      })
+      if (res.ok) {
+        setReportState('sent')
+        setReportReason('')
+        setTimeout(() => setReporting(false), 1500)
+        return
+      }
+      const data = await res.json().catch(() => ({}))
+      setReportState(data.error || t('teacher.reportFailed'))
+    } catch (e) {
+      setReportState(t('teacher.reportFailed'))
+    }
+  }
+
   return (
     <main className="min-h-screen bg-navy-dark text-white flex flex-col">
       <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
         <span className="font-display font-bold">{topic || t('classroom.title')}</span>
-        <a href="/dashboard" className="text-white/50 hover:text-white text-sm font-medium">
-          ← {t('classroom.backToDashboard')}
-        </a>
+        <div className="flex items-center gap-5">
+          {participants.length > 0 && (
+            <button onClick={() => { setReporting(o => !o); setReportState('') }}
+              className="text-white/50 hover:text-brand-red text-sm font-medium transition-colors">
+              🚩 {t('teacher.report')}
+            </button>
+          )}
+          <a href="/dashboard" className="text-white/50 hover:text-white text-sm font-medium">
+            ← {t('classroom.backToDashboard')}
+          </a>
+        </div>
       </div>
+
+      {reporting && (
+        <div className="bg-navy border-b border-white/10 px-6 py-4">
+          <div className="max-w-xl space-y-3">
+            {reportState === 'sent' ? (
+              <p className="text-brand-teal text-sm font-bold">✅ {t('teacher.reportSent')}</p>
+            ) : (
+              <>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-white/50 mb-1">{t('classroom.reportWho')}</label>
+                    <select value={reportTarget} onChange={e => setReportTarget(e.target.value)}
+                      className="w-full bg-navy-dark border-2 border-white/15 rounded-xl px-3 py-2 text-sm text-white focus:border-brand-red focus:outline-none">
+                      {participants.map(p => (
+                        <option key={p.id} value={p.id}>{p.first_name} {p.last_name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-white/50 mb-1">{t('teacher.reportCategory')}</label>
+                    <select value={reportCategory} onChange={e => setReportCategory(e.target.value)}
+                      className="w-full bg-navy-dark border-2 border-white/15 rounded-xl px-3 py-2 text-sm text-white focus:border-brand-red focus:outline-none">
+                      <option value="harassment">{t('teacher.reportCatHarassment')}</option>
+                      <option value="inappropriate_content">{t('teacher.reportCatInappropriate')}</option>
+                      <option value="spam_or_scam">{t('teacher.reportCatSpam')}</option>
+                      <option value="no_show">{t('teacher.reportCatNoShow')}</option>
+                      <option value="other">{t('teacher.reportCatOther')}</option>
+                    </select>
+                  </div>
+                </div>
+                <textarea value={reportReason} onChange={e => setReportReason(e.target.value)} rows={2} maxLength={400}
+                  placeholder={t('teacher.reportReasonPlaceholder')}
+                  className="w-full bg-navy-dark border-2 border-white/15 rounded-xl px-3 py-2 text-sm text-white placeholder-white/30 focus:border-brand-red focus:outline-none"/>
+                <p className="text-white/40 text-xs">{t('classroom.reportEvidenceNote')}</p>
+                {reportState && reportState !== 'sending' && (
+                  <p className="text-brand-red text-xs font-bold">{reportState}</p>
+                )}
+                <div className="flex gap-2 justify-end">
+                  <button onClick={() => setReporting(false)} className="text-white/50 text-sm font-bold px-3 py-1.5">
+                    {t('teacher.reportCancel')}
+                  </button>
+                  <button onClick={submitReport} disabled={!reportReason.trim() || reportState === 'sending'}
+                    className="bg-brand-red text-white px-4 py-1.5 rounded-full text-sm font-bold border-2 border-navy disabled:opacity-40">
+                    {t('teacher.reportSubmit')}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {status === 'connecting' && (
         <div className="flex-1 flex items-center justify-center text-white/40 font-medium">
