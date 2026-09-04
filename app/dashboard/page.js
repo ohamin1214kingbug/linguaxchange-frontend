@@ -557,12 +557,6 @@ export default function Dashboard() {
                           <p className="text-navy/40 text-xs mt-0.5">
                             {scheduledAt ? formatInTimezone(scheduledAt, user.timezone, user.time_format) : t('dashboard.noTimeSet')}
                           </p>
-                          {session && !isClassOver && !isLive && (
-                            <a href={`/classroom/${session.id}`}
-                              className="text-brand-red text-xs font-bold hover:underline">
-                              {t('dashboard.startClass')}
-                            </a>
-                          )}
                         </div>
                         {isClassOver ? (
                           <span className="text-navy/40 text-sm">{t('dashboard.ended')}</span>
