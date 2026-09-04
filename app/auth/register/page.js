@@ -489,7 +489,7 @@ export default function Register() {
                         ${form.teach_level === level
                           ? 'border-navy bg-brand-red text-white'
                           : 'border-navy/15 text-navy hover:border-navy/40'}`}>
-                      {level === 'Native' ? level : levelLabel(form.teach_language, level)}
+                      {levelLabel(form.teach_language, level, t)}
                     </button>
                   ))}
                 </div>

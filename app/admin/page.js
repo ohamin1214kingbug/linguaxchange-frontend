@@ -48,7 +48,7 @@ function UserDetail({ user, t }) {
       ? `until ${new Date(user.suspended_until).toLocaleDateString()} — ${user.suspension_reason || 'no reason recorded'}`
       : null],
     ['Teaches', user.teach_language
-      ? `${langName(user.teach_language)}${user.teach_level ? ` · ${levelLabel(user.teach_language, user.teach_level)}` : ''}`
+      ? `${langName(user.teach_language)}${user.teach_level ? ` · ${levelLabel(user.teach_language, user.teach_level, t)}` : ''}`
       : null],
     ['Learning', learning.length ? learning.map(langName).join(', ') : null],
     ['Certificate', user.has_certificate ? user.certificate_explanation || 'Claimed, no explanation given' : 'Not claimed'],

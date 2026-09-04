@@ -84,7 +84,7 @@ export default function People() {
                   <p className="text-navy/40 text-xs font-mono">{userCode(u.id)}</p>
                   <p className="text-navy/60 text-xs mt-0.5">
                     {u.teach_language
-                      ? `${langName(u.teach_language)}${u.teach_level ? ` · ${levelLabel(u.teach_language, u.teach_level)}` : ''}`
+                      ? `${langName(u.teach_language)}${u.teach_level ? ` · ${levelLabel(u.teach_language, u.teach_level, t)}` : ''}`
                       : u.nationality || ''}
                   </p>
                 </div>

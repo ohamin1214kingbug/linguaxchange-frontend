@@ -359,7 +359,7 @@ export default function TeacherProfile() {
                 {teacher.teach_language && LANGS[teacher.teach_language] && (
                   <span className="bg-brand-red/10 text-navy px-3 py-1 rounded-full text-sm font-bold border-2 border-navy/10">
                     {LANGS[teacher.teach_language].flag} {t('teacher.teaches', { lang: LANGS[teacher.teach_language].name })}
-                    {teacher.teach_level ? ` · ${teacher.teach_level}` : ''}
+                    {teacher.teach_level ? ` · ${levelLabel(teacher.teach_language, teacher.teach_level, t)}` : ''}
                   </span>
                 )}
                 {teacher.has_certificate && (
