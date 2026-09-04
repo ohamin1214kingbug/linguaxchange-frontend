@@ -180,6 +180,7 @@ export default function Navbar() {
       <div className="flex gap-3 md:gap-4 items-center">
         <a href="/classes" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.exploreShort')}</a>
         <a href="/resources" className="text-navy/70 font-medium hover:text-navy">{t('nav.resources')}</a>
+        <a href="/people" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('nav.people')}</a>
         <LanguageSwitcher />
 
         {!user && (
