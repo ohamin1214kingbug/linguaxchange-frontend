@@ -445,6 +445,15 @@ export default function Dashboard() {
                         <p className="text-navy text-sm font-bold">
                           {cls?.title || 'Class'}
                         </p>
+                        {/* Reporting is about a person, so this points at the
+                            teacher's profile, where the form with categories
+                            and evidence already lives. */}
+                        {cls?.teacher?.id && (
+                          <a href={`/teachers/${cls.teacher.id}`}
+                            className="text-navy/40 hover:text-brand-red text-xs font-medium transition-colors">
+                            🚩 {t('teacher.report')} · {cls.teacher.first_name} {cls.teacher.last_name}
+                          </a>
+                        )}
                         <p className="text-navy/40 text-xs mt-0.5">
                           {scheduledAt
                             ? formatInTimezone(scheduledAt, user.timezone, user.time_format)
