@@ -7,6 +7,7 @@ import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
 import Tabs from '../../components/Tabs'
 import { countryOptions } from '../../lib/countries'
+import { userCode } from '../../lib/userCode'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -15,7 +16,6 @@ const BADGE_KEYS = { first_class: 'firstClass', five_taught: 'fiveTaught', polyg
 // Same permanent id-derived code shown to admins in the reports queue —
 // lets a user quote it themselves instead of admins being the only ones
 // who can see it.
-const userCode = id => 'U' + String(id).padStart(6, '0')
 
 function BadgeRow({ badges, t }) {
   if (!badges || badges.length === 0) return null

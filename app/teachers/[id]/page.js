@@ -3,6 +3,7 @@ import { levelLabel } from '../../../lib/languages'
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
+import { userCode } from '../../../lib/userCode'
 import Navbar from '../../../components/Navbar'
 import { formatInTimezone, formatDay } from '../../../lib/timezone'
 import { nextSessionDate, lastSessionDate } from '../../../lib/classSchedule'
@@ -337,6 +338,9 @@ export default function TeacherProfile() {
               <h1 className="font-display font-extrabold text-2xl text-navy">
                 {teacher.first_name} {teacher.last_name}
               </h1>
+              <p className="text-navy/40 text-xs font-mono mt-0.5" title={t('teacher.userCodeHint')}>
+                {userCode(teacher.id)}
+              </p>
               {teacher.nationality && (
                 <p className="text-navy/50 text-sm mt-0.5">{teacher.nationality}</p>
               )}
