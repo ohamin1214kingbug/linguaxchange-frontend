@@ -558,7 +558,7 @@ export default function Dashboard() {
 
                 return (
                   <div key={enrollment.id} className="py-4 border-b border-navy/10 last:border-0">
-                    {isLive && (
+                    {isLive && enrollment.status !== 'cancelled' && (
                       <a href={`/classroom/${enrollment.class_session_id}`}
                         className="flex items-center justify-center gap-2 mb-3 bg-red-600 text-white font-extrabold text-sm tracking-wide px-4 py-2 rounded-xl animate-pulse shadow-[0_0_16px_4px_rgba(220,38,38,0.55)] hover:bg-red-700 transition-colors">
                         <span className="w-2 h-2 bg-white rounded-full" /> {t('dashboard.liveNow')} · {t('dashboard.joinMeeting')}
@@ -583,17 +583,19 @@ export default function Dashboard() {
                             ? formatInTimezone(scheduledAt, user.timezone, user.time_format)
                             : t('dashboard.noTimeSet')}
                           {' · '}
-                          {enrollment.status === 'attended'
-                            ? t('dashboard.attended')
-                            : isClassOver
-                              ? t('dashboard.classEndedConfirm')
-                              : isLive
-                                ? t('dashboard.liveNow')
-                                : t('dashboard.upcoming')}
+                          {enrollment.status === 'cancelled'
+                            ? t('history.cancelled')
+                            : enrollment.status === 'attended'
+                              ? t('dashboard.attended')
+                              : isClassOver
+                                ? t('dashboard.classEndedConfirm')
+                                : isLive
+                                  ? t('dashboard.liveNow')
+                                  : t('dashboard.upcoming')}
                         </p>
                       </div>
                       <div>
-                        {enrollment.status !== 'attended' && isClassOver && (
+                        {enrollment.status !== 'attended' && enrollment.status !== 'cancelled' && isClassOver && (
                           <button
                             onClick={() => confirmAttendance(enrollment.id)}
                             disabled={confirming === enrollment.id}
@@ -601,7 +603,7 @@ export default function Dashboard() {
                             {confirming === enrollment.id ? t('dashboard.confirming') : t('dashboard.confirmAttendance')}
                           </button>
                         )}
-                        {enrollment.status !== 'attended' && !isClassOver && (
+                        {enrollment.status !== 'attended' && enrollment.status !== 'cancelled' && !isClassOver && (
                           <button
                             onClick={() => cancelEnrollment(enrollment, scheduledAt && (scheduledAt.getTime() - Date.now() >= 24 * 60 * 60 * 1000))}
                             disabled={cancellingEnrollmentId === enrollment.id}

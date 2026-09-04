@@ -375,7 +375,9 @@ export default function History() {
                       level={cls?.level}
                       when={formatInTimezone(e.class_sessions.session_date, user.timezone, user.time_format)}
                       meta={teacher ? t('history.withTeacher', { name: `${teacher.first_name} ${teacher.last_name || ''}`.trim() }) : ''}
-                      badge={e.status === 'attended' ? t('dashboard.attended') : t('history.notConfirmed')}
+                      badge={e.status === 'cancelled'
+                        ? t('history.cancelled')
+                        : e.status === 'attended' ? t('dashboard.attended') : t('history.notConfirmed')}
                       badgeTone={e.status === 'attended'
                         ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
                         : 'bg-navy/5 text-navy/40 border-navy/10'}
