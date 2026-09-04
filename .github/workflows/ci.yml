@@ -1,0 +1,34 @@
+# The frontend had no CI at all: a broken build or a missing translation key
+# was found by someone opening the page.
+#
+# Node 24 matches what Vercel builds this project with, so a version-specific
+# failure surfaces here rather than in a deploy.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Keep in step with Vercel's Node.js Version setting.
+          node-version: '24'
+          cache: npm
+
+      - run: npm ci
+
+      # Before the build, because it is fast and it fails for a reason the
+      # build never will: a key missing from a locale falls through to the
+      # key string at runtime, so the page renders "dashboard.reportCodeLabel"
+      # and compiles perfectly. Verified by deleting a Korean key — this step
+      # fails, next build succeeds.
+      - run: node scripts/checkTranslations.mjs
+
+      - run: npx next build
