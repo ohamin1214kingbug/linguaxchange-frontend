@@ -66,7 +66,10 @@ export default function ProfilePage() {
   // Built from the shared ladder rather than a seventh copy of it; the
   // translated "Native" is appended here because lib/languages has no
   // translator to call.
-  const LEVEL_OPTIONS = [...LEVELS, t('profile.native')]
+  // Values, not labels. This list used to end with t('profile.native'), and
+  // whichever button was clicked went straight into teach_level — so a
+  // Korean member's stored level became "원어민".
+  const LEVEL_OPTIONS = [...LEVELS, 'Native']
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
@@ -325,7 +328,7 @@ export default function ProfilePage() {
                         ${form.teach_level === level
                           ? 'border-navy bg-brand-red text-white'
                           : 'border-navy/15 text-navy hover:border-navy/40'}`}>
-                      {LEVELS.includes(level) ? levelLabel(form.teach_language, level) : level}
+                      {levelLabel(form.teach_language, level, t)}
                     </button>
                   ))}
                 </div>
