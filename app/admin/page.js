@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { languageOptions, LEVELS, levelLabel } from '../../lib/languages'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
+import { userCode } from '../../lib/userCode'
 
 // A user's DB id is already permanent and unique — no new column needed,
 // just a friendlier alphabet-led format for admins to reference in reports.
-const userCode = id => 'U' + String(id).padStart(6, '0')
 
 // Shared by both the pending and approved user cards below, so the same
 // widget doesn't get written out twice.
