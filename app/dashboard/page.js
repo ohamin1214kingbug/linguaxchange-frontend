@@ -490,7 +490,7 @@ export default function Dashboard() {
                   <div>
                     <label className="block text-xs font-bold text-navy mb-1">{t('dashboard.reportCodeLabel')}</label>
                     <input value={reportCode} onChange={e => setReportCode(e.target.value)}
-                      placeholder="U000012" maxLength={12}
+                      placeholder={t('dashboard.reportCodePlaceholder')} maxLength={12}
                       className="w-full border-2 border-navy/20 rounded-xl px-3 py-2 text-sm font-mono focus:border-brand-red focus:outline-none transition-colors"/>
                     <p className="text-navy/40 text-xs mt-1">{t('dashboard.reportCodeHint')}</p>
                   </div>
