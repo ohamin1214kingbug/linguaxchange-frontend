@@ -121,6 +121,12 @@ export default function Dashboard() {
   const [transactions, setTransactions] = useState([])
   const [enrollments, setEnrollments] = useState([])
   const [teachingClasses, setTeachingClasses] = useState([])
+  const [reportable, setReportable] = useState([])
+  const [reporting, setReporting] = useState(false)
+  const [reportTarget, setReportTarget] = useState('')
+  const [reportCategory, setReportCategory] = useState('harassment')
+  const [reportReason, setReportReason] = useState('')
+  const [reportState, setReportState] = useState('')
   const [confirming, setConfirming] = useState(null)
   const [message, setMessage] = useState('')
   const [messageOk, setMessageOk] = useState(false)
@@ -144,6 +150,7 @@ export default function Dashboard() {
     fetchEnrollments()
     fetchMyReviews()
     fetchTeachingClasses(parsedUser.id)
+    fetchReportable()
     // The cached localStorage user only carries what login returned, so the
     // public profile is fetched fresh — it's the same data a stranger sees
     // on /teachers/:id, which is exactly what the nudge below is about.
@@ -176,6 +183,43 @@ export default function Dashboard() {
       .then(res => res.json())
       .then(data => setMyReviews(Array.isArray(data) ? data : []))
       .catch(() => {})
+  }
+
+  const fetchReportable = () => {
+    fetch(`${API}/api/reports/reportable`, { headers: authHeaders() })
+      .then(res => res.json())
+      .then(data => {
+        const list = Array.isArray(data) ? data : []
+        setReportable(list)
+        if (list.length) setReportTarget(String(list[0].id))
+      })
+      .catch(() => {})
+  }
+
+  const submitReport = async () => {
+    if (!reportTarget || !reportReason.trim()) return
+    setReportState('sending')
+    try {
+      const res = await fetch(`${API}/api/reports`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({
+          report_type: 'user',
+          reported_id: parseInt(reportTarget),
+          category: reportCategory,
+          reason: reportReason.trim()
+        })
+      })
+      if (res.ok) {
+        setReportState('sent')
+        setReportReason('')
+        return
+      }
+      const data = await res.json().catch(() => ({}))
+      setReportState(data.error || t('teacher.reportFailed'))
+    } catch (e) {
+      setReportState(t('teacher.reportFailed'))
+    }
   }
 
   const fetchTeachingClasses = (teacherId) => {
@@ -623,7 +667,7 @@ export default function Dashboard() {
         {/* Quick actions */}
         <div className="bg-white rounded-2xl p-6 border-2 border-navy">
           <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.quickActions')}</h2>
-          <div className="flex gap-4">
+          <div className="flex gap-4 flex-wrap">
             <a href="/classes"
               className="bg-brand-red text-white px-6 py-3 rounded-full text-sm font-bold border-2 border-navy">
               {t('common.explore')}
@@ -632,7 +676,70 @@ export default function Dashboard() {
               className="border-2 border-navy text-navy px-6 py-3 rounded-full text-sm font-bold hover:bg-navy hover:text-white transition-colors">
               {t('dashboard.createAClass')}
             </a>
+            {/* Always here, whether or not there is a class on the page.
+                Someone looking for how to report a person should not have to
+                already have that person's class in front of them. */}
+            <button onClick={() => { setReporting(o => !o); setReportState('') }}
+              className="border-2 border-navy/20 text-navy/70 px-6 py-3 rounded-full text-sm font-bold hover:border-brand-red hover:text-brand-red transition-colors">
+              🚩 {t('dashboard.reportSomeone')}
+            </button>
           </div>
+
+          {reporting && (
+            <div className="mt-4 border-t-2 border-navy/10 pt-4">
+              {reportState === 'sent' ? (
+                <p className="text-brand-teal text-sm font-bold">✅ {t('teacher.reportSent')}</p>
+              ) : reportable.length === 0 ? (
+                // No shared class means nobody to pick. Saying where the
+                // form does live beats an empty dropdown.
+                <p className="text-navy/60 text-sm">
+                  {t('dashboard.reportNobodyYet')}{' '}
+                  <a href="/classes" className="text-brand-red font-bold hover:underline">{t('common.explore')}</a>
+                </p>
+              ) : (
+                <div className="space-y-3 max-w-xl">
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-navy mb-1">{t('classroom.reportWho')}</label>
+                      <select value={reportTarget} onChange={e => setReportTarget(e.target.value)}
+                        className="w-full border-2 border-navy/20 rounded-xl px-3 py-2 text-sm focus:border-brand-red focus:outline-none transition-colors">
+                        {reportable.map(p => (
+                          <option key={p.id} value={p.id}>{p.first_name} {p.last_name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-navy mb-1">{t('teacher.reportCategory')}</label>
+                      <select value={reportCategory} onChange={e => setReportCategory(e.target.value)}
+                        className="w-full border-2 border-navy/20 rounded-xl px-3 py-2 text-sm focus:border-brand-red focus:outline-none transition-colors">
+                        <option value="harassment">{t('teacher.reportCatHarassment')}</option>
+                        <option value="inappropriate_content">{t('teacher.reportCatInappropriate')}</option>
+                        <option value="spam_or_scam">{t('teacher.reportCatSpam')}</option>
+                        <option value="no_show">{t('teacher.reportCatNoShow')}</option>
+                        <option value="other">{t('teacher.reportCatOther')}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <textarea value={reportReason} onChange={e => setReportReason(e.target.value)} rows={3} maxLength={500}
+                    placeholder={t('teacher.reportReasonPlaceholder')}
+                    className="w-full border-2 border-navy/20 rounded-xl px-3 py-2 text-sm focus:border-brand-red focus:outline-none transition-colors"/>
+                  <p className="text-navy/40 text-xs">{t('classroom.reportEvidenceNote')}</p>
+                  {reportState && reportState !== 'sending' && (
+                    <p className="text-brand-red text-xs font-bold">{reportState}</p>
+                  )}
+                  <div className="flex gap-2 justify-end">
+                    <button onClick={() => setReporting(false)} className="text-navy/50 text-sm font-bold px-3 py-1.5">
+                      {t('teacher.reportCancel')}
+                    </button>
+                    <button onClick={submitReport} disabled={!reportReason.trim() || reportState === 'sending'}
+                      className="bg-brand-red text-white px-4 py-1.5 rounded-full text-sm font-bold border-2 border-navy disabled:opacity-40">
+                      {t('teacher.reportSubmit')}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </main>
