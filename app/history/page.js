@@ -207,7 +207,10 @@ function RateStudents({ sessionId, t }) {
         return (
           <div key={student.id} className="mt-3 bg-cream rounded-xl p-4 border-2 border-navy/10">
             <div className="flex items-center justify-between gap-3 mb-1">
-              <p className="text-sm font-bold text-navy">{student.first_name} {student.last_name || ''}</p>
+              <a href={`/teachers/${student.id}`}
+                className="text-sm font-bold text-navy hover:text-brand-red transition-colors">
+                {student.first_name} {student.last_name || ''}
+              </a>
               <span className="text-navy/40 text-xs font-bold">{rated}/{SKILLS.length}</span>
             </div>
             <p className="text-[10px] font-extrabold text-brand-red uppercase tracking-wide">{t('feedback.skillEvaluation')}</p>
