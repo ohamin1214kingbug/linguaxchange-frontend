@@ -2,13 +2,13 @@
 
 **Level:** TOPIK 1 · CEFR A1 (Breakthrough) · **Language:** Korean · **Audience:** Learners
 
-Korean has a gate that Spanish and German do not. Before any grammar makes sense you have to be able to read, and until you can, every word you meet is a picture rather than a sound. The good news is that this gate is unusually cheap to pass: Hangul is a designed alphabet, not an inherited one, and most learners read it — slowly, but genuinely — within a week.
+Korean has a gate that Spanish and German do not. Before any grammar makes sense you have to be able to read, and until you can, every word you meet is a picture rather than a sound. The good news is that this gate is unusually cheap to pass: Hangeul is a designed alphabet, not an inherited one, and most learners read it — slowly, but genuinely — within a week.
 
 TOPIK level 1 describes someone who can carry out basic conversations for daily survival: introducing yourself, buying something, ordering food. You can understand and produce simple sentences about very familiar subjects — yourself, your family, your hobbies, the weather — using roughly 800 basic words and a small set of sentence patterns.
 
 Everything below serves that description. If a grammar point does not help you survive one of those situations, it is not a TOPIK 1 problem yet.
 
-## Before grammar: Hangul
+## Before grammar: Hangeul
 
 Do not postpone this and do not use romanisation as a crutch. Learners who lean on romanised Korean spend the following year unlearning the pronunciation it taught them.
 
@@ -84,7 +84,7 @@ Aim for around 800 words you can retrieve, not merely recognise. Depth in these 
 
 Treat this as the exit test. Grammar you cannot deploy here is not yet learned.
 
-- Read Hangul aloud at conversational speed, even if you do not know every word
+- Read Hangeul aloud at conversational speed, even if you do not know every word
 - Introduce yourself: name, nationality, occupation, where you live
 - Ask someone the same and understand the answer
 - Order in a restaurant or café and ask what something costs
@@ -111,7 +111,7 @@ Treat this as the exit test. Grammar you cannot deploy here is not yet learned.
 
 ## How to know you are ready for TOPIK 2
 
-You are ready when Hangul is genuinely automatic, when the 해요 form comes out without assembling it, and when you can hold a slow conversation about yourself without rehearsing it first. Hesitating over verb endings means more time at this level, not a harder textbook.
+You are ready when Hangeul is genuinely automatic, when the 해요 form comes out without assembling it, and when you can hold a slow conversation about yourself without rehearsing it first. Hesitating over verb endings means more time at this level, not a harder textbook.
 
 TOPIK 1 is commonly estimated at somewhere around 100 to 150 hours of guided study for a European-language speaker — more than Spanish A1 would take, largely because of the writing system and the word order. Treat that as a rough scale, not a target.
 
