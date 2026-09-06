@@ -58,6 +58,8 @@ function toHtmlBody(markdown) {
   let list = []
   let seenTitle = false
   let metaDone = false
+  let ledeDone = false
+  let afterRule = false
 
   // Each entry is { depth, text }; depth 1 is an indented sub-bullet.
   const flushList = () => {
@@ -85,10 +87,19 @@ function toHtmlBody(markdown) {
     flushList()
 
     if (!line.trim()) continue
-    if (/^---+$/.test(line)) { out.push('<hr>'); continue }
+    if (/^---+$/.test(line)) { out.push('<hr>'); afterRule = true; continue }
 
     if (line.startsWith('## ')) { out.push(`<h2>${inline(line.slice(3))}</h2>`); continue }
-    if (line.startsWith('# ')) { out.push(`<h1>${inline(line.slice(2))}</h1>`); seenTitle = true; continue }
+    if (line.startsWith('# ')) {
+      // The title breaks at the em dash: the guide's name large and navy, the
+      // "— What to Study" half smaller and gold, so the shelf of six guides
+      // reads as a series rather than six unrelated documents.
+      const [name, ...rest] = line.slice(2).split('—')
+      const tail = rest.join('—').trim()
+      out.push(`<h1>${inline(name.trim())}${tail ? `<span class="tail">— ${inline(tail)}</span>` : ''}</h1>`)
+      seenTitle = true
+      continue
+    }
 
     // The line directly under the title is the level/language/audience strip,
     // which the original renders in red with navy labels.
@@ -97,7 +108,15 @@ function toHtmlBody(markdown) {
       metaDone = true
       continue
     }
-    out.push(`<p>${inline(line)}</p>`)
+    if (metaDone && !ledeDone) {
+      // The opening paragraph is the one that tells a visitor whether this
+      // guide is for them, so it gets the callout rather than blending into
+      // the wall of text underneath.
+      out.push(`<p class="lede">${inline(line)}</p>`)
+      ledeDone = true
+      continue
+    }
+    out.push(`<p${afterRule ? ' class="note"' : ''}>${inline(line)}</p>`)
   }
   flushList()
   return out.join('\n')
@@ -105,29 +124,74 @@ function toHtmlBody(markdown) {
 
 const page = body => `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>LinguaXchange guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  @page { size: A4; margin: 18mm; }
+  /* Measured out of the redesign reference with pdfplumber, not eyeballed:
+     Nanum Gothic throughout, 10.5pt body in #272941, 28pt title, 19pt
+     section headings, gold #E8B11A, cream #FFF7DF, accent red #DB423D.
+
+     Nanum Gothic carries Latin and Hangul in one family, which is the point.
+     The previous template set Helvetica and let the system substitute
+     AppleGothic for Korean, so 좋아요 arrived in a different typeface from the
+     sentence around it — visible on every page of both Korean guides. */
+  @page { size: A4; margin: 16mm 15mm 18mm; }
   html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body {
-    font-family: "Helvetica Neue", Helvetica, "Apple SD Gothic Neo", AppleGothic, sans-serif;
-    font-size: 11pt; line-height: 1.55; color: #16162A; margin: 0;
+    font-family: "Nanum Gothic", "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 10.5pt; line-height: 1.65; color: #272941; margin: 0;
   }
-  h1 { font-size: 22pt; line-height: 1.2; margin: 0 0 6pt; font-weight: 700; }
+
+  h1 {
+    font-size: 28pt; line-height: 1.15; margin: 0 0 4pt;
+    font-weight: 700; color: #1C1F36; letter-spacing: -0.4pt;
+  }
+  h1 .tail {
+    display: block; font-size: 18pt; color: #E8B11A;
+    letter-spacing: 0; margin-top: 2pt;
+  }
+
+  /* A rule this heavy is deliberate: it is the only thing separating one
+     section from the next in a document that is almost entirely prose. */
   h2 {
-    font-size: 14pt; line-height: 1.3; margin: 20pt 0 8pt; font-weight: 700;
-    padding-bottom: 6pt; border-bottom: 1.5pt solid #E8B93C;
+    font-size: 19pt; line-height: 1.25; margin: 26pt 0 0; font-weight: 700;
+    color: #1C1F36; letter-spacing: -0.2pt;
   }
-  p { margin: 0 0 9pt; }
-  /* The strip under the title: red, with the labels inside it navy. */
-  p.meta { font-weight: 700; color: #C93033; margin-bottom: 14pt; }
-  p.meta strong { color: #16162A; }
-  strong { font-weight: 700; color: #16162A; }
+  h2::after {
+    content: ""; display: block; height: 14pt; background: #E8B11A;
+    margin: 7pt 0 1pt;
+  }
+
+  p { margin: 0 0 10pt; }
+
+  /* The strip under the title: values red, labels navy. */
+  p.meta { font-size: 10pt; font-weight: 700; color: #DB423D; margin-bottom: 16pt; }
+  p.meta strong { color: #1C1F36; }
+
+  /* The opening paragraph, boxed so a visitor can tell in one glance
+     whether this guide is aimed at them. */
+  p.lede {
+    background: #FFF7DF; border-left: 4pt solid #E8B11A;
+    padding: 11pt 14pt; margin: 0 0 14pt;
+  }
+
+  /* Everything after the closing rule is attribution — who wrote this and
+     which official descriptors it follows. It belongs on the page and below
+     the reader's main line of attention. */
+  p.note { font-size: 9.5pt; line-height: 1.5; color: #4E4F5E; margin-bottom: 7pt; }
+
+  strong { font-weight: 700; color: #1C1F36; }
   em { font-style: italic; }
-  ul { margin: 0 0 9pt; padding-left: 16pt; }
-  ul ul { margin: 4pt 0 0; }
-  li { margin: 0 0 4pt; }
-  hr { border: 0; border-top: 1.5pt solid #E8B93C; margin: 18pt 0 12pt; }
-  h2, li { break-inside: avoid; }
+
+  ul { margin: 0 0 10pt; padding-left: 15pt; }
+  ul ul { margin: 5pt 0 0; }
+  li { margin: 0 0 5pt; font-size: 10pt; }
+
+  hr { border: 0; border-top: 3pt solid #E8B11A; margin: 20pt 0 14pt; }
+
+  /* Keep a heading with the text it introduces, and never split a bullet. */
+  h2, li, p.lede { break-inside: avoid; }
   h2 { break-after: avoid; }
 </style></head><body>
 ${body}
