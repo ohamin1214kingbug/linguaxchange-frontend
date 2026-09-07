@@ -418,9 +418,20 @@ export default function Admin() {
     return [userCode(u.id), u.first_name, u.last_name, u.email].some(v => v?.toLowerCase().includes(q))
   }
   const matchesUserSearch = u => matchesSearch(u, userSearch)
-  const pendingUsers = users.filter(u => !u.is_approved && matchesUserSearch(u))
-  const approvedUsers = users.filter(u => u.is_approved && matchesUserSearch(u))
-  const creditSearchResults = users.filter(u => matchesSearch(u, creditSearch))
+
+  // A deleted account is anonymized, not removed — the row has to survive
+  // because other members' bookings and the credit ledger reference it. Part
+  // of that scrubbing sets is_approved false, and this screen bucketed purely
+  // on that flag, so every deleted account landed in "Waiting for approval"
+  // permanently, showing Approve, Reject and Add-token controls. Approving one
+  // would have flipped a scrubbed row back into the approved list.
+  //
+  // Every other route already filters on deleted_at — public search, public
+  // profiles, login, the report pickers. This list was the one that did not.
+  const liveUsers = users.filter(u => !u.deleted_at)
+  const pendingUsers = liveUsers.filter(u => !u.is_approved && matchesUserSearch(u))
+  const approvedUsers = liveUsers.filter(u => u.is_approved && matchesUserSearch(u))
+  const creditSearchResults = liveUsers.filter(u => matchesSearch(u, creditSearch))
   const pendingClasses = classes.filter(c => c.status === 'pending')
   const approvedClasses = classes.filter(c => c.status === 'approved')
   const pendingReports = reports.filter(r => r.status === 'pending')
@@ -561,7 +572,7 @@ export default function Admin() {
               </>
             )}
             {pendingUsers.length === 0 && approvedUsers.length === 0 && (
-              <p className="text-navy/40 text-center py-12">{users.length === 0 ? 'No users yet' : 'No users match your search'}</p>
+              <p className="text-navy/40 text-center py-12">{liveUsers.length === 0 ? 'No users yet' : 'No users match your search'}</p>
             )}
           </div>
           </>
@@ -737,7 +748,7 @@ export default function Admin() {
               </div>
             ))}
             {creditSearchResults.length === 0 && (
-              <p className="text-navy/40 text-center py-12">{users.length === 0 ? 'No users yet' : 'No users match your search'}</p>
+              <p className="text-navy/40 text-center py-12">{liveUsers.length === 0 ? 'No users yet' : 'No users match your search'}</p>
             )}
           </div>
           </>
