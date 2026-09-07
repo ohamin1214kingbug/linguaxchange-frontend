@@ -636,10 +636,14 @@ export default function Admin() {
               <>
                 <h2 className="font-display font-bold text-navy">⏳ Pending approval</h2>
                 {byLanguage(pendingClasses).map(([label, group]) => (
-                  <div key={label}>
-                    <p className="font-display font-bold text-navy/50 text-sm mt-4 mb-2">{label} · {group.length}</p>
+                  // <details>, not a useState toggle: the browser already has
+                  // this widget, keyboard and screen-reader behaviour included.
+                  // Pending opens by default because it is the queue that needs
+                  // a decision.
+                  <details key={label} open className="mt-4">
+                    <summary className="font-display font-bold text-navy/50 text-sm mb-2 cursor-pointer select-none hover:text-navy marker:text-navy/30">{label} · {group.length}</summary>
                     {group.map(cls => (
-                      <div key={cls.id} className="bg-white rounded-2xl p-5 border-2 border-brand-yellow mb-3">
+                      <div key={cls.id} className="bg-white rounded-2xl p-4 border-2 border-brand-yellow mb-2">
                         <div className="flex items-start justify-between gap-3">
                           <ClassPeople cls={cls} students={studentsOf(cls)}/>
                           <div className="flex gap-2 flex-shrink-0">
@@ -655,7 +659,7 @@ export default function Admin() {
                         </div>
                       </div>
                     ))}
-                  </div>
+                  </details>
                 ))}
               </>
             )}
@@ -664,10 +668,13 @@ export default function Admin() {
                 <h2 className="font-display font-bold text-navy mt-6">✅ Active classes</h2>
                 <p className="text-navy/50 text-sm">Mark complete once the class has happened. Credit is earned separately, when students confirm they attended.</p>
                 {byLanguage(approvedClasses).map(([label, group]) => (
-                  <div key={label}>
-                    <p className="font-display font-bold text-navy/50 text-sm mt-4 mb-2">{label} · {group.length}</p>
+                  // Collapsed by default. Active classes are reference, not a
+                  // to-do list, and eight of them pushed the pending queue —
+                  // the part that needs acting on — off the screen.
+                  <details key={label} className="mt-4">
+                    <summary className="font-display font-bold text-navy/50 text-sm mb-2 cursor-pointer select-none hover:text-navy marker:text-navy/30">{label} · {group.length}</summary>
                     {group.map(cls => (
-                      <div key={cls.id} className="bg-white rounded-2xl p-5 border-2 border-brand-teal mb-3">
+                      <div key={cls.id} className="bg-white rounded-2xl p-4 border-2 border-brand-teal mb-2">
                         <div className="flex items-start justify-between gap-3">
                           <ClassPeople cls={cls} students={studentsOf(cls)}/>
                           <button onClick={() => completeClass(cls.id)}
@@ -677,7 +684,7 @@ export default function Admin() {
                         </div>
                       </div>
                     ))}
-                  </div>
+                  </details>
                 ))}
               </>
             )}
