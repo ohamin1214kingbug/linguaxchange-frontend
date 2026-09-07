@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { languageOptions, LEVELS, levelLabel } from '../../lib/languages'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import { userCode } from '../../lib/userCode'
+import { nextSessionDate } from '../../lib/classSchedule'
 
 // A user's DB id is already permanent and unique — no new column needed,
 // just a friendlier alphabet-led format for admins to reference in reports.
@@ -19,7 +20,12 @@ function ClassPeople({ cls, students }) {
   return (
     <div className="min-w-0">
       <p className="font-bold text-navy">{cls.title}</p>
-      <p className="text-navy/60 text-sm">{cls.level} · {cls.duration_minutes} min</p>
+      <p className="text-navy/60 text-sm">
+        {cls.level} · {cls.duration_minutes} min ·{' '}
+        {nextSessionDate(cls)
+          ? nextSessionDate(cls).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
+          : <span className="text-brand-red font-bold">no upcoming session</span>}
+      </p>
       <p className="text-navy/70 text-sm mt-2">
         <span className="text-navy/40">Teacher</span>{' '}
         {cls.teacher ? `${cls.teacher.first_name} ${cls.teacher.last_name}` : 'Unknown'}{' '}
@@ -647,10 +653,16 @@ export default function Admin() {
                         <div className="flex items-start justify-between gap-3">
                           <ClassPeople cls={cls} students={studentsOf(cls)}/>
                           <div className="flex gap-2 flex-shrink-0">
-                            <button onClick={() => approveClass(cls.id)}
-                              className="bg-brand-teal text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
-                              ✓ Approve
-                            </button>
+                            {nextSessionDate(cls) ? (
+                              <button onClick={() => approveClass(cls.id)}
+                                className="bg-brand-teal text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
+                                ✓ Approve
+                              </button>
+                            ) : (
+                              // approveClass ignores the response, so leaving a
+                              // live button here would fail in silence.
+                              <span className="text-navy/40 text-xs self-center max-w-32">Needs a new date before it can be approved</span>
+                            )}
                             <button onClick={() => rejectClass(cls.id)}
                               className="bg-brand-red/10 text-brand-red px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-red/30">
                               ✗ Reject
