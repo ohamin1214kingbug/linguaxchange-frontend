@@ -114,10 +114,23 @@ export default function Home() {
             </a>
           </div>
         </div>
+
+        {/* Nothing above the fold says there is anything below it. A plain
+            anchor with scroll-smooth on <html> does the whole job: the
+            browser animates the scroll, it still works with JS disabled, and
+            it is a real link a keyboard reaches in tab order.
+
+            aria-label reuses the section's own eyebrow rather than adding a
+            "scroll down" key to five locales — naming the destination is what
+            a link's accessible name is for anyway. */}
+        <a href="#how-it-works" aria-label={t('home.methodEyebrow')}
+          className="mt-20 md:mt-28 mx-auto w-12 h-12 rounded-full border-2 border-navy/20 bg-white/70 text-navy text-xl flex items-center justify-center hover:border-navy hover:bg-white transition-colors motion-safe:animate-bounce">
+          ↓
+        </a>
       </section>
 
       {/* How it works */}
-      <section className="px-4 md:px-8 py-16 md:py-24 max-w-5xl mx-auto">
+      <section id="how-it-works" className="px-4 md:px-8 py-16 md:py-24 max-w-5xl mx-auto scroll-mt-20">
         <p className="text-brand-red font-bold tracking-widest text-sm mb-3">{t('home.methodEyebrow')}</p>
         <h2 className="font-display font-extrabold text-navy text-4xl md:text-5xl mb-12 md:mb-16 leading-tight">
           {t('home.methodTitle1')}<br/>{t('home.methodTitle2')}
