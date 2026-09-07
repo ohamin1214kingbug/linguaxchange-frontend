@@ -120,11 +120,17 @@ export default function Home() {
             browser animates the scroll, it still works with JS disabled, and
             it is a real link a keyboard reaches in tab order.
 
+            Desktop only. On a 375x812 phone the buttons above end at 754px
+            and this sits at 834 — below the fold, which is the one place a
+            "there is more below" hint cannot do its job. Nothing short of
+            reflowing the hero fits it in, and it is not needed there: on a
+            phone the fold is not the hard stop it is on a wide screen.
+
             aria-label reuses the section's own eyebrow rather than adding a
             "scroll down" key to five locales — naming the destination is what
             a link's accessible name is for anyway. */}
         <a href="#how-it-works" aria-label={t('home.methodEyebrow')}
-          className="mt-20 md:mt-28 mx-auto w-12 h-12 rounded-full border-2 border-navy/20 bg-white/70 text-navy text-xl flex items-center justify-center hover:border-navy hover:bg-white transition-colors motion-safe:animate-bounce">
+          className="hidden md:flex mt-20 md:mt-28 mx-auto w-12 h-12 rounded-full border-2 border-navy/20 bg-white/70 text-navy text-xl items-center justify-center hover:border-navy hover:bg-white transition-colors motion-safe:animate-bounce">
           ↓
         </a>
       </section>
