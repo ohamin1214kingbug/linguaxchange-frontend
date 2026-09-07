@@ -10,10 +10,18 @@ export const revalidate = 3600
 // English, like the guide pages themselves: this runs on the server, where the
 // translation context is a client-side React provider that does not exist. The
 // visitor still gets their own language once the grid hydrates.
+// The languages are named here on purpose — "Spanish B1 study guide" is what
+// someone actually types — which means this string goes stale the moment a
+// language is added. It already did once, staying Spanish-only after the
+// Korean guides shipped. Adding a language means editing this line.
+//
+// The openGraph pair below is deliberately language-neutral for that reason:
+// a shared link cannot go out of date, and the card has no search term to
+// match anyway.
 export const metadata = {
-  title: 'Free Spanish study guides | LinguaXchange',
+  title: 'Free Spanish and Korean study guides | LinguaXchange',
   description:
-    'What to study at every CEFR level, written by LinguaXchange. Free PDF guides for Spanish A1 to B2 — no account needed.',
+    'What to study at every CEFR level, written by LinguaXchange. Free PDF guides for Spanish A1 to B2 and Korean TOPIK 1 to 4 — no account needed.',
   alternates: { canonical: `${SITE}/resources` },
   openGraph: {
     title: 'Free study guides',
