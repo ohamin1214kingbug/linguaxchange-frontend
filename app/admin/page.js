@@ -8,6 +8,34 @@ import { userCode } from '../../lib/userCode'
 // A user's DB id is already permanent and unique — no new column needed,
 // just a friendlier alphabet-led format for admins to reference in reports.
 
+// The class title, who teaches it, and who signed up — the three things an
+// admin needs to approve or complete a class.
+//
+// The class description is deliberately not shown. It is written to sell the
+// class to a student, it runs to several lines, and it pushed the people out
+// of view on a screen whose whole job is deciding about people. It is still
+// on the public class page, where it belongs.
+function ClassPeople({ cls, students }) {
+  return (
+    <div className="min-w-0">
+      <p className="font-bold text-navy">{cls.title}</p>
+      <p className="text-navy/60 text-sm">{cls.level} · {cls.duration_minutes} min</p>
+      <p className="text-navy/70 text-sm mt-2">
+        <span className="text-navy/40">Teacher</span>{' '}
+        {cls.teacher ? `${cls.teacher.first_name} ${cls.teacher.last_name}` : 'Unknown'}{' '}
+        <span className="font-mono text-navy/40 text-xs">{userCode(cls.teacher_id)}</span>
+      </p>
+      <p className="text-navy/70 text-sm">
+        <span className="text-navy/40">Students</span>{' '}
+        {students.length === 0
+          ? <span className="text-navy/40">nobody yet</span>
+          : students.map(s => `${s.first_name} ${s.last_name}`).join(', ')}
+        {' '}<span className="text-navy/40">({students.length}/{cls.max_students})</span>
+      </p>
+    </div>
+  )
+}
+
 // Shared by both the pending and approved user cards below, so the same
 // widget doesn't get written out twice.
 function CreditControl({ amount, message, onAmountChange, onSubmit }) {
@@ -434,6 +462,30 @@ export default function Admin() {
   const creditSearchResults = liveUsers.filter(u => matchesSearch(u, creditSearch))
   const pendingClasses = classes.filter(c => c.status === 'pending')
   const approvedClasses = classes.filter(c => c.status === 'approved')
+
+  // One list per language, in the order the shared language list defines, so
+  // this screen and the create form agree. Empty languages are dropped.
+  const byLanguage = list => {
+    const known = languageOptions(t).map(l => [`${l.flag} ${l.name}`, list.filter(c => c.language_code === l.code)])
+    // A code outside the shared list still has to show up. Silently hiding a
+    // class from the only screen that can approve it is worse than an odd
+    // heading.
+    const rest = list.filter(c => !languageOptions(t).some(l => l.code === c.language_code))
+    return [...known, ['🌐 Other', rest]].filter(([, cs]) => cs.length > 0)
+  }
+
+  // Enrollments hang off sessions, and a class with several sessions repeats
+  // the same student, so dedupe by id. Cancelled enrollments are refunded
+  // and no longer attending — listing them would overstate the class.
+  const studentsOf = cls => {
+    const byId = new Map()
+    for (const session of cls.class_sessions || []) {
+      for (const e of session.class_enrollments || []) {
+        if (e.student && e.status !== 'cancelled') byId.set(e.student.id, e.student)
+      }
+    }
+    return [...byId.values()]
+  }
   const pendingReports = reports.filter(r => r.status === 'pending')
   const handledReports = reports.filter(r => r.status !== 'pending')
 
@@ -580,48 +632,51 @@ export default function Admin() {
 
         {tab === 'classes' && !loading && (
           <div className="space-y-4">
-            {approvedClasses.length > 0 && (
+            {pendingClasses.length > 0 && (
               <>
-                <h2 className="font-display font-bold text-navy">✅ Active classes — mark complete once the class has happened (updates teacher streak/badges; credit is earned separately when students confirm attendance)</h2>
-                {approvedClasses.map(cls => (
-                  <div key={cls.id} className="bg-white rounded-2xl p-5 border-2 border-brand-teal">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="font-bold text-navy">{cls.title}</p>
-                        <p className="text-navy/60 text-sm">{cls.language_code} · {cls.level} · {cls.duration_minutes} min</p>
-                        {cls.description && <p className="text-navy/60 text-sm mt-2">{cls.description}</p>}
+                <h2 className="font-display font-bold text-navy">⏳ Pending approval</h2>
+                {byLanguage(pendingClasses).map(([label, group]) => (
+                  <div key={label}>
+                    <p className="font-display font-bold text-navy/50 text-sm mt-4 mb-2">{label} · {group.length}</p>
+                    {group.map(cls => (
+                      <div key={cls.id} className="bg-white rounded-2xl p-5 border-2 border-brand-yellow mb-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <ClassPeople cls={cls} students={studentsOf(cls)}/>
+                          <div className="flex gap-2 flex-shrink-0">
+                            <button onClick={() => approveClass(cls.id)}
+                              className="bg-brand-teal text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
+                              ✓ Approve
+                            </button>
+                            <button onClick={() => rejectClass(cls.id)}
+                              className="bg-brand-red/10 text-brand-red px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-red/30">
+                              ✗ Reject
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                      <button onClick={() => completeClass(cls.id)}
-                        className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
-                        ✓ Mark complete
-                      </button>
-                    </div>
+                    ))}
                   </div>
                 ))}
               </>
             )}
-            {pendingClasses.length > 0 && (
+            {approvedClasses.length > 0 && (
               <>
-                <h2 className="font-display font-bold text-navy mt-4">⏳ Pending approval</h2>
-                {pendingClasses.map(cls => (
-                  <div key={cls.id} className="bg-white rounded-2xl p-5 border-2 border-brand-yellow">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="font-bold text-navy">{cls.title}</p>
-                        <p className="text-navy/60 text-sm">{cls.language_code} · {cls.level} · {cls.duration_minutes} min</p>
-                        {cls.description && <p className="text-navy/60 text-sm mt-2">{cls.description}</p>}
+                <h2 className="font-display font-bold text-navy mt-6">✅ Active classes</h2>
+                <p className="text-navy/50 text-sm">Mark complete once the class has happened. Credit is earned separately, when students confirm they attended.</p>
+                {byLanguage(approvedClasses).map(([label, group]) => (
+                  <div key={label}>
+                    <p className="font-display font-bold text-navy/50 text-sm mt-4 mb-2">{label} · {group.length}</p>
+                    {group.map(cls => (
+                      <div key={cls.id} className="bg-white rounded-2xl p-5 border-2 border-brand-teal mb-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <ClassPeople cls={cls} students={studentsOf(cls)}/>
+                          <button onClick={() => completeClass(cls.id)}
+                            className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy flex-shrink-0">
+                            ✓ Mark complete
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex gap-2">
-                        <button onClick={() => approveClass(cls.id)}
-                          className="bg-brand-teal text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
-                          ✓ Approve
-                        </button>
-                        <button onClick={() => rejectClass(cls.id)}
-                          className="bg-brand-red/10 text-brand-red px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-red/30">
-                          ✗ Reject
-                        </button>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 ))}
               </>
