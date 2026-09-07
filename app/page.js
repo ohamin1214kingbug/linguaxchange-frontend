@@ -150,10 +150,19 @@ export default function Home() {
             </div>
           ))}
         </div>
+
+        {/* Second and last cue. The hero's earns its place because nothing
+            above the fold hints at a page below it; this one carries a reader
+            who has finished the three steps into the languages. A third would
+            be noise — by then scrolling is established. */}
+        <a href="#languages" aria-label={t('home.languagesEyebrow')}
+          className="mt-16 md:mt-20 mx-auto w-12 h-12 rounded-full border-2 border-navy/20 bg-white/70 text-navy text-xl flex items-center justify-center hover:border-navy hover:bg-white transition-colors motion-safe:animate-bounce">
+          ↓
+        </a>
       </section>
 
       {/* Languages */}
-      <section className="bg-navy-dark px-4 md:px-8 py-16 md:py-24">
+      <section id="languages" className="bg-navy-dark px-4 md:px-8 py-16 md:py-24 scroll-mt-20">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-wrap items-end justify-between gap-4 mb-12">
             <div>
