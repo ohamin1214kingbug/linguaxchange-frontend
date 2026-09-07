@@ -120,7 +120,9 @@ TOPIK 2 is commonly estimated at a further 150 to 200 hours beyond level 1. As a
 
 ## Next step
 
-Practise it live. Reading about -는데 will not make it automatic; using it with someone who will correct you will. Book a Korean conversation class and put this level to work.
+Move on to the Korean TOPIK 3 guide, which introduces indirect speech and the shift from talking about yourself to talking about other people.
+
+And practise it live. Reading about -는데 will not make it automatic; using it with someone who will correct you will. Book a Korean conversation class and put this level to work.
 
 ---
 
