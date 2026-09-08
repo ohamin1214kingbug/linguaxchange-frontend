@@ -184,6 +184,10 @@ function RateStudents({ sessionId, t }) {
       setMsg(res.ok
         ? { studentId, key: 'feedback.saved' }
         : (data.error ? { studentId, text: data.error } : { studentId, key: 'common.connectionError' }))
+      // Reload so the row locks straight away. Without it the form stays
+      // editable until the page is reloaded, and the next submit is refused
+      // by the server with no explanation the teacher expects.
+      if (res.ok) load()
     } catch {
       setMsg({ studentId, key: 'common.connectionError' })
     }
@@ -199,11 +203,15 @@ function RateStudents({ sessionId, t }) {
       {open && rows === null && <p className="text-navy/40 text-xs mt-2">{t('common.loading')}</p>}
       {open && rows?.length === 0 && <p className="text-navy/40 text-xs mt-2">{t('feedback.noStudents')}</p>}
 
-      {open && rows?.map(({ student }) => {
+      {open && rows?.map(({ student, feedback }) => {
         const draft = drafts[student.id] || {}
         const rated = SKILLS.filter(s => draft[s] != null).length
         const ready = rated >= MIN_SKILLS
         const comment = draft.comment || ''
+        // Submitted feedback is final — the student may already have read it.
+        // The server enforces this; here it just stops the teacher filling in
+        // a form that would be refused.
+        const locked = !!feedback
         return (
           <div key={student.id} className="mt-3 bg-cream rounded-xl p-4 border-2 border-navy/10">
             <div className="flex items-center justify-between gap-3 mb-1">
@@ -214,10 +222,11 @@ function RateStudents({ sessionId, t }) {
               <span className="text-navy/40 text-xs font-bold">{rated}/{SKILLS.length}</span>
             </div>
             <p className="text-[10px] font-extrabold text-brand-red uppercase tracking-wide">{t('feedback.skillEvaluation')}</p>
-            <p className="text-navy/40 text-[11px] mb-2">{t('feedback.rateAtLeastThree', { n: MIN_SKILLS })}</p>
+            {!locked && <p className="text-navy/40 text-[11px] mb-2">{t('feedback.rateAtLeastThree', { n: MIN_SKILLS })}</p>}
             <div>
               {SKILLS.map(s => (
-                <SkillRow key={s} skill={s} value={draft[s]} onChange={v => setSkill(student.id, s, v)} t={t} />
+                <SkillRow key={s} skill={s} value={draft[s]} readOnly={locked}
+                  onChange={v => setSkill(student.id, s, v)} t={t} />
               ))}
             </div>
 
@@ -230,7 +239,7 @@ function RateStudents({ sessionId, t }) {
             </div>
 
             <p className="text-[10px] font-extrabold text-brand-blue uppercase tracking-wide mt-4 mb-2">{t('feedback.teacherComment')}</p>
-            <div className="flex flex-wrap gap-2 mb-2">
+            <div className={`flex flex-wrap gap-2 mb-2 ${locked ? 'hidden' : ''}`}>
               {COMMENT_CHIPS.map(key => (
                 <button key={key} type="button" onClick={() => appendChip(student.id, t(`feedback.${key}`))}
                   className="border-2 border-navy/15 text-navy/70 rounded-full px-3 py-1 text-[11px] font-medium hover:border-navy/40 hover:text-navy transition-colors">
@@ -241,21 +250,27 @@ function RateStudents({ sessionId, t }) {
             <textarea
               value={comment}
               maxLength={300}
+              readOnly={locked}
               onChange={e => setSkill(student.id, 'comment', e.target.value)}
               placeholder={t('feedback.commentPlaceholder', { name: student.first_name })}
               rows={2}
-              className="w-full border-2 border-navy/20 rounded-xl px-3 py-2 text-sm resize-none focus:border-brand-red focus:outline-none transition-colors"/>
-            <p className="text-navy/30 text-[10px] mt-1">{comment.length}/300</p>
+              className={`w-full border-2 rounded-xl px-3 py-2 text-sm resize-none focus:outline-none transition-colors ${
+                locked ? 'border-navy/10 bg-navy/5 text-navy/60' : 'border-navy/20 focus:border-brand-red'}`}/>
+            {!locked && <p className="text-navy/30 text-[10px] mt-1">{comment.length}/300</p>}
 
-            <div className="flex items-center justify-between gap-3 mt-2">
-              <span className={`text-[11px] font-medium ${ready ? 'text-brand-green' : 'text-navy/40'}`}>
-                {ready ? t('feedback.readyToSubmit') : t('feedback.rateAtLeastThree', { n: MIN_SKILLS })}
-              </span>
-              <button onClick={() => submit(student.id)} disabled={saving === student.id || !ready}
-                className="bg-brand-red text-white px-4 py-1.5 rounded-full text-xs font-bold border-2 border-navy disabled:opacity-40 disabled:cursor-not-allowed">
-                {saving === student.id ? t('feedback.saving') : t('feedback.submit')}
-              </button>
-            </div>
+            {locked ? (
+              <p className="text-navy/40 text-[11px] font-medium mt-2">{t('feedback.alreadySubmitted')}</p>
+            ) : (
+              <div className="flex items-center justify-between gap-3 mt-2">
+                <span className={`text-[11px] font-medium ${ready ? 'text-brand-green' : 'text-navy/40'}`}>
+                  {ready ? t('feedback.readyToSubmit') : t('feedback.rateAtLeastThree', { n: MIN_SKILLS })}
+                </span>
+                <button onClick={() => submit(student.id)} disabled={saving === student.id || !ready}
+                  className="bg-brand-red text-white px-4 py-1.5 rounded-full text-xs font-bold border-2 border-navy disabled:opacity-40 disabled:cursor-not-allowed">
+                  {saving === student.id ? t('feedback.saving') : t('feedback.submit')}
+                </button>
+              </div>
+            )}
 
             {msg?.studentId === student.id && (
               <p className={`text-xs mt-2 font-bold text-right ${
