@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from '../../components/Navbar'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import { userCode } from '../../lib/userCode'
@@ -16,6 +16,48 @@ export default function People() {
   const [results, setResults] = useState(null)
   const [searching, setSearching] = useState(false)
   const [error, setError] = useState('')
+  const [saved, setSaved] = useState(new Set())
+  const [savingId, setSavingId] = useState(null)
+  const [me, setMe] = useState(null)
+
+  // Loaded once, not per result: the saved list is small and the search can
+  // return twenty rows, which would otherwise be twenty requests to learn
+  // twenty booleans.
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    setMe(JSON.parse(localStorage.getItem('user') || 'null')?.id ?? null)
+    if (!token) return
+    fetch(`${API}/api/saved-teachers`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => (r.ok ? r.json() : []))
+      .then(list => setSaved(new Set((Array.isArray(list) ? list : []).map(x => x.id))))
+      .catch(() => {})
+  }, [])
+
+  const toggleSaved = async id => {
+    const token = localStorage.getItem('token')
+    if (!token) { window.location.href = '/auth/login'; return }
+    setSavingId(id)
+    const wasSaved = saved.has(id)
+    const res = wasSaved
+      ? await fetch(`${API}/api/saved-teachers/${id}`, {
+          method: 'DELETE', headers: { Authorization: `Bearer ${token}` }
+        })
+      : await fetch(`${API}/api/saved-teachers`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ teacher_id: id })
+        })
+    // Only move the heart if the server agreed. Flipping it optimistically
+    // would show someone a saved teacher who is not on their list.
+    if (res.ok) {
+      setSaved(prev => {
+        const next = new Set(prev)
+        wasSaved ? next.delete(id) : next.add(id)
+        return next
+      })
+    }
+    setSavingId(null)
+  }
 
   const search = async e => {
     e?.preventDefault()
@@ -68,8 +110,12 @@ export default function People() {
         {results && results.length > 0 && (
           <div className="space-y-3">
             {results.map(u => (
-              <a key={u.id} href={`/teachers/${u.id}`}
-                className="flex items-center gap-4 bg-white rounded-2xl p-4 border-2 border-navy/10 hover:border-navy transition-colors">
+              // The card is a div with the link inside rather than a link
+              // wrapping everything: a button nested in an anchor is invalid
+              // HTML, and the heart must not also navigate to the profile.
+              <div key={u.id}
+                className="flex items-center gap-3 bg-white rounded-2xl p-4 border-2 border-navy/10 hover:border-navy transition-colors">
+                <a href={`/teachers/${u.id}`} className="flex items-center gap-4 min-w-0 flex-1">
                 {u.photo_url ? (
                   <img src={u.photo_url} alt="" className="w-12 h-12 rounded-full object-cover border-2 border-navy/15 flex-shrink-0"/>
                 ) : (
@@ -88,7 +134,22 @@ export default function People() {
                       : u.nationality || ''}
                   </p>
                 </div>
-              </a>
+                </a>
+
+                {/* Only where saving is possible: the API refuses a user who
+                    teaches nothing, and refuses you saving yourself. A button
+                    whose only outcome is a rejected request is worse than no
+                    button. Labels are the teacher page's own, so this adds no
+                    translation keys. */}
+                {u.teach_language && u.id !== me && (
+                  <button onClick={() => toggleSaved(u.id)} disabled={savingId === u.id}
+                    aria-label={saved.has(u.id) ? t('teacher.savedLabel') : t('teacher.saveLabel')}
+                    title={saved.has(u.id) ? t('teacher.savedLabel') : t('teacher.saveLabel')}
+                    className="flex-shrink-0 w-11 h-11 flex items-center justify-center rounded-full text-xl hover:bg-cream disabled:opacity-40 transition-colors">
+                    {saved.has(u.id) ? '❤️' : '🤍'}
+                  </button>
+                )}
+              </div>
             ))}
           </div>
         )}
