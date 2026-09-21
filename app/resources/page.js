@@ -1,7 +1,7 @@
 import ResourcesGridClient from './ResourcesGridClient'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
-const SITE = 'https://linguaxchange.com'
+const SITE = 'https://gongbuleng.com'
 
 // Guides change rarely — a level's contents are stable for months — so this is
 // the same hour the sitemap uses.
@@ -19,9 +19,9 @@ export const revalidate = 3600
 // a shared link cannot go out of date, and the card has no search term to
 // match anyway.
 export const metadata = {
-  title: 'Free Spanish and Korean study guides | LinguaXchange',
+  title: 'Free Spanish and Korean study guides | Gongbuleng',
   description:
-    'What to study at every CEFR level, written by LinguaXchange. Free PDF guides for Spanish A1 to B2 and Korean TOPIK 1 to 4 — no account needed.',
+    'What to study at every CEFR level, written by Gongbuleng. Free PDF guides for Spanish A1 to B2 and Korean TOPIK 1 to 4 — no account needed.',
   alternates: { canonical: `${SITE}/resources` },
   openGraph: {
     title: 'Free study guides',

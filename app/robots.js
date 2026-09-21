@@ -1,4 +1,4 @@
-const BASE = 'https://linguaxchange.com'
+const BASE = 'https://gongbuleng.com'
 
 export default function robots() {
   return {

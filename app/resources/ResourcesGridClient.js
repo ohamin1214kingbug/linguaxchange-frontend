@@ -39,7 +39,7 @@ export default function ResourcesGridClient({ initialResources = [], serverFetch
   return (
     <main className="min-h-screen bg-cream">
       <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
-        <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
+        <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">leng</span></a>
         <LanguageSwitcher />
       </nav>
 

@@ -1,7 +1,7 @@
 export default function manifest() {
   return {
-    name: 'LinguaXchange',
-    short_name: 'Lingua',
+    name: 'Gongbuleng',
+    short_name: 'Gongbuleng',
     description: 'Learn by teaching, teach by learning.',
     start_url: '/',
     display: 'standalone',

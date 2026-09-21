@@ -121,4 +121,4 @@ Move on to the Korean TOPIK 2 guide, which adds the connectives and modal ending
 
 ---
 
-*Written by LinguaXchange. Aligned with the TOPIK level 1 descriptors published by the National Institute for International Education (국립국제교육원). The CEFR equivalence shown is NIIED's own published TOPIK–CEFR linkage; it is a linkage rather than an identity, and no TOPIK certificate states a CEFR level.*
+*Written by Gongbuleng. Aligned with the TOPIK level 1 descriptors published by the National Institute for International Education (국립국제교육원). The CEFR equivalence shown is NIIED's own published TOPIK–CEFR linkage; it is a linkage rather than an identity, and no TOPIK certificate states a CEFR level.*

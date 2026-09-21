@@ -1,6 +1,6 @@
 import { hasUpcomingSession } from '../lib/classSchedule'
 
-const BASE = 'https://linguaxchange.com'
+const BASE = 'https://gongbuleng.com'
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
 // Only the pages a logged-out visitor can actually read. Everything else

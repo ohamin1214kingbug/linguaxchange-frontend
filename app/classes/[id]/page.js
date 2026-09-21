@@ -2,7 +2,7 @@ import ClassDetailClient from './ClassDetailClient'
 import { LANGUAGE_NAMES_EN as LANGUAGE_NAMES } from '../../../lib/languages'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
-const SITE = 'https://linguaxchange.com'
+const SITE = 'https://gongbuleng.com'
 
 // A class fills up, gets cancelled, or is edited, so a long cache would serve a
 // stale seat count. Five minutes stays honest without making every crawl hit
@@ -25,7 +25,7 @@ async function getClass(id) {
 export async function generateMetadata({ params }) {
   const { id } = await params
   const cls = await getClass(id)
-  if (!cls) return { title: 'Class — LinguaXchange' }
+  if (!cls) return { title: 'Class — Gongbuleng' }
 
   const language = LANGUAGE_NAMES[cls.language_code] || cls.language_code
   const teacher = cls.teacher?.first_name ? ` with ${cls.teacher.first_name}` : ''
@@ -35,11 +35,11 @@ export async function generateMetadata({ params }) {
   // beats an empty one, which search engines fill in themselves using whatever
   // text they happen to find first on the page.
   const description = cls.description?.trim()
-    || `A live ${language} class at ${cls.level} level on LinguaXchange. Small group, no subscription.`
+    || `A live ${language} class at ${cls.level} level on Gongbuleng. Small group, no subscription.`
 
   const url = `${SITE}/classes/${id}`
   return {
-    title: `${title} | LinguaXchange`,
+    title: `${title} | Gongbuleng`,
     description,
     alternates: { canonical: url },
     openGraph: { title, description, url, type: 'article' },

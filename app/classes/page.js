@@ -2,7 +2,7 @@ import ClassesBrowseClient from './ClassesBrowseClient'
 import { hasUpcomingSession } from '../../lib/classSchedule'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
-const SITE = 'https://linguaxchange.com'
+const SITE = 'https://gongbuleng.com'
 
 // The listings change as classes are created, filled and cancelled, so this is
 // short. Long enough that a crawl doesn't hammer Railway, short enough that the
@@ -43,7 +43,7 @@ async function getClasses(searchParams) {
 // translation context — a client-side React provider — does not exist. The
 // visitor still sees their own language once the page hydrates.
 export const metadata = {
-  title: 'Browse language classes | LinguaXchange',
+  title: 'Browse language classes | Gongbuleng',
   description:
     'Small group language classes in Korean, Spanish, German, English, Portuguese, French and Italian. Teach what you know, learn what you don’t — no subscription.',
   alternates: { canonical: `${SITE}/classes` },

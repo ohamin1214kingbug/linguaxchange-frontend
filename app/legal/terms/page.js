@@ -2,7 +2,7 @@ export default function TermsOfService() {
   return (
     <main className="min-h-screen bg-cream">
       <nav className="flex items-center px-4 md:px-8 py-4 border-b border-navy/10">
-        <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
+        <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">leng</span></a>
       </nav>
 
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
@@ -10,7 +10,7 @@ export default function TermsOfService() {
         <p className="text-navy/50 text-sm mb-8">Last updated: July 31, 2026</p>
 
         <div className="space-y-6 text-navy/80 leading-relaxed">
-          <p>These terms govern your use of LinguaXchange. By creating an account, you agree to them.</p>
+          <p>These terms govern your use of Gongbuleng. By creating an account, you agree to them.</p>
 
           <section>
             <h2 className="font-display font-bold text-xl text-navy mb-2">1. Your account</h2>
@@ -19,7 +19,7 @@ export default function TermsOfService() {
 
           <section>
             <h2 className="font-display font-bold text-xl text-navy mb-2">2. Credits</h2>
-            <p>LinguaXchange runs on credits, not money. New accounts start with a small credit grant. You earn credits by teaching a class and spend them by joining one. Credits have no cash value, cannot be bought, sold, or exchanged for money, and are not refundable.</p>
+            <p>Gongbuleng runs on credits, not money. New accounts start with a small credit grant. You earn credits by teaching a class and spend them by joining one. Credits have no cash value, cannot be bought, sold, or exchanged for money, and are not refundable.</p>
           </section>
 
           <section>
@@ -29,7 +29,7 @@ export default function TermsOfService() {
 
           <section>
             <h2 className="font-display font-bold text-xl text-navy mb-2">4. Conduct</h2>
-            <p>Use a real photo of yourself. Don't harass, abuse, or discriminate against other users. Don't use LinguaXchange for anything illegal, or to solicit payment outside the platform in place of credits. We may suspend or terminate accounts that violate these terms.</p>
+            <p>Use a real photo of yourself. Don't harass, abuse, or discriminate against other users. Don't use Gongbuleng for anything illegal, or to solicit payment outside the platform in place of credits. We may suspend or terminate accounts that violate these terms.</p>
           </section>
 
           <section>
@@ -39,7 +39,7 @@ export default function TermsOfService() {
 
           <section>
             <h2 className="font-display font-bold text-xl text-navy mb-2">6. No warranty</h2>
-            <p>LinguaXchange is provided "as is". We don't guarantee the platform will be uninterrupted, error-free, or that any teacher's qualifications are accurate — has_certificate and similar fields are self-reported by users. We aren't liable for the quality of any class or the conduct of any user.</p>
+            <p>Gongbuleng is provided "as is". We don't guarantee the platform will be uninterrupted, error-free, or that any teacher's qualifications are accurate — has_certificate and similar fields are self-reported by users. We aren't liable for the quality of any class or the conduct of any user.</p>
           </section>
 
           <section>
@@ -53,7 +53,7 @@ export default function TermsOfService() {
           </section>
         </div>
 
-        <a href="/" className="inline-block mt-10 text-navy/60 font-medium hover:text-navy">← Back to LinguaXchange</a>
+        <a href="/" className="inline-block mt-10 text-navy/60 font-medium hover:text-navy">← Back to Gongbuleng</a>
       </div>
     </main>
   )

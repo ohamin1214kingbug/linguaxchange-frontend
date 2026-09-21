@@ -89,4 +89,4 @@ B2 is where Spanish moves from familiar topics to abstract ones, and from expres
 
 ---
 
-*Written by LinguaXchange. Aligned with the Common European Framework of Reference for Languages (CEFR) B1 descriptors. For the official Spanish B1 examination syllabus, see UNED's published prueba libre syllabus.*
+*Written by Gongbuleng. Aligned with the Common European Framework of Reference for Languages (CEFR) B1 descriptors. For the official Spanish B1 examination syllabus, see UNED's published prueba libre syllabus.*

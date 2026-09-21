@@ -16,22 +16,22 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const title = "LinguaXchange";
+const title = "Gongbuleng";
 const description = "Learn by teaching, teach by learning.";
 
 export const metadata = {
-  metadataBase: new URL("https://linguaxchange.com"),
+  metadataBase: new URL("https://gongbuleng.com"),
   title,
   description,
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Lingua",
+    title: "Gongbuleng",
   },
   openGraph: {
     title,
     description,
-    url: "https://linguaxchange.com",
+    url: "https://gongbuleng.com",
     siteName: title,
   },
   twitter: {
