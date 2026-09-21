@@ -25,7 +25,7 @@ async function getClass(id) {
 export async function generateMetadata({ params }) {
   const { id } = await params
   const cls = await getClass(id)
-  if (!cls) return { title: 'Class — Gongbuleng' }
+  if (!cls) return { title: 'Class — GongbuLeng' }
 
   const language = LANGUAGE_NAMES[cls.language_code] || cls.language_code
   const teacher = cls.teacher?.first_name ? ` with ${cls.teacher.first_name}` : ''
@@ -35,11 +35,11 @@ export async function generateMetadata({ params }) {
   // beats an empty one, which search engines fill in themselves using whatever
   // text they happen to find first on the page.
   const description = cls.description?.trim()
-    || `A live ${language} class at ${cls.level} level on Gongbuleng. Small group, no subscription.`
+    || `A live ${language} class at ${cls.level} level on GongbuLeng. Small group, no subscription.`
 
   const url = `${SITE}/classes/${id}`
   return {
-    title: `${title} | Gongbuleng`,
+    title: `${title} | GongbuLeng`,
     description,
     alternates: { canonical: url },
     openGraph: { title, description, url, type: 'article' },

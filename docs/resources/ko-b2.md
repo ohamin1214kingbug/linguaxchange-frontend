@@ -106,4 +106,4 @@ In the meantime, the thing that moves level 4 fastest is being corrected by some
 
 ---
 
-*Written by Gongbuleng. Aligned with the TOPIK level 4 descriptors published by the National Institute for International Education (국립국제교육원). The CEFR equivalence shown is NIIED's own published TOPIK–CEFR linkage; it is a linkage rather than an identity, and no TOPIK certificate states a CEFR level. Admission, graduation and visa requirements described here vary by institution and change — confirm them with the body that sets them.*
+*Written by GongbuLeng. Aligned with the TOPIK level 4 descriptors published by the National Institute for International Education (국립국제교육원). The CEFR equivalence shown is NIIED's own published TOPIK–CEFR linkage; it is a linkage rather than an identity, and no TOPIK certificate states a CEFR level. Admission, graduation and visa requirements described here vary by institution and change — confirm them with the body that sets them.*

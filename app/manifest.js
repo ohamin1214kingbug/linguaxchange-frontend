@@ -1,7 +1,7 @@
 export default function manifest() {
   return {
-    name: 'Gongbuleng',
-    short_name: 'Gongbuleng',
+    name: 'GongbuLeng',
+    short_name: 'GongbuLeng',
     description: 'Learn by teaching, teach by learning.',
     start_url: '/',
     display: 'standalone',

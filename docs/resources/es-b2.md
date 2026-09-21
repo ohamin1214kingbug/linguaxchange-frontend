@@ -90,4 +90,4 @@ C1 shifts again, from arguing clearly to arguing *precisely*: implication, nuanc
 
 ---
 
-*Written by Gongbuleng. Aligned with the Common European Framework of Reference for Languages (CEFR) B2 descriptors.*
+*Written by GongbuLeng. Aligned with the Common European Framework of Reference for Languages (CEFR) B2 descriptors.*

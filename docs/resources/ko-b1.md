@@ -124,4 +124,4 @@ And practise this level live. Indirect speech is not learned by reading about it
 
 ---
 
-*Written by Gongbuleng. Aligned with the TOPIK level 3 descriptors published by the National Institute for International Education (국립국제교육원). The CEFR equivalence shown is NIIED's own published TOPIK–CEFR linkage; it is a linkage rather than an identity, and no TOPIK certificate states a CEFR level. Cut-off scores for each level are published with each sitting — check the current announcement rather than a figure quoted elsewhere.*
+*Written by GongbuLeng. Aligned with the TOPIK level 3 descriptors published by the National Institute for International Education (국립국제교육원). The CEFR equivalence shown is NIIED's own published TOPIK–CEFR linkage; it is a linkage rather than an identity, and no TOPIK certificate states a CEFR level. Cut-off scores for each level are published with each sitting — check the current announcement rather than a figure quoted elsewhere.*

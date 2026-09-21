@@ -43,7 +43,7 @@ async function getClasses(searchParams) {
 // translation context — a client-side React provider — does not exist. The
 // visitor still sees their own language once the page hydrates.
 export const metadata = {
-  title: 'Browse language classes | Gongbuleng',
+  title: 'Browse language classes | GongbuLeng',
   description:
     'Small group language classes in Korean, Spanish, German, English, Portuguese, French and Italian. Teach what you know, learn what you don’t — no subscription.',
   alternates: { canonical: `${SITE}/classes` },

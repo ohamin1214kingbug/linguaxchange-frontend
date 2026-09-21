@@ -107,7 +107,7 @@ export default function VerifyPhone() {
         <LanguageSwitcher />
       </div>
       <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md">
-        <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">leng</span></a>
+        <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">Leng</span></a>
         <h1 className="font-display font-extrabold text-navy text-3xl mt-4 mb-2">{t('auth.verifyPhoneRequiredTitle')}</h1>
         <p className="text-navy/60 mb-6">{t('auth.verifyPhoneRequiredSubtitle')}</p>
 

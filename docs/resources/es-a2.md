@@ -89,4 +89,4 @@ Move on to the Spanish B1 guide, which introduces the subjunctive and the shift 
 
 ---
 
-*Written by Gongbuleng. Aligned with the Common European Framework of Reference for Languages (CEFR) A2 descriptors. For the official Spanish A2 examination syllabus, see UNED's published prueba libre syllabus.*
+*Written by GongbuLeng. Aligned with the Common European Framework of Reference for Languages (CEFR) A2 descriptors. For the official Spanish A2 examination syllabus, see UNED's published prueba libre syllabus.*

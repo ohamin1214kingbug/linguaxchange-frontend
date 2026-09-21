@@ -7,7 +7,7 @@ const API = 'https://linguaxchange-backend-production.up.railway.app'
 
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
-export const alt = 'Gongbuleng study guide'
+export const alt = 'GongbuLeng study guide'
 
 const mascot = `data:image/png;base64,${readFileSync(
   join(process.cwd(), 'public/icons/icon-512.png'),
@@ -130,7 +130,7 @@ export default async function Image({ params }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
             <div style={{ display: 'flex', fontSize: 34, fontWeight: 800, color: '#1a1a2e' }}>
               <span>Gongbu</span>
-              <span style={{ color: '#e0263a' }}>leng</span>
+              <span style={{ color: '#e0263a' }}>Leng</span>
             </div>
             <img src={mascot} width={72} height={72} style={{ borderRadius: 18 }} />
           </div>

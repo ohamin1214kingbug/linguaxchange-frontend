@@ -100,4 +100,4 @@ Move on to the Spanish A2 guide, which opens up the past tenses and lets you fin
 
 ---
 
-*Written by Gongbuleng. Aligned with the Common European Framework of Reference for Languages (CEFR) A1 descriptors. For the official Spanish A1 examination syllabus, see UNED's published prueba libre syllabus.*
+*Written by GongbuLeng. Aligned with the Common European Framework of Reference for Languages (CEFR) A1 descriptors. For the official Spanish A1 examination syllabus, see UNED's published prueba libre syllabus.*

@@ -126,4 +126,4 @@ And practise it live. Reading about -는데 will not make it automatic; using it
 
 ---
 
-*Written by Gongbuleng. Aligned with the TOPIK level 2 descriptors published by the National Institute for International Education (국립국제교육원). The CEFR equivalence shown is NIIED's own published TOPIK–CEFR linkage; it is a linkage rather than an identity, and no TOPIK certificate states a CEFR level.*
+*Written by GongbuLeng. Aligned with the TOPIK level 2 descriptors published by the National Institute for International Education (국립국제교육원). The CEFR equivalence shown is NIIED's own published TOPIK–CEFR linkage; it is a linkage rather than an identity, and no TOPIK certificate states a CEFR level.*

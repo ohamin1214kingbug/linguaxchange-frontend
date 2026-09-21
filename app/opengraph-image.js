@@ -4,7 +4,7 @@ import { join } from "path";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "Gongbuleng — Learn by teaching, teach by learning.";
+export const alt = "GongbuLeng — Learn by teaching, teach by learning.";
 
 const mascot = `data:image/png;base64,${readFileSync(
   join(process.cwd(), "public/icons/icon-512.png"),
@@ -36,7 +36,7 @@ export default function Image() {
             }}
           >
             <span>Gongbu</span>
-            <span style={{ color: "#e0263a" }}>leng</span>
+            <span style={{ color: "#e0263a" }}>Leng</span>
           </div>
           <div style={{ marginTop: 18, fontSize: 38, color: "#5a5a6e" }}>
             Learn by teaching, teach by learning.

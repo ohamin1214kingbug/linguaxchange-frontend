@@ -16,7 +16,7 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const title = "Gongbuleng";
+const title = "GongbuLeng";
 const description = "Learn by teaching, teach by learning.";
 
 export const metadata = {
@@ -26,7 +26,7 @@ export const metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Gongbuleng",
+    title: "GongbuLeng",
   },
   openGraph: {
     title,

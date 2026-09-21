@@ -19,9 +19,9 @@ export const revalidate = 3600
 // a shared link cannot go out of date, and the card has no search term to
 // match anyway.
 export const metadata = {
-  title: 'Free Spanish and Korean study guides | Gongbuleng',
+  title: 'Free Spanish and Korean study guides | GongbuLeng',
   description:
-    'What to study at every CEFR level, written by Gongbuleng. Free PDF guides for Spanish A1 to B2 and Korean TOPIK 1 to 4 — no account needed.',
+    'What to study at every CEFR level, written by GongbuLeng. Free PDF guides for Spanish A1 to B2 and Korean TOPIK 1 to 4 — no account needed.',
   alternates: { canonical: `${SITE}/resources` },
   openGraph: {
     title: 'Free study guides',
