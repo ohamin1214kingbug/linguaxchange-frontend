@@ -34,7 +34,7 @@ export default function TermsOfService() {
 
           <section>
             <h2 className="font-display font-bold text-xl text-navy mb-2">5. Video classes</h2>
-            <p>Classes are held over video call through a third-party video provider. We don't record, monitor, or moderate class calls, and aren't responsible for what happens during them. Report any issue to <a href="mailto:linguaxchange.app@gmail.com" className="text-brand-red font-medium underline">linguaxchange.app@gmail.com</a>.</p>
+            <p>Classes are held over video call through a third-party video provider. We don't record, monitor, or moderate class calls, and aren't responsible for what happens during them. Report any issue to <a href="mailto:gongbuleng.team@gmail.com" className="text-brand-red font-medium underline">gongbuleng.team@gmail.com</a>.</p>
           </section>
 
           <section>
@@ -49,7 +49,7 @@ export default function TermsOfService() {
 
           <section>
             <h2 className="font-display font-bold text-xl text-navy mb-2">8. Contact</h2>
-            <p>Questions about these terms? Email <a href="mailto:linguaxchange.app@gmail.com" className="text-brand-red font-medium underline">linguaxchange.app@gmail.com</a>.</p>
+            <p>Questions about these terms? Email <a href="mailto:gongbuleng.team@gmail.com" className="text-brand-red font-medium underline">gongbuleng.team@gmail.com</a>.</p>
           </section>
         </div>
 

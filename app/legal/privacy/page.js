@@ -44,7 +44,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="font-display font-bold text-xl text-navy mb-2">4. Your choices</h2>
-            <p>You can update your profile at any time from your account settings. To request that we delete your account and associated data, email us at <a href="mailto:linguaxchange.app@gmail.com" className="text-brand-red font-medium underline">linguaxchange.app@gmail.com</a>.</p>
+            <p>You can update your profile at any time from your account settings. To request that we delete your account and associated data, email us at <a href="mailto:gongbuleng.team@gmail.com" className="text-brand-red font-medium underline">gongbuleng.team@gmail.com</a>.</p>
           </section>
 
           <section>
@@ -54,7 +54,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="font-display font-bold text-xl text-navy mb-2">6. Contact</h2>
-            <p>Questions about this policy? Email <a href="mailto:linguaxchange.app@gmail.com" className="text-brand-red font-medium underline">linguaxchange.app@gmail.com</a>.</p>
+            <p>Questions about this policy? Email <a href="mailto:gongbuleng.team@gmail.com" className="text-brand-red font-medium underline">gongbuleng.team@gmail.com</a>.</p>
           </section>
         </div>
 
