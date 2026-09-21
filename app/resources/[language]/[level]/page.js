@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import { levelLabel } from '../../../../lib/languages'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
-const SITE = 'https://linguaxchange.com'
+const SITE = 'https://gongbuleng.com'
 
 // Server-rendered rather than client-fetched: this is the page that has to be
 // readable by a crawler with no JavaScript, which is the entire reason the
@@ -27,12 +27,12 @@ async function getResource(language, level) {
 export async function generateMetadata({ params }) {
   const { language, level } = await params
   const resource = await getResource(language, level)
-  if (!resource) return { title: 'Study guide — LinguaXchange' }
+  if (!resource) return { title: 'Study guide — GongbuLeng' }
 
   const url = `${SITE}/resources/${language.toLowerCase()}/${level.toLowerCase()}`
   const description = resource.description || resource.title
   return {
-    title: `${resource.title} — LinguaXchange`,
+    title: `${resource.title} — GongbuLeng`,
     description,
     alternates: { canonical: url },
     openGraph: { title: resource.title, description, url, type: 'article' },
@@ -47,7 +47,7 @@ export default async function ResourceDetail({ params }) {
   return (
     <main className="min-h-screen bg-cream">
       <nav className="flex items-center px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
-        <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
+        <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">Leng</span></a>
       </nav>
 
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
@@ -93,7 +93,7 @@ export default async function ResourceDetail({ params }) {
           </p>
           <p className="text-navy/60 text-sm leading-relaxed mb-4">
             Reading about a grammar point is not the same as using it under pressure.
-            LinguaXchange runs small group classes where you teach what you know and
+            GongbuLeng runs small group classes where you teach what you know and
             learn what you don&apos;t — no subscription.
           </p>
           <a href={`/classes?language=${resource.language_code}&level=${resource.level}`}

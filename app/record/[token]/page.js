@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic'
 // the translation layer is a client-side React context. It is also read mostly
 // by university staff rather than by the member.
 export const metadata = {
-  title: 'Participation record | LinguaXchange',
+  title: 'Participation record | GongbuLeng',
   // The page names a real person and lists their activity. It is shared
   // deliberately by that person and must never enter a search index.
   robots: { index: false, follow: false },
@@ -96,7 +96,7 @@ export default async function RecordPage({ params }) {
           )}
 
           <p className="text-navy/40 text-xs mt-8 pt-4 border-t border-navy/10">
-            Generated {day(record.generatedAt)} by LinguaXchange · linguaxchange.com
+            Generated {day(record.generatedAt)} by GongbuLeng · gongbuleng.com
           </p>
         </div>
       </div>

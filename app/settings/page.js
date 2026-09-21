@@ -286,7 +286,7 @@ export default function SettingsPage() {
       const url = URL.createObjectURL(await res.blob())
       const a = document.createElement('a')
       a.href = url
-      a.download = `linguaxchange-data-${user.id}.json`
+      a.download = `gongbuleng-data-${user.id}.json`
       a.click()
       URL.revokeObjectURL(url)
     } catch (e) {

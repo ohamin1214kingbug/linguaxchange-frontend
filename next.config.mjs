@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Study guides are served from linguaxchange.com/guides/... rather than
+  // Study guides are served from gongbuleng.com/guides/... rather than
   // from the Supabase project hostname they are actually stored on.
   //
   // A rewrite, not a redirect: the address bar stays on our domain, so a

@@ -176,7 +176,7 @@ export default function Navbar() {
       </div>
     )}
     <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
-      <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
+      <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">Leng</span></a>
       <div className="flex gap-3 md:gap-4 items-center">
         <a href="/classes" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.exploreShort')}</a>
         <a href="/resources" className="text-navy/70 font-medium hover:text-navy">{t('nav.resources')}</a>

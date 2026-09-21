@@ -39,7 +39,7 @@ export default function Home() {
             {/* Decorative only, and the first thing to go when the nav got a
                 fourth item — the wordmark carries the brand on its own. */}
             <span className="hidden sm:inline text-2xl">🌐</span>
-            <span className="font-display font-bold text-lg sm:text-xl text-navy">Lingua<span className="text-brand-red">Xchange</span></span>
+            <span className="font-display font-bold text-lg sm:text-xl text-navy">Gongbu<span className="text-brand-red">Leng</span></span>
           </a>
           <div className="flex gap-2 sm:gap-3 md:gap-6 items-center">
             <a href="/classes" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.explore')}</a>

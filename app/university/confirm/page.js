@@ -39,7 +39,7 @@ export default function ConfirmUniversity() {
   return (
     <main className="min-h-screen bg-cream">
       <nav className="flex items-center px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
-        <a href="/" className="font-display font-bold text-lg text-navy">Lingua<span className="text-brand-red">Xchange</span></a>
+        <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">Leng</span></a>
       </nav>
       <div className="max-w-md mx-auto px-4 py-20 text-center">
         <p className="font-display font-extrabold text-2xl text-navy mb-3">
