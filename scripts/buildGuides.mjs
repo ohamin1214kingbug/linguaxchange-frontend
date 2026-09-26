@@ -126,20 +126,25 @@ const page = body => `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>GongbuLeng guide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
 <style>
   /* Measured out of the redesign reference with pdfplumber, not eyeballed:
      Nanum Gothic throughout, 10.5pt body in #272941, 28pt title, 19pt
      section headings, gold #E8B11A, cream #FFF7DF, accent red #DB423D.
 
-     Nanum Gothic carries Latin and Hangul in one family, which is the point.
-     The previous template set Helvetica and let the system substitute
-     AppleGothic for Korean, so 좋아요 arrived in a different typeface from the
-     sentence around it — visible on every page of both Korean guides. */
+     One family must carry both Latin and Hangul. The previous template set
+     Helvetica and let the system substitute AppleGothic for Korean, so 좋아요
+     arrived in a different typeface from the sentence around it — visible on
+     every page of both Korean guides.
+
+     Noto Sans KR, not the measured Nanum Gothic: Nanum's Latin lowercase i
+     and j end in a hooked foot, which reads as a defect in English body text
+     ("Spanish", "is", "being"). Noto Sans KR keeps the one-family property
+     with a plain i. */
   @page { size: A4; margin: 16mm 15mm 18mm; }
   html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body {
-    font-family: "Nanum Gothic", "Helvetica Neue", Helvetica, sans-serif;
+    font-family: "Noto Sans KR", "Helvetica Neue", Helvetica, sans-serif;
     font-size: 10.5pt; line-height: 1.65; color: #272941; margin: 0;
   }
 
