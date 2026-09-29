@@ -41,6 +41,18 @@ export const metadata = {
   },
 };
 
+// Google picks the name it prints above a search result from WebSite
+// structured data on the home page; without it, it guesses, often falling
+// back to the bare domain. alternateName lists the spelling people may type
+// and the old name, so searches for either still resolve to this site.
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "GongbuLeng",
+  alternateName: ["Gongbuleng", "LinguaXchange"],
+  url: "https://gongbuleng.com/",
+};
+
 export const viewport = {
   themeColor: "#1a1a2e",
 };
@@ -52,6 +64,10 @@ export default function RootLayout({ children }) {
       className={`${baloo.variable} ${inter.variable} h-full antialiased scroll-smooth`}
     >
       <body className="min-h-full flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         <ServiceWorkerRegister />
         <AuthTabSync />
         <LanguageProvider>{children}</LanguageProvider>
