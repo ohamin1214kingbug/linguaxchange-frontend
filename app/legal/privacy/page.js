@@ -7,7 +7,7 @@ export default function PrivacyPolicy() {
 
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">Privacy Policy</h1>
-        <p className="text-navy/50 text-sm mb-8">Last updated: July 31, 2026</p>
+        <p className="text-navy/65 text-sm mb-8">Last updated: July 31, 2026</p>
 
         <div className="space-y-6 text-navy/80 leading-relaxed">
           <p>GongbuLeng ("we", "us") connects people to teach and learn languages with each other. This policy explains what personal data we collect, why, and how it's handled.</p>
@@ -58,7 +58,7 @@ export default function PrivacyPolicy() {
           </section>
         </div>
 
-        <a href="/" className="inline-block mt-10 text-navy/60 font-medium hover:text-navy">← Back to GongbuLeng</a>
+        <a href="/" className="inline-block mt-10 text-navy/65 font-medium hover:text-navy">← Back to GongbuLeng</a>
       </div>
     </main>
   )

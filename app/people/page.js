@@ -89,7 +89,7 @@ export default function People() {
       <Navbar />
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-8 md:py-12">
         <h1 className="font-display font-extrabold text-2xl md:text-3xl text-navy mb-2">{t('people.title')}</h1>
-        <p className="text-navy/60 mb-6">{t('people.subtitle')}</p>
+        <p className="text-navy/65 mb-6">{t('people.subtitle')}</p>
 
         <form onSubmit={search} className="flex gap-2 mb-6">
           <input value={q} onChange={e => setQ(e.target.value)}
@@ -104,7 +104,7 @@ export default function People() {
         {error && <p className="text-brand-red text-sm font-bold mb-4">{error}</p>}
 
         {results && results.length === 0 && (
-          <p className="text-navy/50 text-sm">{t('people.noMatches')}</p>
+          <p className="text-navy/65 text-sm">{t('people.noMatches')}</p>
         )}
 
         {results && results.length > 0 && (
@@ -127,8 +127,8 @@ export default function People() {
                   <p className="font-bold text-navy truncate">{u.first_name} {u.last_name}</p>
                   {/* The code sits here on purpose: finding someone by name
                       is how you get the code the report form asks for. */}
-                  <p className="text-navy/40 text-xs font-mono">{userCode(u.id)}</p>
-                  <p className="text-navy/60 text-xs mt-0.5">
+                  <p className="text-navy/65 text-xs font-mono">{userCode(u.id)}</p>
+                  <p className="text-navy/65 text-xs mt-0.5">
                     {u.teach_language
                       ? `${langName(u.teach_language)}${u.teach_level ? ` · ${levelLabel(u.teach_language, u.teach_level, t)}` : ''}`
                       : u.nationality || ''}

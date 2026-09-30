@@ -7,7 +7,7 @@ export default function TermsOfService() {
 
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">Terms of Service</h1>
-        <p className="text-navy/50 text-sm mb-8">Last updated: July 31, 2026</p>
+        <p className="text-navy/65 text-sm mb-8">Last updated: July 31, 2026</p>
 
         <div className="space-y-6 text-navy/80 leading-relaxed">
           <p>These terms govern your use of GongbuLeng. By creating an account, you agree to them.</p>
@@ -53,7 +53,7 @@ export default function TermsOfService() {
           </section>
         </div>
 
-        <a href="/" className="inline-block mt-10 text-navy/60 font-medium hover:text-navy">← Back to GongbuLeng</a>
+        <a href="/" className="inline-block mt-10 text-navy/65 font-medium hover:text-navy">← Back to GongbuLeng</a>
       </div>
     </main>
   )

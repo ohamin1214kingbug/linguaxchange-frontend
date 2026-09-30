@@ -83,7 +83,7 @@ function RatingForm({ classSessionId, existingReview, onReviewed }) {
     <div className="mt-3 flex items-center gap-2 text-sm">
       <span className="text-brand-teal font-bold">{t('dashboard.reviewSubmitted')}</span>
       <Stars rating={existingReview.rating} />
-      {existingReview.comment && <span className="text-navy/50 italic truncate">"{existingReview.comment}"</span>}
+      {existingReview.comment && <span className="text-navy/65 italic truncate">"{existingReview.comment}"</span>}
     </div>
   )
 
@@ -388,7 +388,7 @@ export default function Dashboard() {
   ].filter(Boolean) : []
 
   if (!user) return (
-    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">{t('common.loading')}</div>
+    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/65 font-medium">{t('common.loading')}</div>
   )
 
   return (
@@ -399,7 +399,7 @@ export default function Dashboard() {
         <h1 className="font-display font-extrabold text-2xl md:text-3xl text-navy mb-2">
           {t('dashboard.welcomeBack', { name: user.first_name })}
         </h1>
-        <p className="text-navy/60 mb-8">{t('dashboard.accountOverview')}</p>
+        <p className="text-navy/65 mb-8">{t('dashboard.accountOverview')}</p>
 
         {/* Unmissable on purpose — a class in progress is time-sensitive in
             a way nothing else on this page is, so it sits above every other
@@ -438,7 +438,7 @@ export default function Dashboard() {
             <span className="text-xl leading-none mt-0.5">👋</span>
             <div>
               <p className="font-display font-bold text-navy">{t('dashboard.completeProfileTitle')}</p>
-              <p className="text-navy/60 text-sm mt-0.5">
+              <p className="text-navy/65 text-sm mt-0.5">
                 {t('dashboard.completeProfileNote', {
                   fields: missingProfileFields.map(k => t(k)).join(', ')
                 })}
@@ -449,14 +449,14 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-10">
           <div className="bg-white rounded-2xl p-6 border-2 border-navy">
-            <p className="text-navy/60 text-sm mb-1 font-medium">{t('dashboard.creditBalance')}</p>
+            <p className="text-navy/65 text-sm mb-1 font-medium">{t('dashboard.creditBalance')}</p>
             <p className="font-display font-extrabold text-5xl text-brand-red">{credits ?? '...'}</p>
-            <p className="text-navy/40 text-sm mt-1">{t('dashboard.creditsAvailable')}</p>
+            <p className="text-navy/65 text-sm mt-1">{t('dashboard.creditsAvailable')}</p>
           </div>
           <div className="bg-white rounded-2xl p-6 border-2 border-navy">
-            <p className="text-navy/60 text-sm mb-1 font-medium">{t('dashboard.classesJoined')}</p>
+            <p className="text-navy/65 text-sm mb-1 font-medium">{t('dashboard.classesJoined')}</p>
             <p className="font-display font-extrabold text-5xl text-brand-teal">{enrollments.length}</p>
-            <p className="text-navy/40 text-sm mt-1">{t('dashboard.totalEnrollments')}</p>
+            <p className="text-navy/65 text-sm mt-1">{t('dashboard.totalEnrollments')}</p>
           </div>
         </div>
 
@@ -475,7 +475,7 @@ export default function Dashboard() {
             ]} />
           </div>
           <button onClick={() => { setReporting(o => !o); setReportState('') }}
-            className="px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap border-2 border-navy/20 bg-white text-navy/60 hover:border-brand-red hover:text-brand-red transition-colors">
+            className="px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap border-2 border-navy/20 bg-white text-navy/65 hover:border-brand-red hover:text-brand-red transition-colors">
             🚩 {t('dashboard.reportSomeone')}
           </button>
         </div>
@@ -492,7 +492,7 @@ export default function Dashboard() {
                     <input value={reportCode} onChange={e => setReportCode(e.target.value)}
                       placeholder={t('dashboard.reportCodePlaceholder')} maxLength={12}
                       className="w-full border-2 border-navy/20 rounded-xl px-3 py-2 text-sm font-mono focus:border-brand-red focus:outline-none transition-colors"/>
-                    <p className="text-navy/40 text-xs mt-1">{t('dashboard.reportCodeHint')}</p>
+                    <p className="text-navy/65 text-xs mt-1">{t('dashboard.reportCodeHint')}</p>
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-navy mb-1">{t('teacher.reportCategory')}</label>
@@ -513,9 +513,9 @@ export default function Dashboard() {
                   <label className="block text-xs font-bold text-navy mb-1">{t('dashboard.reportAttach')}</label>
                   <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" multiple
                     onChange={attachEvidence} disabled={reportFiles.length >= 3}
-                    className="text-xs text-navy/60 file:mr-3 file:rounded-full file:border-2 file:border-navy/20 file:bg-white file:px-3 file:py-1 file:text-xs file:font-bold"/>
+                    className="text-xs text-navy/65 file:mr-3 file:rounded-full file:border-2 file:border-navy/20 file:bg-white file:px-3 file:py-1 file:text-xs file:font-bold"/>
                   {reportFiles.length > 0 && (
-                    <p className="text-navy/50 text-xs mt-1">
+                    <p className="text-navy/65 text-xs mt-1">
                       {reportFiles.length} {t('dashboard.reportAttached')}
                       <button onClick={() => setReportFiles([])} className="ml-2 text-brand-red font-bold hover:underline">×</button>
                     </p>
@@ -525,7 +525,7 @@ export default function Dashboard() {
                   <p className="text-brand-red text-xs font-bold">{reportState}</p>
                 )}
                 <div className="flex gap-2 justify-end">
-                  <button onClick={() => setReporting(false)} className="text-navy/50 text-sm font-bold px-3 py-1.5">
+                  <button onClick={() => setReporting(false)} className="text-navy/65 text-sm font-bold px-3 py-1.5">
                     {t('teacher.reportCancel')}
                   </button>
                   <button onClick={submitReport}
@@ -545,11 +545,11 @@ export default function Dashboard() {
           <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
             <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.myClasses')}</h2>
             {enrollments.length === 0 && (
-              <p className="text-navy/40 text-sm">{t('history.noneTaken')}</p>
+              <p className="text-navy/65 text-sm">{t('history.noneTaken')}</p>
             )}
             {[[upcomingEnrollments, 'teacher.upcomingClasses'], [pastEnrollments, 'dashboard.pastClassesTaken']].map(([group, heading]) => group.length > 0 && (
             <div key={heading} className="mb-4 last:mb-0">
-            <p className="text-navy/40 text-xs font-bold uppercase tracking-wide mb-1">{t(heading)}</p>
+            <p className="text-navy/65 text-xs font-bold uppercase tracking-wide mb-1">{t(heading)}</p>
             <div className="space-y-1">
               {group.map(enrollment => {
                 const session = enrollment.class_sessions
@@ -574,11 +574,11 @@ export default function Dashboard() {
                             and evidence already lives. */}
                         {cls?.teacher?.id && (
                           <a href={`/teachers/${cls.teacher.id}`}
-                            className="text-navy/40 hover:text-brand-red text-xs font-medium transition-colors">
+                            className="text-navy/65 hover:text-brand-red text-xs font-medium transition-colors">
                             🚩 {t('teacher.report')} · {cls.teacher.first_name} {cls.teacher.last_name}
                           </a>
                         )}
-                        <p className="text-navy/40 text-xs mt-0.5">
+                        <p className="text-navy/65 text-xs mt-0.5">
                           {scheduledAt
                             ? formatInTimezone(scheduledAt, user.timezone, user.time_format)
                             : t('dashboard.noTimeSet')}
@@ -639,11 +639,11 @@ export default function Dashboard() {
           <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
             <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.classesTeaching')}</h2>
             {teachingClasses.length === 0 && (
-              <p className="text-navy/40 text-sm">{t('history.noneTaught')}</p>
+              <p className="text-navy/65 text-sm">{t('history.noneTaught')}</p>
             )}
             {[[upcomingTeaching, 'teacher.upcomingClasses'], [pastTeaching, 'teacher.pastClasses']].map(([group, heading]) => group.length > 0 && (
             <div key={heading} className="mb-4 last:mb-0">
-            <p className="text-navy/40 text-xs font-bold uppercase tracking-wide mb-1">{t(heading)}</p>
+            <p className="text-navy/65 text-xs font-bold uppercase tracking-wide mb-1">{t(heading)}</p>
             <div className="space-y-1">
               {group.map(cls => {
                 const session = cls.class_sessions?.[0]
@@ -689,12 +689,12 @@ export default function Dashboard() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-navy text-sm font-bold">{cls.title}</p>
-                          <p className="text-navy/40 text-xs mt-0.5">
+                          <p className="text-navy/65 text-xs mt-0.5">
                             {scheduledAt ? formatInTimezone(scheduledAt, user.timezone, user.time_format) : t('dashboard.noTimeSet')}
                           </p>
                         </div>
                         {isClassOver ? (
-                          <span className="text-navy/40 text-sm">{t('dashboard.ended')}</span>
+                          <span className="text-navy/65 text-sm">{t('dashboard.ended')}</span>
                         ) : (
                           <div className="flex gap-2 flex-shrink-0 ml-4">
                             <button onClick={() => startEditClass(cls)}
@@ -723,14 +723,14 @@ export default function Dashboard() {
         <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
           <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.creditHistory')}</h2>
           {transactions.length === 0 ? (
-            <p className="text-navy/40 text-sm">{t('dashboard.noTransactionsYet')}</p>
+            <p className="text-navy/65 text-sm">{t('dashboard.noTransactionsYet')}</p>
           ) : (
             <div className="space-y-3">
               {transactions.map((tx) => (
                 <div key={tx.id} className="flex justify-between items-center py-2 border-b border-navy/10 last:border-0">
                   <div>
                     <p className="text-navy text-sm font-medium">{tx.description}</p>
-                    <p className="text-navy/40 text-xs">
+                    <p className="text-navy/65 text-xs">
                       {new Date(tx.created_at).toLocaleDateString()}
                     </p>
                   </div>

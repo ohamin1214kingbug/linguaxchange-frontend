@@ -15,17 +15,17 @@ export default function Home() {
   const LANGUAGES = [
     { code: 'KO', flag: '🇰🇷', name: t('home.langKorean'), greeting: '안녕하세요', color: 'bg-brand-red' },
     { code: 'ES', flag: '🇪🇸', name: t('home.langSpanish'), greeting: 'Hola', color: 'bg-brand-blue' },
-    { code: 'DE', flag: '🇩🇪', name: t('home.langGerman'), greeting: 'Hallo', color: 'bg-brand-yellow' },
-    { code: 'EN', flag: '🇬🇧', name: t('home.langEnglish'), greeting: 'Hello', color: 'bg-brand-teal' },
+    { code: 'DE', flag: '🇩🇪', name: t('home.langGerman'), greeting: 'Hallo', color: 'bg-brand-yellow', ink: 'text-navy' },
+    { code: 'EN', flag: '🇬🇧', name: t('home.langEnglish'), greeting: 'Hello', color: 'bg-brand-teal', ink: 'text-navy' },
     { code: 'PT', flag: '🇧🇷', name: t('home.langPortuguese'), greeting: 'Olá', color: 'bg-brand-purple' },
-    { code: 'FR', flag: '🇫🇷', name: t('home.langFrench'), greeting: 'Bonjour', color: 'bg-brand-coral' },
+    { code: 'FR', flag: '🇫🇷', name: t('home.langFrench'), greeting: 'Bonjour', color: 'bg-brand-coral', ink: 'text-navy' },
     { code: 'IT', flag: '🇮🇹', name: t('home.langItalian'), greeting: 'Ciao', color: 'bg-brand-red-dark' },
   ]
 
   const STEPS = [
     { n: '01', color: 'bg-brand-red', icon: '👤', title: t('home.step1Title'), text: t('home.step1Text') },
     { n: '02', color: 'bg-brand-blue', icon: '🌐', title: t('home.step2Title'), text: t('home.step2Text') },
-    { n: '03', color: 'bg-brand-yellow', icon: '💬', title: t('home.step3Title'), text: t('home.step3Text') },
+    { n: '03', color: 'bg-brand-yellow', ink: 'text-navy', icon: '💬', title: t('home.step3Title'), text: t('home.step3Text') },
   ]
 
   return (
@@ -99,7 +99,7 @@ export default function Home() {
             {t('home.heroTitle3')}
           </h1>
 
-          <p className="text-lg md:text-xl text-navy/60 mb-10 max-w-xl">
+          <p className="text-lg md:text-xl text-navy/65 mb-10 max-w-xl">
             {t('home.heroSubtext')}
           </p>
 
@@ -145,14 +145,14 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {STEPS.map(step => (
             <div key={step.n} className="relative bg-white border-2 border-navy rounded-2xl p-6 pt-10">
-              <div className={`absolute -top-5 -right-3 w-11 h-11 rounded-full ${step.color} border-2 border-navy flex items-center justify-center text-white font-display font-bold text-sm`}>
+              <div className={`absolute -top-5 -right-3 w-11 h-11 rounded-full ${step.color} border-2 border-navy flex items-center justify-center ${step.ink || 'text-white'} font-display font-bold text-sm`}>
                 {step.n}
               </div>
               <div className={`w-14 h-14 rounded-xl ${step.color} border-2 border-navy flex items-center justify-center text-2xl mb-5`}>
                 {step.icon}
               </div>
               <h3 className="font-display font-bold text-xl text-navy mb-2">{step.title}</h3>
-              <p className="text-navy/60 leading-relaxed">{step.text}</p>
+              <p className="text-navy/65 leading-relaxed">{step.text}</p>
             </div>
           ))}
         </div>
@@ -185,7 +185,7 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
             {LANGUAGES.map(lang => (
               <div key={lang.code} className="relative bg-navy border border-white/10 rounded-2xl p-6 overflow-hidden">
-                <span className={`absolute top-4 right-4 ${lang.color} text-white text-xs font-bold px-3 py-1 rounded-full border border-white/20`}>
+                <span className={`absolute top-4 right-4 ${lang.color} ${lang.ink || 'text-white'} text-xs font-bold px-3 py-1 rounded-full border border-white/20`}>
                   {lang.greeting}
                 </span>
                 <div className="text-4xl mb-4">{lang.flag}</div>
@@ -205,7 +205,7 @@ export default function Home() {
         <h2 className="font-display font-extrabold text-navy text-4xl sm:text-5xl md:text-6xl leading-tight mb-6 max-w-3xl mx-auto">
           {t('home.ctaJoinTitle')}
         </h2>
-        <p className="text-navy/60 text-lg mb-10 max-w-xl mx-auto">
+        <p className="text-navy/65 text-lg mb-10 max-w-xl mx-auto">
           {t('home.ctaJoinSubtext')}
         </p>
         <a href="/auth/register"
@@ -214,7 +214,7 @@ export default function Home() {
         </a>
       </section>
 
-      <footer className="text-center py-8 text-navy/40 text-sm border-t border-navy/10 space-y-2">
+      <footer className="text-center py-8 text-navy/65 text-sm border-t border-navy/10 space-y-2">
         <div className="flex justify-center gap-4">
           <a href="/resources" className="hover:text-navy/70">{t('nav.resources')}</a>
           <a href="/legal/privacy" className="hover:text-navy/70">Privacy Policy</a>

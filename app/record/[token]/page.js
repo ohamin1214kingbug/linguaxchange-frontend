@@ -50,13 +50,13 @@ export default async function RecordPage({ params }) {
     <main className="min-h-screen bg-cream print:bg-white">
       <div className="max-w-2xl mx-auto px-6 py-12">
         <div className="bg-white border-2 border-navy rounded-2xl p-8 print:border-0 print:p-0">
-          <p className="text-navy/50 text-xs font-bold uppercase tracking-wide mb-1">Participation record</p>
+          <p className="text-navy/65 text-xs font-bold uppercase tracking-wide mb-1">Participation record</p>
           <h1 className="font-display font-extrabold text-3xl text-navy mb-2">{record.name}</h1>
 
           {record.university && (
             <p className="text-navy/70 mb-6">
               🎓 {record.university}
-              {record.verifiedAt && <span className="text-navy/40"> · verified {day(record.verifiedAt)}</span>}
+              {record.verifiedAt && <span className="text-navy/65"> · verified {day(record.verifiedAt)}</span>}
             </p>
           )}
 
@@ -66,7 +66,7 @@ export default async function RecordPage({ params }) {
                 <tr key={label} className="border-t border-navy/10">
                   <td className="py-3 text-navy/70">{label}</td>
                   <td className="py-3 text-right font-bold text-navy">{count}</td>
-                  <td className="py-3 text-right text-navy/60 w-20">{time}</td>
+                  <td className="py-3 text-right text-navy/65 w-20">{time}</td>
                 </tr>
               ))}
             </tbody>
@@ -92,10 +92,10 @@ export default async function RecordPage({ params }) {
             /* An honest empty record is more credible than a broken page, and
                refusing to generate one would make the feature look broken for
                every new member. */
-            <p className="text-navy/50 text-sm">No classes attended or taught yet.</p>
+            <p className="text-navy/65 text-sm">No classes attended or taught yet.</p>
           )}
 
-          <p className="text-navy/40 text-xs mt-8 pt-4 border-t border-navy/10">
+          <p className="text-navy/65 text-xs mt-8 pt-4 border-t border-navy/10">
             Generated {day(record.generatedAt)} by GongbuLeng · gongbuleng.com
           </p>
         </div>

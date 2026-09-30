@@ -67,7 +67,7 @@ function PhoneHint({ value, country, t }) {
   } catch {}
 
   return (
-    <p className="text-navy/40 text-xs mt-1">
+    <p className="text-navy/65 text-xs mt-1">
       {example ? t('auth.phoneExampleHint', { n: example }) : t('auth.phoneNumberHint')}
     </p>
   )

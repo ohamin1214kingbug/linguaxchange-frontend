@@ -48,7 +48,7 @@ export default function ConfirmUniversity() {
           {state === 'failed' && t('university.confirmFailed')}
         </p>
         {state === 'done' && university && (
-          <p className="text-navy/60 mb-6">🎓 {university}</p>
+          <p className="text-navy/65 mb-6">🎓 {university}</p>
         )}
         {state !== 'working' && (
           <a href="/profile" className="inline-block bg-brand-red text-white px-6 py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">

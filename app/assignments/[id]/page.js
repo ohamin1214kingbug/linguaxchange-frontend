@@ -91,7 +91,7 @@ export default function AssignmentPage({ params }) {
       <Navbar />
       <main className="px-4 py-10 max-w-3xl mx-auto">
         <h1 className="font-display font-extrabold text-navy text-2xl mb-1">{request.prompt}</h1>
-        <p className="text-navy/50 text-sm mb-6">{request.language_code}</p>
+        <p className="text-navy/65 text-sm mb-6">{request.language_code}</p>
 
         {error && (
           <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{t(error)}</div>
@@ -108,7 +108,7 @@ export default function AssignmentPage({ params }) {
             <div className="bg-white border-2 border-navy rounded-2xl p-5 whitespace-pre-wrap leading-relaxed mb-4">
               {request.body}
             </div>
-            <p className="text-navy/60 mb-4">{t('assignments.awaiting')}</p>
+            <p className="text-navy/65 mb-4">{t('assignments.awaiting')}</p>
             <button onClick={withdraw}
               className="border-2 border-navy text-navy px-5 py-2.5 rounded-full text-sm font-bold">
               {t('assignments.withdraw')}
@@ -124,7 +124,7 @@ export default function AssignmentPage({ params }) {
             {!user ? (
               <a href="/auth/login" className="text-brand-red font-bold hover:underline">{t('common.signIn')}</a>
             ) : teachLanguage !== undefined ? (
-              <p className="text-navy/60">{t('assignments.notYourLanguage')}</p>
+              <p className="text-navy/65">{t('assignments.notYourLanguage')}</p>
             ) : null}
           </div>
         )}

@@ -127,8 +127,8 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
     <div>
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
-          <p className="text-navy/60 text-sm">{t('requests.subtitle')}</p>
-          <p className="text-navy/40 text-xs mt-1">⏳ {t('requests.ttlNote')}</p>
+          <p className="text-navy/65 text-sm">{t('requests.subtitle')}</p>
+          <p className="text-navy/65 text-xs mt-1">⏳ {t('requests.ttlNote')}</p>
         </div>
         <button onClick={() => { setShowForm(o => !o); setPosted(false); setError('') }}
           className="bg-navy text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-navy/90 whitespace-nowrap transition-colors">
@@ -175,7 +175,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
           </div>
 
           <div>
-            <label className={label}>{t('requests.detailsLabel')} <span className="text-navy/40 font-normal">{t('classes.optional')}</span></label>
+            <label className={label}>{t('requests.detailsLabel')} <span className="text-navy/65 font-normal">{t('classes.optional')}</span></label>
             <textarea value={form.details} rows={3} maxLength={400}
               onChange={e => setForm({ ...form, details: e.target.value })}
               placeholder={t('requests.detailsPlaceholder')} className={field}/>
@@ -203,7 +203,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
             <span className="text-sm text-navy font-medium">{t('requests.flexibleLabel')}</span>
           </label>
 
-          <p className="text-navy/50 text-xs">{t('requests.costNote')}</p>
+          <p className="text-navy/65 text-xs">{t('requests.costNote')}</p>
 
           <button onClick={submit} disabled={busy === 'form'}
             className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
@@ -212,7 +212,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
         </div>
       )}
 
-      {loading && <p className="text-navy/40">{t('requests.loading')}</p>}
+      {loading && <p className="text-navy/65">{t('requests.loading')}</p>}
 
       <div className="space-y-4">
         {requests.map(req => {
@@ -228,10 +228,10 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
                 {req.level ? (
                   <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{req.level}</span>
                 ) : (
-                  <span className="bg-navy/5 text-navy/50 px-2 py-0.5 rounded-full text-xs font-bold">{t('requests.anyLevel')}</span>
+                  <span className="bg-navy/5 text-navy/65 px-2 py-0.5 rounded-full text-xs font-bold">{t('requests.anyLevel')}</span>
                 )}
                 <span className={`px-2 py-0.5 rounded-full text-xs font-bold border ${
-                  hours < 3 ? 'bg-brand-red/10 text-brand-red border-brand-red/30' : 'bg-navy/5 text-navy/50 border-navy/10'}`}>
+                  hours < 3 ? 'bg-brand-red/10 text-brand-red border-brand-red/30' : 'bg-navy/5 text-navy/65 border-navy/10'}`}>
                   ⏳ {hours < 1 ? t('requests.expiresSoon') : t('requests.expiresIn', { n: hours })}
                 </span>
                 {req.time_flexible && (
@@ -242,12 +242,12 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
               </div>
 
               <h3 className="font-display font-bold text-navy text-lg mb-1">{req.topic}</h3>
-              {req.details && <p className="text-navy/60 text-sm mb-2 whitespace-pre-line">{req.details}</p>}
+              {req.details && <p className="text-navy/65 text-sm mb-2 whitespace-pre-line">{req.details}</p>}
 
               <p className="text-brand-red text-xs font-bold mb-1">
                 🗓️ {formatInTimezone(req.preferred_time, currentUser?.timezone, currentUser?.time_format)}
               </p>
-              <p className="text-navy/40 text-xs mb-4">
+              <p className="text-navy/65 text-xs mb-4">
                 👥 {t('requests.studentsWanted', { n: req.max_students })}
                 {req.student && ` · ${req.student.first_name} ${req.student.last_name}`}
                 {interested.length > 0 && ` · 🙋 ${t('requests.interestedCount', { n: interested.length })}`}
@@ -256,9 +256,9 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
               <div className="flex flex-wrap gap-2">
                 {mine ? (
                   <>
-                    <span className="bg-navy/5 text-navy/60 px-4 py-2 rounded-full text-sm font-bold">{t('requests.yourRequest')}</span>
+                    <span className="bg-navy/5 text-navy/65 px-4 py-2 rounded-full text-sm font-bold">{t('requests.yourRequest')}</span>
                     <button onClick={() => withdraw(req)} disabled={busy === req.id}
-                      className="px-4 py-2 rounded-full text-sm font-bold border-2 border-navy/20 text-navy/60 hover:border-brand-red hover:text-brand-red disabled:opacity-50 transition-colors">
+                      className="px-4 py-2 rounded-full text-sm font-bold border-2 border-navy/20 text-navy/65 hover:border-brand-red hover:text-brand-red disabled:opacity-50 transition-colors">
                       {t('requests.withdraw')}
                     </button>
                   </>
@@ -282,7 +282,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
 
         {!loading && requests.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-navy/40">{t('requests.empty')}</p>
+            <p className="text-navy/65">{t('requests.empty')}</p>
             <p className="text-navy/30 text-sm mt-1">{t('requests.emptyHint')}</p>
           </div>
         )}

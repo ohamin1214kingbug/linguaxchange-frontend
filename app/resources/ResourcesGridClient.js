@@ -45,27 +45,27 @@ export default function ResourcesGridClient({ initialResources = [], serverFetch
 
       <div className="max-w-4xl mx-auto px-4 md:px-8 py-12">
         <h1 className="font-display font-extrabold text-3xl md:text-4xl text-navy mb-2">{t('resources.title')}</h1>
-        <p className="text-navy/60 mb-10 max-w-xl">{t('resources.subtitle')}</p>
+        <p className="text-navy/65 mb-10 max-w-xl">{t('resources.subtitle')}</p>
 
-        {loading && <p className="text-navy/40">{t('common.loading')}</p>}
+        {loading && <p className="text-navy/65">{t('common.loading')}</p>}
 
         {!loading && (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  <th className="text-left text-navy/40 text-xs font-bold uppercase tracking-wide pb-3 pr-4"></th>
+                  <th className="text-left text-navy/65 text-xs font-bold uppercase tracking-wide pb-3 pr-4"></th>
                   {GRID_LEVELS.map(level => (
-                    <th key={level} className="text-navy/40 text-xs font-bold uppercase tracking-wide pb-3 px-2">{level}</th>
+                    <th key={level} className="text-navy/65 text-xs font-bold uppercase tracking-wide pb-3 px-2">{level}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {languages.map(lang => (
                   <tr key={lang.code} className="border-t border-navy/10">
-                    <td className="py-3 pr-4 font-bold text-navy whitespace-nowrap">
+                    <th scope="row" className="py-3 pr-4 font-bold text-navy whitespace-nowrap text-left">
                       <span className="mr-2">{lang.flag}</span>{lang.name}
-                    </td>
+                    </th>
                     {GRID_LEVELS.map(level => (
                       <td key={level} className="py-3 px-2 text-center">
                         {has(lang.code, level) ? (

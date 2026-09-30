@@ -140,14 +140,14 @@ export default function ClassDetailClient({ initialClass = null }) {
   if (loading) return (
     <main className="min-h-screen bg-cream">
       <Navbar />
-      <p className="text-navy/40 text-center py-20 font-medium">{t('common.loading')}</p>
+      <p className="text-navy/65 text-center py-20 font-medium">{t('common.loading')}</p>
     </main>
   )
 
   if (!cls) return (
     <main className="min-h-screen bg-cream">
       <Navbar />
-      <p className="text-navy/40 text-center py-20 font-medium">{t('classDetail.notFound')}</p>
+      <p className="text-navy/65 text-center py-20 font-medium">{t('classDetail.notFound')}</p>
     </main>
   )
 
@@ -167,7 +167,7 @@ export default function ClassDetailClient({ initialClass = null }) {
         <div className="flex items-center gap-2 mt-4 mb-1">
           <span className="text-lg">{LANGS[cls.language_code]?.flag}</span>
           <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{levelLabel(cls.language_code, cls.level)}</span>
-          <span className="bg-navy/5 text-navy/60 px-2 py-0.5 rounded-full text-xs font-medium">{cls.duration_minutes} {t('classes.min')}</span>
+          <span className="bg-navy/5 text-navy/65 px-2 py-0.5 rounded-full text-xs font-medium">{cls.duration_minutes} {t('classes.min')}</span>
         </div>
         <h1 className="font-display font-extrabold text-3xl text-navy mb-6">{cls.title}</h1>
 
@@ -177,15 +177,15 @@ export default function ClassDetailClient({ initialClass = null }) {
           {cls.description && <p className="text-navy/70 text-sm mb-4">{cls.description}</p>}
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between gap-4">
-              <dt className="text-navy/50">{t('classes.topic')}</dt>
+              <dt className="text-navy/65">{t('classes.topic')}</dt>
               <dd className="text-navy font-medium text-right">{cls.topic}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-navy/50">{t('classes.maxStudentsLabel')}</dt>
+              <dt className="text-navy/65">{t('classes.maxStudentsLabel')}</dt>
               <dd className="text-navy font-medium text-right">{cls.max_students}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-navy/50">{t('classDetail.teacher')}</dt>
+              <dt className="text-navy/65">{t('classDetail.teacher')}</dt>
               <dd className="text-navy font-medium text-right">
                 <a href={`/teachers/${cls.teacher?.id}`} className="text-brand-red hover:underline">
                   {cls.teacher?.first_name} {cls.teacher?.last_name}
@@ -205,7 +205,7 @@ export default function ClassDetailClient({ initialClass = null }) {
                       <span className={s.status === 'cancelled' ? 'text-navy/30 line-through' : 'text-brand-red font-bold'}>
                         🗓️ {mounted ? formatInTimezone(s.session_date, currentUser?.timezone, currentUser?.time_format) : utcLabel(s.session_date)}
                       </span>
-                      {s.status === 'cancelled' && <span className="text-navy/40 text-xs">{t('classDetail.cancelled')}</span>}
+                      {s.status === 'cancelled' && <span className="text-navy/65 text-xs">{t('classDetail.cancelled')}</span>}
                     </li>
                   ))}
               </ul>
@@ -216,7 +216,7 @@ export default function ClassDetailClient({ initialClass = null }) {
         {/* Class materials — everyone sees them, only the teacher edits. */}
         <div className={card}>
           <h2 className="font-display font-bold text-navy mb-1">{t('classDetail.materials')}</h2>
-          <p className="text-navy/50 text-xs mb-4">{t('classDetail.materialsNote')}</p>
+          <p className="text-navy/65 text-xs mb-4">{t('classDetail.materialsNote')}</p>
 
           {canEditMaterials ? (
             <>
@@ -235,7 +235,7 @@ export default function ClassDetailClient({ initialClass = null }) {
 
               <div className="mt-5 border-t border-navy/10 pt-4">
                 <p className="font-display font-bold text-navy text-sm mb-1">{t('classDetail.pdfTitle')}</p>
-                <p className="text-navy/50 text-xs mb-3">{t('classDetail.pdfNote')}</p>
+                <p className="text-navy/65 text-xs mb-3">{t('classDetail.pdfNote')}</p>
 
                 {cls.lesson_plan_url && (
                   <a href={cls.lesson_plan_url} target="_blank" rel="noopener noreferrer"
@@ -265,7 +265,7 @@ export default function ClassDetailClient({ initialClass = null }) {
             <>
               {cls.materials
                 ? <p className="text-navy/70 text-sm whitespace-pre-line">{cls.materials}</p>
-                : !cls.lesson_plan_url && <p className="text-navy/40 text-sm">{t('classDetail.noMaterials')}</p>}
+                : !cls.lesson_plan_url && <p className="text-navy/65 text-sm">{t('classDetail.noMaterials')}</p>}
               {cls.lesson_plan_url && (
                 <a href={cls.lesson_plan_url} target="_blank" rel="noopener noreferrer"
                   className={`flex items-center gap-2 text-brand-red text-sm font-bold hover:underline ${cls.materials ? 'mt-3' : ''}`}>
@@ -280,7 +280,7 @@ export default function ClassDetailClient({ initialClass = null }) {
         {roster && (
           <div className={card}>
             <h2 className="font-display font-bold text-navy mb-1">{t('classDetail.students')}</h2>
-            <p className="text-navy/50 text-xs mb-4">{t('classDetail.studentsNote')}</p>
+            <p className="text-navy/65 text-xs mb-4">{t('classDetail.studentsNote')}</p>
 
             <div className="space-y-5">
               {roster.sessions.map(s => (
@@ -313,7 +313,7 @@ export default function ClassDetailClient({ initialClass = null }) {
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-navy/40 text-sm">{t('classDetail.noStudentsYet')}</p>
+                    <p className="text-navy/65 text-sm">{t('classDetail.noStudentsYet')}</p>
                   )}
                 </div>
               ))}

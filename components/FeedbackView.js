@@ -30,7 +30,7 @@ export default function FeedbackView({ request, feedback, canAcknowledge, onAckn
           makes the feature demonstrable to an institution without the badge
           being a permission that would starve supply. */}
       {feedback.reviewer?.university_domain && (
-        <p className="text-navy/60 text-xs mb-4">
+        <p className="text-navy/65 text-xs mb-4">
           🎓 {feedback.reviewer.university_domain}
         </p>
       )}

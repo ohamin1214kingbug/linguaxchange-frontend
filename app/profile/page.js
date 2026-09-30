@@ -171,7 +171,7 @@ export default function ProfilePage() {
   }
 
   if (!profile) return (
-    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">{t('common.loading')}</div>
+    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/65 font-medium">{t('common.loading')}</div>
   )
 
   return (
@@ -180,19 +180,19 @@ export default function ProfilePage() {
 
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">{t('profile.yourProfile')}</h1>
-        <p className="text-navy/60 mb-2">{t('profile.howOthersSeeYou')}</p>
+        <p className="text-navy/65 mb-2">{t('profile.howOthersSeeYou')}</p>
         {profile?.university_verified_at && (
           /* The date is the point: a university address keeps working after
              graduation, so the badge states when it was checked rather than
              implying the person is enrolled today. */
           <p className="text-brand-teal font-bold text-sm mt-1">
             🎓 {profile.university_domain}
-            <span className="text-navy/40 font-medium">
+            <span className="text-navy/65 font-medium">
               {' · '}{formatDay(profile.university_verified_at)}
             </span>
           </p>
         )}
-        <p className="text-navy/40 text-sm mb-4">
+        <p className="text-navy/65 text-sm mb-4">
           {profile.longest_streak > 0
             ? `${t('profile.longestStreak')}: ${t('profile.weeksCount', { n: profile.longest_streak })}`
             : t('profile.noStreakYet')}
@@ -247,7 +247,7 @@ export default function ProfilePage() {
                 {uploading ? t('profile.uploading') : t('profile.uploadPhoto')}
                 <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" disabled={uploading}/>
               </label>
-              <p className="text-navy/40 text-xs mt-2">{t('profile.photoHint')}</p>
+              <p className="text-navy/65 text-xs mt-2">{t('profile.photoHint')}</p>
             </div>
           </div>
         </div>
@@ -287,7 +287,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <label className="block text-sm font-bold text-navy mb-1">
-                {t('profile.bio')} <span className="text-navy/40 font-normal">{t('profile.bioCount', { n: form.bio.length })}</span>
+                {t('profile.bio')} <span className="text-navy/65 font-normal">{t('profile.bioCount', { n: form.bio.length })}</span>
               </label>
               <textarea value={form.bio} onChange={e => setForm(f => ({ ...f, bio: e.target.value }))}
                 maxLength={300} rows={3}

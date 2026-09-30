@@ -43,7 +43,7 @@ export default function ForgotPassword() {
         <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md text-center">
           <div className="text-5xl mb-4">📬</div>
           <h1 className="font-display font-extrabold text-navy text-2xl mb-2">{t('auth.checkYourEmail')}</h1>
-          <p className="text-navy/60 mb-6">{t('auth.resetLinkSentText', { email })}</p>
+          <p className="text-navy/65 mb-6">{t('auth.resetLinkSentText', { email })}</p>
           <a href="/auth/login" className="text-brand-red font-bold hover:underline">{t('common.backToLogin')}</a>
         </div>
       </main>
@@ -58,7 +58,7 @@ export default function ForgotPassword() {
       <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md">
         <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">Leng</span></a>
         <h1 className="font-display font-extrabold text-navy text-3xl mt-4 mb-2">{t('auth.resetYourPassword')}</h1>
-        <p className="text-navy/60 mb-8">{t('auth.resetPasswordSubtitle')}</p>
+        <p className="text-navy/65 mb-8">{t('auth.resetPasswordSubtitle')}</p>
 
         {error && (
           <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{t(error)}</div>
@@ -75,7 +75,7 @@ export default function ForgotPassword() {
             {loading ? t('auth.sending') : t('auth.sendResetLink')}
           </button>
         </div>
-        <p className="text-center text-navy/60 text-sm mt-6">
+        <p className="text-center text-navy/65 text-sm mt-6">
           <a href="/auth/login" className="text-brand-red font-bold hover:underline">{t('common.backToLogin')}</a>
         </p>
       </div>

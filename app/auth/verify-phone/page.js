@@ -109,7 +109,7 @@ export default function VerifyPhone() {
       <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md">
         <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">Leng</span></a>
         <h1 className="font-display font-extrabold text-navy text-3xl mt-4 mb-2">{t('auth.verifyPhoneRequiredTitle')}</h1>
-        <p className="text-navy/60 mb-6">{t('auth.verifyPhoneRequiredSubtitle')}</p>
+        <p className="text-navy/65 mb-6">{t('auth.verifyPhoneRequiredSubtitle')}</p>
 
         {error && (
           <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{t(error)}</div>
@@ -128,7 +128,7 @@ export default function VerifyPhone() {
               <div className="bg-brand-teal/10 text-brand-teal border-2 border-brand-teal/30 rounded-xl px-4 py-3 text-sm font-bold flex items-center justify-between">
                 {t('auth.phoneVerifiedMsg')}
                 <button onClick={() => { setPhoneVerified(false); setOtpSent(false); setOtpCode(''); setVerifiedToken('') }}
-                  className="text-navy/50 font-medium underline text-xs">
+                  className="text-navy/65 font-medium underline text-xs">
                   {t('auth.changeNumber')}
                 </button>
               </div>
@@ -144,13 +144,13 @@ export default function VerifyPhone() {
             </button>
           ) : (
             <div className="space-y-3">
-              <p className="text-navy/60 text-sm">{t('auth.codeSentTo', { phone })}</p>
+              <p className="text-navy/65 text-sm">{t('auth.codeSentTo', { phone })}</p>
               <div>
                 <label className="block text-sm font-bold text-navy mb-1">{t('auth.verificationCode')}</label>
                 <input type="text" inputMode="numeric" value={otpCode} onChange={e => setOtpCode(e.target.value)}
                   className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" placeholder="123456"/>
               </div>
-              <button onClick={sendOtp} disabled={otpLoading} className="text-navy/60 font-bold text-sm underline">
+              <button onClick={sendOtp} disabled={otpLoading} className="text-navy/65 font-bold text-sm underline">
                 {t('auth.resendCode')}
               </button>
               <button onClick={verifyOtp} disabled={verifyLoading || !otpCode}

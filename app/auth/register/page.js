@@ -268,7 +268,7 @@ export default function Register() {
       <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md">
         <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">Leng</span></a>
         <h1 className="font-display font-extrabold text-navy text-3xl mt-4 mb-2">{t('auth.createAccount')}</h1>
-        <p className="text-navy/60 mb-6">{t('auth.stepOf', { n: step, total: TOTAL_STEPS })}</p>
+        <p className="text-navy/65 mb-6">{t('auth.stepOf', { n: step, total: TOTAL_STEPS })}</p>
 
         <StepIndicator />
 
@@ -292,7 +292,7 @@ export default function Register() {
 
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-navy/10"></div>
-              <span className="text-navy/40 text-sm font-medium">{t('auth.or')}</span>
+              <span className="text-navy/65 text-sm font-medium">{t('auth.or')}</span>
               <div className="flex-1 h-px bg-navy/10"></div>
             </div>
 
@@ -320,7 +320,7 @@ export default function Register() {
                   className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 pr-11 focus:border-brand-red focus:outline-none transition-colors" placeholder={t('auth.minCharacters')}/>
                 <button type="button" onClick={() => setShowPassword(v => !v)}
                   aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-navy/40 hover:text-navy transition-colors">
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-navy/65 hover:text-navy transition-colors">
                   <EyeIcon crossed={showPassword} />
                 </button>
               </div>
@@ -337,7 +337,7 @@ export default function Register() {
                   className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 pr-11 focus:border-brand-red focus:outline-none transition-colors" placeholder={t('auth.minCharacters')}/>
                 <button type="button" onClick={() => setShowConfirmPassword(v => !v)}
                   aria-label={showConfirmPassword ? t('auth.hidePassword') : t('auth.showPassword')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-navy/40 hover:text-navy transition-colors">
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-navy/65 hover:text-navy transition-colors">
                   <EyeIcon crossed={showConfirmPassword} />
                 </button>
               </div>
@@ -367,7 +367,7 @@ export default function Register() {
           <div className="space-y-4">
             <div>
               <h2 className="font-display font-bold text-navy text-lg mb-1">{t('auth.verifyPhoneTitle')}</h2>
-              <p className="text-navy/60 text-sm mb-3">{t('auth.verifyPhoneSubtitle')}</p>
+              <p className="text-navy/65 text-sm mb-3">{t('auth.verifyPhoneSubtitle')}</p>
               <label className="block text-sm font-bold text-navy mb-1">{t('auth.phoneNumber')}</label>
               <PhoneNumberField value={phone} language={language}
                 onChange={value => { setPhone(value || ''); setOtpSent(false); setPhoneVerified(false) }}
@@ -378,7 +378,7 @@ export default function Register() {
               <div className="bg-brand-teal/10 text-brand-teal border-2 border-brand-teal/30 rounded-xl px-4 py-3 text-sm font-bold flex items-center justify-between">
                 {t('auth.phoneVerifiedMsg')}
                 <button onClick={() => { setPhoneVerified(false); setOtpSent(false); setOtpCode(''); setVerifiedToken('') }}
-                  className="text-navy/50 font-medium underline text-xs">
+                  className="text-navy/65 font-medium underline text-xs">
                   {t('auth.changeNumber')}
                 </button>
               </div>
@@ -389,7 +389,7 @@ export default function Register() {
               </button>
             ) : (
               <div className="space-y-3">
-                <p className="text-navy/60 text-sm">{t('auth.codeSentTo', { phone })}</p>
+                <p className="text-navy/65 text-sm">{t('auth.codeSentTo', { phone })}</p>
                 <div>
                   <label className="block text-sm font-bold text-navy mb-1">{t('auth.verificationCode')}</label>
                   <input type="text" inputMode="numeric" value={otpCode} onChange={e => setOtpCode(e.target.value)}
@@ -397,7 +397,7 @@ export default function Register() {
                 </div>
                 <div className="flex gap-3">
                   <button onClick={sendOtp} disabled={otpLoading}
-                    className="text-navy/60 font-bold text-sm underline">
+                    className="text-navy/65 font-bold text-sm underline">
                     {t('auth.resendCode')}
                   </button>
                 </div>
@@ -437,12 +437,12 @@ export default function Register() {
                   {photoPreview ? t('auth.changePhoto') : t('auth.uploadPhoto')}
                   <input type="file" accept="image/*" onChange={handlePhoto} className="hidden"/>
                 </label>
-                <p className="text-navy/40 text-xs mt-2">{t('auth.mustBeRealPhoto')}</p>
+                <p className="text-navy/65 text-xs mt-2">{t('auth.mustBeRealPhoto')}</p>
               </div>
             </div>
             <div>
               <label className="block text-sm font-bold text-navy mb-1">
-                {t('auth.shortBio')} <span className="text-navy/40 font-normal">({form.bio.length}/300)</span>
+                {t('auth.shortBio')} <span className="text-navy/65 font-normal">({form.bio.length}/300)</span>
               </label>
               <textarea name="bio" onChange={handleChange} value={form.bio} maxLength={300} rows={3}
                 className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 resize-none focus:border-brand-red focus:outline-none transition-colors"
@@ -554,7 +554,7 @@ export default function Register() {
                   {t('auth.uploadCertificate')}
                   <input type="file" accept=".pdf,.jpg,.png" className="hidden"/>
                 </label>
-                <p className="text-navy/40 text-xs mt-2">{t('auth.certificateExamples')}</p>
+                <p className="text-navy/65 text-xs mt-2">{t('auth.certificateExamples')}</p>
               </div>
             )}
 
@@ -583,7 +583,7 @@ export default function Register() {
           </div>
         )}
 
-        <p className="text-center text-navy/60 text-sm mt-6">
+        <p className="text-center text-navy/65 text-sm mt-6">
           {t('auth.alreadyHaveAccount')} <a href="/auth/login" className="text-brand-red font-bold hover:underline">{t('auth.login')}</a>
         </p>
       </div>

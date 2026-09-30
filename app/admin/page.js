@@ -20,23 +20,23 @@ function ClassPeople({ cls, students }) {
   return (
     <div className="min-w-0">
       <p className="font-bold text-navy">{cls.title}</p>
-      <p className="text-navy/60 text-sm">
+      <p className="text-navy/65 text-sm">
         {cls.level} · {cls.duration_minutes} min ·{' '}
         {nextSessionDate(cls)
           ? nextSessionDate(cls).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
           : <span className="text-brand-red font-bold">no upcoming session</span>}
       </p>
       <p className="text-navy/70 text-sm mt-2">
-        <span className="text-navy/40">Teacher</span>{' '}
+        <span className="text-navy/65">Teacher</span>{' '}
         {cls.teacher ? `${cls.teacher.first_name} ${cls.teacher.last_name}` : 'Unknown'}{' '}
-        <span className="font-mono text-navy/40 text-xs">{userCode(cls.teacher_id)}</span>
+        <span className="font-mono text-navy/65 text-xs">{userCode(cls.teacher_id)}</span>
       </p>
       <p className="text-navy/70 text-sm">
-        <span className="text-navy/40">Students</span>{' '}
+        <span className="text-navy/65">Students</span>{' '}
         {students.length === 0
-          ? <span className="text-navy/40">nobody yet</span>
+          ? <span className="text-navy/65">nobody yet</span>
           : students.map(s => `${s.first_name} ${s.last_name}`).join(', ')}
-        {' '}<span className="text-navy/40">({students.length}/{cls.max_students})</span>
+        {' '}<span className="text-navy/65">({students.length}/{cls.max_students})</span>
       </p>
     </div>
   )
@@ -56,7 +56,7 @@ function CreditControl({ amount, message, onAmountChange, onSubmit }) {
           className="bg-brand-yellow/20 text-navy px-4 py-1.5 rounded-full text-sm font-bold border-2 border-navy/20 hover:border-navy transition-colors">
           Add
         </button>
-        {message && <span className="text-navy/50 text-xs">{message}</span>}
+        {message && <span className="text-navy/65 text-xs">{message}</span>}
       </div>
     </div>
   )
@@ -100,11 +100,11 @@ function UserDetail({ user, t }) {
     <div className="mt-3 border-t border-navy/10 pt-3 space-y-2">
       {user.bio
         ? <p className="text-navy/70 text-sm italic">“{user.bio}”</p>
-        : <p className="text-navy/40 text-sm italic">No bio yet</p>}
+        : <p className="text-navy/65 text-sm italic">No bio yet</p>}
       <dl className="grid grid-cols-[7rem_1fr] gap-x-3 gap-y-1 text-sm">
         {rows.map(([label, value]) => (
           <div key={label} className="contents">
-            <dt className="text-navy/40 font-bold text-xs uppercase tracking-wide pt-0.5">{label}</dt>
+            <dt className="text-navy/65 font-bold text-xs uppercase tracking-wide pt-0.5">{label}</dt>
             <dd className="text-navy/80">{value}</dd>
           </div>
         ))}
@@ -136,7 +136,7 @@ function EnforcementControl({ user, confirmText, message, onConfirmChange, onSus
           <span className="bg-brand-red/10 text-brand-red px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-red/30">
             Suspended until {suspendedUntil.toLocaleDateString()}
           </span>
-          <button onClick={onUnsuspend} className="text-navy/60 hover:text-navy text-xs font-bold underline">
+          <button onClick={onUnsuspend} className="text-navy/65 hover:text-navy text-xs font-bold underline">
             Lift the suspension
           </button>
         </div>
@@ -160,7 +160,7 @@ function EnforcementControl({ user, confirmText, message, onConfirmChange, onSus
           Delete permanently
         </button>
       </div>
-      {message && <p className="text-navy/60 text-xs mt-2">{message}</p>}
+      {message && <p className="text-navy/65 text-xs mt-2">{message}</p>}
     </div>
   )
 }
@@ -504,28 +504,28 @@ export default function Admin() {
 
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-12">
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">Admin Dashboard</h1>
-        <p className="text-navy/60 mb-8">Manage users and classes</p>
+        <p className="text-navy/65 mb-8">Manage users and classes</p>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           <div className="bg-white rounded-2xl p-4 border-2 border-navy text-center">
             <p className="font-display font-extrabold text-3xl text-brand-yellow">{pendingUsers.length}</p>
-            <p className="text-navy/60 text-sm font-medium">Pending users</p>
+            <p className="text-navy/65 text-sm font-medium">Pending users</p>
           </div>
           <div className="bg-white rounded-2xl p-4 border-2 border-navy text-center">
             <p className="font-display font-extrabold text-3xl text-brand-teal">{approvedUsers.length}</p>
-            <p className="text-navy/60 text-sm font-medium">Approved users</p>
+            <p className="text-navy/65 text-sm font-medium">Approved users</p>
           </div>
           <div className="bg-white rounded-2xl p-4 border-2 border-navy text-center">
             <p className="font-display font-extrabold text-3xl text-brand-yellow">{pendingClasses.length}</p>
-            <p className="text-navy/60 text-sm font-medium">Pending classes</p>
+            <p className="text-navy/65 text-sm font-medium">Pending classes</p>
           </div>
           <div className="bg-white rounded-2xl p-4 border-2 border-navy text-center">
             <p className="font-display font-extrabold text-3xl text-brand-red">{approvedClasses.length}</p>
-            <p className="text-navy/60 text-sm font-medium">Active classes</p>
+            <p className="text-navy/65 text-sm font-medium">Active classes</p>
           </div>
           <div className="bg-white rounded-2xl p-4 border-2 border-navy text-center">
             <p className="font-display font-extrabold text-3xl text-brand-yellow">{pendingReports.length}</p>
-            <p className="text-navy/60 text-sm font-medium">Open reports</p>
+            <p className="text-navy/65 text-sm font-medium">Open reports</p>
           </div>
         </div>
 
@@ -552,7 +552,7 @@ export default function Admin() {
           </button>
         </div>
 
-        {loading && <p className="text-navy/40">Loading...</p>}
+        {loading && <p className="text-navy/65">Loading...</p>}
 
         {tab === 'users' && !loading && (
           <>
@@ -572,8 +572,8 @@ export default function Admin() {
                         </div>
                         <div>
                           <p className="font-bold text-navy">{user.first_name} {user.last_name}</p>
-                          <p className="text-navy/60 text-sm">{user.email} · <span className="font-mono font-bold">{userCode(user.id)}</span></p>
-                          <p className="text-navy/40 text-xs">{user.nationality} · {new Date(user.created_at).toLocaleDateString()}</p>
+                          <p className="text-navy/65 text-sm">{user.email} · <span className="font-mono font-bold">{userCode(user.id)}</span></p>
+                          <p className="text-navy/65 text-xs">{user.nationality} · {new Date(user.created_at).toLocaleDateString()}</p>
                         </div>
                       </div>
                       <div className="flex gap-2">
@@ -588,7 +588,7 @@ export default function Admin() {
                       </div>
                     </div>
                     <button onClick={() => setOpenUser(openUser === user.id ? null : user.id)}
-                      className="mt-3 text-navy/50 hover:text-navy text-xs font-bold transition-colors">
+                      className="mt-3 text-navy/65 hover:text-navy text-xs font-bold transition-colors">
                       {openUser === user.id ? '▾ Hide details' : '▸ Details'}
                     </button>
                     {openUser === user.id && <UserDetail user={user} t={t} />}
@@ -611,14 +611,14 @@ export default function Admin() {
                         </div>
                         <div>
                           <p className="font-bold text-navy">{user.first_name} {user.last_name}</p>
-                          <p className="text-navy/60 text-sm">{user.email} · <span className="font-mono font-bold">{userCode(user.id)}</span></p>
-                          <p className="text-navy/40 text-xs">{user.nationality}</p>
+                          <p className="text-navy/65 text-sm">{user.email} · <span className="font-mono font-bold">{userCode(user.id)}</span></p>
+                          <p className="text-navy/65 text-xs">{user.nationality}</p>
                         </div>
                       </div>
                       <span className="bg-brand-teal/10 text-brand-teal px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-teal/30">Approved</span>
                     </div>
                     <button onClick={() => setOpenUser(openUser === user.id ? null : user.id)}
-                      className="mt-3 text-navy/50 hover:text-navy text-xs font-bold transition-colors">
+                      className="mt-3 text-navy/65 hover:text-navy text-xs font-bold transition-colors">
                       {openUser === user.id ? '▾ Hide details' : '▸ Details'}
                     </button>
                     {openUser === user.id && <UserDetail user={user} t={t} />}
@@ -630,7 +630,7 @@ export default function Admin() {
               </>
             )}
             {pendingUsers.length === 0 && approvedUsers.length === 0 && (
-              <p className="text-navy/40 text-center py-12">{liveUsers.length === 0 ? 'No users yet' : 'No users match your search'}</p>
+              <p className="text-navy/65 text-center py-12">{liveUsers.length === 0 ? 'No users yet' : 'No users match your search'}</p>
             )}
           </div>
           </>
@@ -647,7 +647,7 @@ export default function Admin() {
                   // Pending opens by default because it is the queue that needs
                   // a decision.
                   <details key={label} open className="mt-4">
-                    <summary className="font-display font-bold text-navy/50 text-sm mb-2 cursor-pointer select-none hover:text-navy marker:text-navy/30">{label} · {group.length}</summary>
+                    <summary className="font-display font-bold text-navy/65 text-sm mb-2 cursor-pointer select-none hover:text-navy marker:text-navy/30">{label} · {group.length}</summary>
                     {group.map(cls => (
                       <div key={cls.id} className="bg-white rounded-2xl p-4 border-2 border-brand-yellow mb-2">
                         <div className="flex items-start justify-between gap-3">
@@ -661,7 +661,7 @@ export default function Admin() {
                             ) : (
                               // approveClass ignores the response, so leaving a
                               // live button here would fail in silence.
-                              <span className="text-navy/40 text-xs self-center max-w-32">Needs a new date before it can be approved</span>
+                              <span className="text-navy/65 text-xs self-center max-w-32">Needs a new date before it can be approved</span>
                             )}
                             <button onClick={() => rejectClass(cls.id)}
                               className="bg-brand-red/10 text-brand-red px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-red/30">
@@ -678,13 +678,13 @@ export default function Admin() {
             {approvedClasses.length > 0 && (
               <>
                 <h2 className="font-display font-bold text-navy mt-6">✅ Active classes</h2>
-                <p className="text-navy/50 text-sm">Mark complete once the class has happened. Credit is earned separately, when students confirm they attended.</p>
+                <p className="text-navy/65 text-sm">Mark complete once the class has happened. Credit is earned separately, when students confirm they attended.</p>
                 {byLanguage(approvedClasses).map(([label, group]) => (
                   // Collapsed by default. Active classes are reference, not a
                   // to-do list, and eight of them pushed the pending queue —
                   // the part that needs acting on — off the screen.
                   <details key={label} className="mt-4">
-                    <summary className="font-display font-bold text-navy/50 text-sm mb-2 cursor-pointer select-none hover:text-navy marker:text-navy/30">{label} · {group.length}</summary>
+                    <summary className="font-display font-bold text-navy/65 text-sm mb-2 cursor-pointer select-none hover:text-navy marker:text-navy/30">{label} · {group.length}</summary>
                     {group.map(cls => (
                       <div key={cls.id} className="bg-white rounded-2xl p-4 border-2 border-brand-teal mb-2">
                         <div className="flex items-start justify-between gap-3">
@@ -701,7 +701,7 @@ export default function Admin() {
               </>
             )}
             {pendingClasses.length === 0 && approvedClasses.length === 0 && (
-              <p className="text-navy/40 text-center py-12">No classes yet</p>
+              <p className="text-navy/65 text-center py-12">No classes yet</p>
             )}
           </div>
         )}
@@ -719,12 +719,12 @@ export default function Admin() {
                           {report.report_type === 'user'
                             ? <>👤 {report.reported_user
                                 ? `${report.reported_user.first_name} ${report.reported_user.last_name}`
-                                : 'Unknown user'} <span className="font-mono text-navy/50">{userCode(report.reported_id)}</span></>
+                                : 'Unknown user'} <span className="font-mono text-navy/65">{userCode(report.reported_id)}</span></>
                             : <>📚 Class #{report.reported_id}</>}
                         </p>
-                        <p className="text-navy/50 text-xs font-bold mt-1">{CATEGORY_LABELS[report.category] || CATEGORY_LABELS.other}</p>
-                        <p className="text-navy/60 text-sm mt-1">{report.reason}</p>
-                        <p className="text-navy/40 text-xs mt-2">
+                        <p className="text-navy/65 text-xs font-bold mt-1">{CATEGORY_LABELS[report.category] || CATEGORY_LABELS.other}</p>
+                        <p className="text-navy/65 text-sm mt-1">{report.reason}</p>
+                        <p className="text-navy/65 text-xs mt-2">
                           Reported by {report.reporter?.first_name} {report.reporter?.last_name} <span className="font-mono">{userCode(report.reporter_id)}</span> ({report.reporter?.email}) · {new Date(report.created_at).toLocaleDateString()}
                         </p>
                         {report.evidence_paths?.length > 0 && (
@@ -775,10 +775,10 @@ export default function Admin() {
                             ? <>👤 User <span className="font-mono">{userCode(report.reported_id)}</span></>
                             : <>📚 Class #{report.reported_id}</>}
                         </p>
-                        <p className="text-navy/60 text-sm mt-1">{report.reason}</p>
+                        <p className="text-navy/65 text-sm mt-1">{report.reason}</p>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-bold border-2 whitespace-nowrap ${
-                        report.status === 'resolved' ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-navy/5 text-navy/50 border-navy/10'}`}>
+                        report.status === 'resolved' ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-navy/5 text-navy/65 border-navy/10'}`}>
                         {report.status}
                       </span>
                     </div>
@@ -786,7 +786,7 @@ export default function Admin() {
                 ))}
               </>
             )}
-            {reports.length === 0 && <p className="text-navy/40 text-center py-12">No reports yet</p>}
+            {reports.length === 0 && <p className="text-navy/65 text-center py-12">No reports yet</p>}
           </div>
         )}
 
@@ -804,7 +804,7 @@ export default function Admin() {
                   </div>
                   <div>
                     <p className="font-bold text-navy text-sm">{user.first_name} {user.last_name}</p>
-                    <p className="text-navy/50 text-xs">{user.email} · <span className="font-mono font-bold">{userCode(user.id)}</span></p>
+                    <p className="text-navy/65 text-xs">{user.email} · <span className="font-mono font-bold">{userCode(user.id)}</span></p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -817,12 +817,12 @@ export default function Admin() {
                     className="bg-brand-yellow/20 text-navy px-4 py-1.5 rounded-full text-sm font-bold border-2 border-navy/20 hover:border-navy transition-colors whitespace-nowrap">
                     Add
                   </button>
-                  {creditMessages[user.id] && <span className="text-navy/50 text-xs whitespace-nowrap">{creditMessages[user.id]}</span>}
+                  {creditMessages[user.id] && <span className="text-navy/65 text-xs whitespace-nowrap">{creditMessages[user.id]}</span>}
                 </div>
               </div>
             ))}
             {creditSearchResults.length === 0 && (
-              <p className="text-navy/40 text-center py-12">{liveUsers.length === 0 ? 'No users yet' : 'No users match your search'}</p>
+              <p className="text-navy/65 text-center py-12">{liveUsers.length === 0 ? 'No users yet' : 'No users match your search'}</p>
             )}
           </div>
           </>
@@ -835,7 +835,7 @@ export default function Admin() {
               {/* One row per language + level. Saving with a level already in
                   the list below updates that row rather than adding one, which
                   is not obvious from a form that keeps its values. */}
-              <p className="text-navy/50 text-xs mb-3">
+              <p className="text-navy/65 text-xs mb-3">
                 Save once per level, then upload that level&apos;s PDF from its card below.
               </p>
               <div className="flex flex-wrap gap-2 mb-3">
@@ -872,20 +872,20 @@ export default function Admin() {
                   className="bg-brand-red text-white px-5 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red/90 transition-colors">
                   Save {languageOptions(t).find(l => l.code === resourceForm.language_code)?.name || resourceForm.language_code} {resourceForm.level}
                 </button>
-                {resourceMessage && <span className="text-navy/60 text-sm">{resourceMessage}</span>}
+                {resourceMessage && <span className="text-navy/65 text-sm">{resourceMessage}</span>}
               </div>
             </div>
 
-            {resources.length === 0 && <p className="text-navy/40">No resources yet.</p>}
+            {resources.length === 0 && <p className="text-navy/65">No resources yet.</p>}
             {resources.map(r => (
               <div key={r.id} className="bg-white border-2 border-navy/15 rounded-xl p-4 mb-3">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-bold text-navy">{r.title}</p>
-                    <p className="text-navy/50 text-sm">{r.language_code} · {r.level} · {r.audience}</p>
+                    <p className="text-navy/65 text-sm">{r.language_code} · {r.level} · {r.audience}</p>
                     {/* A row with no PDF is a draft and is hidden from the
                         public list, so say so rather than looking published. */}
-                    <p className={`text-xs mt-1 ${r.pdf_url ? 'text-navy/40' : 'text-brand-red font-bold'}`}>
+                    <p className={`text-xs mt-1 ${r.pdf_url ? 'text-navy/65' : 'text-brand-red font-bold'}`}>
                       {r.pdf_url ? 'Published' : 'Draft — no PDF uploaded, not public'}
                     </p>
                   </div>
@@ -899,7 +899,7 @@ export default function Admin() {
                 <div className="mt-3 border-t border-navy/10 pt-3 flex items-center gap-3 flex-wrap">
                   <label className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border-2 transition-colors ${
                     uploadingId === r.id
-                      ? 'bg-navy/5 text-navy/40 border-navy/20 cursor-wait'
+                      ? 'bg-navy/5 text-navy/65 border-navy/20 cursor-wait'
                       : r.pdf_url
                         ? 'bg-white text-navy border-navy/30 hover:border-navy cursor-pointer'
                         : 'bg-brand-red text-white border-navy hover:bg-brand-red/90 cursor-pointer'}`}>
@@ -912,7 +912,7 @@ export default function Admin() {
                   </label>
                   {r.pdf_url && (
                     <a href={r.pdf_url} target="_blank" rel="noopener noreferrer"
-                      className="text-navy/60 text-sm underline hover:text-navy">View current PDF</a>
+                      className="text-navy/65 text-sm underline hover:text-navy">View current PDF</a>
                   )}
                 </div>
               </div>

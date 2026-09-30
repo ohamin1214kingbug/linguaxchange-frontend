@@ -226,7 +226,7 @@ export default function Navbar() {
                           <p className="text-navy text-xs mt-1.5 leading-relaxed">
                             {t('common.bananaWhatRule')}
                           </p>
-                          <p className="text-navy/60 text-xs mt-1">
+                          <p className="text-navy/65 text-xs mt-1">
                             {t('common.bananaWhatNoMoney')}
                           </p>
                           <button onClick={dismissBananaExplainer}
@@ -240,7 +240,7 @@ export default function Navbar() {
                             <p className="font-display font-extrabold text-navy">
                               {bananaLabel}
                             </p>
-                            <p className="text-navy/60 text-xs mt-0.5">
+                            <p className="text-navy/65 text-xs mt-0.5">
                               {credits <= LOW_BANANAS ? t('common.bananasLow') : t('common.creditsTip')}
                             </p>
                           </div>
@@ -273,13 +273,13 @@ export default function Navbar() {
                   <div className="absolute right-0 mt-2 bg-white border-2 border-navy rounded-xl z-20 w-72 shadow-lg overflow-hidden max-h-96 overflow-y-auto">
                     <p className="px-4 py-3 text-sm font-bold text-navy border-b border-navy/10">{t('nav.notifications')}</p>
                     {notifications.length === 0 && (
-                      <p className="px-4 py-6 text-sm text-navy/40 text-center">{t('nav.noNotifications')}</p>
+                      <p className="px-4 py-6 text-sm text-navy/65 text-center">{t('nav.noNotifications')}</p>
                     )}
                     {notifications.map(n => (
                       <a key={n.id} href={notificationHref(n)} onClick={() => markRead(n.id)}
                         className={`block px-4 py-3 text-sm border-b border-navy/5 hover:bg-cream transition-colors last:border-0 ${!n.read_at ? 'bg-brand-red/5' : ''}`}>
-                        <p className={!n.read_at ? 'text-navy font-medium' : 'text-navy/60'}>{n.message}</p>
-                        <p className="text-navy/40 text-xs mt-0.5">{timeAgo(n.created_at, t)}</p>
+                        <p className={!n.read_at ? 'text-navy font-medium' : 'text-navy/65'}>{n.message}</p>
+                        <p className="text-navy/65 text-xs mt-0.5">{timeAgo(n.created_at, t)}</p>
                       </a>
                     ))}
                   </div>

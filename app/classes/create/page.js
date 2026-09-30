@@ -161,7 +161,7 @@ export default function CreateClass() {
         <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md text-center">
           <div className="text-5xl mb-4">🎉</div>
           <h1 className="font-display font-extrabold text-navy text-2xl mb-2">{publishedImmediately ? t('classes.classPublished') : t('classes.classSubmitted')}</h1>
-          <p className="text-navy/60 mb-6">{publishedImmediately ? t('classes.publishedText') : t('classes.pendingApprovalText')}</p>
+          <p className="text-navy/65 mb-6">{publishedImmediately ? t('classes.publishedText') : t('classes.pendingApprovalText')}</p>
           <div className="flex gap-3 justify-center">
             <a href="/classes" className="bg-brand-red text-white px-6 py-3 rounded-full font-bold border-2 border-navy">{t('classes.browseClasses')}</a>
             <a href="/dashboard" className="border-2 border-navy text-navy px-6 py-3 rounded-full font-bold hover:bg-navy hover:text-white transition-colors">{t('common.dashboard')}</a>
@@ -177,7 +177,7 @@ export default function CreateClass() {
 
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">{t('classes.createClass')}</h1>
-        <p className="text-navy/60 mb-8">{t('classes.fillDetails')}</p>
+        <p className="text-navy/65 mb-8">{t('classes.fillDetails')}</p>
 
         {error && (
           <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-6 text-sm font-medium">{t(error)}</div>
@@ -192,7 +192,7 @@ export default function CreateClass() {
             // (routes/classRequests.js's /fulfill has no check that catches
             // that mismatch, so the only guard is not offering the option).
             <div className="bg-cream rounded-xl px-4 py-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
-              <span className="text-navy/50">{t('classes.answeringRequest')}</span>
+              <span className="text-navy/65">{t('classes.answeringRequest')}</span>
               <span className="font-bold text-navy">
                 {LANGUAGES.find(l => l.code === form.language_code)?.flag} {LANGUAGES.find(l => l.code === form.language_code)?.name} · {levelLabel(form.language_code, form.level)} · {t('classes.studentsCount', { n: form.max_students })}
               </span>
@@ -267,7 +267,7 @@ export default function CreateClass() {
 
           <div>
             <label className="block text-sm font-bold text-navy mb-1">
-              {t('classes.dateTime')} <span className="text-navy/40 font-normal">{t('classes.dateTimeHint')}</span>
+              {t('classes.dateTime')} <span className="text-navy/65 font-normal">{t('classes.dateTimeHint')}</span>
             </label>
             <DateTimePicker value={form.scheduled_at} onChange={val => { setDateTimeError(''); setForm({ ...form, scheduled_at: val }) }} t={t} />
             {dateTimeError && <p className="text-brand-red text-sm font-medium mt-1.5">{t(dateTimeError)}</p>}
@@ -333,7 +333,7 @@ export default function CreateClass() {
               </div>
               <div>
                 <label className="block text-sm font-bold text-navy mb-1">
-                  {t('classes.recursUntil')} <span className="text-navy/40 font-normal">{t('classes.recursUntilHint')}</span>
+                  {t('classes.recursUntil')} <span className="text-navy/65 font-normal">{t('classes.recursUntilHint')}</span>
                 </label>
                 <input name="recurrence_end_date" type="date" onChange={handleChange}
                   value={form.recurrence_end_date}
@@ -344,7 +344,7 @@ export default function CreateClass() {
 
           <div>
             <label className="block text-sm font-bold text-navy mb-1">
-              {t('classes.materials')} <span className="text-navy/40 font-normal">{t('classes.optional')}</span>
+              {t('classes.materials')} <span className="text-navy/65 font-normal">{t('classes.optional')}</span>
             </label>
             <textarea name="materials" onChange={handleChange} value={form.materials} rows={2}
               className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 resize-none focus:border-brand-red focus:outline-none transition-colors"

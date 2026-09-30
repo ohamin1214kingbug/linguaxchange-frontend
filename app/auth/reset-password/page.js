@@ -46,7 +46,7 @@ function ResetPasswordForm() {
     return (
       <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md text-center">
         <h1 className="font-display font-extrabold text-navy text-2xl mb-2">{t('auth.invalidLink')}</h1>
-        <p className="text-navy/60 mb-6">{t('auth.invalidLinkText')}</p>
+        <p className="text-navy/65 mb-6">{t('auth.invalidLinkText')}</p>
         <a href="/auth/forgot-password" className="text-brand-red font-bold hover:underline">{t('auth.requestNewLink')}</a>
       </div>
     )
@@ -57,7 +57,7 @@ function ResetPasswordForm() {
       <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md text-center">
         <div className="text-5xl mb-4">✅</div>
         <h1 className="font-display font-extrabold text-navy text-2xl mb-2">{t('auth.passwordUpdated')}</h1>
-        <p className="text-navy/60">{t('auth.redirectingToLogin')}</p>
+        <p className="text-navy/65">{t('auth.redirectingToLogin')}</p>
       </div>
     )
   }
@@ -66,7 +66,7 @@ function ResetPasswordForm() {
     <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md">
       <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">Leng</span></a>
       <h1 className="font-display font-extrabold text-navy text-3xl mt-4 mb-2">{t('auth.setNewPassword')}</h1>
-      <p className="text-navy/60 mb-8">{t('auth.setNewPasswordSubtitle')}</p>
+      <p className="text-navy/65 mb-8">{t('auth.setNewPasswordSubtitle')}</p>
 
       {error && (
         <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{t(error)}</div>
@@ -99,7 +99,7 @@ export default function ResetPassword() {
       <div className="absolute top-4 right-4">
         <LanguageSwitcher />
       </div>
-      <Suspense fallback={<div className="text-navy/40">{t('common.loading')}</div>}>
+      <Suspense fallback={<div className="text-navy/65">{t('common.loading')}</div>}>
         <ResetPasswordForm />
       </Suspense>
     </main>

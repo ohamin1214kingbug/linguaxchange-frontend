@@ -100,7 +100,7 @@ export default function SavedTeachers() {
 
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">{t('savedTeachers.title')}</h1>
-        <p className="text-navy/60 mb-8">{t('savedTeachers.subtitle')}</p>
+        <p className="text-navy/65 mb-8">{t('savedTeachers.subtitle')}</p>
 
         <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-8">
           <label className="block text-sm font-bold text-navy mb-2">{t('savedTeachers.findLabel')}</label>
@@ -132,14 +132,14 @@ export default function SavedTeachers() {
                 <div className="min-w-0">
                   <p className="font-bold text-navy">
                     {found.first_name} {found.last_name}
-                    {found.nationality && <span className="text-navy/40 font-medium text-sm"> · {found.nationality}</span>}
+                    {found.nationality && <span className="text-navy/65 font-medium text-sm"> · {found.nationality}</span>}
                   </p>
-                  <p className="text-navy/50 text-xs">
+                  <p className="text-navy/65 text-xs">
                     {LANGS[found.teach_language]?.flag} {LANGS[found.teach_language]?.name}
                     {found.teach_level ? ` · ${found.teach_level}` : ''}
                   </p>
                   {found.bio && (
-                    <p className="text-navy/60 text-sm mt-1 line-clamp-2">{found.bio}</p>
+                    <p className="text-navy/65 text-sm mt-1 line-clamp-2">{found.bio}</p>
                   )}
                 </div>
               </div>
@@ -153,7 +153,7 @@ export default function SavedTeachers() {
 
         <h2 className="font-display font-bold text-navy mb-4">{t('savedTeachers.yourList', { n: saved.length })}</h2>
 
-        {loading && <p className="text-navy/40">{t('common.loading')}</p>}
+        {loading && <p className="text-navy/65">{t('common.loading')}</p>}
 
         <div className="space-y-3">
           {saved.map(teacher => (
@@ -169,27 +169,27 @@ export default function SavedTeachers() {
                 <div className="min-w-0">
                   <p className="font-bold text-navy">
                     {teacher.first_name} {teacher.last_name}
-                    {teacher.nationality && <span className="text-navy/40 font-medium text-sm"> · {teacher.nationality}</span>}
+                    {teacher.nationality && <span className="text-navy/65 font-medium text-sm"> · {teacher.nationality}</span>}
                   </p>
-                  <p className="text-navy/50 text-xs">
+                  <p className="text-navy/65 text-xs">
                     {LANGS[teacher.teach_language]?.flag} {LANGS[teacher.teach_language]?.name}
                     {teacher.teach_level ? ` · ${teacher.teach_level}` : ''}
                   </p>
                   {/* Clamped rather than truncated to one line: a bio is the
                       thing that actually distinguishes two saved teachers. */}
                   {teacher.bio && (
-                    <p className="text-navy/60 text-sm mt-1 line-clamp-2">{teacher.bio}</p>
+                    <p className="text-navy/65 text-sm mt-1 line-clamp-2">{teacher.bio}</p>
                   )}
                 </div>
               </a>
               <button onClick={() => unsave(teacher.id)} disabled={busy}
-                className="text-navy/40 hover:text-brand-red text-sm font-bold px-3 py-1.5 disabled:opacity-50 transition-colors whitespace-nowrap">
+                className="text-navy/65 hover:text-brand-red text-sm font-bold px-3 py-1.5 disabled:opacity-50 transition-colors whitespace-nowrap">
                 {t('savedTeachers.remove')}
               </button>
             </div>
           ))}
           {!loading && saved.length === 0 && (
-            <p className="text-navy/40 text-center py-12">{t('savedTeachers.empty')}</p>
+            <p className="text-navy/65 text-center py-12">{t('savedTeachers.empty')}</p>
           )}
         </div>
       </div>

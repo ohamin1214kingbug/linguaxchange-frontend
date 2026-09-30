@@ -77,7 +77,7 @@ export default function Callback() {
     <main className="min-h-screen bg-cream flex items-center justify-center">
       <div className="text-center">
         <div className="text-4xl mb-4">🌐</div>
-        <p className="text-navy/60 font-medium">Logging you in with Google...</p>
+        <p className="text-navy/65 font-medium">Logging you in with Google...</p>
       </div>
     </main>
   )

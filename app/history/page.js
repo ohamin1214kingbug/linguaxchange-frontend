@@ -87,7 +87,7 @@ function SkillRow({ skill, value, onChange, readOnly, t }) {
       <SkillIcon name={skill} className={style ? style.text : 'text-navy/25'} />
       <div className="min-w-0 flex-1">
         <p className="text-navy text-xs font-bold leading-tight">{t(`feedback.${SKILL_LABEL[skill]}`)}</p>
-        <p className="text-navy/40 text-[11px] leading-tight">{t(`feedback.${SKILL_LABEL[skill]}Hint`)}</p>
+        <p className="text-navy/65 text-[11px] leading-tight">{t(`feedback.${SKILL_LABEL[skill]}Hint`)}</p>
       </div>
       <Dots value={value} onChange={onChange} readOnly={readOnly} />
       <span className={`w-16 text-right text-[10px] font-extrabold uppercase leading-tight ${style ? style.text : 'text-navy/20'}`}>
@@ -200,8 +200,8 @@ function RateStudents({ sessionId, t }) {
         {open ? t('feedback.hide') : t('feedback.rateStudents')}
       </button>
 
-      {open && rows === null && <p className="text-navy/40 text-xs mt-2">{t('common.loading')}</p>}
-      {open && rows?.length === 0 && <p className="text-navy/40 text-xs mt-2">{t('feedback.noStudents')}</p>}
+      {open && rows === null && <p className="text-navy/65 text-xs mt-2">{t('common.loading')}</p>}
+      {open && rows?.length === 0 && <p className="text-navy/65 text-xs mt-2">{t('feedback.noStudents')}</p>}
 
       {open && rows?.map(({ student, feedback }) => {
         const draft = drafts[student.id] || {}
@@ -219,10 +219,10 @@ function RateStudents({ sessionId, t }) {
                 className="text-sm font-bold text-navy hover:text-brand-red transition-colors">
                 {student.first_name} {student.last_name || ''}
               </a>
-              <span className="text-navy/40 text-xs font-bold">{rated}/{SKILLS.length}</span>
+              <span className="text-navy/65 text-xs font-bold">{rated}/{SKILLS.length}</span>
             </div>
             <p className="text-[10px] font-extrabold text-brand-red uppercase tracking-wide">{t('feedback.skillEvaluation')}</p>
-            {!locked && <p className="text-navy/40 text-[11px] mb-2">{t('feedback.rateAtLeastThree', { n: MIN_SKILLS })}</p>}
+            {!locked && <p className="text-navy/65 text-[11px] mb-2">{t('feedback.rateAtLeastThree', { n: MIN_SKILLS })}</p>}
             <div>
               {SKILLS.map(s => (
                 <SkillRow key={s} skill={s} value={draft[s]} readOnly={locked}
@@ -235,7 +235,7 @@ function RateStudents({ sessionId, t }) {
                 <div className={`h-full rounded-full transition-all ${ready ? 'bg-brand-green' : 'bg-brand-yellow'}`}
                   style={{ width: `${(rated / SKILLS.length) * 100}%` }} />
               </div>
-              <span className="text-navy/40 text-[11px] font-bold">{t('feedback.ratedCount', { n: rated, total: SKILLS.length })}</span>
+              <span className="text-navy/65 text-[11px] font-bold">{t('feedback.ratedCount', { n: rated, total: SKILLS.length })}</span>
             </div>
 
             <p className="text-[10px] font-extrabold text-brand-blue uppercase tracking-wide mt-4 mb-2">{t('feedback.teacherComment')}</p>
@@ -255,14 +255,14 @@ function RateStudents({ sessionId, t }) {
               placeholder={t('feedback.commentPlaceholder', { name: student.first_name })}
               rows={2}
               className={`w-full border-2 rounded-xl px-3 py-2 text-sm resize-none focus:outline-none transition-colors ${
-                locked ? 'border-navy/10 bg-navy/5 text-navy/60' : 'border-navy/20 focus:border-brand-red'}`}/>
+                locked ? 'border-navy/10 bg-navy/5 text-navy/65' : 'border-navy/20 focus:border-brand-red'}`}/>
             {!locked && <p className="text-navy/30 text-[10px] mt-1">{comment.length}/300</p>}
 
             {locked ? (
-              <p className="text-navy/40 text-[11px] font-medium mt-2">{t('feedback.alreadySubmitted')}</p>
+              <p className="text-navy/65 text-[11px] font-medium mt-2">{t('feedback.alreadySubmitted')}</p>
             ) : (
               <div className="flex items-center justify-between gap-3 mt-2">
-                <span className={`text-[11px] font-medium ${ready ? 'text-brand-green' : 'text-navy/40'}`}>
+                <span className={`text-[11px] font-medium ${ready ? 'text-brand-green' : 'text-navy/65'}`}>
                   {ready ? t('feedback.readyToSubmit') : t('feedback.rateAtLeastThree', { n: MIN_SKILLS })}
                 </span>
                 <button onClick={() => submit(student.id)} disabled={saving === student.id || !ready}
@@ -293,7 +293,7 @@ function Row({ flag, title, level, when, meta, badge, badgeTone, divider = true 
           {flag} {title}
           {level && <span className="ml-2 bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{level}</span>}
         </p>
-        <p className="text-navy/40 text-xs mt-0.5">{when}{meta ? ` · ${meta}` : ''}</p>
+        <p className="text-navy/65 text-xs mt-0.5">{when}{meta ? ` · ${meta}` : ''}</p>
       </div>
       {badge && (
         <span className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-bold border-2 ${badgeTone}`}>{badge}</span>
@@ -351,7 +351,7 @@ export default function History() {
   }, [])
 
   if (!user) return (
-    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">{t('common.loading')}</div>
+    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/65 font-medium">{t('common.loading')}</div>
   )
 
   return (
@@ -360,9 +360,9 @@ export default function History() {
 
       <div className="max-w-3xl mx-auto px-4 md:px-8 py-8 md:py-12">
         <h1 className="font-display font-extrabold text-2xl md:text-3xl text-navy mb-2">{t('history.title')}</h1>
-        <p className="text-navy/60 mb-8">{t('history.subtitle')}</p>
+        <p className="text-navy/65 mb-8">{t('history.subtitle')}</p>
 
-        {loading && <p className="text-navy/40 font-medium">{t('common.loading')}</p>}
+        {loading && <p className="text-navy/65 font-medium">{t('common.loading')}</p>}
 
         {!loading && (
           <>
@@ -377,10 +377,10 @@ export default function History() {
             {tab === 'taken' && (
             <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
               <h2 className="font-display font-bold text-navy mb-4">
-                {t('history.taken')} <span className="text-navy/40 font-medium text-sm">({taken.length})</span>
+                {t('history.taken')} <span className="text-navy/65 font-medium text-sm">({taken.length})</span>
               </h2>
               {taken.length === 0 ? (
-                <p className="text-navy/40 text-sm">{t('history.noneTaken')}</p>
+                <p className="text-navy/65 text-sm">{t('history.noneTaken')}</p>
               ) : taken.map(e => {
                 const cls = e.class_sessions.classes
                 const teacher = cls?.teacher
@@ -398,7 +398,7 @@ export default function History() {
                         : e.status === 'attended' ? t('dashboard.attended') : t('history.notConfirmed')}
                       badgeTone={e.status === 'attended'
                         ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
-                        : 'bg-navy/5 text-navy/40 border-navy/10'}
+                        : 'bg-navy/5 text-navy/65 border-navy/10'}
                       divider={false}
                     />
                     {received && <FeedbackSummary feedback={received} t={t} />}
@@ -411,10 +411,10 @@ export default function History() {
             {tab === 'taught' && (
             <div className="bg-white rounded-2xl p-6 border-2 border-navy">
               <h2 className="font-display font-bold text-navy mb-4">
-                {t('history.taught')} <span className="text-navy/40 font-medium text-sm">({taught.length})</span>
+                {t('history.taught')} <span className="text-navy/65 font-medium text-sm">({taught.length})</span>
               </h2>
               {taught.length === 0 ? (
-                <p className="text-navy/40 text-sm">{t('history.noneTaught')}</p>
+                <p className="text-navy/65 text-sm">{t('history.noneTaught')}</p>
               ) : taught.map(s => (
                 <div key={s.id} className="border-b border-navy/10 last:border-0">
                   <Row

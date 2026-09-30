@@ -104,13 +104,13 @@ export default function StreakCalendar({ userId, streakCount }) {
               <p className="font-display font-extrabold text-navy">
                 {t('dashboard.weekStreak', { n: streakCount })}
               </p>
-              <p className="text-navy/60 text-xs mt-0.5">
+              <p className="text-navy/65 text-xs mt-0.5">
                 {countedThisWeek ? t('nav.streakCountedThisWeek') : t('nav.streakKeepGoing')}
               </p>
               <div className="flex justify-between mt-3">
                 {thisWeek.map(({ date, active, isToday }, i) => (
                   <div key={i} className="flex flex-col items-center gap-1">
-                    <span className="text-[10px] font-bold text-navy/40">{weekdayLabels[i]}</span>
+                    <span className="text-[10px] font-bold text-navy/65">{weekdayLabels[i]}</span>
                     <div className={`h-6 w-6 rounded-full flex items-center justify-center text-[11px] ${
                       active ? 'bg-brand-red text-white font-bold'
                       : isToday ? 'border-2 border-brand-red/50 text-navy font-bold'
@@ -131,12 +131,12 @@ export default function StreakCalendar({ userId, streakCount }) {
                   className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-cream text-navy font-bold text-sm">›</button>
               </div>
 
-              <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-navy/40 mb-1">
+              <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-navy/65 mb-1">
                 {weekdayLabels.map((w, i) => <div key={i}>{w}</div>)}
               </div>
 
               {loading ? (
-                <p className="text-navy/40 text-xs text-center py-6">{t('common.loading')}</p>
+                <p className="text-navy/65 text-xs text-center py-6">{t('common.loading')}</p>
               ) : (
                 <div className="grid grid-cols-7 gap-1">
                   {grid.map(({ date, inCurrentMonth }, i) => {

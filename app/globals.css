@@ -15,7 +15,7 @@
   --color-navy: #1a1a2e;
   --color-navy-dark: #191933;
 
-  --color-brand-red: #e0263a;
+  --color-brand-red: #da1f33; /* was #e0263a: 4.25:1 on cream, under WCAG's 4.5:1 for text. 2.5% darker, same hue. */
   --color-brand-red-dark: #c01f31;
   --color-brand-blue: #4361ee;
   --color-brand-yellow: #f4a623;

@@ -56,7 +56,7 @@ export default function AnnotationEditor({ request, onSent }) {
 
   return (
     <div>
-      <p className="text-navy/60 text-sm mb-2">{t('assignments.selectSpan')}</p>
+      <p className="text-navy/65 text-sm mb-2">{t('assignments.selectSpan')}</p>
       <div ref={ref} onMouseUp={onMouseUp}
         className="bg-white border-2 border-navy rounded-2xl p-5 whitespace-pre-wrap leading-relaxed mb-4 select-text">
         {request.body}
@@ -75,7 +75,7 @@ export default function AnnotationEditor({ request, onSent }) {
           </select>
 
           <label className="block text-xs font-bold text-navy mb-1">{t('assignments.noteLabel')}</label>
-          <p className="text-navy/50 text-xs mb-2">{t('assignments.noteHint')}</p>
+          <p className="text-navy/65 text-xs mb-2">{t('assignments.noteHint')}</p>
           <textarea value={draft.note} onChange={e => setDraft(d => ({ ...d, note: e.target.value }))}
             rows={3} maxLength={300} className="w-full border-2 border-navy/15 rounded-xl px-3 py-2 text-sm mb-3" />
 
@@ -91,10 +91,10 @@ export default function AnnotationEditor({ request, onSent }) {
         <div key={i} className="border-l-4 border-brand-red pl-3 mb-3 flex items-start justify-between gap-2">
           <div>
             <p className="text-navy font-bold text-sm">“{request.body.slice(a.start, a.end)}”</p>
-            <p className="text-navy/60 text-xs">{t(`assignments.category.${a.category}`)} — {a.note}</p>
+            <p className="text-navy/65 text-xs">{t(`assignments.category.${a.category}`)} — {a.note}</p>
           </div>
           <button onClick={() => setAnnotations(list => list.filter((_, j) => j !== i))}
-            className="text-navy/40 hover:text-brand-red text-sm font-bold px-1">
+            className="text-navy/65 hover:text-brand-red text-sm font-bold px-1">
             ×
           </button>
         </div>
@@ -103,7 +103,7 @@ export default function AnnotationEditor({ request, onSent }) {
       {/* 500 characters with no guidance was the one field in this flow shaped
           like somewhere to paste a rewritten paragraph. Same hint as noteHint. */}
       <label className="block text-sm font-bold text-navy mb-1 mt-4">{t('assignments.overallLabel')}</label>
-      <p className="text-navy/50 text-xs mb-2">{t('assignments.overallHint')}</p>
+      <p className="text-navy/65 text-xs mb-2">{t('assignments.overallHint')}</p>
       <textarea value={overall} onChange={e => setOverall(e.target.value)} rows={3} maxLength={500}
         className="w-full border-2 border-navy/15 rounded-xl px-4 py-2.5 mb-4" />
 
