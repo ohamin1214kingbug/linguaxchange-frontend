@@ -122,8 +122,10 @@ function toHtmlBody(markdown) {
   return out.join('\n')
 }
 
-const page = body => `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>GongbuLeng guide</title>
+// The English-learning guides (en-*) are written in Spanish for Spanish
+// speakers; every other guide is written in English.
+const page = (body, lang) => `<!doctype html>
+<html lang="${lang}"><head><meta charset="utf-8"><title>GongbuLeng guide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
@@ -218,7 +220,7 @@ let failed = false
 
 for (const file of guides) {
   const name = file.replace(/\.md$/, '')
-  const html = page(toHtmlBody(readFileSync(join(SRC, file), 'utf8')))
+  const html = page(toHtmlBody(readFileSync(join(SRC, file), 'utf8')), file.startsWith('en-') ? 'es' : 'en')
   const tmp = join(OUT, `${name}.html`)
   const pdf = join(OUT, `${name}.pdf`)
 
