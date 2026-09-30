@@ -53,7 +53,7 @@ export default function AssignmentBoard({ language, currentUser, langs }) {
           {/* Answered wins over expired: once someone has written feedback the
               request's expiry stops mattering to the student, and "expired" on
               a request that actually got answered reads as a failure. */}
-          <span className={`ml-auto text-xs font-bold ${answered ? 'text-brand-teal' : expired ? 'text-navy/40' : 'text-navy/50'}`}>
+          <span className={`ml-auto text-xs font-bold ${answered ? 'text-brand-teal' : expired ? 'text-navy/65' : 'text-navy/65'}`}>
             {answered
               ? t('assignments.answered')
               : showExpiry && expired
@@ -62,7 +62,7 @@ export default function AssignmentBoard({ language, currentUser, langs }) {
           </span>
         </div>
         <p className="font-display font-bold text-navy">{r.prompt}</p>
-        <p className="text-navy/60 text-sm mt-1 line-clamp-2">{r.body}</p>
+        <p className="text-navy/65 text-sm mt-1 line-clamp-2">{r.body}</p>
       </a>
     )
   }
@@ -86,10 +86,10 @@ export default function AssignmentBoard({ language, currentUser, langs }) {
         </div>
       )}
 
-      {loading && <p className="text-navy/40">…</p>}
+      {loading && <p className="text-navy/65">…</p>}
 
       {!loading && requests.length === 0 && (
-        <p className="text-navy/60">{t('assignments.boardEmpty')}</p>
+        <p className="text-navy/65">{t('assignments.boardEmpty')}</p>
       )}
 
       {requests.map(r => card(r, false))}

@@ -73,14 +73,14 @@ export default async function ResourceDetail({ params }) {
           // the syllabus is the reference it aligns with.
           <p className="mt-5">
             <a href={resource.source_url} target="_blank" rel="noopener noreferrer"
-              className="text-navy/60 text-sm hover:text-navy underline">
+              className="text-navy/65 text-sm hover:text-navy underline">
               Official exam syllabus ↗
             </a>
           </p>
         )}
 
         {resource.attribution && (
-          <p className="mt-6 text-navy/40 text-xs leading-relaxed">{resource.attribution}</p>
+          <p className="mt-6 text-navy/65 text-xs leading-relaxed">{resource.attribution}</p>
         )}
 
         {/* The reason this page is worth ranking. Someone reading about what
@@ -91,7 +91,7 @@ export default async function ResourceDetail({ params }) {
           <p className="font-display font-extrabold text-xl text-navy mb-2">
             Practise this level with a real person
           </p>
-          <p className="text-navy/60 text-sm leading-relaxed mb-4">
+          <p className="text-navy/65 text-sm leading-relaxed mb-4">
             Reading about a grammar point is not the same as using it under pressure.
             GongbuLeng runs small group classes where you teach what you know and
             learn what you don&apos;t — no subscription.

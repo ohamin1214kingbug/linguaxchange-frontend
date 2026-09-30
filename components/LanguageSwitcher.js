@@ -14,7 +14,7 @@ export default function LanguageSwitcher() {
         className="flex items-center gap-1.5 border-2 border-navy/15 rounded-full px-3 py-1.5 text-sm font-bold text-navy hover:border-navy/40 transition-colors">
         <span>{current.flag}</span>
         <span className="hidden sm:inline">{current.label}</span>
-        <span className="text-navy/40 text-xs">▾</span>
+        <span className="text-navy/65 text-xs">▾</span>
       </button>
       {open && (
         <>

@@ -17,7 +17,7 @@ export default function Tabs({ tabs, active, onChange }) {
           className={`px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap border-2 transition-colors ${
             active === tab.key
               ? 'bg-navy text-white border-navy'
-              : 'bg-white text-navy/60 border-navy/20 hover:border-navy hover:text-navy'
+              : 'bg-white text-navy/65 border-navy/20 hover:border-navy hover:text-navy'
           }`}>
           {tab.label}
         </button>

@@ -243,12 +243,12 @@ export default function TeacherProfile() {
       <div className="flex items-center gap-2 mb-1">
         <span>{LANGS[cls.language_code]?.flag}</span>
         <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{levelLabel(cls.language_code, cls.level)}</span>
-        <span className="text-navy/40 text-xs">{cls.duration_minutes} {t('classes.min')}</span>
+        <span className="text-navy/65 text-xs">{cls.duration_minutes} {t('classes.min')}</span>
       </div>
       <p className="font-bold text-navy text-sm">{cls.title}</p>
-      {cls.description && <p className="text-navy/40 text-xs mt-0.5">{cls.description}</p>}
+      {cls.description && <p className="text-navy/65 text-xs mt-0.5">{cls.description}</p>}
       {date && (
-        <p className={`text-xs font-bold mt-1 ${muted ? 'text-navy/40' : 'text-brand-red'}`}>
+        <p className={`text-xs font-bold mt-1 ${muted ? 'text-navy/65' : 'text-brand-red'}`}>
           🗓️ {formatInTimezone(date.toISOString(), viewerTimezone, viewerTimeFormat)}
         </p>
       )}
@@ -256,11 +256,11 @@ export default function TeacherProfile() {
   )
 
   if (loading) return (
-    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">{t('common.loading')}</div>
+    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/65 font-medium">{t('common.loading')}</div>
   )
 
   if (!teacher || teacher.error) return (
-    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">{t('teacher.teacherNotFound')}</div>
+    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/65 font-medium">{t('teacher.teacherNotFound')}</div>
   )
 
   return (
@@ -272,14 +272,14 @@ export default function TeacherProfile() {
         <div className="bg-white rounded-2xl p-8 border-2 border-navy mb-6">
           <div className="flex justify-end items-center gap-4">
             <button onClick={toggleSaved} disabled={savingTeacher}
-              className={`text-xs font-bold disabled:opacity-50 ${saved ? 'text-brand-red' : 'text-navy/40 hover:text-brand-red'}`}>
+              className={`text-xs font-bold disabled:opacity-50 ${saved ? 'text-brand-red' : 'text-navy/65 hover:text-brand-red'}`}>
               {saved ? `❤️ ${t('teacher.savedLabel')}` : `🤍 ${t('teacher.saveLabel')}`}
             </button>
             {reportSent ? (
-              <span className="text-navy/40 text-xs">{t('teacher.reportSent')}</span>
+              <span className="text-navy/65 text-xs">{t('teacher.reportSent')}</span>
             ) : (
               <button onClick={() => setReporting(o => !o)}
-                className="text-navy/40 text-xs font-medium hover:text-brand-red">
+                className="text-navy/65 text-xs font-medium hover:text-brand-red">
                 🚩 {t('teacher.report')}
               </button>
             )}
@@ -301,7 +301,7 @@ export default function TeacherProfile() {
               <label className="block text-xs font-bold text-navy mt-3 mb-1">{t('teacher.reportEvidence')}</label>
               <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={attachImages}
                 disabled={reportImages.length >= 3}
-                className="text-xs text-navy/60 file:mr-3 file:rounded-full file:border-2 file:border-navy/20 file:bg-white file:px-3 file:py-1 file:text-xs file:font-bold"/>
+                className="text-xs text-navy/65 file:mr-3 file:rounded-full file:border-2 file:border-navy/20 file:bg-white file:px-3 file:py-1 file:text-xs file:font-bold"/>
               {reportImages.length > 0 && (
                 <div className="flex gap-2 mt-2">
                   {reportImages.map((src, i) => (
@@ -315,7 +315,7 @@ export default function TeacherProfile() {
               )}
               {reportError && <p className="text-brand-red text-xs mt-2 font-bold">{reportError}</p>}
               <div className="flex gap-2 justify-end mt-2">
-                <button onClick={() => setReporting(false)} className="text-navy/50 text-sm font-bold px-3 py-1.5">
+                <button onClick={() => setReporting(false)} className="text-navy/65 text-sm font-bold px-3 py-1.5">
                   {t('teacher.reportCancel')}
                 </button>
                 <button onClick={submitReport} disabled={!reportReason.trim()}
@@ -338,11 +338,11 @@ export default function TeacherProfile() {
               <h1 className="font-display font-extrabold text-2xl text-navy">
                 {teacher.first_name} {teacher.last_name}
               </h1>
-              <p className="text-navy/40 text-xs font-mono mt-0.5" title={t('teacher.userCodeHint')}>
+              <p className="text-navy/65 text-xs font-mono mt-0.5" title={t('teacher.userCodeHint')}>
                 {userCode(teacher.id)}
               </p>
               {teacher.nationality && (
-                <p className="text-navy/50 text-sm mt-0.5">{teacher.nationality}</p>
+                <p className="text-navy/65 text-sm mt-0.5">{teacher.nationality}</p>
               )}
               {teacher?.university_verified_at && (
                 /* The date is the point: a university address keeps working after
@@ -350,7 +350,7 @@ export default function TeacherProfile() {
                    implying the person is enrolled today. */
                 <p className="text-brand-teal font-bold text-sm mt-1">
                   🎓 {teacher.university_domain}
-                  <span className="text-navy/40 font-medium">
+                  <span className="text-navy/65 font-medium">
                     {' · '}{formatDay(teacher.university_verified_at)}
                   </span>
                 </p>
@@ -371,7 +371,7 @@ export default function TeacherProfile() {
                   <span className="flex items-center gap-1">
                     <Stars rating={parseFloat(avgRating)} />
                     <span className="text-navy text-sm font-bold">{avgRating}</span>
-                    <span className="text-navy/40 text-sm">{t('teacher.reviewsCount', { n: reviews.length })}</span>
+                    <span className="text-navy/65 text-sm">{t('teacher.reviewsCount', { n: reviews.length })}</span>
                   </span>
                 )}
               </div>
@@ -382,12 +382,12 @@ export default function TeacherProfile() {
                   them, so half of what a teacher fills in on /profile was
                   invisible to the people deciding whether to book them. */}
               {teacher.certificate_explanation && (
-                <p className="text-navy/60 text-sm mt-2 italic">{teacher.certificate_explanation}</p>
+                <p className="text-navy/65 text-sm mt-2 italic">{teacher.certificate_explanation}</p>
               )}
 
               {teacher.learn_languages?.length > 0 && (
                 <div className="flex items-center gap-2 mt-3 flex-wrap">
-                  <span className="text-navy/50 text-sm">{t('teacher.wantsToLearn')}</span>
+                  <span className="text-navy/65 text-sm">{t('teacher.wantsToLearn')}</span>
                   {teacher.learn_languages.map(code => LANGS[code] && (
                     <span key={code}
                       className="bg-brand-teal/10 text-navy px-2.5 py-1 rounded-full text-xs font-bold border-2 border-brand-teal/30">
@@ -448,7 +448,7 @@ export default function TeacherProfile() {
         {pastClasses.length > 0 && (
           <div className="bg-white rounded-2xl p-6 border-2 border-navy/15 mb-6">
             <h2 className="font-display font-bold text-navy mb-1">{t('teacher.pastClasses')}</h2>
-            <p className="text-navy/50 text-xs mb-4">{t('teacher.pastClassesNote')}</p>
+            <p className="text-navy/65 text-xs mb-4">{t('teacher.pastClassesNote')}</p>
             <div className="space-y-3">
               {pastClasses.map(cls => (
                 <div key={cls.id} className="py-3 border-b border-navy/10 last:border-0 opacity-70">
@@ -468,7 +468,7 @@ export default function TeacherProfile() {
                 <div key={i} className="py-3 border-b border-navy/10 last:border-0">
                   <Stars rating={rev.rating} />
                   {rev.comment && <p className="text-navy/70 text-sm mt-1">{rev.comment}</p>}
-                  <p className="text-navy/40 text-xs mt-1">
+                  <p className="text-navy/65 text-xs mt-1">
                     {new Date(rev.created_at).toLocaleDateString()}
                   </p>
                 </div>
@@ -478,7 +478,7 @@ export default function TeacherProfile() {
         )}
 
         {classes.length === 0 && reviews.length === 0 && (
-          <div className="text-center py-12 text-navy/40">
+          <div className="text-center py-12 text-navy/65">
             <p>{t('teacher.noClassesPosted')}</p>
           </div>
         )}

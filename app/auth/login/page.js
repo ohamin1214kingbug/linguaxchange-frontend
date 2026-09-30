@@ -64,7 +64,7 @@ function LoginForm() {
       <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md">
         <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">Leng</span></a>
         <h1 className="font-display font-extrabold text-navy text-3xl mt-4 mb-2">{t('auth.welcomeBack')}</h1>
-        <p className="text-navy/60 mb-8">{t('auth.loginSubtitle')}</p>
+        <p className="text-navy/65 mb-8">{t('auth.loginSubtitle')}</p>
 
         {notice && !error && (
           <div className="bg-brand-teal/10 text-brand-teal border-2 border-brand-teal/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{notice}</div>
@@ -87,22 +87,22 @@ function LoginForm() {
 
         <div className="flex items-center gap-3 mb-6">
           <div className="flex-1 h-px bg-navy/10"></div>
-          <span className="text-navy/40 text-sm font-medium">{t('auth.or')}</span>
+          <span className="text-navy/65 text-sm font-medium">{t('auth.or')}</span>
           <div className="flex-1 h-px bg-navy/10"></div>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-navy mb-1">{t('auth.email')}</label>
-            <input name="email" type="email" onChange={handleChange}
+            <label htmlFor="login-email" className="block text-sm font-bold text-navy mb-1">{t('auth.email')}</label>
+            <input id="login-email" name="email" type="email" onChange={handleChange}
               className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" placeholder="maria@email.com"/>
           </div>
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-bold text-navy">{t('auth.password')}</label>
+              <label htmlFor="login-password" className="block text-sm font-bold text-navy">{t('auth.password')}</label>
               <a href="/auth/forgot-password" className="text-xs text-brand-red font-bold hover:underline">{t('auth.forgotPassword')}</a>
             </div>
-            <input name="password" type="password" onChange={handleChange}
+            <input id="login-password" name="password" type="password" onChange={handleChange}
               className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors"/>
           </div>
           <button onClick={handleSubmit} disabled={loading}
@@ -110,7 +110,7 @@ function LoginForm() {
             {loading ? t('auth.loggingIn') : t('auth.login')}
           </button>
         </div>
-        <p className="text-center text-navy/60 text-sm mt-6">
+        <p className="text-center text-navy/65 text-sm mt-6">
           {t('auth.noAccountYet')} <a href="/auth/register" className="text-brand-red font-bold hover:underline">{t('common.signUpFree')}</a>
         </p>
       </div>
@@ -121,7 +121,7 @@ function LoginForm() {
 export default function Login() {
   const { t } = useLanguage()
   return (
-    <Suspense fallback={<div className="min-h-screen bg-cream flex items-center justify-center text-navy/40">{t('common.loading')}</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-cream flex items-center justify-center text-navy/65">{t('common.loading')}</div>}>
       <LoginForm />
     </Suspense>
   )

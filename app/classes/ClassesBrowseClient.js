@@ -184,7 +184,7 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
             ['requests', t('requests.tabRequests')],
             ['assignments', t('assignments.tab')]].map(([key, label]) => (
             <button key={key} onClick={() => setTab(key)}
-              className={`px-4 md:px-5 py-2 rounded-full text-sm font-bold transition-colors ${tab === key ? 'bg-navy text-white' : 'text-navy/60 hover:text-navy'}`}>
+              className={`px-4 md:px-5 py-2 rounded-full text-sm font-bold transition-colors ${tab === key ? 'bg-navy text-white' : 'text-navy/65 hover:text-navy'}`}>
               {label}
             </button>
           ))}
@@ -218,7 +218,7 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
           <input value={search} onChange={e => setSearch(e.target.value)}
             placeholder={t('classes.searchPlaceholder')}
             className="flex-1 min-w-[200px] border-2 border-navy/20 rounded-full px-4 py-2 text-sm focus:border-brand-red focus:outline-none transition-colors"/>
-          <select value={teacherFilter} onChange={e => setTeacherFilter(e.target.value)}
+          <select aria-label={t('classes.filterByTeacher')} value={teacherFilter} onChange={e => setTeacherFilter(e.target.value)}
             className="border-2 border-navy/20 rounded-full px-4 py-2 text-sm text-navy focus:border-brand-red focus:outline-none transition-colors">
             <option value="all">{t('classes.allTeachers')}</option>
             {teacherOptions.map(tch => (
@@ -227,7 +227,7 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
           </select>
         </div>
 
-        {loading && classes.length === 0 && <p className="text-navy/40">{t('classes.loadingClasses')}</p>}
+        {loading && classes.length === 0 && <p className="text-navy/65">{t('classes.loadingClasses')}</p>}
 
         <div className="space-y-4">
           {classes.map(cls => (
@@ -237,7 +237,7 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lg">{LANGS[cls.language_code]?.flag}</span>
                     <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{levelLabel(cls.language_code, cls.level)}</span>
-                    <span className="bg-navy/5 text-navy/60 px-2 py-0.5 rounded-full text-xs font-medium">{cls.duration_minutes} {t('classes.min')}</span>
+                    <span className="bg-navy/5 text-navy/65 px-2 py-0.5 rounded-full text-xs font-medium">{cls.duration_minutes} {t('classes.min')}</span>
                   </div>
                   {/* The card's only link to the class for anyone who isn't its
                       teacher — the button on the right is a Join action, and
@@ -247,13 +247,13 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
                   <h3 className="font-display font-bold text-navy text-lg mb-1">
                     <a href={`/classes/${cls.id}`} className="hover:text-brand-red transition-colors">{cls.title}</a>
                   </h3>
-                  {cls.description && <p className="text-navy/60 text-sm mb-2">{cls.description}</p>}
+                  {cls.description && <p className="text-navy/65 text-sm mb-2">{cls.description}</p>}
                   {cls.class_sessions?.[0]?.session_date && (
                     <p className="text-brand-red text-xs font-bold mb-1">
                       🗓️ {mounted ? formatInTimezone(cls.class_sessions[0].session_date, currentUser?.timezone, currentUser?.time_format) : utcLabel(cls.class_sessions[0].session_date)}
                     </p>
                   )}
-                  <p className="text-navy/40 text-xs">
+                  <p className="text-navy/65 text-xs">
                     {cls.topic} · {t('classes.maxStudents', { n: cls.max_students })}
                     {cls.teacher && (
                       <>
@@ -302,7 +302,7 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
                   ? t('classes.emptyFilteredTitle', { what: emptyLabel })
                   : t('classes.emptyTitle')}
               </p>
-              <p className="text-navy/60 text-sm mb-5 max-w-md mx-auto">{t('classes.emptyBody')}</p>
+              <p className="text-navy/65 text-sm mb-5 max-w-md mx-auto">{t('classes.emptyBody')}</p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <button onClick={() => setTab('requests')}
                   className="bg-brand-red text-white px-5 py-2.5 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">

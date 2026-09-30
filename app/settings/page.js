@@ -320,7 +320,7 @@ export default function SettingsPage() {
   }
 
   if (!user) return (
-    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/40 font-medium">{t('common.loading')}</div>
+    <div className="min-h-screen bg-cream flex items-center justify-center text-navy/65 font-medium">{t('common.loading')}</div>
   )
 
   return (
@@ -332,7 +332,7 @@ export default function SettingsPage() {
             to change it — this is exactly where someone notices they are signed
             in as the wrong one. Confirms first, because switching is a logout
             and an accidental click would otherwise end the session. */}
-        <p className="text-navy/50 text-sm mb-6">
+        <p className="text-navy/65 text-sm mb-6">
           {t('settings.signedInAs', { email: user.email })}
           {' · '}
           <button type="button"
@@ -355,7 +355,7 @@ export default function SettingsPage() {
               className={`px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap border-2 transition-colors ${
                 tab === tb.key
                   ? tb.key === 'danger' ? 'bg-brand-red text-white border-navy' : 'bg-navy text-white border-navy'
-                  : 'bg-white text-navy/60 border-navy/20 hover:border-navy hover:text-navy'
+                  : 'bg-white text-navy/65 border-navy/20 hover:border-navy hover:text-navy'
               }`}>
               {t(tb.label)}
             </button>
@@ -384,7 +384,7 @@ export default function SettingsPage() {
 
           {prefs.timezone_source === 'manual' ? (
             <div className="flex items-center justify-between gap-3 mt-2">
-              <p className="text-navy/50 text-xs">{t('settings.timezoneManualNote')}</p>
+              <p className="text-navy/65 text-xs">{t('settings.timezoneManualNote')}</p>
               <button type="button"
                 onClick={() => setPrefs(p => ({ ...p, timezone: detectTimezone() || p.timezone, timezone_source: 'auto' }))}
                 className="text-brand-red text-xs font-bold hover:underline whitespace-nowrap">
@@ -392,7 +392,7 @@ export default function SettingsPage() {
               </button>
             </div>
           ) : (
-            <p className="text-navy/50 text-xs mt-2">{t('settings.timezoneAutoNote')}</p>
+            <p className="text-navy/65 text-xs mt-2">{t('settings.timezoneAutoNote')}</p>
           )}
 
           <label className="block text-sm font-bold text-navy mb-1.5 mt-5">{t('settings.timeFormatLabel')}</label>
@@ -409,7 +409,7 @@ export default function SettingsPage() {
               className="w-4 h-4 accent-brand-red"/>
             <span className="text-sm font-bold text-navy">{t('settings.lowCreditNudgeLabel')}</span>
           </label>
-          <p className="text-navy/50 text-xs mt-1">{t('settings.lowCreditNudgeNote')}</p>
+          <p className="text-navy/65 text-xs mt-1">{t('settings.lowCreditNudgeNote')}</p>
 
           <button onClick={savePrefs} disabled={savingPrefs}
             className="w-full mt-5 bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
@@ -422,7 +422,7 @@ export default function SettingsPage() {
         {tab === 'teaching' && (
         <div className={card}>
           <h2 className="font-display font-bold text-navy mb-1">{t('settings.teachingDefaults')}</h2>
-          <p className="text-navy/50 text-xs mb-4">{t('settings.teachingDefaultsNote')}</p>
+          <p className="text-navy/65 text-xs mb-4">{t('settings.teachingDefaultsNote')}</p>
 
           {prefsMessage && (
             <div className={`px-4 py-3 rounded-xl mb-4 text-sm font-medium border-2 ${prefsOk
@@ -455,7 +455,7 @@ export default function SettingsPage() {
         {tab === 'password' && (
         <div className={card}>
           <h2 className="font-display font-bold text-navy mb-1">{t('settings.changePassword')}</h2>
-          <p className="text-navy/50 text-xs mb-4">{t('settings.changePasswordNote')}</p>
+          <p className="text-navy/65 text-xs mb-4">{t('settings.changePasswordNote')}</p>
 
           {pwMessage && (
             <div className={`px-4 py-3 rounded-xl mb-4 text-sm font-medium border-2 ${pwOk
@@ -483,7 +483,7 @@ export default function SettingsPage() {
         {tab === 'data' && (
         <div className={card}>
           <h2 className="font-display font-bold text-navy mb-1">{t('settings.yourData')}</h2>
-          <p className="text-navy/50 text-xs mb-4">{t('settings.exportNote')}</p>
+          <p className="text-navy/65 text-xs mb-4">{t('settings.exportNote')}</p>
           <button onClick={exportData} disabled={exporting}
             className="w-full bg-white text-navy py-3 rounded-full font-bold border-2 border-navy hover:bg-cream disabled:opacity-50 transition-colors">
             {exporting ? t('settings.exporting') : t('settings.exportData')}
@@ -495,7 +495,7 @@ export default function SettingsPage() {
         {tab === 'danger' && (
         <div className="bg-white rounded-2xl p-6 border-2 border-brand-red">
           <h2 className="font-display font-bold text-brand-red mb-1">{t('settings.deleteAccount')}</h2>
-          <p className="text-navy/60 text-xs mb-4 whitespace-pre-line">{t('settings.deleteExplain')}</p>
+          <p className="text-navy/65 text-xs mb-4 whitespace-pre-line">{t('settings.deleteExplain')}</p>
 
           {delMessage && (
             <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 px-4 py-3 rounded-xl mb-4 text-sm font-medium">
@@ -523,7 +523,7 @@ export default function SettingsPage() {
           <div className="space-y-6">
             <div className="bg-white border-2 border-navy/15 rounded-xl p-5">
               <p className="font-display font-bold text-navy mb-1">{t('university.title')}</p>
-              <p className="text-navy/60 text-sm mb-4">{t('university.subtitle')}</p>
+              <p className="text-navy/65 text-sm mb-4">{t('university.subtitle')}</p>
 
               {uniState?.verifiedAt ? (
                 <p className="text-brand-teal font-bold text-sm">
@@ -546,7 +546,7 @@ export default function SettingsPage() {
                           the mail may not arrive. A dead end here would leave
                           the member with no way forward but a page reload. */}
                       <button onClick={() => { setUniSent(false); setUniMessage('') }}
-                        className="text-navy/60 text-sm font-bold hover:text-navy underline">
+                        className="text-navy/65 text-sm font-bold hover:text-navy underline">
                         {t('university.resend')}
                       </button>
                     </div>
@@ -559,16 +559,16 @@ export default function SettingsPage() {
                   {/* Naming the supported universities up front saves someone
                       typing an address that can never work. */}
                   {uniDomains.length > 0 && (
-                    <p className="text-navy/40 text-xs mt-3">{uniDomains.map(d => d.name).join(' · ')}</p>
+                    <p className="text-navy/65 text-xs mt-3">{uniDomains.map(d => d.name).join(' · ')}</p>
                   )}
                 </>
               )}
-              {uniMessage && <p className="text-navy/60 text-sm mt-3">{uniMessage}</p>}
+              {uniMessage && <p className="text-navy/65 text-sm mt-3">{uniMessage}</p>}
             </div>
 
             <div className="bg-white border-2 border-navy/15 rounded-xl p-5">
               <p className="font-display font-bold text-navy mb-1">{t('university.recordTitle')}</p>
-              <p className="text-navy/60 text-sm mb-4">{t('university.recordSubtitle')}</p>
+              <p className="text-navy/65 text-sm mb-4">{t('university.recordSubtitle')}</p>
 
               {recordToken ? (
                 <>
@@ -593,7 +593,7 @@ export default function SettingsPage() {
                       {t('university.recordRevoke')}
                     </button>
                   </div>
-                  <p className="text-navy/40 text-xs mt-3">{t('university.recordRotateNote')}</p>
+                  <p className="text-navy/65 text-xs mt-3">{t('university.recordRotateNote')}</p>
                 </>
               ) : (
                 <button onClick={createRecordLink} disabled={recordBusy}

@@ -67,13 +67,13 @@ export default function AssignmentForm({ onPosted }) {
       <textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
         rows={8} className="w-full border-2 border-navy/15 rounded-xl px-4 py-2.5" />
 
-      <p className={`text-xs mt-1 mb-4 font-bold ${tooLong ? 'text-brand-red' : 'text-navy/50'}`}>
+      <p className={`text-xs mt-1 mb-4 font-bold ${tooLong ? 'text-brand-red' : 'text-navy/65'}`}>
         {tooLong
           ? t('assignments.tooLong', { max: MAX_WORDS })
           : t('assignments.wordCount', { n: words, max: MAX_WORDS })}
       </p>
 
-      <p className="text-navy/60 text-xs mb-4">{t('assignments.costNote')}</p>
+      <p className="text-navy/65 text-xs mb-4">{t('assignments.costNote')}</p>
 
       {error && <p className="text-brand-red text-sm mb-3 font-bold">{error}</p>}
 

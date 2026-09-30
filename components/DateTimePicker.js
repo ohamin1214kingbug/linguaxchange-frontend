@@ -67,7 +67,7 @@ export default function DateTimePicker({ value, onChange, t }) {
     <div className="relative">
       <button type="button" onClick={() => setOpen(o => !o)}
         className={`w-full text-left border-2 rounded-xl px-4 py-2.5 transition-colors ${
-          parsedValue ? 'border-navy/20 text-navy' : 'border-navy/20 text-navy/40'} hover:border-navy/40`}>
+          parsedValue ? 'border-navy/20 text-navy' : 'border-navy/20 text-navy/65'} hover:border-navy/40`}>
         {triggerLabel}
       </button>
 
@@ -83,7 +83,7 @@ export default function DateTimePicker({ value, onChange, t }) {
                 <button type="button" onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1))}
                   className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-cream text-navy font-bold">›</button>
               </div>
-              <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold text-navy/40 mb-1">
+              <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold text-navy/65 mb-1">
                 {weekdayLabels.map((w, i) => <div key={i}>{w}</div>)}
               </div>
               <div className="grid grid-cols-7 gap-1">
@@ -108,9 +108,9 @@ export default function DateTimePicker({ value, onChange, t }) {
 
             <div className="border-t sm:border-t-0 sm:border-l border-navy/10 p-4 w-48 max-h-80 overflow-y-auto">
               {!selectedDate ? (
-                <p className="text-sm text-navy/40 text-center mt-4">{t('classes.pickDateFirst')}</p>
+                <p className="text-sm text-navy/65 text-center mt-4">{t('classes.pickDateFirst')}</p>
               ) : timeSlots.length === 0 ? (
-                <p className="text-sm text-navy/40 text-center mt-4">{t('classes.noTimesToday')}</p>
+                <p className="text-sm text-navy/65 text-center mt-4">{t('classes.noTimesToday')}</p>
               ) : (
                 <div className="space-y-1">
                   {timeSlots.map((slot, i) => {
