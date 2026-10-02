@@ -5,6 +5,7 @@ import { useLanguage } from '../lib/i18n/LanguageContext'
 import DateTimePicker from './DateTimePicker'
 import { formatInTimezone, asUtcDate } from '../lib/timezone'
 import { CLASS_SIZE_OPTIONS, DEFAULT_CLASS_SIZE } from '../lib/classSize'
+import { rememberReturnPath } from '../lib/auth'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -52,7 +53,13 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
   const authed = (path, options) => {
     const token = localStorage.getItem('token')
     if (!token) {
-      window.location.href = '/auth/login'
+      // Come back to this board, filtered as it is now, once signed up. A
+      // newcomer from a study guide needs to register, not log in.
+      const back = new URLSearchParams({ tab: 'requests' })
+      if (language && language !== 'all') back.set('language', language)
+      if (level && level !== 'all') back.set('level', level)
+      rememberReturnPath(`/classes?${back}`)
+      window.location.href = '/auth/register'
       return null
     }
     return fetch(`${API}${path}`, {
@@ -130,7 +137,17 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
           <p className="text-navy/65 text-sm">{t('requests.subtitle')}</p>
           <p className="text-navy/65 text-xs mt-1">⏳ {t('requests.ttlNote')}</p>
         </div>
-        <button onClick={() => { setShowForm(o => !o); setPosted(false); setError('') }}
+        <button onClick={() => {
+          // Start the form on what the board is filtered to — a reader arriving
+          // from the German A1 guide should not have to pick German A1 again.
+          // Never overwrites a choice already made.
+          if (!showForm) setForm(f => ({
+            ...f,
+            language_code: f.language_code || (language && language !== 'all' ? language : ''),
+            level: f.level || (level && level !== 'all' ? level : ''),
+          }))
+          setShowForm(o => !o); setPosted(false); setError('')
+        }}
           className="bg-navy text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-navy/90 whitespace-nowrap transition-colors">
           {showForm ? t('requests.cancel') : `+ ${t('requests.post')}`}
         </button>

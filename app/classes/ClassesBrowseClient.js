@@ -8,6 +8,7 @@ import AssignmentBoard from '../../components/AssignmentBoard'
 import { formatInTimezone, utcLabel } from '../../lib/timezone'
 import { hasUpcomingSession } from '../../lib/classSchedule'
 import { fetchJoinedClassIds } from '../../lib/enrollments'
+import { rememberReturnPath } from '../../lib/auth'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -16,12 +17,12 @@ const API = 'https://linguaxchange-backend-production.up.railway.app'
 // the listings into the server-rendered HTML — a client component is still
 // prerendered on the server, but the useEffect that fetches them never runs
 // during that pass, so this page used to ship an empty list to crawlers.
-export default function ClassesBrowseClient({ initialClasses = [], serverFetched = false, initialLanguage = 'all', initialLevel = 'all' }) {
+export default function ClassesBrowseClient({ initialClasses = [], serverFetched = false, initialLanguage = 'all', initialLevel = 'all', initialTab = 'classes' }) {
   const { t } = useLanguage()
   const [classes, setClasses] = useState(initialClasses)
   const [teacherOptions, setTeacherOptions] = useState([])
   const [loading, setLoading] = useState(!serverFetched)
-  const [tab, setTab] = useState('classes')
+  const [tab, setTab] = useState(initialTab)
   const [filter, setFilter] = useState(initialLanguage)
   const [levelFilter, setLevelFilter] = useState(initialLevel)
   const [teacherFilter, setTeacherFilter] = useState('all')
@@ -101,7 +102,13 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
     const user = JSON.parse(localStorage.getItem('user') || 'null')
     const token = localStorage.getItem('token')
     if (!user || !token) {
-      window.location.href = '/auth/login'
+      // Back to these same filtered classes after signing up.
+      const back = new URLSearchParams()
+      if (filter !== 'all') back.set('language', filter)
+      if (levelFilter !== 'all') back.set('level', levelFilter)
+      const query = back.toString()
+      rememberReturnPath(`/classes${query ? `?${query}` : ''}`)
+      window.location.href = '/auth/register'
       return
     }
     if (!window.confirm(t('classes.confirmJoin'))) return

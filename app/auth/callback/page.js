@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '../../../lib/supabase'
 import { syncTimezone } from '../../../lib/timezone'
+import { takeReturnPath } from '../../../lib/auth'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -61,7 +62,7 @@ export default function Callback() {
           if (data.isNewUser && !data.user.phone_verified) {
             router.replace('/auth/verify-phone')
           } else {
-            router.replace('/dashboard')
+            router.replace(takeReturnPath())
           }
         } else {
           router.replace('/auth/register')
