@@ -34,7 +34,7 @@ function Stars({ rating }) {
   return (
     <span className="text-lg leading-none">
       {[1,2,3,4,5].map(i => (
-        <span key={i} className={rating >= i ? 'text-brand-yellow' : 'text-navy/20'}>★</span>
+        <span key={i} className={rating >= i ? 'text-brand-yellow' : 'text-navy/50'}>★</span>
       ))}
     </span>
   )
@@ -93,7 +93,7 @@ function RatingForm({ classSessionId, existingReview, onReviewed }) {
       <div className="flex gap-1 mb-3">
         {[1,2,3,4,5].map(star => (
           <button key={star} type="button" onClick={() => setRating(star)}
-            className={`text-2xl transition-colors ${rating >= star ? 'text-brand-yellow' : 'text-navy/20'}`}>
+            className={`text-2xl transition-colors ${rating >= star ? 'text-brand-yellow' : 'text-navy/50'}`}>
             ★
           </button>
         ))}

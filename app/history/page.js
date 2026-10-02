@@ -84,13 +84,13 @@ function SkillRow({ skill, value, onChange, readOnly, t }) {
   const style = SCORE_STYLE[value]
   return (
     <div className="flex items-center gap-3 py-2 border-b border-navy/5 last:border-0">
-      <SkillIcon name={skill} className={style ? style.text : 'text-navy/25'} />
+      <SkillIcon name={skill} className={style ? style.text : 'text-navy/50'} />
       <div className="min-w-0 flex-1">
         <p className="text-navy text-xs font-bold leading-tight">{t(`feedback.${SKILL_LABEL[skill]}`)}</p>
         <p className="text-navy/65 text-[11px] leading-tight">{t(`feedback.${SKILL_LABEL[skill]}Hint`)}</p>
       </div>
       <Dots value={value} onChange={onChange} readOnly={readOnly} />
-      <span className={`w-16 text-right text-[10px] font-extrabold uppercase leading-tight ${style ? style.text : 'text-navy/20'}`}>
+      <span className={`w-16 text-right text-[10px] font-extrabold uppercase leading-tight ${style ? style.text : 'text-navy/65'}`}>
         {style ? t(`feedback.${style.key}`) : '—'}
       </span>
     </div>
@@ -256,7 +256,7 @@ function RateStudents({ sessionId, t }) {
               rows={2}
               className={`w-full border-2 rounded-xl px-3 py-2 text-sm resize-none focus:outline-none transition-colors ${
                 locked ? 'border-navy/10 bg-navy/5 text-navy/65' : 'border-navy/20 focus:border-brand-red'}`}/>
-            {!locked && <p className="text-navy/30 text-[10px] mt-1">{comment.length}/300</p>}
+            {!locked && <p className="text-navy/65 text-[10px] mt-1">{comment.length}/300</p>}
 
             {locked ? (
               <p className="text-navy/65 text-[11px] font-medium mt-2">{t('feedback.alreadySubmitted')}</p>

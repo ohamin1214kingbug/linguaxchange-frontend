@@ -300,7 +300,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
         {!loading && requests.length === 0 && (
           <div className="text-center py-12">
             <p className="text-navy/65">{t('requests.empty')}</p>
-            <p className="text-navy/30 text-sm mt-1">{t('requests.emptyHint')}</p>
+            <p className="text-navy/65 text-sm mt-1">{t('requests.emptyHint')}</p>
           </div>
         )}
       </div>
