@@ -8,6 +8,7 @@ import { syncTimezone } from '../../../lib/timezone'
 import PhoneNumberField, { isValidPhoneNumber } from '../../../components/PhoneNumberField'
 import { countryOptions } from '../../../lib/countries'
 import { languageOptions, LEVELS, levelLabel } from '../../../lib/languages'
+import { takeReturnPath } from '../../../lib/auth'
 
 
 const TOTAL_STEPS = 5
@@ -245,7 +246,7 @@ export default function Register() {
         localStorage.setItem('token', data.token)
         localStorage.setItem('user', JSON.stringify(data.user))
         syncTimezone(data.user.id, data.token)
-        router.push('/dashboard')
+        router.push(takeReturnPath())
       }
     } catch (err) {
       setError('common.connectionError')

@@ -5,6 +5,7 @@ import { supabase } from '../../../lib/supabase'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../../components/LanguageSwitcher'
 import { syncTimezone } from '../../../lib/timezone'
+import { takeReturnPath } from '../../../lib/auth'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -37,7 +38,7 @@ function LoginForm() {
         localStorage.setItem('token', data.token)
         localStorage.setItem('user', JSON.stringify(data.user))
         syncTimezone(data.user.id, data.token)
-        router.push('/dashboard')
+        router.push(takeReturnPath())
       }
     } catch (err) {
       setError('common.connectionError')

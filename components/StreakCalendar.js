@@ -114,7 +114,7 @@ export default function StreakCalendar({ userId, streakCount }) {
                     <div className={`h-6 w-6 rounded-full flex items-center justify-center text-[11px] ${
                       active ? 'bg-brand-red text-white font-bold'
                       : isToday ? 'border-2 border-brand-red/50 text-navy font-bold'
-                      : 'bg-navy/5 text-navy/30'}`}>
+                      : 'bg-navy/5 text-navy/65'}`}>
                       {active ? '🔥' : date.getDate()}
                     </div>
                   </div>

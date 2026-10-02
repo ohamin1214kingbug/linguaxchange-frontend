@@ -647,7 +647,7 @@ export default function Admin() {
                   // Pending opens by default because it is the queue that needs
                   // a decision.
                   <details key={label} open className="mt-4">
-                    <summary className="font-display font-bold text-navy/65 text-sm mb-2 cursor-pointer select-none hover:text-navy marker:text-navy/30">{label} · {group.length}</summary>
+                    <summary className="font-display font-bold text-navy/65 text-sm mb-2 cursor-pointer select-none hover:text-navy marker:text-navy/50">{label} · {group.length}</summary>
                     {group.map(cls => (
                       <div key={cls.id} className="bg-white rounded-2xl p-4 border-2 border-brand-yellow mb-2">
                         <div className="flex items-start justify-between gap-3">
@@ -684,7 +684,7 @@ export default function Admin() {
                   // to-do list, and eight of them pushed the pending queue —
                   // the part that needs acting on — off the screen.
                   <details key={label} className="mt-4">
-                    <summary className="font-display font-bold text-navy/65 text-sm mb-2 cursor-pointer select-none hover:text-navy marker:text-navy/30">{label} · {group.length}</summary>
+                    <summary className="font-display font-bold text-navy/65 text-sm mb-2 cursor-pointer select-none hover:text-navy marker:text-navy/50">{label} · {group.length}</summary>
                     {group.map(cls => (
                       <div key={cls.id} className="bg-white rounded-2xl p-4 border-2 border-brand-teal mb-2">
                         <div className="flex items-start justify-between gap-3">

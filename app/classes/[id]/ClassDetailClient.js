@@ -202,7 +202,7 @@ export default function ClassDetailClient({ initialClass = null }) {
                   .sort((a, b) => new Date(a.session_date) - new Date(b.session_date))
                   .map(s => (
                     <li key={s.id} className="text-sm flex items-center gap-2">
-                      <span className={s.status === 'cancelled' ? 'text-navy/30 line-through' : 'text-brand-red font-bold'}>
+                      <span className={s.status === 'cancelled' ? 'text-navy/65 line-through' : 'text-brand-red font-bold'}>
                         🗓️ {mounted ? formatInTimezone(s.session_date, currentUser?.timezone, currentUser?.time_format) : utcLabel(s.session_date)}
                       </span>
                       {s.status === 'cancelled' && <span className="text-navy/65 text-xs">{t('classDetail.cancelled')}</span>}

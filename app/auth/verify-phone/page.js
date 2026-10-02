@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../../components/LanguageSwitcher'
 import PhoneNumberField, { isValidPhoneNumber } from '../../../components/PhoneNumberField'
+import { takeReturnPath } from '../../../lib/auth'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -91,7 +92,7 @@ export default function VerifyPhone() {
       } else {
         const stored = JSON.parse(localStorage.getItem('user') || '{}')
         localStorage.setItem('user', JSON.stringify({ ...stored, ...data.user }))
-        router.push('/dashboard')
+        router.push(takeReturnPath())
       }
     } catch (err) {
       setError('common.connectionError')
