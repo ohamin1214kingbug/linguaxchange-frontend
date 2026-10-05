@@ -6,6 +6,7 @@ import DateTimePicker from './DateTimePicker'
 import { formatInTimezone, asUtcDate } from '../lib/timezone'
 import { CLASS_SIZE_OPTIONS, DEFAULT_CLASS_SIZE } from '../lib/classSize'
 import { rememberReturnPath } from '../lib/auth'
+import { saveRequestDraft, takeRequestDraft } from '../lib/requestDraft'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 
@@ -31,6 +32,15 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
     language_code: '', level: '', topic: '', details: '',
     max_students: DEFAULT_CLASS_SIZE, preferred_time: '', time_flexible: true
   })
+
+  // Back from signing up with a request they had already typed: reopen it.
+  useEffect(() => {
+    const draft = takeRequestDraft()
+    if (draft) {
+      setForm(f => ({ ...f, ...draft }))
+      setShowForm(true)
+    }
+  }, [])
 
   const load = () => {
     const params = new URLSearchParams()
@@ -59,6 +69,8 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
       if (language && language !== 'all') back.set('language', language)
       if (level && level !== 'all') back.set('level', level)
       rememberReturnPath(`/classes?${back}`)
+      // And keep what they typed, so the form comes back filled in.
+      if (showForm) saveRequestDraft(form)
       window.location.href = '/auth/register'
       return null
     }
