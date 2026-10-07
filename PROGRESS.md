@@ -1,88 +1,85 @@
-# LinguaXchange — Progress Notes
+# GongbuLeng — Progress Notes
 
-_Last updated: 2026-07-24. Written so a fresh Claude session can pick up this project with zero prior context._
+_Last updated: 2026-10-07. Written so a fresh Claude session can pick up this project with zero prior context. Earlier name: LinguaXchange (renamed 2026-09-22)._
 
 ## 1. Project overview
 
-LinguaXchange is a language-exchange platform where students book/join live video classes with teachers in five languages: English, Korean, Spanish, German, Portuguese. It's a two-repo project: a Next.js frontend and an Express/Supabase backend, both solo-developer projects owned by the user (ohamin1214kingbug on GitHub). Early phases focused on fixing real security/logic bugs, adding email + password reset, and adding tests. The project then went through a full visual redesign (cream/navy/red "sticker" style matching reference screenshots), and then a **full i18n (translation) rollout** with a language-switcher bar — this is now **complete** across all user-facing pages.
+**GongbuLeng** (공부 "study" + *leng* from *lenguaje*; always written with a capital L) is a language-exchange platform: members teach the language they know and learn the ones they don't, in small live video classes paid for with credits instead of money. Classes cover seven languages — Korean, Spanish, German, English, Portuguese, French, Italian — and the UI is translated into five (EN, KO, ES, DE, PT). Free study guides (A1–B2, all seven languages) bring in visitors from search.
+
+Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid student): a Next.js frontend and an Express/Supabase backend.
 
 ## 2. What's been built
 
-**Backend** (`/Users/kinghamin/linguaxchange-backend`):
-- JWT auth (`middleware/auth.js`: `requireAuth`, `requireAdmin` via `ADMIN_EMAILS` env allowlist), applied to all protected routes in `routes/*.js`
-- Class scheduling fixed: session created at class creation, enrollment joins existing session (not a new one)
-- Recurring classes generate real multiple sessions (`utils/sessionDates.js`)
-- Password reset flow: DB migration (`migrations/add_password_reset_columns.sql`), backend endpoints in `routes/auth.js`, frontend pages
-- Real transactional email via Resend (`utils/mailer.js`), sending from verified domain `notifications@linguaxchange.com` (moved off Gmail SMTP because Railway blocks outbound SMTP)
-- Embedded video classroom via Jitsi Meet (`external_api.js`, HMAC-based unguessable room names) — replaced an earlier Zoom Video SDK attempt
-- Jest test suite: 4 suites / 28 tests covering pure-function logic (`utils/sessionDates.js`, `utils/pickSession.js`, `utils/roomName.js`, auth/validators)
+**Backend** (`/Users/kinghamin/linguaxchange-backend`, Express 5):
+- Custom JWT auth (`middleware/auth.js`): `requireAuth` checks the token, suspension and a per-user revocation cutoff (`token_valid_after`), and **fails closed** if the user row can't be read. `requireAdmin` uses the `ADMIN_EMAILS` allowlist. Passwords use bcrypt; Supabase Auth is used only for Google sign-in.
+- Classes (one-off and recurring sessions), enrollments with an atomic capacity trigger, class requests (students ask for a class; others can +1), writing feedback (assignments), reviews, reports, suspensions, account deletion with anonymisation, data export, participation records shared by revocable token, university email verification, badges, streaks, in-app notifications, reminder emails.
+- Credits: balances change only through the `spend_credit` / `add_credit` SQL functions (atomic); every change is recorded in `credit_transactions` through `utils/creditLedger.js`, which logs `[CREDIT_LEDGER]` if a history row fails to save.
+- Video: Jitsi as a Service (JaaS, `8x8.vc`) with signed room JWTs (`JAAS_APP_ID`, `JAAS_KID`, `JAAS_PRIVATE_KEY`).
+- Email: Resend, sending from `notifications@gongbuleng.com`.
+- Cron endpoints (`routes/cron.js`) for reminders, refunds of expired requests, notifications and health checks.
+- One-off scripts in `scripts/`: `testFixtures.js` (throwaway `.invalid` accounts), `announceRename.js` (the rename email; already sent to all 5 approved members — its sent-log makes re-runs skip them).
+- Tests: Jest, **50 suites / 383 tests** (`npx jest`).
 
-**Frontend** (`/Users/kinghamin/linguaxchange-frontend`):
-- Full visual redesign: cream/navy/red palette, Baloo 2 (display) + Inter (body) fonts, thick-border "sticker" card style — applied to home, auth pages, dashboard, classes (browse + create), profile, teacher profile, admin, classroom nav
-- i18n infrastructure (see Architecture below) — `lib/i18n/translations.js`, `lib/i18n/LanguageContext.js`, `components/LanguageSwitcher.js`
-- Translated pages (i18n rollout complete): home (`app/page.js`), all auth pages (`app/auth/login`, `app/auth/register`, `app/auth/forgot-password`, `app/auth/reset-password`), dashboard (`app/dashboard/page.js`), browse classes (`app/classes/page.js`), create-class form (`app/classes/create/page.js`), profile (`app/profile/page.js`), teacher profile (`app/teachers/[id]/page.js`). Intentionally left in English: `app/admin/page.js` (internal-only tool) and most of `app/classroom/[sessionId]/page.js` (third-party Jitsi UI chrome).
+**Frontend** (`/Users/kinghamin/linguaxchange-frontend`, Next.js App Router):
+- Cream/navy/red "sticker" design, Baloo 2 + Inter fonts.
+- Pages: home, browse classes (with a class-request board and writing-feedback tab), class detail, create class, classroom (JaaS), dashboard, history, people, saved teachers, profile/settings, teacher profiles, participation record, study guides, legal pages, admin, all auth flows.
+- Study guides: 28 PDFs (7 languages × A1–B2). Source markdown in `docs/resources/*.md`, built by `scripts/buildGuides.mjs` (headless Chrome, Noto Sans KR), uploaded through the admin page, served at `/guides/:file` via a rewrite to the Supabase storage bucket `resources`. English guides (`en-*`) are written in Spanish for Spanish speakers; the rest in English. Portuguese follows Brazilian usage.
+- Sign-up funnel: a logged-out visitor who requests or joins a class is sent to register and returned afterwards to the same filtered board (`rememberReturnPath` / `takeReturnPath` in `lib/auth.js`), with any half-typed request restored (`lib/requestDraft.js`).
+- Tests: Node's built-in runner, **18 tests** (`npm test`) — translation parity across the five UI languages, return-path safety, request drafts.
 
 ## 3. Tech stack & architecture
 
-- **Frontend**: Next.js 16.2.10 (App Router, Turbopack), React 19, Tailwind CSS v4 (CSS-based `@theme inline` config in `app/globals.css`, no `tailwind.config.js`). Deployed to **Vercel**.
-- **Backend**: Express 5, `@supabase/supabase-js` (service-role key) as the DB client, `jsonwebtoken` + `bcrypt` for custom auth (no Supabase Auth). Deployed to **Railway** at `https://linguaxchange-backend-production.up.railway.app`. Frontend calls this URL directly (hardcoded `const API = ...` at the top of most page files — no env var indirection currently).
-- **Email**: Resend API (HTTPS-based; chosen specifically because Railway blocks outbound SMTP).
-- **Testing**: Jest, backend only. Pattern: extract pure functions out of route handlers into `utils/*.js` so they're unit-testable without hitting the DB.
-- **i18n**: Deliberately dependency-free (no `next-intl`/`react-i18next`) — a small custom Context-based system, appropriate for the app's size and the project's "no unnecessary dependencies" convention.
-  - `lib/i18n/translations.js` — `UI_LANGUAGES` array (code/flag/label) + `translations` object keyed by `EN`/`KO`/`ES`/`DE`/`PT`, each with namespaces: `common`, `home`, `auth`, `dashboard`, `classes`, `profile`, `teacher`. Key counts are verified equal across all 5 languages via an ad hoc node script.
-  - `lib/i18n/LanguageContext.js` — `LanguageProvider` (wraps `{children}` in `app/layout.js`), `useLanguage()` hook exposing `{ language, setLanguage, t }`. `t(key, vars)` does flat dotted lookup (`t('home.title')`), falls back to English if a key/lang is missing, supports `{placeholder}` interpolation via `.replaceAll()`. Language choice persists to `localStorage` under key `site_language`.
-  - `components/LanguageSwitcher.js` — flag dropdown button, click-outside-to-close.
-  - **Established page pattern** for translating a page: add `'use client'`, import `useLanguage` + `LanguageSwitcher`, destructure `t` from `useLanguage()`, replace hardcoded strings with `t('namespace.key')`, drop `<LanguageSwitcher />` into the nav, and localize any hardcoded `LANGS`/`LANGUAGES` label objects via `t('home.langKorean')` etc.
-- **Repo/folder conventions**: `app/<route>/page.js` per page (App Router), shared UI in `components/`, i18n in `lib/i18n/`. No component library — everything hand-rolled with Tailwind utility classes.
+- **Frontend**: Next.js 16.3 (App Router, Turbopack), React 19.3, Tailwind CSS v4 (`@theme inline` in `app/globals.css`). Deployed on **Vercel** at `https://gongbuleng.com`.
+- **Backend**: Express 5, `@supabase/supabase-js` with the service-role key, `jsonwebtoken`, `bcrypt`, `helmet`, `express-rate-limit`. Deployed on **Railway** (project `pretty-perfection`) at `https://linguaxchange-backend-production.up.railway.app` — the host keeps the old name on purpose.
+- **Database**: Supabase Postgres. RLS is enabled with no policies on every table (deny-all for the public key); only the backend's service-role key reads or writes. `EXECUTE` on the SECURITY DEFINER functions is revoked from `anon` and `authenticated`.
+- **i18n**: hand-rolled. `lib/i18n/translations.js` (keys `EN`/`KO`/`ES`/`DE`/`PT`), `lib/i18n/LanguageContext.js` (`useLanguage()` → `t(key, vars)`, falls back to English, then to the key). `tests/translations.test.mjs` fails if the languages drift apart.
+- **SEO**: sitemap (`app/sitemap.js`, revalidates hourly), robots, per-page metadata, `WebSite` structured data naming the site GongbuLeng. Search Console domain property `gongbuleng.com`; sitemap reads "Success"; change of address filed from `linguaxchange.com`.
+- **Security headers** (frontend `next.config.mjs`): `frame-ancestors 'none'`, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`. No `Permissions-Policy` (the classroom iframe needs camera/microphone/screen share) and no full CSP yet.
+- **Conventions**: backend logic that can break is pulled into `utils/*.js` so Jest can test it without a database; route tests drive `router.handle()` with mocked Supabase clients (no supertest).
 
 ## 4. Current state / what's working
 
-- All backend functionality (auth, classes, enrollments, credits, reviews, video/Jitsi, password reset, email) is live and verified working in earlier sessions.
-- Visual redesign is complete and live across all pages.
-- i18n infrastructure is complete and verified: language switching works, persists across reload, falls back to English correctly.
-- **i18n rollout is complete.** All user-facing pages translated and verified: home, all 4 auth pages, dashboard, browse classes, create-class form, profile, teacher profile. `npx next build` passes cleanly (14 routes, no errors); browser-verified end-to-end in Korean and Spanish (language switching, form validation, save/join flows) with no console errors. Committed and pushed (`16d7c5b`).
-- Translation dictionary key counts verified equal across all 5 languages (EN/KO/ES/DE/PT): common 12, home 30, auth 69, dashboard 29, classes 69, profile 27, teacher 8.
-- A pre-existing unrelated CSS bug was fixed opportunistically while working on the home page: a decorative "Hola" badge that overlapped the hero stat badge (moved from `-top-4 left-0` to `-top-16 left-4`).
-- The `message.includes('Successfully')`-style fragile string-matching bug (see Known issues below) has been fixed everywhere it was found: `app/dashboard/page.js`, `app/classes/page.js`, and `app/teachers/[id]/page.js` all now use an explicit `messageOk` boolean state instead.
-- `LanguageSwitcher` is present in the nav of every translated page, including `app/classes/create/page.js`, `app/profile/page.js`, and `app/teachers/[id]/page.js` (added in the same pass — the established page pattern requires it, and it was initially missed, then caught and fixed before commit).
+- Rename to GongbuLeng is complete and live: `linguaxchange.com` 308-redirects to `gongbuleng.com` (paths kept), `www.gongbuleng.com` redirects to the apex, Google sign-in shows "GongbuLeng", email comes from the new domain, guides and PDFs carry the new name.
+- Accessibility: home, classes, guides, a guide page and login score 100 on Lighthouse; brand red is `#da1f33` and secondary text uses `text-navy/65`.
+- 28 guides live; the guides page title and description are built from the guides that exist.
+- 0 open Dependabot alerts in both repos (as of 2026-10-03); dependencies at their latest minor versions.
 
 ## 5. In progress / next steps
 
-Task #31 ("Translate dashboard, classes, profile, teacher profile pages") is **complete**. There is no known in-progress frontend or backend work as of this update. Possible next steps (not started, no priority assigned):
-
-- Address the class-topic i18n limitation described below (would need a topic-code schema change).
-- Any new page/feature work would follow the established page pattern (see Architecture section 3) — add `useLanguage`, translate strings, drop in `<LanguageSwitcher />`, use `messageOk` for any success/error banner.
-
-**Known scoping decision (communicated)**: `app/admin/page.js` and most of `app/classroom/[sessionId]/page.js` are intentionally left in English — admin is an internal-only tool the site owner (English speaker) uses, and the classroom page is mostly third-party Jitsi UI chrome, not ours to translate.
-
-There is also a known, not-yet-solved deeper issue: class `topic` values are stored as free English text in the DB when a class is created (selected from the `TOPICS` list or custom text), so translating the *display* of `cls.topic` on the browse-classes and teacher-profile pages isn't straightforward — it would require storing a topic code instead of raw text and translating on render. Out of scope for now; flagged as a possible future improvement, not a bug to fix.
+- **No public classes yet** — the biggest gap. The funnel from guides to class requests works; teachers need to post classes.
+- Run one real sign-up through the new funnel end to end (logged out → guide → request → register → back on the board). Not yet done; it creates a real account.
+- Two major upgrades deliberately deferred: `dotenv` 18 (backend) and `eslint` 10 (frontend).
+- Lint: 85 errors / 35 warnings in the app's own code, none a runtime bug (React-Compiler-style rules, `<a>` instead of `<Link>`, unescaped apostrophes). Converting the 31 internal `<a>` links to `<Link>` would speed up navigation; the owner chose to skip it for now.
+- Open question: confirm the database stops a student enrolling twice in the same session (a unique constraint on `class_enrollments (user_id, class_session_id)`); needs a duplicate check and SQL run by the owner.
+- 2026-10-30: a scheduled task reminds the owner to clean up the old domain (auto-renew `linguaxchange.com`, remove old Supabase redirect URLs and the old Resend domain). Do **not** remove `linguaxchange.com` from Vercel or Search Console — the redirect and change of address depend on them.
 
 ## 6. Known issues & gotchas
 
-- **`preview_click` (CDP-based) is unreliable with React state** — clicks sometimes don't register with React's event system. Use `preview_eval` with `document.querySelector(...).click()` instead. Critically, **fire only one `.click()` per `preview_eval` call** — batching multiple synchronous clicks in one eval can clobber each other due to React state-closure batching.
-- **English-string-matching for UI logic is a recurring trap** in this codebase (see `messageOk` fix above) — any `message.includes('SomeEnglishWord')` pattern found while translating a page needs the same boolean-state treatment, not just a translated string swap.
-- **Two-repo cwd trap (confirmed, easy to hit)**: this is a two-repo project (frontend + backend) opened together, and a shell's working directory persists across tool calls but does *not* auto-track which repo you meant to be in. It's very easy to run a command intending it for the backend right after a frontend command (or vice versa) without an explicit `cd`, and have it silently execute against the wrong repo — `git status`/`git diff` will just report on whatever repo you're already sitting in, with no error. Always `cd /Users/kinghamin/linguaxchange-frontend` or `cd /Users/kinghamin/linguaxchange-backend` explicitly (don't rely on the previous command's directory) before any git or build command, especially when interleaving checks across both repos.
-- Both repos' `origin` remotes are HTTPS URLs with an embedded GitHub PAT (visible via `git remote -v`) — be careful not to echo `git remote -v` output verbatim into any shared/logged location; treat it as containing a credential.
-- Backend `.env` exists locally (250 bytes) but there's no `.env.example` committed — if a new session needs to know what env vars are required, cross-reference `middleware/auth.js`, `utils/mailer.js`, and the Supabase client init rather than guessing from a template file (none exists).
-- Frontend has **no `.env` / env var indirection** for the backend URL — it's a hardcoded string constant (`const API = 'https://linguaxchange-backend-production.up.railway.app'`) repeated at the top of most `page.js` files. If the Railway URL ever changes, it must be updated in every file individually (no central config).
-- The translation dictionary (`lib/i18n/translations.js`) is very large (~1000+ lines). When editing it, anchor `Edit` calls on unique closing text near the target section rather than trying to match large blocks — this was the working pattern established across the session.
+- **UCM's campus network blocked `gongbuleng.com`** (category `newly-registered-domain`) when checked on 2026-09-30; the domain was registered 2026-09-19. Expected to clear about 32 days after registration if the filter is Palo Alto's — unconfirmed. `linguaxchange.com` is not blocked but redirects into the block.
+- **Two-repo cwd trap**: always `cd` explicitly into the frontend or backend before git or build commands.
+- **Lint picks up `.claude/worktrees/`** (each worktree carries its own `.next` build) unless `".claude/**"` is in `eslint.config.mjs` `globalIgnores`. The ecc plugin's config-protection hook blocks Claude from editing that file; the owner has to add the line or disable the hook.
+- **Supabase reads that ignore `error`** were the source of real bugs (shared records showing 0 classes, refunds silently skipped). New code checks `error` and fails loudly or retries.
+- The frontend hardcodes the API URL (`const API = 'https://linguaxchange-backend-production.up.railway.app'`) in many files; there is no central config.
+- Both repos' `origin` remotes embed a GitHub token in the URL — never print `git remote -v` into shared output.
+- Pages are cached (ISR, mostly hourly): after an admin change, the guides page and sitemap can take up to an hour or two to update.
 
 ## 7. Environment / config notes
 
-- **Frontend repo**: `github.com/ohamin1214kingbug/linguaxchange-frontend`, deployed on **Vercel**.
-- **Backend repo**: `github.com/ohamin1214kingbug/linguaxchange-backend`, deployed on **Railway**, production URL `https://linguaxchange-backend-production.up.railway.app`.
-- **Database**: Supabase (project details not enumerated in this file — check `.env` / Supabase dashboard directly; connection uses the service-role key via `@supabase/supabase-js`).
-- **Email**: Resend, sending domain `linguaxchange.com` (custom domain, DNS-verified with DKIM/SPF/MX records already configured — do not need to redo this).
-- **Backend env vars in use** (inferred from code, not exhaustively confirmed against `.env`): Supabase URL + service-role key, `JWT_SECRET` (or similar) for `jsonwebtoken`, `ADMIN_EMAILS` (comma-separated allowlist for `requireAdmin`), `RESEND_API_KEY`. Verify exact names in `middleware/auth.js` / `utils/mailer.js` / DB client init before assuming.
-- Working directories for a Claude session on this project: frontend at `/Users/kinghamin/linguaxchange-frontend`, backend at `/Users/kinghamin/linguaxchange-backend` (typically opened as "primary" + "additional working directory" pair).
+- Repos: `github.com/ohamin1214kingbug/linguaxchange-frontend` (Vercel team HAMINKINGBUG) and `github.com/ohamin1214kingbug/linguaxchange-backend` (Railway). Repo and project names still say linguaxchange on purpose.
+- Domains: `gongbuleng.com` (primary) and `linguaxchange.com` (redirect), DNS on Vercel.
+- Supabase project ref: `shrsxgzrdbxlptwzuevb`. Site URL `https://gongbuleng.com`; redirect URL `https://gongbuleng.com/auth/callback`.
+- Google sign-in: Cloud project `913341791233`, owned by `ohamin96@gmail.com`; branding published as GongbuLeng.
+- Contact address on legal pages: `gongbuleng.team@gmail.com`.
+- Backend env vars include the Supabase URL and service-role key (`SUPABASE_URL`, `SUPABASE_KEY`), `JWT_SECRET`, `ADMIN_EMAILS`, `RESEND_API_KEY`, the `JAAS_*` keys and Twilio credentials. Read names from the code, never values from `.env`.
 
 ## 8. Decisions made (don't re-litigate)
 
-- **i18n: hand-rolled Context + flat dictionary, not a library.** Reason: app is small, adding `next-intl` or similar would be disproportionate. Keep this pattern for any new pages/namespaces going forward.
-- **Message-banner styling must use an explicit boolean state, never string-matching on translated text.** Established as a hard rule after finding it broken in two places already.
-- **Admin page and classroom (Jitsi) chrome are out of i18n scope.** Admin is internal/English-only by nature; classroom page is largely third-party UI.
-- **No fake/placeholder stats or testimonials on the home page.** The user explicitly required real data only — the platform has no real user metrics yet, so the home page must not fabricate numbers or quotes to look more "finished" than it is.
-- **Email delivery: Resend over Gmail SMTP.** Reason: Railway blocks outbound SMTP entirely, so Gmail SMTP silently failed in production; Resend's HTTPS API works around that. Required setting up and verifying a custom domain (`linguaxchange.com`) since Resend's shared sending domain has deliverability/branding limits.
-- **Video: Jitsi Meet over Zoom Video SDK.** Reason: free, no account/credential management needed, simpler embed. This was a mid-course correction — an earlier commit added Zoom Video SDK, then it was replaced.
-- **Testing: pure-function extraction over mocking the DB.** Backend logic that had real bugs (session-date generation, session-picking on enrollment) was pulled out of route handlers into `utils/*.js` specifically so Jest could test it without a live Supabase connection.
-- **Workflow expectation**: commit + push after each logical unit of work (not batched across unrelated features), with commit messages explaining *why*, and the `Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>` trailer.
+- **Brand spelling is GongbuLeng** (capital L). Domain and email addresses stay lowercase.
+- **i18n stays hand-rolled**, and success/error banners use an explicit boolean, never string-matching on translated text.
+- **No fake stats or testimonials** on the home page.
+- **Resend over SMTP** (Railway blocks outbound SMTP).
+- **Video: JaaS (8x8.vc)**, replacing an earlier Zoom attempt and free Jitsi.
+- **Guides**: A1–B2 only for now (no C1). English guides in Spanish; Portuguese guides follow Brazilian usage and link to Celpe-Bras (INEP).
+- **Credit history is logged, not rolled back**: a failed history save logs `[CREDIT_LEDGER]` rather than undoing the student's join or refund.
+- **Admin approval only gates teachers publishing classes**; new members can browse and request classes immediately.
+- **Workflow**: work on a branch, merge to `main` with `--no-ff` ("Merge: …"), push only when the owner asks, commit messages explain why, and each commit carries the `Co-Authored-By` trailer for the model that wrote it.
