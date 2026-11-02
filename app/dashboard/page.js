@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
 import Tabs from '../../components/Tabs'
@@ -16,6 +17,20 @@ const API = 'https://linguaxchange-backend-production.up.railway.app'
 // mint one outside the window. Kept in step here so the link never appears
 // on a door the server will hold shut.
 const TEACHER_EARLY_MS = 10 * 60 * 1000
+
+// The rules a new member otherwise only learns by running into them. The
+// numbers are the backend's: SIGNUP_CREDIT_GRANT (routes/auth.js),
+// REFUND_CUTOFF_MS (utils/enrollmentCancel.js), REQUEST_TTL_HOURS
+// (utils/classRequests.js) — change the copy if those change. Remembered per
+// browser: once dismissed it stays gone, unlike the navbar's banana panel,
+// because this one is a paragraph of reading rather than a single line.
+const WELCOME_DISMISSED_KEY = 'welcomeCardDismissed'
+const WELCOME_POINTS = [
+  ['🍌', 'dashboard.welcomeStart'],
+  ['↩️', 'dashboard.welcomeCancel'],
+  ['🙋', 'dashboard.welcomeRequest'],
+  ['🎓', 'dashboard.welcomeTeach']
+]
 
 function sessionTiming(session, durationMinutes, isTeacher = false, now = new Date()) {
   const scheduledAt = session?.session_date ? asUtcDate(session.session_date) : null
@@ -138,6 +153,7 @@ export default function Dashboard() {
   const [myReviews, setMyReviews] = useState([])
   const [tab, setTab] = useState('enrolled')
   const [profile, setProfile] = useState(null)
+  const [showWelcome, setShowWelcome] = useState(false)
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
@@ -145,6 +161,7 @@ export default function Dashboard() {
     if (!stored || !token) { router.push('/auth/login'); return }
     const parsedUser = JSON.parse(stored)
     setUser(parsedUser)
+    setShowWelcome(!localStorage.getItem(WELCOME_DISMISSED_KEY))
     fetchCredits()
     fetchTransactions()
     fetchEnrollments()
@@ -387,6 +404,11 @@ export default function Dashboard() {
     !profile.nationality?.trim() && 'auth.nationality'
   ].filter(Boolean) : []
 
+  const dismissWelcome = () => {
+    localStorage.setItem(WELCOME_DISMISSED_KEY, '1')
+    setShowWelcome(false)
+  }
+
   if (!user) return (
     <div className="min-h-screen bg-cream flex items-center justify-center text-navy/65 font-medium">{t('common.loading')}</div>
   )
@@ -430,6 +452,32 @@ export default function Dashboard() {
           }`}>
             {t(message)}
           </div>
+        )}
+
+        {/* The main button points at requests, not browsing: with few public
+            classes yet, a request is the step that works for everyone. */}
+        {showWelcome && (
+          <section className="mb-6 bg-white border-2 border-navy rounded-2xl px-5 py-5">
+            <h2 className="font-display font-bold text-lg text-navy mb-3">{t('dashboard.welcomeTitle')}</h2>
+            <ul className="space-y-2 text-navy text-sm">
+              {WELCOME_POINTS.map(([icon, key]) => (
+                <li key={key} className="flex gap-3">
+                  <span aria-hidden="true">{icon}</span>
+                  <span>{t(key)}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="flex flex-wrap gap-3 mt-5">
+              <Link href="/classes?tab=requests"
+                className="bg-brand-red text-white px-5 py-2.5 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">
+                {t('dashboard.welcomeCta')}
+              </Link>
+              <button onClick={dismissWelcome}
+                className="px-5 py-2.5 rounded-full text-sm font-bold text-navy border-2 border-navy hover:bg-navy/5 transition-colors">
+                {t('dashboard.welcomeGotIt')}
+              </button>
+            </div>
+          </section>
         )}
 
         {missingProfileFields.length > 0 && (
