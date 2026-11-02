@@ -25,11 +25,18 @@ const TEACHER_EARLY_MS = 10 * 60 * 1000
 // browser: once dismissed it stays gone, unlike the navbar's banana panel,
 // because this one is a paragraph of reading rather than a single line.
 const WELCOME_DISMISSED_KEY = 'welcomeCardDismissed'
+// Every way a balance moves, in the order a new member meets them. Bananas
+// can't be bought: teaching (enrollments.js payout) and writing feedback
+// (utils/assignmentCredits.js) are the only ways to earn.
+const BANANA_CYCLE = [
+  ['🍌', 'dashboard.bananaCycleStart'],
+  ['📚', 'dashboard.bananaCycleSpend'],
+  ['🎓', 'dashboard.bananaCycleEarn']
+]
 const WELCOME_POINTS = [
-  ['🍌', 'dashboard.welcomeStart'],
   ['↩️', 'dashboard.welcomeCancel'],
   ['🙋', 'dashboard.welcomeRequest'],
-  ['🎓', 'dashboard.welcomeTeach']
+  ['🧑‍🏫', 'dashboard.welcomeTeach']
 ]
 
 function sessionTiming(session, durationMinutes, isTeacher = false, now = new Date()) {
@@ -459,6 +466,16 @@ export default function Dashboard() {
         {showWelcome && (
           <section className="mb-6 bg-white border-2 border-navy rounded-2xl px-5 py-5">
             <h2 className="font-display font-bold text-lg text-navy mb-3">{t('dashboard.welcomeTitle')}</h2>
+            <h3 className="font-bold text-navy text-sm mb-2">{t('dashboard.bananaCycleTitle')}</h3>
+            <ol className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
+              {BANANA_CYCLE.map(([icon, key], i) => (
+                <li key={key} className="flex items-center gap-2 bg-brand-yellow/15 border-2 border-navy rounded-xl px-3 py-2 text-sm font-bold text-navy">
+                  <span aria-hidden="true">{icon}</span>
+                  <span>{i + 1}. {t(key)}</span>
+                </li>
+              ))}
+            </ol>
+            <p className="text-navy/65 text-sm mb-4">{t('dashboard.bananaCycleNote')}</p>
             <ul className="space-y-2 text-navy text-sm">
               {WELCOME_POINTS.map(([icon, key]) => (
                 <li key={key} className="flex gap-3">
