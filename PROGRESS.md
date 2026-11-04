@@ -57,7 +57,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 
 - **No public classes yet** — the biggest gap. The funnel from guides to class requests works; teachers need to post classes.
 - Run one real sign-up through the new funnel end to end (logged out → guide → request → register → back on the board). Not yet done; it creates a real account.
-- Owner to-dos after the secret rotation: delete the stale GitHub Actions `CRON_SECRET` (unused), and review the GitHub security log, Resend log and Twilio usage for anything unusual.
+- Owner to-do after the secret rotation: review the GitHub security log, Resend log and Twilio usage for anything unusual. (The stale GitHub Actions `CRON_SECRET` was deleted 2026-11-04; no workflow used it.)
 - Two major upgrades deliberately deferred: `dotenv` 18 (backend) and `eslint` 10 (frontend).
 - Lint: 85 errors / 35 warnings in the app's own code, none a runtime bug (React-Compiler-style rules, `<a>` instead of `<Link>`, unescaped apostrophes). Converting the 31 internal `<a>` links to `<Link>` would speed up navigation; the owner chose to skip it for now.
 - Open question: confirm the database stops a student enrolling twice in the same session (a unique constraint on `class_enrollments (user_id, class_session_id)`); needs a duplicate check and SQL run by the owner.
