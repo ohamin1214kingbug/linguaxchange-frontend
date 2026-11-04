@@ -5,7 +5,7 @@ import Navbar from '../../../components/Navbar'
 import AnnotationEditor from '../../../components/AnnotationEditor'
 import FeedbackView from '../../../components/FeedbackView'
 
-const API = 'https://linguaxchange-backend-production.up.railway.app'
+const API = 'https://api.gongbuleng.com'
 
 export default function AssignmentPage({ params }) {
   const { id } = use(params)

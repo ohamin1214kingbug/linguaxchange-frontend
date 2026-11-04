@@ -4,7 +4,7 @@ import { useLanguage } from '../../lib/i18n/LanguageContext'
 import { languageOptions, LEVELS } from '../../lib/languages'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
 
-const API = 'https://linguaxchange-backend-production.up.railway.app'
+const API = 'https://api.gongbuleng.com'
 
 // Only the levels a guide could plausibly exist for. C1 and C2 are in the
 // schema but showing empty columns for them would make the grid look

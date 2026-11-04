@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 
-const API = 'https://linguaxchange-backend-production.up.railway.app'
+const API = 'https://api.gongbuleng.com'
 
 export default function ConfirmUniversity() {
   const { t } = useLanguage()

@@ -7,7 +7,7 @@ import Navbar from '../../components/Navbar'
 import Tabs from '../../components/Tabs'
 import { formatInTimezone, asUtcDate } from '../../lib/timezone'
 
-const API = 'https://linguaxchange-backend-production.up.railway.app'
+const API = 'https://api.gongbuleng.com'
 
 // Was computed inline, separately, in both the enrolled-classes list and the
 // teaching-classes list. A third caller (the live-class banner below) is

@@ -5,7 +5,7 @@ import { supabase } from '../../../lib/supabase'
 import { syncTimezone } from '../../../lib/timezone'
 import { takeReturnPath } from '../../../lib/auth'
 
-const API = 'https://linguaxchange-backend-production.up.railway.app'
+const API = 'https://api.gongbuleng.com'
 
 export default function Callback() {
   const router = useRouter()

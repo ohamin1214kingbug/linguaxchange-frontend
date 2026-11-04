@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 
-const API = 'https://linguaxchange-backend-production.up.railway.app'
+const API = 'https://api.gongbuleng.com'
 
 // Never cached: a record is read by someone deciding whether to trust it, and a
 // stale one understates what the member has done since. It is also revocable,

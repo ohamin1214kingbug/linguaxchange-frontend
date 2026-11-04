@@ -1,7 +1,7 @@
 import ClassDetailClient from './ClassDetailClient'
 import { LANGUAGE_NAMES_EN as LANGUAGE_NAMES } from '../../../lib/languages'
 
-const API = 'https://linguaxchange-backend-production.up.railway.app'
+const API = 'https://api.gongbuleng.com'
 const SITE = 'https://gongbuleng.com'
 
 // A class fills up, gets cancelled, or is edited, so a long cache would serve a

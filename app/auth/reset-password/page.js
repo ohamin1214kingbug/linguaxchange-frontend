@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../../components/LanguageSwitcher'
 
-const API = 'https://linguaxchange-backend-production.up.railway.app'
+const API = 'https://api.gongbuleng.com'
 
 function ResetPasswordForm() {
   const router = useRouter()

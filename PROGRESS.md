@@ -30,7 +30,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 ## 3. Tech stack & architecture
 
 - **Frontend**: Next.js 16.3 (App Router, Turbopack), React 19.3, Tailwind CSS v4 (`@theme inline` in `app/globals.css`). Deployed on **Vercel** at `https://gongbuleng.com`.
-- **Backend**: Express 5, `@supabase/supabase-js` with the service-role key, `jsonwebtoken`, `bcrypt`, `helmet`, `express-rate-limit`. Deployed on **Railway** (project `pretty-perfection`) at `https://linguaxchange-backend-production.up.railway.app` — the host keeps the old name on purpose.
+- **Backend**: Express 5, `@supabase/supabase-js` with the service-role key, `jsonwebtoken`, `bcrypt`, `helmet`, `express-rate-limit`. Deployed on **Railway** (project `pretty-perfection`) at `https://api.gongbuleng.com` (Railway custom domain, added 2026-11-04 because UCM's DNS does not resolve the default `linguaxchange-backend-production.up.railway.app` host, which still works and is what cron-job.org calls).
 - **Database**: Supabase Postgres. RLS is enabled with no policies on every table (deny-all for the public key); only the backend's service-role key reads or writes. `EXECUTE` on the SECURITY DEFINER functions is revoked from `anon` and `authenticated`.
 - **i18n**: hand-rolled. `lib/i18n/translations.js` (keys `EN`/`KO`/`ES`/`DE`/`PT`), `lib/i18n/LanguageContext.js` (`useLanguage()` → `t(key, vars)`, falls back to English, then to the key). `tests/translations.test.mjs` fails if the languages drift apart.
 - **SEO**: sitemap (`app/sitemap.js`, revalidates hourly), robots, per-page metadata, `WebSite` structured data naming the site GongbuLeng. Search Console domain property `gongbuleng.com`; sitemap reads "Success"; change of address filed from `linguaxchange.com`.
@@ -59,7 +59,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - **Two-repo cwd trap**: always `cd` explicitly into the frontend or backend before git or build commands.
 - **Lint picks up `.claude/worktrees/`** (each worktree carries its own `.next` build) unless `".claude/**"` is in `eslint.config.mjs` `globalIgnores`. The ecc plugin's config-protection hook blocks Claude from editing that file; the owner has to add the line or disable the hook.
 - **Supabase reads that ignore `error`** were the source of real bugs (shared records showing 0 classes, refunds silently skipped). New code checks `error` and fails loudly or retries.
-- The frontend hardcodes the API URL (`const API = 'https://linguaxchange-backend-production.up.railway.app'`) in many files; there is no central config.
+- The frontend hardcodes the API URL (`const API = 'https://api.gongbuleng.com'`) in many files; there is no central config.
 - Both repos' `origin` remotes embed a GitHub token in the URL — never print `git remote -v` into shared output.
 - Pages are cached (ISR, mostly hourly): after an admin change, the guides page and sitemap can take up to an hour or two to update.
 
