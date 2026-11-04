@@ -9,7 +9,7 @@ import { formatInTimezone, formatDay } from '../../../lib/timezone'
 import { nextSessionDate, lastSessionDate } from '../../../lib/classSchedule'
 import { fetchJoinedClassIds } from '../../../lib/enrollments'
 
-const API = 'https://linguaxchange-backend-production.up.railway.app'
+const API = 'https://api.gongbuleng.com'
 
 const BADGE_KEYS = { first_class: 'firstClass', five_taught: 'fiveTaught', polyglot: 'polyglot' }
 

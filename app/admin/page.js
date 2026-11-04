@@ -187,7 +187,7 @@ export default function Admin() {
   const [resourceMessage, setResourceMessage] = useState('')
   const [uploadingId, setUploadingId] = useState(null)
 
-  const API = 'https://linguaxchange-backend-production.up.railway.app'
+  const API = 'https://api.gongbuleng.com'
 
   useEffect(() => {
     const token = localStorage.getItem('token')

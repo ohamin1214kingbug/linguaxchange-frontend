@@ -7,7 +7,7 @@ import LanguageSwitcher from '../../../components/LanguageSwitcher'
 import { syncTimezone } from '../../../lib/timezone'
 import { takeReturnPath } from '../../../lib/auth'
 
-const API = 'https://linguaxchange-backend-production.up.railway.app'
+const API = 'https://api.gongbuleng.com'
 
 function LoginForm() {
   const router = useRouter()

@@ -2,7 +2,7 @@ import ResourcesGridClient from './ResourcesGridClient'
 import { languageOptions } from '../../lib/languages'
 import { translations } from '../../lib/i18n/translations'
 
-const API = 'https://linguaxchange-backend-production.up.railway.app'
+const API = 'https://api.gongbuleng.com'
 const SITE = 'https://gongbuleng.com'
 
 // Guides change rarely — a level's contents are stable for months — so this is

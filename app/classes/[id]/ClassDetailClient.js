@@ -6,7 +6,7 @@ import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import Navbar from '../../../components/Navbar'
 import { formatInTimezone, utcLabel } from '../../../lib/timezone'
 
-const API = 'https://linguaxchange-backend-production.up.railway.app'
+const API = 'https://api.gongbuleng.com'
 
 const card = 'bg-white rounded-2xl p-6 border-2 border-navy mb-6'
 

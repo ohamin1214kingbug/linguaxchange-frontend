@@ -7,7 +7,7 @@ import Tabs from '../../components/Tabs'
 import { formatInTimezone } from '../../lib/timezone'
 import { hasFinished } from '../../lib/classSchedule'
 
-const API = 'https://linguaxchange-backend-production.up.railway.app'
+const API = 'https://api.gongbuleng.com'
 
 const FLAGS = { KO: '🇰🇷', ES: '🇪🇸', DE: '🇩🇪', EN: '🇬🇧', PT: '🇧🇷', FR: '🇫🇷', IT: '🇮🇹' }
 

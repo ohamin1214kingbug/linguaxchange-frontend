@@ -12,7 +12,7 @@ import { takeReturnPath } from '../../../lib/auth'
 
 
 const TOTAL_STEPS = 5
-const API = 'https://linguaxchange-backend-production.up.railway.app'
+const API = 'https://api.gongbuleng.com'
 
 // Hand-drawn SVG, not the emoji glyph — a plain icon that looks the same
 // everywhere instead of whatever the visitor's OS/browser emoji font is.
