@@ -196,7 +196,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final CTA */}
+      {/* Final CTA — a sign-up pitch, so members never see it. Its button
+          went to /auth/register even for someone already logged in. */}
+      {!isLoggedIn && (
       <section className="relative overflow-hidden px-4 md:px-8 py-20 md:py-28 text-center">
         <div className="absolute top-8 left-6 md:left-16 w-16 h-16 bg-brand-blue/10 rotate-45 -z-10" />
         <div className="absolute bottom-8 right-6 md:right-24 w-32 h-32 rounded-full bg-brand-red/10 -z-10" />
@@ -213,6 +215,7 @@ export default function Home() {
           {t('home.ctaStartFree')}
         </a>
       </section>
+      )}
 
       <footer className="text-center py-8 text-navy/65 text-sm border-t border-navy/10 space-y-2">
         <div className="flex justify-center gap-4">
