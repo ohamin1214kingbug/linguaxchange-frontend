@@ -1,3 +1,15 @@
+// Same origin proxy.js forwards to; see that file for why the API is proxied.
+const API_ORIGIN = process.env.API_ORIGIN || 'https://linguaxchange-backend-production.up.railway.app'
+
+// Base64 uploads bigger than a Vercel function accepts. proxy.js's matcher
+// excludes exactly these; keep the two lists in sync.
+const UPLOAD_ROUTES = [
+  '/api/classes/:id/materials-pdf',
+  '/api/resources/:id/pdf',
+  '/api/users/:id/avatar',
+  '/api/reports',
+]
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Study guides are served from gongbuleng.com/guides/... rather than
@@ -49,6 +61,10 @@ const nextConfig = {
         destination:
           'https://shrsxgzrdbxlptwzuevb.supabase.co/storage/v1/object/public/resources/:file',
       },
+      // Upload routes reach the API through a plain rewrite rather than
+      // proxy.js, which skips them: a function's request body is capped at
+      // 4.5MB on Vercel, a rewrite's is not (a 14.5MB body went through).
+      ...UPLOAD_ROUTES.map(source => ({ source, destination: `${API_ORIGIN}${source}` })),
     ]
   },
 };

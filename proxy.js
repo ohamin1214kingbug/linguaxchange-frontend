@@ -26,6 +26,11 @@ export function proxy(request) {
   return NextResponse.rewrite(target, { request: { headers } })
 }
 
+// Uploads skip this function: Vercel caps a function's request body at 4.5MB,
+// and a base64 PDF or photo is often bigger. They go through the plain
+// rewrite in next.config.mjs instead, which has no such cap. Those routes
+// carry no rate limit, so they don't need the visitor IP this adds.
+// Keep this list in sync with UPLOAD_ROUTES there.
 export const config = {
-  matcher: '/api/:path*',
+  matcher: '/api/((?!classes/[^/]+/materials-pdf$|resources/[^/]+/pdf$|users/[^/]+/avatar$|reports$).*)',
 }
