@@ -7,7 +7,7 @@ import { detectTimezone, formatDay } from '../../lib/timezone'
 import Navbar from '../../components/Navbar'
 import { CLASS_SIZE_OPTIONS } from '../../lib/classSize'
 
-const API = 'https://api.gongbuleng.com'
+const API = ''
 
 // Native IANA list — no library, no hardcoded table to go stale when a
 // country changes its zones. A plain <select> is type-to-jump searchable,

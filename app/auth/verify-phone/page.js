@@ -6,7 +6,7 @@ import LanguageSwitcher from '../../../components/LanguageSwitcher'
 import PhoneNumberField, { isValidPhoneNumber } from '../../../components/PhoneNumberField'
 import { takeReturnPath } from '../../../lib/auth'
 
-const API = 'https://api.gongbuleng.com'
+const API = ''
 
 export default function VerifyPhone() {
   const router = useRouter()

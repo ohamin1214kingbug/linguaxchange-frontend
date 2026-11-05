@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 
-const API = 'https://api.gongbuleng.com'
+const API = ''
 
 // Domain comes from the backend alongside the room token, so the video
 // provider is swappable without touching this page.

@@ -4,7 +4,7 @@ import { useLanguage } from '../lib/i18n/LanguageContext'
 import { languageOptions, LEVELS, levelLabel } from '../lib/languages'
 import { countWords, MAX_WORDS } from '../lib/assignments'
 
-const API = 'https://api.gongbuleng.com'
+const API = ''
 
 export default function AssignmentForm({ onPosted }) {
   const { t } = useLanguage()

@@ -10,7 +10,7 @@ import { hasUpcomingSession } from '../../lib/classSchedule'
 import { fetchJoinedClassIds } from '../../lib/enrollments'
 import { rememberReturnPath } from '../../lib/auth'
 
-const API = 'https://api.gongbuleng.com'
+const API = ''
 
 // `initialClasses` comes from the server component in page.js, already
 // filtered to whatever the URL asked for. Seeding state with it is what puts

@@ -8,7 +8,7 @@ import { CLASS_SIZE_OPTIONS, DEFAULT_CLASS_SIZE } from '../lib/classSize'
 import { rememberReturnPath } from '../lib/auth'
 import { saveRequestDraft, takeRequestDraft } from '../lib/requestDraft'
 
-const API = 'https://api.gongbuleng.com'
+const API = ''
 
 // Mirrors utils/classRequests.js hoursLeft on the backend — the badge needs
 // it per-render, and asking the server for a countdown would be silly.

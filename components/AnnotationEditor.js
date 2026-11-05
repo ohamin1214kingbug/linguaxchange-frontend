@@ -3,7 +3,7 @@ import { useState, useRef } from 'react'
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import { CATEGORIES } from '../lib/assignments'
 
-const API = 'https://api.gongbuleng.com'
+const API = ''
 
 // Offsets index into the request body exactly as stored. The text is rendered
 // from that same string with no trimming or normalisation, or the offsets sent

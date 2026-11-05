@@ -5,7 +5,7 @@ import { useLanguage } from '../../lib/i18n/LanguageContext'
 import { userCode } from '../../lib/userCode'
 import { languageOptions, levelLabel } from '../../lib/languages'
 
-const API = 'https://api.gongbuleng.com'
+const API = ''
 
 // A lookup, not a directory. An empty box shows nothing rather than
 // everyone: the point is reaching a person you already have in mind — the

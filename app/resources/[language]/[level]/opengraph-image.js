@@ -3,7 +3,7 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 import { LANGUAGE_NAMES_EN } from '../../../../lib/languages'
 
-const API = 'https://api.gongbuleng.com'
+const API = 'https://linguaxchange-backend-production.up.railway.app'
 
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'

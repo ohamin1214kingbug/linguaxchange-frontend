@@ -5,7 +5,7 @@ import LanguageSwitcher from './LanguageSwitcher'
 import StreakCalendar from './StreakCalendar'
 import { logout } from '../lib/auth'
 
-const API = 'https://api.gongbuleng.com'
+const API = ''
 const NOTIFICATIONS_POLL_MS = 30 * 1000
 // Mirrors LOW_CREDIT_THRESHOLD in the backend's utils/lowCreditNudge.js — the
 // balance at which it already emails "you're running low".

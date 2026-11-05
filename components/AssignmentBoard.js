@@ -4,7 +4,7 @@ import { useLanguage } from '../lib/i18n/LanguageContext'
 import { levelLabel } from '../lib/languages'
 import AssignmentForm from './AssignmentForm'
 
-const API = 'https://api.gongbuleng.com'
+const API = ''
 
 export default function AssignmentBoard({ language, currentUser, langs }) {
   const { t } = useLanguage()
