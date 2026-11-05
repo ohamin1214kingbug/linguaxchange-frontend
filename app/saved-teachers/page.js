@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
 
-const API = 'https://api.gongbuleng.com'
+const API = ''
 
 // A code is just 'U' + the user's own db id, so finding someone by code is
 // finding them by id — no separate lookup endpoint needed, reuses the

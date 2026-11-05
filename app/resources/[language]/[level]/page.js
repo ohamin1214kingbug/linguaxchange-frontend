@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { levelLabel } from '../../../../lib/languages'
 
-const API = 'https://api.gongbuleng.com'
+const API = 'https://linguaxchange-backend-production.up.railway.app'
 const SITE = 'https://gongbuleng.com'
 
 // Server-rendered rather than client-fetched: this is the page that has to be

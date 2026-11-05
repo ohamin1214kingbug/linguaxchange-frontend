@@ -5,7 +5,7 @@ import { isSameDay, startOfDay, buildCalendarGrid } from '../lib/calendarGrid'
 import { asUtcDate } from '../lib/timezone'
 import { hasFinished } from '../lib/classSchedule'
 
-const API = 'https://api.gongbuleng.com'
+const API = ''
 
 // getWeekStart in utils/streak.js on the backend is the source of truth for
 // which ISO week (Mon-Sun, UTC) a date falls in — mirrored here so "counted

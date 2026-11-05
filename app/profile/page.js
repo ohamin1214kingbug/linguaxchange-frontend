@@ -9,7 +9,7 @@ import Tabs from '../../components/Tabs'
 import { countryOptions } from '../../lib/countries'
 import { userCode } from '../../lib/userCode'
 
-const API = 'https://api.gongbuleng.com'
+const API = ''
 
 const BADGE_KEYS = { first_class: 'firstClass', five_taught: 'fiveTaught', polyglot: 'polyglot' }
 

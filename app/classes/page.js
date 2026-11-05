@@ -1,7 +1,7 @@
 import ClassesBrowseClient from './ClassesBrowseClient'
 import { hasUpcomingSession } from '../../lib/classSchedule'
 
-const API = 'https://api.gongbuleng.com'
+const API = 'https://linguaxchange-backend-production.up.railway.app'
 const SITE = 'https://gongbuleng.com'
 
 // The listings change as classes are created, filled and cancelled, so this is

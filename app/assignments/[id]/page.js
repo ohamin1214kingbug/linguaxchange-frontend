@@ -5,7 +5,7 @@ import Navbar from '../../../components/Navbar'
 import AnnotationEditor from '../../../components/AnnotationEditor'
 import FeedbackView from '../../../components/FeedbackView'
 
-const API = 'https://api.gongbuleng.com'
+const API = ''
 
 export default function AssignmentPage({ params }) {
   const { id } = use(params)

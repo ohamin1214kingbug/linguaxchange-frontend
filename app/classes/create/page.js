@@ -81,7 +81,7 @@ export default function CreateClass() {
     const stored = localStorage.getItem('user')
     if (!token || !stored) return
     const { id } = JSON.parse(stored)
-    fetch(`https://api.gongbuleng.com/api/users/${id}`, {
+    fetch(`/api/users/${id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(r => r.json())
@@ -119,7 +119,7 @@ export default function CreateClass() {
     setLoading(true)
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('https://api.gongbuleng.com/api/classes', {
+      const response = await fetch('/api/classes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -140,7 +140,7 @@ export default function CreateClass() {
         // for it. Best-effort: the class exists either way, and a failed
         // link-up isn't worth blocking the success screen over.
         if (requestId) {
-          await fetch(`https://api.gongbuleng.com/api/class-requests/${requestId}/fulfill`, {
+          await fetch(`/api/class-requests/${requestId}/fulfill`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify({ class_id: data.id })
