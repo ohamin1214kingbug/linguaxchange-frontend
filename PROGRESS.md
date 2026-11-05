@@ -1,6 +1,6 @@
 # GongbuLeng — Progress Notes
 
-_Last updated: 2026-11-04. Written so a fresh Claude session can pick up this project with zero prior context. Earlier name: LinguaXchange (renamed 2026-09-22)._
+_Last updated: 2026-11-05. Written so a fresh Claude session can pick up this project with zero prior context. Earlier name: LinguaXchange (renamed 2026-09-22)._
 
 ## 1. Project overview
 
@@ -25,7 +25,9 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - Email: Resend, sending from `notifications@gongbuleng.com`.
 - Cron endpoints (`routes/cron.js`) for reminders, refunds of expired requests, notifications and health checks.
 - One-off scripts in `scripts/`: `testFixtures.js` (throwaway `.invalid` accounts), `announceRename.js` (the rename email; already sent to all 5 approved members — its sent-log makes re-runs skip them).
-- Tests: Jest, **51 suites / 390 tests** (`npx jest`).
+- Rate limits (`middleware/rateLimit.js`): the tight limits are keyed on the account or phone, because a campus network puts many members behind one address. Login (also change-password and account delete) counts only failed attempts, 10 per account+address and 50 per address per 15 min; register 30 per address per hour; send-otp 3 per phone and 20 per address per hour; verify-otp 10 per phone+address, 50 per address; university email 5 per member, 20 per address; public GETs 100 per address per minute. `app.set('trust proxy', 2)`: Railway adds two hops, so one hop made every visitor look like a Railway edge server.
+- Uploads are base64 JSON. `/api/users`, `/api/classes`, `/api/resources` and `/api/reports` accept 21mb (three 5MB report images); everything else 100kb.
+- Tests: Jest, **53 suites / 399 tests** (`npx jest`).
 
 **Frontend** (`/Users/kinghamin/linguaxchange-frontend`, Next.js App Router):
 - Cream/navy/red "sticker" design, Baloo 2 + Inter fonts.
@@ -38,7 +40,11 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 ## 3. Tech stack & architecture
 
 - **Frontend**: Next.js 16.4 (App Router, Turbopack), React 19.3, Tailwind CSS v4 (`@theme inline` in `app/globals.css`). Deployed on **Vercel** at `https://gongbuleng.com`.
-- **Backend**: Express 5, `@supabase/supabase-js` with the service-role key, `jsonwebtoken`, `bcrypt`, `helmet`, `express-rate-limit`. Deployed on **Railway** (project `pretty-perfection`) at `https://api.gongbuleng.com` (Railway custom domain, added 2026-11-04 because UCM's DNS does not resolve the default `linguaxchange-backend-production.up.railway.app` host, which still works and is what cron-job.org calls).
+- **Backend**: Express 5, `@supabase/supabase-js` with the service-role key, `jsonwebtoken`, `bcrypt`, `helmet`, `express-rate-limit`. Deployed on **Railway** (project `pretty-perfection`) at `https://linguaxchange-backend-production.up.railway.app` (also what cron-job.org calls).
+- **How the browser reaches the API** (since 2026-11-05): same-origin, at `gongbuleng.com/api/...`, so it works wherever the site itself resolves (see the UCM gotcha below). Client code uses `const API = ''`.
+  - `proxy.js` (Next 16's middleware) rewrites `/api/*` to Railway and adds `x-client-ip` (the visitor, from Vercel's `x-forwarded-for`) and `x-proxy-secret`. The backend trusts `x-client-ip` for rate limiting only when the secret matches `API_PROXY_SECRET` (timing-safe). The secret is set in both Railway and Vercel (Production); a Vercel env change needs a **Redeploy** to apply.
+  - Four upload endpoints (`/api/classes/:id/materials-pdf`, `/api/resources/:id/pdf`, `/api/users/:id/avatar`, `/api/reports`) are excluded from `proxy.js`'s matcher and go through a plain rewrite in `next.config.mjs` instead: a Vercel function rejects request bodies over 4.5MB (`FUNCTION_PAYLOAD_TOO_LARGE`), a rewrite does not (20MB tested). Those routes have no rate limit. Keep the two lists in sync. Locally, `next dev` still stops rewrites at ~10MB.
+  - Server-rendered files (`app/sitemap.js`, `app/record/[token]/page.js`, `app/classes/page.js`, `app/classes/[id]/page.js`, `app/resources/page.js`, `app/resources/[language]/[level]/page.js` and its `opengraph-image.js`) call the Railway host directly; they run on Vercel, not on campus.
 - **Database**: Supabase Postgres. RLS is enabled with no policies on every table (deny-all for the public key); only the backend's service-role key reads or writes. `EXECUTE` on the SECURITY DEFINER functions is revoked from `anon` and `authenticated`.
 - **i18n**: hand-rolled. `lib/i18n/translations.js` (keys `EN`/`KO`/`ES`/`DE`/`PT`), `lib/i18n/LanguageContext.js` (`useLanguage()` → `t(key, vars)`, falls back to English, then to the key). `tests/translations.test.mjs` fails if the languages drift apart.
 - **SEO**: sitemap (`app/sitemap.js`, revalidates hourly), robots, per-page metadata, `WebSite` structured data naming the site GongbuLeng. Search Console domain property `gongbuleng.com`; sitemap reads "Success"; change of address filed from `linguaxchange.com`.
@@ -50,7 +56,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - Rename to GongbuLeng is complete and live: `linguaxchange.com` 308-redirects to `gongbuleng.com` (paths kept), `www.gongbuleng.com` redirects to the apex, Google sign-in shows "GongbuLeng", email comes from the new domain, guides and PDFs carry the new name.
 - Accessibility: home, classes, guides, a guide page and login score 100 on Lighthouse; brand red is `#da1f33` and secondary text uses `text-navy/65`.
 - 28 guides live; the guides page title and description are built from the guides that exist.
-- Dependabot (2026-11-04): backend 0 open alerts (`body-parser` 2.4.0, `ip-address` 10.7.6); frontend on Next.js 16.4.5 (fixes two critical RCEs and a DoS the app wasn't using), 1 open moderate alert in `minimatch`, dev-only via ESLint, needs the deferred ESLint major.
+- Dependabot (2026-11-05): frontend 0 open alerts (Next.js 16.4.5); backend 2 open, both dev-only (`minimatch` moderate, `deepmerge` low with no fix yet). `follow-redirects` (via twilio → axios) patched to 1.16.2.
 - 2026-11-01: every backend secret was rotated after Railway's October security incident (Supabase now on an `sb_secret_` key, legacy JWT keys revoked). `CRON_SECRET` also lives in the URLs of the two cron-job.org jobs.
 
 ## 5. In progress / next steps
@@ -58,6 +64,9 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - **No public classes yet** — the biggest gap. The funnel from guides to class requests works; teachers need to post classes.
 - Run one real sign-up through the new funnel end to end (logged out → guide → request → register → back on the board). Not yet done; it creates a real account.
 - Owner to-do after the secret rotation: review the GitHub security log, Resend log and Twilio usage for anything unusual. (The stale GitHub Actions `CRON_SECRET` was deleted 2026-11-04; no workflow used it.)
+- Owner to-do: in Twilio Verify, turn on Fraud Guard and restrict Geo Permissions to the countries members use; send-otp now allows 20 codes per address per hour, and each costs money. Not checked yet.
+- Not yet verified on UCM Wi-Fi since the `/api` proxy went live: log in on campus and check the balance and phone banner load.
+- Optional cleanup: `api.gongbuleng.com` is no longer used (UCM blocked it too); its Railway custom domain and the CNAME/TXT records can be removed.
 - Two major upgrades deliberately deferred: `dotenv` 18 (backend) and `eslint` 10 (frontend).
 - Lint: 85 errors / 35 warnings in the app's own code, none a runtime bug (React-Compiler-style rules, `<a>` instead of `<Link>`, unescaped apostrophes). Converting the 31 internal `<a>` links to `<Link>` would speed up navigation; the owner chose to skip it for now.
 - Open question: confirm the database stops a student enrolling twice in the same session (a unique constraint on `class_enrollments (user_id, class_session_id)`); needs a duplicate check and SQL run by the owner.
@@ -68,22 +77,23 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - **UCM's campus network**:
   - It blocked `gongbuleng.com` as a newly registered domain in September; that has cleared.
   - On 2026-11-04 its DNS (`147.96.1.9` / `147.96.2.4`) was found not to resolve `linguaxchange-backend-production.up.railway.app`. On campus Wi-Fi the site loaded, but every API call failed silently: balance stuck on "•••", no phone banner.
-  - Fixed by moving the frontend to `api.gongbuleng.com`. If a page shows "•••" or missing banners on campus, check DNS before debugging code.
+  - Moving the API to `api.gongbuleng.com` worked for about an hour, then UCM blocked that too (it resolves to a Railway host). Fixed 2026-11-05 by serving the API from `gongbuleng.com/api` (see section 3); campus DNS can't block the API without blocking the site. If a page shows "•••" or missing banners on campus, check DNS before debugging code.
+  - Many students likely share a few public addresses on campus Wi-Fi, which is why the tight rate limits are per account or phone, not per address.
 - **Two-repo cwd trap**: always `cd` explicitly into the frontend or backend before git or build commands.
 - **Lint picks up `.claude/worktrees/`** (each worktree carries its own `.next` build) unless `".claude/**"` is in `eslint.config.mjs` `globalIgnores`. The ecc plugin's config-protection hook blocks Claude from editing that file; the owner has to add the line or disable the hook.
 - **Supabase reads that ignore `error`** were the source of real bugs (shared records showing 0 classes, refunds silently skipped). New code checks `error` and fails loudly or retries.
-- The frontend hardcodes the API URL (`const API = 'https://api.gongbuleng.com'`) in many files; there is no central config.
+- The API base is still repeated per file (`const API = ''` in client code, the Railway URL in the server-rendered files listed in section 3); there is no central config.
 - Both repos' `origin` remotes embed a GitHub token in the URL — never print `git remote -v` into shared output.
 - Pages are cached (ISR, mostly hourly): after an admin change, the guides page and sitemap can take up to an hour or two to update.
 
 ## 7. Environment / config notes
 
 - Repos: `github.com/ohamin1214kingbug/linguaxchange-frontend` (Vercel team HAMINKINGBUG) and `github.com/ohamin1214kingbug/linguaxchange-backend` (Railway). Repo and project names still say linguaxchange on purpose.
-- Domains: `gongbuleng.com` (primary) and `linguaxchange.com` (redirect), DNS on Vercel. `api.gongbuleng.com` is a CNAME to Railway (`1tx8hud0.up.railway.app`) plus a `_railway-verify.api` TXT record.
+- Domains: `gongbuleng.com` (primary) and `linguaxchange.com` (redirect), DNS on Vercel. `api.gongbuleng.com` (CNAME to `1tx8hud0.up.railway.app` plus a `_railway-verify.api` TXT record) is unused since 2026-11-05.
 - Supabase project ref: `shrsxgzrdbxlptwzuevb`. Site URL `https://gongbuleng.com`; redirect URL `https://gongbuleng.com/auth/callback`.
 - Google sign-in: Cloud project `913341791233`, owned by `ohamin96@gmail.com`; branding published as GongbuLeng.
 - Contact address on legal pages: `gongbuleng.team@gmail.com`.
-- Backend env vars include the Supabase URL and service-role key (`SUPABASE_URL`, `SUPABASE_KEY`), `JWT_SECRET`, `ADMIN_EMAILS`, `RESEND_API_KEY`, the `JAAS_*` keys and Twilio credentials. Read names from the code, never values from `.env`.
+- Backend env vars include the Supabase URL and service-role key (`SUPABASE_URL`, `SUPABASE_KEY`), `JWT_SECRET`, `ADMIN_EMAILS`, `RESEND_API_KEY`, the `JAAS_*` keys, Twilio credentials and `API_PROXY_SECRET` (also on Vercel). Read names from the code, never values from `.env`.
 
 ## 8. Decisions made (don't re-litigate)
 
@@ -96,4 +106,5 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - **Credit history is logged, not rolled back**: a failed history save logs `[CREDIT_LEDGER]` rather than undoing the student's join or refund.
 - **Admin approval only gates teachers publishing classes**; new members can browse and request classes immediately.
 - **Teachers are paid per student, not per class**, and automatically 72h after class unless the student reports a problem — most students never press "confirm attendance", and teaching is the only way to earn.
+- **The API is proxied through `gongbuleng.com/api`**, not called on its own hostname, so campus DNS filtering can't separate it from the site.
 - **Workflow**: work on a branch, merge to `main` with `--no-ff` ("Merge: …"), push only when the owner asks, commit messages explain why, and each commit carries the `Co-Authored-By` trailer for the model that wrote it.
