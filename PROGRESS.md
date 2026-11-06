@@ -1,6 +1,6 @@
 # GongbuLeng — Progress Notes
 
-_Last updated: 2026-11-05. Written so a fresh Claude session can pick up this project with zero prior context. Earlier name: LinguaXchange (renamed 2026-09-22)._
+_Last updated: 2026-11-07. Written so a fresh Claude session can pick up this project with zero prior context. Earlier name: LinguaXchange (renamed 2026-09-22)._
 
 ## 1. Project overview
 
@@ -12,7 +12,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 
 **Backend** (`/Users/kinghamin/linguaxchange-backend`, Express 5):
 - Custom JWT auth (`middleware/auth.js`): `requireAuth` checks the token, suspension and a per-user revocation cutoff (`token_valid_after`), and **fails closed** if the user row can't be read. `requireAdmin` uses the `ADMIN_EMAILS` allowlist. Passwords use bcrypt; Supabase Auth is used only for Google sign-in.
-- Classes (one-off and recurring sessions), enrollments with an atomic capacity trigger, class requests (students ask for a class; others can +1), writing feedback (assignments), reviews, reports, suspensions, account deletion with anonymisation, data export, participation records shared by revocable token, university email verification, badges, streaks, in-app notifications, reminder emails.
+- Classes (one-off and recurring sessions), enrollments with an atomic capacity trigger, class requests (students ask for a class; others can +1), writing feedback (assignments), reviews, reports, suspensions, account deletion with anonymisation, data export, participation records shared by revocable token, university email verification, badges, streaks, in-app notifications (`notifications.type` is a closed CHECK list; a new type needs a migration run in Supabase, latest `migrations/add_account_approved_notification_type.sql`), reminder emails.
 - Credits: balances change only through the `spend_credit` / `add_credit` SQL functions (atomic); every change is recorded in `credit_transactions` through `utils/creditLedger.js`, which logs `[CREDIT_LEDGER]` if a history row fails to save.
 - Banana (credit) rules, as the code enforces them:
   - Sign-up grants **3** (`SIGNUP_CREDIT_GRANT`, `routes/auth.js`, email and Google paths).
@@ -24,10 +24,10 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - Video: Jitsi as a Service (JaaS, `8x8.vc`) with signed room JWTs (`JAAS_APP_ID`, `JAAS_KID`, `JAAS_PRIVATE_KEY`).
 - Email: Resend, sending from `notifications@gongbuleng.com`.
 - Cron endpoints (`routes/cron.js`) for reminders, refunds of expired requests, notifications and health checks.
-- One-off scripts in `scripts/`: `testFixtures.js` (throwaway `.invalid` accounts), `announceRename.js` (the rename email; already sent to all 5 approved members — its sent-log makes re-runs skip them).
+- One-off scripts in `scripts/`: `testFixtures.js` (throwaway `.invalid` accounts), `announceRename.js` (the rename email; sent to all 5 approved members at the time), `announceApproved.js` (the "your account is approved" email for members approved before approval emails existed; sent to 8 members on 2026-11-07, admins skipped). Each keeps a git-ignored sent-log so re-runs skip anyone already mailed; run them locally with the current `RESEND_API_KEY` in `.env`.
 - Rate limits (`middleware/rateLimit.js`): the tight limits are keyed on the account or phone, because a campus network puts many members behind one address. Login (also change-password and account delete) counts only failed attempts, 10 per account+address and 50 per address per 15 min; register 30 per address per hour; send-otp 3 per phone and 20 per address per hour; verify-otp 10 per phone+address, 50 per address; university email 5 per member, 20 per address; public GETs 100 per address per minute. `app.set('trust proxy', 2)`: Railway adds two hops, so one hop made every visitor look like a Railway edge server.
 - Uploads are base64 JSON. `/api/users`, `/api/classes`, `/api/resources` and `/api/reports` accept 21mb (three 5MB report images); everything else 100kb.
-- Tests: Jest, **53 suites / 399 tests** (`npx jest`).
+- Tests: Jest, **54 suites / 402 tests** (`npx jest`).
 
 **Frontend** (`/Users/kinghamin/linguaxchange-frontend`, Next.js App Router):
 - Cream/navy/red "sticker" design, Baloo 2 + Inter fonts.
@@ -64,7 +64,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - **No public classes yet** — the biggest gap. The funnel from guides to class requests works; teachers need to post classes.
 - Run one real sign-up through the new funnel end to end (logged out → guide → request → register → back on the board). Not yet done; it creates a real account.
 - Owner to-do after the secret rotation: review the GitHub security log, Resend log and Twilio usage for anything unusual. (The stale GitHub Actions `CRON_SECRET` was deleted 2026-11-04; no workflow used it.)
-- Owner to-do: in Twilio Verify, turn on Fraud Guard and restrict Geo Permissions to the countries members use; send-otp now allows 20 codes per address per hour, and each costs money. Not checked yet.
+- Twilio Verify (2026-11-06/07): Fraud Guard is under Verify > Fraud & Geo Permissions. Account-level overrides set Fraud Guard to Disabled for the US, Canada, Brazil and Australia (left as is; those countries are low risk). Geo Permissions was being narrowed from 210 allowed countries to about 50 (Europe, Korea/Japan/China/Taiwan/Hong Kong/India/Philippines, the Americas, Morocco, Australia, New Zealand) with Voice disabled everywhere; the owner reported it done but the final list was not checked. send-otp allows 20 codes per address per hour, and each costs money.
 - Not yet verified on UCM Wi-Fi since the `/api` proxy went live: log in on campus and check the balance and phone banner load.
 - Optional cleanup: `api.gongbuleng.com` is no longer used (UCM blocked it too); its Railway custom domain and the CNAME/TXT records can be removed.
 - Two major upgrades deliberately deferred: `dotenv` 18 (backend) and `eslint` 10 (frontend).
@@ -104,7 +104,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - **Video: JaaS (8x8.vc)**, replacing an earlier Zoom attempt and free Jitsi.
 - **Guides**: A1–B2 only for now (no C1). English guides in Spanish; Portuguese guides follow Brazilian usage and link to Celpe-Bras (INEP).
 - **Credit history is logged, not rolled back**: a failed history save logs `[CREDIT_LEDGER]` rather than undoing the student's join or refund.
-- **Admin approval only gates teachers publishing classes**; new members can browse and request classes immediately.
+- **Admin approval only gates teachers publishing classes**; new members can browse and request classes immediately. Approving a member (POST `/api/admin/users/:id/approve`) emails them and adds an `account_approved` in-app notification, only on the not-approved → approved change, so a second click sends nothing (since 2026-11-07; before that approval was silent).
 - **Teachers are paid per student, not per class**, and automatically 72h after class unless the student reports a problem — most students never press "confirm attendance", and teaching is the only way to earn.
 - **The API is proxied through `gongbuleng.com/api`**, not called on its own hostname, so campus DNS filtering can't separate it from the site.
 - **Workflow**: work on a branch, merge to `main` with `--no-ff` ("Merge: …"), push only when the owner asks, commit messages explain why, and each commit carries the `Co-Authored-By` trailer for the model that wrote it.
