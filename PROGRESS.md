@@ -85,6 +85,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - The API base is still repeated per file (`const API = ''` in client code, the Railway URL in the server-rendered files listed in section 3); there is no central config.
 - Both repos' `origin` remotes embed a GitHub token in the URL — never print `git remote -v` into shared output.
 - Pages are cached (ISR, mostly hourly): after an admin change, the guides page and sitemap can take up to an hour or two to update.
+- **A member who can't get a phone code** sees the generic "can't send a code right now" (`auth.otpUnavailable`). Check in this order: their country is allowed in Twilio Geo Permissions (section 5; enable it there if not); Railway logs show `[SEND_OTP] 60410`, meaning Fraud Guard blocked it (unblock from Twilio Verify > Logs, which adds the number to the Safe List); Twilio's Verify logs show no attempt at all, meaning Railway's `TWILIO_*` variables point at a different Twilio account than the console (happened in August 2026).
 
 ## 7. Environment / config notes
 
