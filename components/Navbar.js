@@ -5,6 +5,7 @@ import LanguageSwitcher from './LanguageSwitcher'
 import StreakCalendar from './StreakCalendar'
 import { logout } from '../lib/auth'
 import { detectTimezone, sameTimezone } from '../lib/timezone'
+import GiftReveal from './GiftReveal'
 
 const API = ''
 const NOTIFICATIONS_POLL_MS = 30 * 1000
@@ -176,6 +177,12 @@ export default function Navbar() {
   }
 
   const unreadCount = notifications.filter(n => !n.read_at).length
+  // Oldest unopened banana gift first; the next one opens after this is collected.
+  const gift = [...notifications].reverse().find(n => n.type === 'credit_added' && !n.read_at)
+  const collectGift = () => {
+    markRead(gift.id)
+    window.dispatchEvent(new Event('credits-changed'))
+  }
   // "1 bananas" reads wrong, and the count shows in both the tooltip and the
   // dropdown heading — so pick the wording once.
   const bananaLabel = credits === 1
@@ -222,6 +229,7 @@ export default function Navbar() {
         </a>
       </div>
     )}
+    <GiftReveal gift={gift} onCollect={collectGift} t={t} />
     {tzMismatch && (
       <div className="bg-brand-teal/15 border-b-2 border-brand-teal px-4 md:px-8 py-2.5 flex items-center justify-center gap-3 flex-wrap text-center">
         <span className="text-navy text-sm font-medium">🕒 {t('nav.timezoneMismatchBanner', tzMismatch)}</span>
