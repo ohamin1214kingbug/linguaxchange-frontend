@@ -40,3 +40,17 @@ test('two of three is a pass', () => {
   answers[quiz.findIndex(q => q.level === 'A1')] = -1
   assert.equal(scoreQuiz(quiz, answers).level, 'B2')
 })
+
+test('the review lists each missed question with both answers, in order', async () => {
+  const { reviewQuiz } = await import('../lib/levelQuiz.js')
+  const answers = [...allRight]
+  answers[1] = 0   // a wrong pick
+  answers[5] = -1  // "I don't know"
+  const review = reviewQuiz(quiz, answers)
+  assert.equal(review.correct, 10)
+  assert.equal(review.total, 12)
+  assert.deepEqual(review.mistakes.map(m => m.number), [2, 6])
+  assert.equal(review.mistakes[0].given, quiz[1].options[0])
+  assert.equal(review.mistakes[0].right, quiz[1].options[quiz[1].answer])
+  assert.equal(review.mistakes[1].given, null)
+})
