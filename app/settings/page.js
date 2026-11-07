@@ -6,6 +6,7 @@ import { useLanguage } from '../../lib/i18n/LanguageContext'
 import { detectTimezone, formatDay } from '../../lib/timezone'
 import Navbar from '../../components/Navbar'
 import { CLASS_SIZE_OPTIONS } from '../../lib/classSize'
+import PushToggle from '../../components/PushToggle'
 
 const API = ''
 
@@ -419,6 +420,7 @@ export default function SettingsPage() {
             <span className="text-sm font-bold text-navy">{t('settings.requestEmailsLabel')}</span>
           </label>
           <p className="text-navy/65 text-xs mt-1">{t('settings.requestEmailsNote')}</p>
+          <PushToggle t={t} />
 
           <button onClick={savePrefs} disabled={savingPrefs}
             className="w-full mt-5 bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
