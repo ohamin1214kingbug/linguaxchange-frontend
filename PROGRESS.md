@@ -1,6 +1,6 @@
 # GongbuLeng — Progress Notes
 
-_Last updated: 2026-11-07. Written so a fresh Claude session can pick up this project with zero prior context. Earlier name: LinguaXchange (renamed 2026-09-22)._
+_Last updated: 2026-11-07 (evening). Written so a fresh Claude session can pick up this project with zero prior context. Earlier name: LinguaXchange (renamed 2026-09-22)._
 
 ## 1. Project overview
 
@@ -20,6 +20,8 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
   - A class request costs 1, refunded if unanswered within **24h** (`utils/classRequests.js`).
   - Writing feedback pays the reviewer 1, auto-released after **72h** (`utils/assignmentCredits.js`).
   - The **last banana is locked until the member has taught once** (`utils/creditSpendGate.js`; "taught" = any `earned` row; fails open).
+  - Ledger types: `spent`, `earned` (teaching only), `refunded`, `earned_feedback`, `bonus` (invite rewards and admin grants). Anything that is not teaching must never be logged as `earned`, or it unlocks the last banana. Admin grants were `earned` until 2026-11-07; rows from before then still are.
+  - Invite a friend: an invited member's first class (their attendance confirm, or the 72-hour payout) gives them and the inviter 1 `bonus` banana each, once (`users.referral_rewarded_at` is the lock); the inviter is paid for at most 10 friends (`utils/referrals.js`, logs `[REFERRAL]`).
   - Teachers earn **1 per student**, paid when the student confirms attendance **or automatically 72h after class** (`utils/attendancePayout.js`, swept by the reminders cron). `class_enrollments.teacher_paid_at` is the single lock both paths claim, so nothing pays twice. A student with an open report against the teacher or class holds the payout for admin review. Only sessions from the last 14 days are swept. The cron response's `attendancePaid` is `null` when the sweep fails, not 0.
 - Video: Jitsi as a Service (JaaS, `8x8.vc`) with signed room JWTs (`JAAS_APP_ID`, `JAAS_KID`, `JAAS_PRIVATE_KEY`).
 - Email: Resend, sending from `notifications@gongbuleng.com`.
@@ -31,7 +33,9 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
   - Class alerts: members follow a language and optionally a level (`class_alerts` table, `migrations/add_class_alerts.sql`, run in Supabase; `/api/class-alerts`). Mailed when a class becomes visible: at creation for an approved teacher, or on admin approval (`utils/classAlerts.js`, logs `[CLASS_ALERT]`).
   - Request emails: posting a class request mails every member whose `teach_language` matches, with the time in their own zone, unless `notification_preferences.request_emails` is false (`utils/requestAlerts.js`, logs `[REQUEST_ALERT]`).
 - `PATCH /api/users/:id` rejects a `timezone` Intl cannot use (`isValidTimezone` in `utils/timezonePolicy.js`).
-- Tests: Jest, **56 suites / 413 tests** (`npx jest`).
+- Invites (2026-11-07): the invite code is the public member code (`U000012`). Register and Google sign-up accept `invite_code` and store `users.referred_by`; an unknown code is ignored, never a reason to refuse signup. `GET /api/referrals` gives the dashboard's counts. Migration `migrations/add_referrals.sql` (run 2026-11-07; its first version failed because it left `earned_feedback` out of the type check).
+- Push notifications (2026-11-07): every place that saves an in-app notification also calls `pushNotifications(rows)` (`utils/push.js`, `web-push` pinned to 3.6.7), which sends to the member's devices and forgets ones that unsubscribed (404/410). Devices subscribe through `/api/push` (`push_subscriptions`, `migrations/add_push_subscriptions.sql`, run). Without `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` nothing is sent and `GET /api/push/key` returns 404. A new notification type has to go through `pushNotifications` too, or it reaches the bell only.
+- Tests: Jest, **59 suites / 424 tests** (`npx jest`).
 
 **Frontend** (`/Users/kinghamin/linguaxchange-frontend`, Next.js App Router):
 - Cream/navy/red "sticker" design, Baloo 2 + Inter fonts.
@@ -42,7 +46,11 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - Turning readers into teachers: each guide page has "Teach a class with this guide", which opens the class form prefilled with language, level, topic and the guide as material (logged-out visitors sign up first and come back). The dashboard shows a "Teach your first class" checklist until the member has an `earned` transaction (hideable, `localStorage` key `firstClassChecklistDismissed`).
 - Browse page: picking a language shows the class alert bar (`components/ClassAlertToggle.js`). Dashboard: "Add to calendar" .ics download on upcoming classes (`lib/calendar.js`). Settings: switch for the request emails; the preferences PATCH replaces the whole JSON object, so every key must be sent.
 - Time zone: detected at sign-in; the navbar asks the member to switch or keep when the device zone differs from the saved one ("keep" pins it as manual; answer remembered per pair in `tzPromptDismissed`). The date picker names the device zone it uses.
-- Tests: Node's built-in runner, **24 tests** (`npm test`) — translation parity across the five UI languages, return-path safety, request drafts, time zone aliases, calendar files.
+- Level check (`lib/levelQuiz.js`, `components/LevelQuiz.js`): at the bottom of every guide, 12 questions (3 per level, A1–B2) in all seven languages; the result is the first level with fewer than 2 of 3 right, plus the score and each missed question with both answers. Questions are written by Claude and **not yet reviewed by native speakers**. English questions are grammar only (its guides are read by Spanish speakers); Portuguese follows Brazilian usage.
+- Invites: any page with `?invite=U000012` keeps the code for a logged-out visitor until signup (`lib/invite.js`, `localStorage` key `inviteCode`); the dashboard's invite card shows the member's link and counts.
+- Gift reveal (`components/GiftReveal.js`): an unread `credit_added` notification (invite reward or admin grant) opens as a small card with a gift box to tap, a banana with the amount, and Collect, which marks it read. Oldest first, one at a time; reduced-motion users get no animation. A first full-screen version was judged too much.
+- Push: Settings → "Notifications on this device" (`components/PushToggle.js`, `lib/push.js`); hidden while the backend has no keys or the browser can't push; on an iPhone not added to the Home Screen it explains how. `public/sw.js` shows each push and opens the page it is about. Logout unsubscribes the device.
+- Tests: Node's built-in runner, **34 tests** (`npm test`) — translation parity across the five UI languages, return-path safety, request drafts, time zone aliases, calendar files, level-check sets and scoring, invite codes, push key conversion.
 
 ## 3. Tech stack & architecture
 
@@ -68,7 +76,8 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 
 ## 5. In progress / next steps
 
-- **No public classes yet** — the biggest gap. Built 2026-11-07 to address it: guide → teach link, first-class checklist, request emails to teachers, class alerts, calendar export. Remaining ideas, in suggested order: waitlist for full classes, a level-check quiz at the end of each guide, Web Push notifications (a service worker is already registered), flashcards from the guides, invite-a-friend banana. A weekly availability grid for teachers was deliberately skipped: with this few teachers per language, every one of them should hear about every request.
+- **Few public classes** — the biggest gap (2 upcoming on 2026-11-07: Korean A1, Spanish A2; 0 open requests). Built 2026-11-07 to address it: guide → teach link, first-class checklist, request emails to teachers, class alerts, calendar export, level check, invite a friend, gift reveal, push notifications. Remaining ideas: flashcards from the guides; a waitlist for full classes once classes actually fill. A weekly availability grid for teachers was deliberately skipped: with this few teachers per language, every one of them should hear about every request.
+- Have a native speaker of each language skim the level-check questions in `lib/levelQuiz.js`; one wrong answer index gives readers the wrong level.
 - Run one real sign-up through the new funnel end to end (logged out → guide → request → register → back on the board). Not yet done; it creates a real account.
 - Owner to-do after the secret rotation: review the GitHub security log, Resend log and Twilio usage for anything unusual. (The stale GitHub Actions `CRON_SECRET` was deleted 2026-11-04; no workflow used it.)
 - Twilio Verify (2026-11-06/07): Fraud Guard is under Verify > Fraud & Geo Permissions. Account-level overrides set Fraud Guard to Disabled for the US, Canada, Brazil and Australia (left as is; those countries are low risk). Geo Permissions (verified 2026-11-07 from the saved console page): SMS allowed for 50 of 249 countries — Europe (Spain, Portugal, France, Italy, Germany, UK, Ireland, Netherlands, Belgium, Switzerland, Austria, Poland, Sweden, Norway, Denmark, Finland, Greece, Romania, Ukraine), Asia (Korea, Japan, China, Taiwan, Hong Kong, India, Philippines), the Americas (US, Canada, Mexico, Costa Rica, Dominican Republic, Guatemala, Honduras, El Salvador, Panama, Nicaragua, Puerto Rico, Argentina, Bolivia, Brazil, Chile, Colombia, Ecuador, Peru, Paraguay, Uruguay, Venezuela), Morocco, Australia and New Zealand; Voice disabled in all 249. A member from any other country gets "can't send a code right now" until their country is enabled. send-otp allows 20 codes per address per hour, and each costs money.
@@ -101,7 +110,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - Supabase project ref: `shrsxgzrdbxlptwzuevb`. Site URL `https://gongbuleng.com`; redirect URL `https://gongbuleng.com/auth/callback`.
 - Google sign-in: Cloud project `913341791233`, owned by `ohamin96@gmail.com`; branding published as GongbuLeng.
 - Contact address on legal pages: `gongbuleng.team@gmail.com`.
-- Backend env vars include the Supabase URL and service-role key (`SUPABASE_URL`, `SUPABASE_KEY`), `JWT_SECRET`, `ADMIN_EMAILS`, `RESEND_API_KEY`, the `JAAS_*` keys, Twilio credentials and `API_PROXY_SECRET` (also on Vercel). Read names from the code, never values from `.env`.
+- Backend env vars include the Supabase URL and service-role key (`SUPABASE_URL`, `SUPABASE_KEY`), `JWT_SECRET`, `ADMIN_EMAILS`, `RESEND_API_KEY`, the `JAAS_*` keys, Twilio credentials and `API_PROXY_SECRET` (also on Vercel), and `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` for push (set in Railway 2026-11-07; Railway applies a variable change only after its Deploy). Read names from the code, never values from `.env`.
 
 ## 8. Decisions made (don't re-litigate)
 
