@@ -4,12 +4,16 @@ import { useLanguage } from '../lib/i18n/LanguageContext'
 import LanguageSwitcher from './LanguageSwitcher'
 import StreakCalendar from './StreakCalendar'
 import { logout } from '../lib/auth'
+import { detectTimezone, sameTimezone } from '../lib/timezone'
 
 const API = ''
 const NOTIFICATIONS_POLL_MS = 30 * 1000
 // Mirrors LOW_CREDIT_THRESHOLD in the backend's utils/lowCreditNudge.js — the
 // balance at which it already emails "you're running low".
 const LOW_BANANAS = 1
+// Holds "<device zone>|<saved zone>" once the member has answered the
+// time zone banner for that pair, so it doesn't ask again on every page.
+const TZ_PROMPT_KEY = 'tzPromptDismissed'
 
 function timeAgo(iso, t) {
   const minutes = Math.floor((Date.now() - new Date(iso).getTime()) / 60000)
@@ -51,6 +55,7 @@ export default function Navbar() {
   const [streak, setStreak] = useState(null)
   const [needsPhone, setNeedsPhone] = useState(false)
   const [profileIncomplete, setProfileIncomplete] = useState(false)
+  const [tzMismatch, setTzMismatch] = useState(null)
   const [notifications, setNotifications] = useState([])
   const [showCreditsTip, setShowCreditsTip] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
@@ -84,7 +89,21 @@ export default function Navbar() {
       authed('/api/credits').then(d => d && setCredits(d.balance ?? 0))
     }
     fetchCredits()
-    fetch(`${API}/api/users/${parsedUser.id}`, { headers }).then(r => r.json()).then(d => setStreak(d?.current_streak ?? 0))
+    fetch(`${API}/api/users/${parsedUser.id}`, { headers }).then(r => r.json()).then(d => {
+      setStreak(d?.current_streak ?? 0)
+      // The zone is only re-detected at login and a session lasts 7 days, so
+      // a member who travels keeps seeing the old zone's times. A manually
+      // picked zone is never overwritten at login at all. Ask instead of
+      // guessing, and stop asking once they've answered for this pair.
+      const device = detectTimezone()
+      if (d?.timezone && device && !sameTimezone(d.timezone, device)) {
+        let dismissed = null
+        try { dismissed = localStorage.getItem(TZ_PROMPT_KEY) } catch (e) {}
+        if (dismissed !== `${device}|${d.timezone}`) {
+          setTzMismatch({ device, saved: d.timezone, source: d.timezone_source })
+        }
+      }
+    })
 
     // A Google sign-up is sent to /auth/verify-phone once, on its very first
     // login (app/auth/callback/page.js gates on isNewUser). Skip it and there
@@ -119,6 +138,34 @@ export default function Navbar() {
       window.removeEventListener('credits-changed', fetchCredits)
     }
   }, [])
+
+  // "Keep" pins the saved zone as a manual choice: left on auto, the next
+  // login would quietly switch it to the device zone anyway.
+  const answerTimezone = async (useDevice) => {
+    const { device, saved, source } = tzMismatch
+    setTzMismatch(null)
+    const remember = () => { try { localStorage.setItem(TZ_PROMPT_KEY, `${device}|${saved}`) } catch (e) {} }
+    if (!useDevice && source === 'manual') return remember()
+    const body = useDevice
+      ? { timezone: device, timezone_source: 'auto' }
+      : { timezone: saved, timezone_source: 'manual' }
+    try {
+      const res = await fetch(`${API}/api/users/${user.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
+        body: JSON.stringify(body)
+      })
+      if (!res.ok) return
+      remember()
+      const stored = JSON.parse(localStorage.getItem('user') || '{}')
+      localStorage.setItem('user', JSON.stringify({ ...stored, ...body }))
+      // Pages read the zone once on mount; reload so every time on screen
+      // switches over, not just the ones rendered after this.
+      if (useDevice) window.location.reload()
+    } catch (e) {
+      // Leave it unanswered; the banner comes back on the next page.
+    }
+  }
 
   const markRead = (id) => {
     setNotifications(ns => ns.map(n => n.id === id ? { ...n, read_at: new Date().toISOString() } : n))
@@ -173,6 +220,19 @@ export default function Navbar() {
           className="bg-navy text-white px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap hover:bg-navy/90 transition-colors">
           {t('nav.verifyPhoneCta')}
         </a>
+      </div>
+    )}
+    {tzMismatch && (
+      <div className="bg-brand-teal/15 border-b-2 border-brand-teal px-4 md:px-8 py-2.5 flex items-center justify-center gap-3 flex-wrap text-center">
+        <span className="text-navy text-sm font-medium">🕒 {t('nav.timezoneMismatchBanner', tzMismatch)}</span>
+        <button type="button" onClick={() => answerTimezone(true)}
+          className="bg-navy text-white px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap hover:bg-navy/90 transition-colors">
+          {t('nav.timezoneSwitch', tzMismatch)}
+        </button>
+        <button type="button" onClick={() => answerTimezone(false)}
+          className="border-2 border-navy text-navy px-4 py-1 rounded-full text-xs font-bold whitespace-nowrap hover:bg-navy/5 transition-colors">
+          {t('nav.timezoneKeep', tzMismatch)}
+        </button>
       </div>
     )}
     <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">

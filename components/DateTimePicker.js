@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { isSameDay, startOfDay, buildCalendarGrid } from '../lib/calendarGrid'
+import { detectTimezone } from '../lib/timezone'
 
 const SLOT_INTERVAL_MINUTES = 30
 
@@ -40,6 +41,12 @@ export default function DateTimePicker({ value, onChange, t }) {
   const monthLabel = new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(viewDate)
 
   const timeSlots = selectedDate ? buildTimeSlots(selectedDate, now) : []
+  // Every slot here is device wall-clock time, while the rest of the site
+  // shows times in the member's saved zone. Name the zone so a member who
+  // kept a different one knows which clock they are picking on.
+  // ponytail: label only; make the picker zone-aware if members keep zones
+  // that differ from their device often.
+  const deviceZone = detectTimezone()
 
   const pickDate = (date) => {
     if (startOfDay(date) < today) return
@@ -104,6 +111,9 @@ export default function DateTimePicker({ value, onChange, t }) {
                   )
                 })}
               </div>
+              {deviceZone && (
+                <p className="text-xs text-navy/65 mt-3">{t('classes.pickerTimezoneHint', { zone: deviceZone })}</p>
+              )}
             </div>
 
             <div className="border-t sm:border-t-0 sm:border-l border-navy/10 p-4 w-48 max-h-80 overflow-y-auto">
