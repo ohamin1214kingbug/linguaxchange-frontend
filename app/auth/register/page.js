@@ -9,6 +9,7 @@ import PhoneNumberField, { isValidPhoneNumber } from '../../../components/PhoneN
 import { countryOptions } from '../../../lib/countries'
 import { languageOptions, LEVELS, levelLabel } from '../../../lib/languages'
 import { takeReturnPath } from '../../../lib/auth'
+import { pendingInvite, clearInvite } from '../../../lib/invite'
 
 
 const TOTAL_STEPS = 5
@@ -237,6 +238,7 @@ export default function Register() {
           certificate_explanation: form.certificate_explanation,
           phone_number: phone,
           verified_token: verifiedToken,
+          invite_code: pendingInvite(),
         })
       })
       const data = await response.json()
@@ -245,6 +247,7 @@ export default function Register() {
       } else {
         localStorage.setItem('token', data.token)
         localStorage.setItem('user', JSON.stringify(data.user))
+        clearInvite()
         syncTimezone(data.user.id, data.token)
         router.push(takeReturnPath())
       }

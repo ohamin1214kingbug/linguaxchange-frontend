@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '../../../lib/supabase'
 import { syncTimezone } from '../../../lib/timezone'
 import { takeReturnPath } from '../../../lib/auth'
+import { pendingInvite, clearInvite } from '../../../lib/invite'
 
 const API = ''
 
@@ -46,7 +47,9 @@ export default function Callback() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            access_token: session.access_token
+            access_token: session.access_token,
+            // Only used if this sign-in creates the account.
+            invite_code: pendingInvite(),
           })
         })
         const data = await loginRes.json()
@@ -57,6 +60,7 @@ export default function Callback() {
             return
           }
           localStorage.setItem('token', data.token)
+          clearInvite()
           localStorage.setItem('user', JSON.stringify(data.user))
           syncTimezone(data.user.id, data.token)
           if (data.isNewUser && !data.user.phone_verified) {

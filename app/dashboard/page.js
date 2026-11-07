@@ -8,6 +8,7 @@ import Tabs from '../../components/Tabs'
 import { formatInTimezone, asUtcDate } from '../../lib/timezone'
 import { downloadClassIcs } from '../../lib/calendar'
 import FirstClassChecklist from '../../components/FirstClassChecklist'
+import InviteCard from '../../components/InviteCard'
 
 const API = ''
 
@@ -466,6 +467,8 @@ export default function Dashboard() {
         {/* The main button points at requests, not browsing: with few public
             classes yet, a request is the step that works for everyone. */}
         <FirstClassChecklist profile={profile} teachingClasses={teachingClasses} transactions={transactions} t={t} />
+
+        <InviteCard userId={user.id} t={t} />
 
         {showWelcome && (
           <section className="mb-6 bg-white border-2 border-navy rounded-2xl px-5 py-5">

@@ -4,6 +4,7 @@ import "./globals.css";
 import { LanguageProvider } from "../lib/i18n/LanguageContext";
 import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
 import AuthTabSync from "../components/AuthTabSync";
+import InviteCapture from "../components/InviteCapture";
 
 const baloo = Baloo_2({
   variable: "--font-display",
@@ -70,6 +71,7 @@ export default function RootLayout({ children }) {
         />
         <ServiceWorkerRegister />
         <AuthTabSync />
+        <InviteCapture />
         <LanguageProvider>{children}</LanguageProvider>
         <SafeAnalytics />
       </body>
