@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { QUIZZES, scoreQuiz } from '../lib/levelQuiz'
+import { QUIZZES, scoreQuiz, reviewQuiz } from '../lib/levelQuiz'
 import { levelLabel } from '../lib/languages'
 
 // Twelve questions, one at a time, then a level and the classes, requests and
@@ -15,6 +15,7 @@ export default function LevelQuiz({ language, languageName, currentLevel }) {
   const index = answers.length
   const done = index === questions.length
   const result = done ? scoreQuiz(questions, answers) : null
+  const review = done ? reviewQuiz(questions, answers) : null
   const label = result && levelLabel(language, result.level)
 
   if (!started) {
@@ -55,9 +56,10 @@ export default function LevelQuiz({ language, languageName, currentLevel }) {
         </div>
       ) : (
         <div className="bg-white border-2 border-navy rounded-2xl p-5">
-          <p className="font-display font-extrabold text-xl text-navy mb-2">
+          <p className="font-display font-extrabold text-xl text-navy mb-1">
             {result.passedAll ? `You're at ${label} or above` : `Start at ${label}`}
           </p>
+          <p className="text-navy font-bold text-sm mb-2">{review.correct} of {review.total} correct</p>
           <p className="text-navy/65 text-sm leading-relaxed mb-4">
             {result.passedAll
               ? 'You got the B2 questions right too, so our guides are behind you. A B2 class keeps you speaking, or you could teach the lower levels.'
@@ -79,6 +81,31 @@ export default function LevelQuiz({ language, languageName, currentLevel }) {
               Try again
             </button>
           </div>
+
+          {review.mistakes.length > 0 && (
+            <div className="mt-6 pt-5 border-t border-navy/10">
+              <p className="font-bold text-navy text-sm mb-3">
+                {review.mistakes.length === 1 ? 'The question you missed' : `The ${review.mistakes.length} questions you missed`}
+              </p>
+              <ol className="space-y-3">
+                {review.mistakes.map(m => (
+                  <li key={m.number} className="bg-cream rounded-xl px-4 py-3">
+                    <p className="text-navy/65 text-xs font-bold mb-1">
+                      Question {m.number} · {levelLabel(language, m.level)}
+                    </p>
+                    <p className="text-navy font-bold mb-1.5" lang={/[가-힣]/.test(m.prompt) ? 'ko' : undefined}>{m.prompt}</p>
+                    <p className="text-sm">
+                      <span className="text-brand-red font-medium">
+                        {m.given === null ? '✗ You skipped it' : <>✗ Your answer: <span className="line-through">{m.given}</span></>}
+                      </span>
+                      <span className="text-navy/65"> · </span>
+                      <span className="text-navy font-bold">✓ {m.right}</span>
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
         </div>
       )}
     </div>
