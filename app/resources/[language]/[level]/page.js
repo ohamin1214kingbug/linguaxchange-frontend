@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { levelLabel, LANGUAGE_NAMES_EN } from '../../../../lib/languages'
+import LevelQuiz from '../../../../components/LevelQuiz'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 const SITE = 'https://gongbuleng.com'
@@ -82,6 +83,12 @@ export default async function ResourceDetail({ params }) {
         {resource.attribution && (
           <p className="mt-6 text-navy/65 text-xs leading-relaxed">{resource.attribution}</p>
         )}
+
+        {/* A reader who isn't sure the level fits gets a direction instead
+            of a guess. Renders nothing for languages without a question set. */}
+        <LevelQuiz language={resource.language_code}
+          languageName={LANGUAGE_NAMES_EN[resource.language_code] || resource.language_code}
+          currentLevel={resource.level} />
 
         {/* The reason this page is worth ranking. Someone reading about what
             to study at this level is the best-qualified visitor the site
