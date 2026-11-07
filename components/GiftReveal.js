@@ -6,19 +6,19 @@ import { useState, useEffect } from 'react'
 // opens as a gift: the box waits, the member taps it, it bursts and the
 // banana comes out. Collecting marks the notification read, so each gift is
 // opened once; several in a row open one after another.
-const SPARKS = Array.from({ length: 14 }, (_, i) => {
-  const angle = (i / 14) * 2 * Math.PI
-  const distance = 110 + (i % 3) * 30
+const SPARKS = Array.from({ length: 8 }, (_, i) => {
+  const angle = (i / 8) * 2 * Math.PI
+  const distance = 56 + (i % 2) * 16
   return {
     dx: `${Math.round(Math.cos(angle) * distance)}px`,
     dy: `${Math.round(Math.sin(angle) * distance)}px`,
-    color: ['#f4a623', '#da1f33', '#2ec4b6', '#ffffff'][i % 4],
+    color: ['#f4a623', '#da1f33', '#2ec4b6'][i % 3],
   }
 })
 
 function GiftBox() {
   return (
-    <svg viewBox="0 0 120 120" className="w-40 h-40 drop-shadow-[0_10px_0_rgba(0,0,0,0.25)]" aria-hidden="true">
+    <svg viewBox="0 0 120 120" className="w-24 h-24" aria-hidden="true">
       <rect x="14" y="52" width="92" height="60" rx="8" fill="#da1f33" stroke="#1a1a2e" strokeWidth="5" />
       <rect x="8" y="36" width="104" height="22" rx="6" fill="#e84a5a" stroke="#1a1a2e" strokeWidth="5" />
       <rect x="51" y="36" width="18" height="76" fill="#f4a623" stroke="#1a1a2e" strokeWidth="5" />
@@ -40,20 +40,18 @@ export default function GiftReveal({ gift, onCollect, t }) {
     if (stage !== 'closed') return
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     setStage(reduced ? 'open' : 'shaking')
-    if (!reduced) setTimeout(() => setStage('open'), 700)
+    if (!reduced) setTimeout(() => setStage('open'), 450)
   }
 
   return (
     <div role="dialog" aria-modal="true" aria-label={t('nav.giftTitle')}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-navy/90 px-4 overflow-hidden">
-      <div className="gift-rays absolute w-[900px] h-[900px] max-w-none pointer-events-none" />
-
-      <div className="relative flex flex-col items-center text-center">
-        <p className="font-display font-extrabold text-3xl md:text-4xl text-white mb-6 drop-shadow-[0_3px_0_#1a1a2e]">
+      className="fixed inset-0 z-50 flex items-center justify-center bg-navy/50 px-4">
+      <div className="w-full max-w-xs bg-white border-2 border-navy rounded-2xl px-6 py-6 flex flex-col items-center text-center shadow-[0_6px_0_#1a1a2e]">
+        <p className="font-display font-extrabold text-xl text-navy mb-4">
           {stage === 'open' ? t('nav.giftOpenedTitle') : t('nav.giftTitle')}
         </p>
 
-        <div className="relative w-48 h-48 flex items-center justify-center">
+        <div className="relative w-28 h-28 flex items-center justify-center rounded-full bg-brand-yellow/15">
           {stage !== 'open' ? (
             <button type="button" onClick={open} aria-label={t('nav.giftTap')}
               className={`${stage === 'shaking' ? 'gift-shake' : 'gift-idle'} cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-yellow rounded-2xl`}>
@@ -61,27 +59,26 @@ export default function GiftReveal({ gift, onCollect, t }) {
             </button>
           ) : (
             <>
-              <div className="gift-flash absolute inset-[-40%] rounded-full bg-white pointer-events-none" />
               {SPARKS.map((s, i) => (
-                <span key={i} className="gift-spark absolute w-3 h-3 rounded-full pointer-events-none"
+                <span key={i} className="gift-spark absolute w-2 h-2 rounded-full pointer-events-none"
                   style={{ background: s.color, '--dx': s.dx, '--dy': s.dy }} />
               ))}
-              <span className="gift-pop text-[120px] leading-none drop-shadow-[0_8px_0_rgba(0,0,0,0.3)]" aria-hidden="true">🍌</span>
+              <span className="gift-pop text-6xl leading-none" aria-hidden="true">🍌</span>
             </>
           )}
         </div>
 
         {stage === 'open' ? (
           <div className="gift-rise flex flex-col items-center">
-            <p className="font-display font-extrabold text-4xl text-brand-yellow mt-4 drop-shadow-[0_3px_0_#1a1a2e]">{t('nav.giftAmount', { n: amount })}</p>
-            <p className="text-white/85 text-base mt-2 max-w-xs">{gift.message}</p>
+            <p className="font-display font-extrabold text-2xl text-navy mt-3">{t('nav.giftAmount', { n: amount })}</p>
+            <p className="text-navy/65 text-sm mt-1">{gift.message}</p>
             <button type="button" onClick={onCollect} autoFocus
-              className="mt-6 bg-brand-yellow text-navy font-extrabold text-lg px-10 py-3 rounded-full border-4 border-navy shadow-[0_5px_0_#1a1a2e] hover:translate-y-0.5 hover:shadow-[0_3px_0_#1a1a2e] transition-all">
+              className="mt-5 bg-brand-red text-white font-bold px-8 py-2.5 rounded-full border-2 border-navy hover:bg-brand-red-dark transition-colors">
               {t('nav.giftCollect')}
             </button>
           </div>
         ) : (
-          <p className="text-white/85 font-bold mt-4 animate-pulse">{t('nav.giftTap')}</p>
+          <p className="text-navy/65 text-sm font-medium mt-4">{t('nav.giftTap')}</p>
         )}
       </div>
     </div>
