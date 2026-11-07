@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { levelLabel } from '../../../../lib/languages'
+import { levelLabel, LANGUAGE_NAMES_EN } from '../../../../lib/languages'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 const SITE = 'https://gongbuleng.com'
@@ -99,6 +99,29 @@ export default async function ResourceDetail({ params }) {
           <a href={`/classes?language=${resource.language_code}&level=${resource.level}`}
             className="inline-block bg-navy text-white px-6 py-3 rounded-full font-bold border-2 border-navy hover:bg-navy/90 transition-colors">
             See {levelLabel(resource.language_code, resource.level)} classes →
+          </a>
+        </div>
+
+        {/* The other side of the same page: the site has learners asking for
+            classes and few teachers posting them. A native speaker reading a
+            guide in their own language already has a lesson plan in hand. */}
+        <div className="mt-8 pt-8 border-t border-navy/10">
+          <p className="font-display font-extrabold text-xl text-navy mb-2">
+            Speak {LANGUAGE_NAMES_EN[resource.language_code] || resource.language_code}? Teach this level
+          </p>
+          <p className="text-navy/65 text-sm leading-relaxed mb-4">
+            Use this guide as your lesson plan. We fill in the language, level and topic
+            for you; you pick a time. Every student who joins earns you a banana to spend
+            on your own classes.
+          </p>
+          <a href={`/classes/create?${new URLSearchParams({
+              language_code: resource.language_code,
+              level: resource.level,
+              topic: `${resource.title.split(":")[0].trim()} practice`,
+              guide: `${SITE}/resources/${language.toLowerCase()}/${level.toLowerCase()}`,
+            })}`}
+            className="inline-block border-2 border-navy text-navy px-6 py-3 rounded-full font-bold hover:bg-navy hover:text-white transition-colors">
+            Teach a class with this guide →
           </a>
         </div>
       </div>

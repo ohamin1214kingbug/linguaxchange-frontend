@@ -7,6 +7,7 @@ import DateTimePicker, { toLocalValue } from '../../../components/DateTimePicker
 import { asUtcDate } from '../../../lib/timezone'
 import { CLASS_SIZE_OPTIONS, DEFAULT_CLASS_SIZE } from '../../../lib/classSize'
 import { languageOptions, LEVELS, levelLabel } from '../../../lib/languages'
+import { rememberReturnPath } from '../../../lib/auth'
 
 
 export default function CreateClass() {
@@ -58,20 +59,37 @@ export default function CreateClass() {
   // negotiable" means in practice.
   const [requestId, setRequestId] = useState(null)
   useEffect(() => {
+    // A study guide's "Teach this level" link lands here logged out more
+    // often than not. Send the visitor to sign up and bring them back to this
+    // same prefilled form, instead of letting them fill it in and fail on
+    // submit.
+    if (!localStorage.getItem('token')) {
+      rememberReturnPath(window.location.pathname + window.location.search)
+      router.replace('/auth/register')
+      return
+    }
     const params = new URLSearchParams(window.location.search)
-    if (!params.get('request')) return
-    setRequestId(params.get('request'))
+    // A guide link carries the guide's own title as the topic and its page as
+    // the material, so a first-time teacher starts from a lesson plan rather
+    // than a blank form.
+    // The browse page's empty-state "teach it yourself" link carries only the
+    // language and level; it used to be ignored because this only ran for
+    // request links. Every field falls back to what the form already holds.
+    const fromGuide = params.get('guide')
+    if (params.get('request')) setRequestId(params.get('request'))
     const preferred = params.get('preferred_time')
     setForm(f => ({
       ...f,
       language_code: params.get('language_code') || f.language_code,
       level: params.get('level') || f.level,
+      topic: fromGuide && params.get('topic') ? 'custom' : f.topic,
       custom_topic: params.get('topic') || f.custom_topic,
       title: params.get('topic') || f.title,
+      materials: fromGuide || f.materials,
       max_students: parseInt(params.get('max_students')) || f.max_students,
       scheduled_at: preferred ? toLocalValue(asUtcDate(preferred)) : f.scheduled_at
     }))
-  }, [])
+  }, [router])
 
   // Prefills from the teacher's own saved defaults (Settings → Teaching
   // defaults), if they've set any — a starting point, not a lock, so every

@@ -6,6 +6,7 @@ import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
 import Tabs from '../../components/Tabs'
 import { formatInTimezone, asUtcDate } from '../../lib/timezone'
+import { downloadClassIcs } from '../../lib/calendar'
 
 const API = ''
 
@@ -658,6 +659,12 @@ export default function Dashboard() {
                                   ? t('dashboard.liveNow')
                                   : t('dashboard.upcoming')}
                         </p>
+                        {scheduledAt && !isClassOver && enrollment.status !== 'cancelled' && (
+                          <button type="button" className="text-navy/65 hover:text-brand-red text-xs font-bold mt-1 transition-colors"
+                            onClick={() => downloadClassIcs({ sessionId: enrollment.class_session_id, title: cls?.title || 'Class', start: scheduledAt, durationMinutes: cls?.duration_minutes })}>
+                            {t('dashboard.addToCalendar')}
+                          </button>
+                        )}
                       </div>
                       <div>
                         {enrollment.status !== 'attended' && enrollment.status !== 'cancelled' && isClassOver && (
@@ -757,6 +764,12 @@ export default function Dashboard() {
                           <p className="text-navy/65 text-xs mt-0.5">
                             {scheduledAt ? formatInTimezone(scheduledAt, user.timezone, user.time_format) : t('dashboard.noTimeSet')}
                           </p>
+                          {scheduledAt && session && !isClassOver && (
+                            <button type="button" className="text-navy/65 hover:text-brand-red text-xs font-bold mt-1 transition-colors"
+                              onClick={() => downloadClassIcs({ sessionId: session.id, title: cls.title, start: scheduledAt, durationMinutes: cls.duration_minutes })}>
+                              {t('dashboard.addToCalendar')}
+                            </button>
+                          )}
                         </div>
                         {isClassOver ? (
                           <span className="text-navy/65 text-sm">{t('dashboard.ended')}</span>

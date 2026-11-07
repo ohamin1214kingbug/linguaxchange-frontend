@@ -9,6 +9,7 @@ import { formatInTimezone, utcLabel } from '../../lib/timezone'
 import { hasUpcomingSession } from '../../lib/classSchedule'
 import { fetchJoinedClassIds } from '../../lib/enrollments'
 import { rememberReturnPath } from '../../lib/auth'
+import ClassAlertToggle from '../../components/ClassAlertToggle'
 
 const API = ''
 
@@ -233,6 +234,11 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
             ))}
           </select>
         </div>
+
+        {/* Keyed on the filter so it re-reads its state for each language. */}
+        {mounted && filter !== 'all' && (
+          <ClassAlertToggle key={`${filter}-${levelFilter}`} language={filter} level={levelFilter} label={emptyLabel} t={t} />
+        )}
 
         {loading && classes.length === 0 && <p className="text-navy/65">{t('classes.loadingClasses')}</p>}
 
