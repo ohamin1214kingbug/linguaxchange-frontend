@@ -77,47 +77,37 @@ body {
 }
 
 /* Gift reveal (components/GiftReveal.js): a banana gift is opened, not just
-   read. The box idles with a wobble, shakes when tapped, bursts, and the
-   banana pops out over spinning light rays. */
-@keyframes gift-rays { to { transform: rotate(360deg); } }
+   read. A small card over the page: the box bobs, gives a short shake when
+   tapped, and the banana pops out with a few sparks. Kept modest on
+   purpose; the first version (full-screen, spinning rays) was too much. */
 @keyframes gift-idle {
   0%, 100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-10px) rotate(-4deg); }
-  50% { transform: translateY(0) rotate(0deg); }
-  75% { transform: translateY(-6px) rotate(4deg); }
+  50% { transform: translateY(-4px) rotate(-2deg); }
 }
 @keyframes gift-shake {
-  0%, 100% { transform: rotate(0deg) scale(1); }
-  20% { transform: rotate(-12deg) scale(1.05); }
-  40% { transform: rotate(12deg) scale(1.1); }
-  60% { transform: rotate(-14deg) scale(1.15); }
-  80% { transform: rotate(14deg) scale(1.2); }
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-6deg); }
+  50% { transform: rotate(6deg); }
+  75% { transform: rotate(-4deg); }
 }
 @keyframes gift-pop {
-  0% { transform: scale(0) rotate(-30deg); opacity: 0; }
-  60% { transform: scale(1.25) rotate(8deg); opacity: 1; }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  0% { transform: scale(0.4); opacity: 0; }
+  70% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
 }
-@keyframes gift-flash { 0% { opacity: 0.9; } 100% { opacity: 0; } }
 @keyframes gift-spark {
   0% { transform: translate(0, 0) scale(1); opacity: 1; }
-  100% { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0.4); opacity: 0; }
 }
-@keyframes gift-rise { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes gift-rise { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-.gift-rays {
-  background: repeating-conic-gradient(from 0deg, rgb(244 166 35 / 0.35) 0deg 12deg, transparent 12deg 30deg);
-  animation: gift-rays 14s linear infinite;
-  mask-image: radial-gradient(circle, black 30%, transparent 70%);
-}
-.gift-idle { animation: gift-idle 1.6s ease-in-out infinite; }
-.gift-shake { animation: gift-shake 0.7s ease-in-out; }
-.gift-pop { animation: gift-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
-.gift-flash { animation: gift-flash 0.5s ease-out forwards; }
-.gift-spark { animation: gift-spark 0.9s ease-out forwards; }
-.gift-rise { animation: gift-rise 0.4s ease-out 0.35s both; }
+.gift-idle { animation: gift-idle 2.4s ease-in-out infinite; }
+.gift-shake { animation: gift-shake 0.45s ease-in-out; }
+.gift-pop { animation: gift-pop 0.4s ease-out both; }
+.gift-spark { animation: gift-spark 0.7s ease-out forwards; }
+.gift-rise { animation: gift-rise 0.3s ease-out 0.2s both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .gift-rays, .gift-idle, .gift-shake, .gift-pop, .gift-spark, .gift-rise { animation: none; }
-  .gift-flash, .gift-spark { display: none; }
+  .gift-idle, .gift-shake, .gift-pop, .gift-rise { animation: none; }
+  .gift-spark { display: none; }
 }
