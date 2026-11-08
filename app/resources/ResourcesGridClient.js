@@ -49,28 +49,30 @@ export default function ResourcesGridClient({ initialResources = [], serverFetch
 
         {loading && <p className="text-navy/65">{t('common.loading')}</p>}
 
+        {/* Tighter on a phone so all four levels fit; at full padding the
+            table was 423px wide and B2 sat past the edge of the screen. */}
         {!loading && (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  <th className="text-left text-navy/65 text-xs font-bold uppercase tracking-wide pb-3 pr-4"></th>
+                  <th className="text-left text-navy/65 text-xs font-bold uppercase tracking-wide pb-3 pr-2 sm:pr-4"></th>
                   {GRID_LEVELS.map(level => (
-                    <th key={level} className="text-navy/65 text-xs font-bold uppercase tracking-wide pb-3 px-2">{level}</th>
+                    <th key={level} className="text-navy/65 text-xs font-bold uppercase tracking-wide pb-3 px-1 sm:px-2">{level}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {languages.map(lang => (
                   <tr key={lang.code} className="border-t border-navy/10">
-                    <th scope="row" className="py-3 pr-4 font-bold text-navy whitespace-nowrap text-left">
-                      <span className="mr-2">{lang.flag}</span>{lang.name}
+                    <th scope="row" className="py-3 pr-2 sm:pr-4 font-bold text-navy whitespace-nowrap text-left">
+                      <span className="mr-1.5 sm:mr-2">{lang.flag}</span>{lang.name}
                     </th>
                     {GRID_LEVELS.map(level => (
-                      <td key={level} className="py-3 px-2 text-center">
+                      <td key={level} className="py-3 px-1 sm:px-2 text-center">
                         {has(lang.code, level) ? (
                           <a href={`/resources/${lang.code.toLowerCase()}/${level.toLowerCase()}`}
-                            className="inline-block bg-brand-yellow/20 text-navy border-2 border-navy px-4 py-1.5 rounded-full text-sm font-bold hover:bg-brand-yellow/40 transition-colors">
+                            className="inline-block bg-brand-yellow/20 text-navy border-2 border-navy px-2.5 sm:px-4 py-1.5 rounded-full text-sm font-bold hover:bg-brand-yellow/40 transition-colors">
                             {level}
                           </a>
                         ) : (

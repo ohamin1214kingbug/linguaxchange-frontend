@@ -519,15 +519,17 @@ export default function Dashboard() {
           </a>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-10">
-          <div className="bg-white rounded-2xl p-6 border-2 border-navy">
+        {/* Side by side on a phone too: stacked, two single numbers took a
+            whole screen of scrolling before the class list. */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 mb-8 md:mb-10">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 border-2 border-navy">
             <p className="text-navy/65 text-sm mb-1 font-medium">{t('dashboard.creditBalance')}</p>
-            <p className="font-display font-extrabold text-5xl text-brand-red">{credits ?? '...'}</p>
+            <p className="font-display font-extrabold text-4xl sm:text-5xl text-brand-red">{credits ?? '...'}</p>
             <p className="text-navy/65 text-sm mt-1">{t('dashboard.creditsAvailable')}</p>
           </div>
-          <div className="bg-white rounded-2xl p-6 border-2 border-navy">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 border-2 border-navy">
             <p className="text-navy/65 text-sm mb-1 font-medium">{t('dashboard.classesJoined')}</p>
-            <p className="font-display font-extrabold text-5xl text-brand-teal">{enrollments.length}</p>
+            <p className="font-display font-extrabold text-4xl sm:text-5xl text-brand-teal">{enrollments.length}</p>
             <p className="text-navy/65 text-sm mt-1">{t('dashboard.totalEnrollments')}</p>
           </div>
         </div>
@@ -538,7 +540,9 @@ export default function Dashboard() {
         {/* Sits in the tab row rather than in Quick actions: this is where
             the eye already is, and reporting is not a "quick action" you
             take on purpose — it is something you go looking for. */}
-        <div className="flex flex-wrap items-start gap-2 mb-6">
+        {/* On a phone the report button goes under the tabs instead of
+            wrapping in between them. */}
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-start gap-2 mb-6">
           <div className="flex-1 min-w-0">
             <Tabs active={tab} onChange={setTab} tabs={[
               { key: 'enrolled', label: t('dashboard.myClasses') },
@@ -547,7 +551,7 @@ export default function Dashboard() {
             ]} />
           </div>
           <button onClick={() => { setReporting(o => !o); setReportState('') }}
-            className="px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap border-2 border-navy/20 bg-white text-navy/65 hover:border-brand-red hover:text-brand-red transition-colors">
+            className="self-end sm:self-auto -mt-4 sm:mt-0 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-bold text-sm whitespace-nowrap border-2 border-navy/20 bg-white text-navy/65 hover:border-brand-red hover:text-brand-red transition-colors">
             🚩 {t('dashboard.reportSomeone')}
           </button>
         </div>
@@ -672,7 +676,7 @@ export default function Dashboard() {
                           </button>
                         )}
                       </div>
-                      <div>
+                      <div className="flex-shrink-0 ml-3 text-right">
                         {enrollment.status !== 'attended' && enrollment.status !== 'cancelled' && isClassOver && (
                           <button
                             onClick={() => confirmAttendance(enrollment.id)}
@@ -685,7 +689,7 @@ export default function Dashboard() {
                           <button
                             onClick={() => cancelEnrollment(enrollment, scheduledAt && (scheduledAt.getTime() - Date.now() >= 24 * 60 * 60 * 1000))}
                             disabled={cancellingEnrollmentId === enrollment.id}
-                            className="text-brand-red text-sm font-bold hover:underline disabled:opacity-50">
+                            className="text-brand-red text-sm font-bold whitespace-nowrap hover:underline disabled:opacity-50">
                             {cancellingEnrollmentId === enrollment.id ? t('dashboard.cancelling') : t('dashboard.cancelClass')}
                           </button>
                         )}

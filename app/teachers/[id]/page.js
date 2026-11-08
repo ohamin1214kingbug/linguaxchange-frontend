@@ -330,7 +330,7 @@ export default function TeacherProfile() {
               <img src={teacher.photo_url} alt={teacher.first_name}
                 className="w-24 h-24 rounded-full object-cover border-2 border-navy flex-shrink-0"/>
             ) : (
-              <div className="w-24 h-24 rounded-full bg-brand-red flex items-center justify-center text-4xl text-white font-display font-bold flex-shrink-0 border-2 border-navy">
+              <div className="w-24 h-24 flex-shrink-0 rounded-full bg-brand-red flex items-center justify-center text-4xl text-white font-display font-bold flex-shrink-0 border-2 border-navy">
                 {teacher.first_name?.[0]?.toUpperCase()}
               </div>
             )}
