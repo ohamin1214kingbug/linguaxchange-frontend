@@ -236,9 +236,9 @@ export default function ProfilePage() {
           <div className="flex items-center gap-6">
             {form.photo_url ? (
               <img src={form.photo_url} alt="avatar"
-                className="w-20 h-20 rounded-full object-cover border-2 border-navy"/>
+                className="w-20 h-20 flex-shrink-0 rounded-full object-cover border-2 border-navy"/>
             ) : (
-              <div className="w-20 h-20 rounded-full bg-brand-red flex items-center justify-center text-3xl text-white font-display font-bold border-2 border-navy">
+              <div className="w-20 h-20 flex-shrink-0 rounded-full bg-brand-red flex items-center justify-center text-3xl text-white font-display font-bold border-2 border-navy">
                 {form.first_name?.[0]?.toUpperCase() || '?'}
               </div>
             )}

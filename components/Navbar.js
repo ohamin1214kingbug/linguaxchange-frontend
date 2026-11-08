@@ -38,7 +38,7 @@ function notificationHref(n) {
 // Tailwind's scanner needs literal class strings, not interpolated ones —
 // hence the two full variants rather than a templated `w-${size}`.
 function Avatar({ user, size = 'sm' }) {
-  const sizeClass = size === 'md' ? 'w-9 h-9' : 'w-8 h-8'
+  const sizeClass = size === 'md' ? 'w-9 h-9 flex-shrink-0' : 'w-8 h-8 flex-shrink-0'
   return user.photo_url ? (
     <img src={user.photo_url} alt={user.first_name}
       className={`${sizeClass} rounded-full object-cover border-2 border-navy`} />
@@ -245,9 +245,13 @@ export default function Navbar() {
     )}
     <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
       <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">Leng</span></a>
-      <div className="flex gap-3 md:gap-4 items-center">
+      {/* A signed-in phone carries the language switch, bananas, bell and
+          avatar; Guides on top of that pushed the bar past 375px and cut the
+          avatar off. Below sm it moves into the profile menu, with Explore
+          and People, which had no way in on a phone at all. */}
+      <div className="flex gap-2 sm:gap-3 md:gap-4 items-center">
         <a href="/classes" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.exploreShort')}</a>
-        <a href="/resources" className="text-navy/70 font-medium hover:text-navy">{t('nav.resources')}</a>
+        <a href="/resources" className={`${user ? 'hidden sm:block' : ''} text-navy/70 font-medium hover:text-navy`}>{t('nav.resources')}</a>
         <a href="/people" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('nav.people')}</a>
         <LanguageSwitcher />
 
@@ -266,7 +270,7 @@ export default function Navbar() {
                     triggers the low-balance email. */}
                 <button onClick={() => setShowCreditsTip(o => !o)}
                   title={bananaLabel}
-                  className={`px-3 py-1 rounded-full text-sm font-bold border-2 transition-colors ${
+                  className={`px-3 py-1 rounded-full text-sm font-bold border-2 whitespace-nowrap transition-colors ${
                     credits <= LOW_BANANAS
                       ? 'bg-brand-red/10 text-brand-red border-brand-red/40 hover:bg-brand-red/20'
                       : 'bg-brand-yellow/15 text-navy border-brand-yellow hover:bg-brand-yellow/25'}`}>
@@ -356,7 +360,7 @@ export default function Navbar() {
             </div>
 
             <div className="relative">
-              <button onClick={() => setShowProfileMenu(o => !o)}>
+              <button onClick={() => setShowProfileMenu(o => !o)} aria-label={t('common.profile')}>
                 <Avatar user={user} />
               </button>
               {showProfileMenu && (
@@ -368,6 +372,9 @@ export default function Navbar() {
                       <p className="font-bold text-navy text-sm">{user.first_name} {user.last_name}</p>
                     </div>
                     <a href="/" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.home')}</a>
+                    <a href="/classes" className="sm:hidden block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('common.exploreShort')}</a>
+                    <a href="/resources" className="sm:hidden block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.resources')}</a>
+                    <a href="/people" className="sm:hidden block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.people')}</a>
                     <a href="/profile" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('common.profile')}</a>
                     <a href="/dashboard" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('common.dashboard')}</a>
                     <a href="/history" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.myClasses')}</a>

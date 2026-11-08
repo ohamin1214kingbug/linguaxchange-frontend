@@ -345,7 +345,11 @@ export default function SettingsPage() {
           </button>
         </p>
 
-        <div className="flex gap-2 mb-8 overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+        {/* Wraps like components/Tabs.js. A sideways-scrolling row hid four of
+            the six sections past the edge of a phone, with nothing to show
+            they were there. Not the shared component: Delete account keeps
+            its red active state. */}
+        <div className="flex flex-wrap gap-2 mb-8">
           {[
             { key: 'prefs', label: 'settings.displayPrefs' },
             { key: 'university', label: 'university.title' },
@@ -355,7 +359,7 @@ export default function SettingsPage() {
             { key: 'danger', label: 'settings.deleteAccount' }
           ].map(tb => (
             <button key={tb.key} type="button" onClick={() => setTab(tb.key)}
-              className={`px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap border-2 transition-colors ${
+              className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-bold text-sm whitespace-nowrap border-2 transition-colors ${
                 tab === tb.key
                   ? tb.key === 'danger' ? 'bg-brand-red text-white border-navy' : 'bg-navy text-white border-navy'
                   : 'bg-white text-navy/65 border-navy/20 hover:border-navy hover:text-navy'

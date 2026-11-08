@@ -108,7 +108,7 @@ export default function SavedTeachers() {
             <input value={code} onChange={e => setCode(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && search()}
               placeholder="U000007"
-              className="flex-1 border-2 border-navy/20 rounded-xl px-4 py-2.5 font-mono focus:border-brand-red focus:outline-none transition-colors"/>
+              className="flex-1 min-w-0 border-2 border-navy/20 rounded-xl px-4 py-2.5 font-mono focus:border-brand-red focus:outline-none transition-colors"/>
             <button onClick={search} disabled={searching || !code.trim()}
               className="bg-navy text-white px-5 py-2.5 rounded-xl font-bold border-2 border-navy hover:bg-navy/90 disabled:opacity-50 transition-colors">
               {searching ? t('savedTeachers.searching') : t('savedTeachers.find')}
@@ -121,9 +121,9 @@ export default function SavedTeachers() {
             <div className="flex items-start justify-between gap-4 mt-4 p-4 bg-cream rounded-xl border-2 border-navy/10">
               <div className="flex items-start gap-3 min-w-0">
                 {found.photo_url ? (
-                  <img src={found.photo_url} alt={found.first_name} className="w-10 h-10 rounded-full object-cover border-2 border-navy"/>
+                  <img src={found.photo_url} alt={found.first_name} className="w-10 h-10 flex-shrink-0 rounded-full object-cover border-2 border-navy"/>
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-brand-red flex items-center justify-center text-white font-bold border-2 border-navy">
+                  <div className="w-10 h-10 flex-shrink-0 rounded-full bg-brand-red flex items-center justify-center text-white font-bold border-2 border-navy">
                     {found.first_name?.[0]?.toUpperCase()}
                   </div>
                 )}

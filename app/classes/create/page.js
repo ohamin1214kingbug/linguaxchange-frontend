@@ -219,7 +219,7 @@ export default function CreateClass() {
           <>
           <div>
             <label className="block text-sm font-bold text-navy mb-3">{t('classes.languageTeach')}</label>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
               {LANGUAGES.map(lang => (
                 <button key={lang.code} onClick={() => setForm({ ...form, language_code: lang.code })}
                   className={`flex flex-col items-center p-3 rounded-xl border-2 text-sm transition-colors
@@ -235,7 +235,9 @@ export default function CreateClass() {
 
           <div>
             <label className="block text-sm font-bold text-navy mb-3">{t('classes.studentLevel')}</label>
-            <div className="flex gap-2">
+            {/* Wraps: six levels (wider still as "A1 · TOPIK 1" for Korean)
+                ran past the edge of a phone in one row. */}
+            <div className="flex flex-wrap gap-2">
               {LEVELS.map(level => (
                 <button key={level} onClick={() => setForm({ ...form, level })}
                   className={`px-4 py-2 rounded-full border-2 font-bold text-sm transition-colors

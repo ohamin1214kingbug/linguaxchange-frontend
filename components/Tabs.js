@@ -14,7 +14,7 @@ export default function Tabs({ tabs, active, onChange }) {
     <div className="flex flex-wrap gap-2 mb-6">
       {tabs.map(tab => (
         <button key={tab.key} type="button" onClick={() => onChange(tab.key)}
-          className={`px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap border-2 transition-colors ${
+          className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-bold text-sm whitespace-nowrap border-2 transition-colors ${
             active === tab.key
               ? 'bg-navy text-white border-navy'
               : 'bg-white text-navy/65 border-navy/20 hover:border-navy hover:text-navy'
