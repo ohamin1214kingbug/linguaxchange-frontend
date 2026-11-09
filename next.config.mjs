@@ -12,6 +12,11 @@ const UPLOAD_ROUTES = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // The rewritten guides are read from their markdown at request time
+  // (lib/guideSource.js); this ships those files with the page's server code.
+  outputFileTracingIncludes: {
+    '/resources/[language]/[level]': ['./docs/resources/*.md'],
+  },
   // Study guides are served from gongbuleng.com/guides/... rather than
   // from the Supabase project hostname they are actually stored on.
   //
