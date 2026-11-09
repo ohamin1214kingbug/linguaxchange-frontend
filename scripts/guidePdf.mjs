@@ -6,15 +6,19 @@
 // Page numbers use CSS page-margin boxes, which Chrome prints from version
 // 131; the build already requires a local Chrome.
 
-import { inlineHtml as h } from '../lib/guideFormat.mjs'
+import { inlineHtml as h, guideLabels } from '../lib/guideFormat.mjs'
 
 const LANGUAGES = {
   ko: ['Korean', '🇰🇷'], es: ['Spanish', '🇪🇸'], de: ['German', '🇩🇪'], en: ['English', '🇬🇧'],
   pt: ['Portuguese', '🇧🇷'], fr: ['French', '🇫🇷'], it: ['Italian', '🇮🇹'],
 }
-const LEVEL_WORD = { a1: 'Beginner', a2: 'Elementary', b1: 'Intermediate', b2: 'Upper intermediate' }
+const LEVEL_WORD = {
+  en: { a1: 'Beginner', a2: 'Elementary', b1: 'Intermediate', b2: 'Upper intermediate' },
+  es: { a1: 'Principiante', a2: 'Elemental', b1: 'Intermedio', b2: 'Intermedio alto' },
+}
 const TOPIK = { a1: 1, a2: 2, b1: 3, b2: 4 }
 
+let L = guideLabels('en')
 const cell = c => c.translation ? `<b>${h(c.text)}</b><span class="tr">${h(c.translation)}</span>` : h(c.text)
 
 function block(b) {
@@ -30,24 +34,27 @@ function block(b) {
     case 'dialogue':
       return `<ul class="dlg">${b.lines.map((l, i) => `<li class="${i % 2 ? 'b' : 'a'}"><span class="who">${h(l.speaker)}</span><span class="say"><span class="t">${h(l.text)}</span>${l.translation ? `<span class="tr">${h(l.translation)}</span>` : ''}</span></li>`).join('')}</ul>`
     case 'tip': case 'note':
-      return `<div class="call tip"><span class="lab">💡 Tip</span>${h(b.text)}</div>`
+      return `<div class="call tip"><span class="lab">${L.tip}</span>${h(b.text)}</div>`
     case 'mistake':
-      return `<div class="call mis"><span class="lab">⚠️ Common mistake</span>${b.pairs.map(p => `<div><s>${h(p.wrong)}</s> → <b>${h(p.right)}</b></div>`).join('')}${b.text ? `<div class="why">${h(b.text)}</div>` : ''}</div>`
+      return `<div class="call mis"><span class="lab">${L.mistake}</span>${b.pairs.map(p => `<div><s>${h(p.wrong)}</s> → <b>${h(p.right)}</b></div>`).join('')}${b.text ? `<div class="why">${h(b.text)}</div>` : ''}</div>`
     case 'practice':
-      return `<div class="prac"><div class="ph">Quick practice</div><ol>${b.items.map(i => {
+      return `<div class="prac"><div class="ph">${L.practice}</div><ol>${b.items.map(i => {
         const [before, after = ''] = i.question.split('___')
         return `<li>${h(before)}<span class="blank"></span>${h(after)}</li>`
-      }).join('')}</ol><div class="ans">Answers: ${b.items.map((i, n) => `${n + 1} ${h(i.answer)}`).join(' · ')}</div></div>`
+      }).join('')}</ol><div class="ans">${L.answers}: ${b.items.map((i, n) => `${n + 1} ${h(i.answer)}`).join(' · ')}</div></div>`
     default: return ''
   }
 }
 
 export function guidePdfHtml(guide, name) {
   const [code, level] = name.split('-')
-  const [language, flag] = LANGUAGES[code] || [code.toUpperCase(), '']
+  L = guideLabels(guide.meta.ui)
+  const [englishName, flag] = LANGUAGES[code] || [code.toUpperCase(), '']
+  // A guide written for speakers of another language names itself in it (en-*: Inglés).
+  const language = guide.meta.language || englishName
   const words = guide.meta.title.split(' ')
   const title = `${h(words.slice(0, -1).join(' '))} <span>${h(words.at(-1))}</span>`
-  const levelLine = code === 'ko' ? `TOPIK ${TOPIK[level]}` : LEVEL_WORD[level] || ''
+  const levelLine = code === 'ko' ? `TOPIK ${TOPIK[level]}` : (LEVEL_WORD[guide.meta.ui] || LEVEL_WORD.en)[level] || ''
   const lang = code === 'en' ? 'es' : 'en'
 
   return `<!doctype html>
@@ -57,7 +64,7 @@ export function guidePdfHtml(guide, name) {
   :root { --cream:#fdf3e7; --navy:#1a1a2e; --red:#da1f33; --yellow:#f4a623; --teal:#2ec4b6; --muted:rgba(26,26,46,.66); }
   @page { size: A4; margin: 18mm 17mm 20mm;
     @bottom-left { content: "GongbuLeng · ${language} ${level.toUpperCase()}"; font: 600 8pt Inter, sans-serif; color: #6b6b7b; }
-    @bottom-right { content: "Practise with a real person: gongbuleng.com   " counter(page); font: 600 8pt Inter, sans-serif; color: #6b6b7b; } }
+    @bottom-right { content: "${L.realPerson}   " counter(page); font: 600 8pt Inter, sans-serif; color: #6b6b7b; } }
   @page :first { margin: 0; @bottom-left { content: none } @bottom-right { content: none } }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -131,15 +138,15 @@ export function guidePdfHtml(guide, name) {
   <div class="lvl"><b>${level.toUpperCase()}</b><i>${levelLine}</i></div>
   <div class="flag">${flag}</div>
   <div class="ctitle">
-    <div class="kick">Free study guide · ${language}</div>
+    <div class="kick">${L.freeGuide} · ${language}</div>
     <h1>${title}</h1>
     ${guide.meta.promise ? `<p class="promise">${h(guide.meta.promise)}</p>` : ''}
   </div>
   <div class="toc">${guide.sections.map((s, i) => `<div><i>${i + 1}</i>${h(s.title)}</div>`).join('')}</div>
-  <div class="cfoot"><b>Gongbu<span>Leng</span></b><span>gongbuleng.com · learn in small live classes</span></div>
+  <div class="cfoot"><b>Gongbu<span>Leng</span></b><span>${L.liveClasses}</span></div>
 </div>
 ${guide.intro.map(b => `<div class="intro">${block(b)}</div>`).join('')}
 ${guide.sections.map(s => `<section>${s.kicker ? `<div class="kick">${h(s.kicker)}</div>` : ''}<h2>${h(s.title)}</h2>${s.blocks.map(block).join('')}</section>`).join('\n')}
-${guide.meta.source ? `<p class="source">Written by GongbuLeng. ${h(guide.meta.source)}</p>` : ''}
+${guide.meta.source ? `<p class="source">${L.writtenBy} ${h(guide.meta.source)}</p>` : ''}
 </body></html>`
 }

@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { inlineHtml } from '../lib/guideFormat.mjs'
+import { inlineHtml, guideLabels } from '../lib/guideFormat.mjs'
 
 // The redesigned study guide on the web: one white card per section, a strip
 // of section chips that stays at the top while reading, and the interactive
@@ -35,7 +35,7 @@ function Table({ block }) {
   )
 }
 
-function Checklist({ items, storageKey }) {
+function Checklist({ items, storageKey, L }) {
   const [done, setDone] = useState([])
   useEffect(() => {
     try { setDone(JSON.parse(localStorage.getItem(storageKey) || '[]')) } catch (e) {}
@@ -57,16 +57,16 @@ function Checklist({ items, storageKey }) {
           </li>
         ))}
       </ul>
-      <p className="text-navy/65 text-xs mt-3">Tick them as you go; this device remembers.</p>
+      <p className="text-navy/65 text-xs mt-3">{L.tick}</p>
     </>
   )
 }
 
-function Practice({ items }) {
+function Practice({ items, L }) {
   const [shown, setShown] = useState(false)
   return (
     <div className="mt-5">
-      <p className="font-bold text-navy text-sm mb-2">Quick practice</p>
+      <p className="font-bold text-navy text-sm mb-2">{L.practice}</p>
       <ol className="space-y-2">
         {items.map((item, i) => {
           const [before, after = ''] = item.question.split('___')
@@ -84,20 +84,20 @@ function Practice({ items }) {
       </ol>
       <button type="button" onClick={() => setShown(s => !s)}
         className="mt-3 bg-navy text-white text-sm font-bold px-4 py-2 rounded-full hover:bg-navy/90 transition-colors">
-        {shown ? 'Hide answers' : 'Show answers'}
+        {shown ? L.hide : L.show}
       </button>
     </div>
   )
 }
 
-function Block({ block, guideKey }) {
+function Block({ block, guideKey, L }) {
   switch (block.type) {
     case 'p':
       return <Html as="p" text={block.text} className="text-navy mb-3 leading-relaxed" />
     case 'list':
       return <ul className="list-disc pl-5 space-y-1 mb-3">{block.items.map((t, i) => <Html as="li" key={i} text={t} />)}</ul>
     case 'checklist':
-      return <Checklist items={block.items} storageKey={`guide:${guideKey}:can`} />
+      return <Checklist items={block.items} storageKey={`guide:${guideKey}:can`} L={L} />
     case 'table':
       return <Table block={block} />
     case 'examples':
@@ -129,14 +129,14 @@ function Block({ block, guideKey }) {
     case 'note':
       return (
         <div className="my-4 rounded-2xl border-2 border-navy bg-brand-yellow/15 px-4 py-3 text-sm">
-          <span className="block text-xs font-extrabold uppercase tracking-wide mb-1">💡 Tip</span>
+          <span className="block text-xs font-extrabold uppercase tracking-wide mb-1">{L.tip}</span>
           <Html text={block.text} />
         </div>
       )
     case 'mistake':
       return (
         <div className="my-4 rounded-2xl border-2 border-navy bg-brand-red/10 px-4 py-3 text-sm">
-          <span className="block text-xs font-extrabold uppercase tracking-wide mb-1">⚠️ Common mistake</span>
+          <span className="block text-xs font-extrabold uppercase tracking-wide mb-1">{L.mistake}</span>
           {block.pairs.map((p, i) => (
             <p key={i} className="my-0.5">
               <Html text={p.wrong} className="line-through text-brand-red font-bold" /> → <Html text={p.right} className="font-bold" />
@@ -146,13 +146,14 @@ function Block({ block, guideKey }) {
         </div>
       )
     case 'practice':
-      return <Practice items={block.items} />
+      return <Practice items={block.items} L={L} />
     default:
       return null
   }
 }
 
 export default function GuideBody({ guide }) {
+  const L = guideLabels(guide.meta.ui)
   const [active, setActive] = useState(guide.sections[0]?.id)
 
   // Highlights the chip of the section being read.
@@ -177,14 +178,14 @@ export default function GuideBody({ guide }) {
         ))}
       </nav>
 
-      {guide.intro.map((b, i) => <Block key={i} block={b} guideKey={guide.key} />)}
+      {guide.intro.map((b, i) => <Block key={i} block={b} guideKey={guide.key} L={L} />)}
 
       <div className="space-y-6 mt-4">
         {guide.sections.map(s => (
           <section key={s.id} id={s.id} className="scroll-mt-16 [word-break:keep-all] bg-white border-2 border-navy rounded-2xl p-5 md:p-6 shadow-[0_5px_0_#1a1a2e]">
             {s.kicker && <p className="text-brand-red text-xs font-extrabold uppercase tracking-wider mb-1">{s.kicker}</p>}
             <h2 className="font-display font-extrabold text-2xl md:text-3xl text-navy leading-tight mb-3">{s.title}</h2>
-            {s.blocks.map((b, i) => <Block key={i} block={b} guideKey={guide.key} />)}
+            {s.blocks.map((b, i) => <Block key={i} block={b} guideKey={guide.key} L={L} />)}
           </section>
         ))}
       </div>

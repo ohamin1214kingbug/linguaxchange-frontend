@@ -1,103 +1,241 @@
-# German A1 — What to Study
-
-**Level:** A1 (Breakthrough) · **Language:** German · **Audience:** Learners
-
-A1 is the point where German stops being a wall of long words and becomes a language you can survive in. You are not aiming for correct case endings under pressure. You are aiming to handle predictable, concrete situations — introducing yourself, ordering food, asking where something is — with a patient speaker who is willing to slow down.
-
-The Common European Framework describes A1 as being able to understand and use familiar everyday expressions and very basic phrases aimed at satisfying concrete needs; to introduce yourself and others; to ask and answer questions about personal details such as where you live, people you know and things you have; and to interact simply provided the other person talks slowly and clearly and is prepared to help.
-
-Everything below serves that description. If a grammar point does not help you do one of those things, it is not an A1 problem yet.
-
-## Grammar to master
-
-**Nouns, gender and articles.** Every German noun is masculine, feminine or neuter, is written with a capital letter, and forms its plural in one of several ways. None of this is predictable enough to guess, so learn every noun as a set of three: article, word, plural — *der Tisch, die Tische*; *die Lampe, die Lampen*; *das Buch, die Bücher*.
-
-- Definite and indefinite articles: *der / die / das*, *ein / eine / ein*
-- The main plural patterns: *-e*, *-er*, *-(e)n*, *-s*, and plurals that add an umlaut
-- Capitalising every noun, including nouns made from other words
-
-**The present tense.** At A1 the present tense does almost all the work, including talking about the future — *Morgen fahre ich nach Berlin*.
-
-- Regular endings: *ich spiele, du spielst, er spielt, wir spielen, ihr spielt, sie spielen*
-- *sein* and *haben*, which you will use in nearly every conversation
-- Verbs whose stem vowel changes with *du* and *er/sie/es*: *sprechen → spricht*, *sehen → sieht*, *fahren → fährt*
-- Modal verbs for requests and ability: *möchten*, *können*, *müssen*, *wollen*
-
-**Word order.** This is the first real structural difference from English, and it is worth getting right early because every sentence depends on it.
-
-- The verb is always the second element in a statement: *Heute gehe ich ins Kino*, not *Heute ich gehe*
-- In yes/no questions the verb comes first: *Kommst du mit?*
-- With a modal verb, the second verb goes to the very end: *Ich möchte einen Kaffee trinken*
-- Separable verbs split, and the prefix goes to the end: *aufstehen → Ich stehe um sieben Uhr auf*
-
-**Nominative and accusative.** German marks the role of a noun in the sentence with its article. At A1 you need the first two cases; the dative arrives properly at A2.
-
-- In the accusative only the masculine changes: *der → den*, *ein → einen* — *Ich habe einen Bruder*
-- Verbs and phrases that take the accusative from day one: *haben*, *brauchen*, *möchten*, *es gibt*
-- Personal pronouns in both cases: *ich / mich*, *du / dich*, *er / ihn*
-
-**Everyday building blocks.**
-
-- *du* for friends, family and other students; *Sie* for strangers, staff and anyone older in a formal setting
-- Negation with *nicht* for verbs and adjectives, and *kein* in place of *ein* before nouns — *Ich habe keine Zeit*
-- Possessives: *mein*, *dein*, *sein*, *ihr*, *unser*, *Ihr*
-- Question words: *wer*, *was*, *wo*, *woher*, *wohin*, *wann*, *wie*, *wie viel*, *warum*
-- Time and place prepositions in their most basic uses: *um acht Uhr*, *am Montag*, *im Mai*, *in Berlin*, *aus Spanien*
-
-## Vocabulary areas
-
-Aim for roughly 500 to 800 words you can actually retrieve, not recognise — each noun with its article and plural. Depth in these areas beats breadth across topics you will not use.
-
-- Greetings, farewells and courtesy formulas: *Guten Tag*, *Tschüss*, *Entschuldigung*, *bitte*, *danke*
-- Personal information: name, age, origin, nationality, languages, phone number, email
-- Family and relationships
-- Professions and workplaces
-- Physical description and basic personality adjectives
-- The home: rooms, furniture, everyday objects
-- Food and drink, meals, ordering in a café or bakery
-- Numbers 0 to 100, prices, telling the time, days, months, dates
-- Colours and clothing
-- The city: shops, public buildings, directions, public transport
-- Daily routine and free-time activities
-- Weather and seasons
-
-## What you should be able to do
-
-Treat this as the real exit test for the level. Grammar you cannot deploy in these situations is not yet learned.
-
-- Introduce yourself and give your personal details, and ask someone else for theirs
-- Spell your name aloud using the German alphabet, including *ä*, *ö*, *ü* and *ß*, and understand a spelled name
-- Describe your family and where you live
-- Say what you do for work or study
-- Order food and drink and ask what something costs
-- Ask for and follow simple directions
-- Talk about your daily routine and what you like and dislike, using *gern*: *Ich schwimme gern*
-- Fill in a form with your personal data
-- Write a short message, postcard or simple personal introduction
-- Understand slow, clearly articulated speech on these familiar topics
-
-## Common difficulties
-
-**Gender is not logical.** *Das Mädchen* (the girl) is neuter, *der Löffel* (spoon) masculine, *die Gabel* (fork) feminine. There are helpful patterns — nouns ending in *-ung*, *-heit* and *-keit* are feminine, nouns ending in *-chen* are neuter — but most of the time you simply have to learn the article with the word.
-
-**The verb keeps moving.** Second position in statements, first in questions, and split in two with modal and separable verbs. Practise short sentences that start with a time word — *Am Samstag…*, *Heute…* — until the inversion stops feeling strange.
-
-**Numbers are said backwards.** 21 is *einundzwanzig*, literally "one-and-twenty". Phone numbers, prices and ages all use this, so drill it until you can hear a number without translating it.
-
-**"Half eight" means 7:30.** *Halb acht* is half an hour before eight, not after. Get this wrong once and you will be an hour late.
-
-**False friends.** *Bekommen* means to receive, not to become. *Das Gift* is poison, not a gift. *Das Handy* is a mobile phone.
-
-## How to know you are ready for A2
-
-You are ready when you can hold a slow, simple conversation about yourself and your immediate surroundings without rehearsing it first, when verb-second word order comes out right without thinking about it, and when you use *den* and *einen* for masculine objects most of the time. Frequent mix-ups between *nicht* and *kein* mean more time at A1, not a harder book.
-
-German usually takes speakers of English and Spanish longer than Spanish or Italian would, mainly because of the case system. Course hour estimates for each level vary widely; treat any figure you see as a rough scale, not a target.
-
-## Next step
-
-Move on to the German A2 guide, which brings in the perfect tense — so you can finally talk about what already happened — and the dative case.
-
 ---
+layout: v2
+title: Your first German
+promise: Introduce yourself, shop and find your way: the German you need for everyday life.
+read: 15
+source: Aligned with the Common European Framework of Reference (CEFR) A1 descriptors. For the official German exam at this level, the Goethe-Zertifikat A1: Start Deutsch 1, see the Goethe-Institut's exam overview.
+---
+A1 is where German stops being a wall of long words and becomes a language you can get by in. You are aiming to handle predictable, everyday situations with someone who speaks slowly and is happy to help.
 
-*Written by GongbuLeng. Aligned with the Common European Framework of Reference for Languages (CEFR) A1 descriptors. For the official German examinations at this level, such as the Goethe-Zertifikat A1: Start Deutsch 1, see the Goethe-Institut's examination overview.*
+## What you'll be able to do | short: I can… | kicker: Your goal
+Treat this as the real test of the level: grammar you can't use in these situations isn't learned yet.
+
+- [ ] Introduce yourself and ask someone their name and where they're from
+- [ ] Spell your name and give your phone number
+- [ ] Talk about your family and where you live
+- [ ] Order food and drink, and ask what something costs
+- [ ] Ask for directions and understand simple answers
+- [ ] Say what you do every day and what you like
+- [ ] Understand slow, clear speech on these topics
+
+## Sounds and spelling | short: Sounds | kicker: Start here
+German spelling is very regular. Once you know these few letters, you can read almost any word aloud.
+
+| Letter | How it sounds | Example |
+|---|---|---|
+| ä | like "e" in bed | Käse // cheese |
+| ö | say "e", round your lips | schön // beautiful |
+| ü | say "ee", round your lips | Tür // door |
+| ß | a sharp "ss" | Straße // street |
+| ei / ie | "eye" / "ee" | mein, Bier // my, beer |
+| w / v | like English "v" / "f" | Wasser, Vater // water, father |
+| z | "ts" | Zug // train |
+
+:::tip
+Every German noun starts with a capital letter: **das Haus**, **der Tisch**. It's an easy way to spot the nouns in a sentence.
+:::
+
+:::mistake
+- Reading Wien as "wine" => Wien sounds like "veen"
+ie is always "ee" and ei is always "eye": the second letter tells you the sound.
+:::
+
+## Articles and gender | short: Articles | kicker: Grammar · 1 of 4
+Every noun is masculine (der), feminine (die) or neuter (das), and the gender isn't predictable from the meaning. After most verbs, only the masculine article changes.
+
+| | Masculine | Feminine | Neuter | Plural |
+|---|---|---|---|---|
+| the | der Mann | die Frau | das Kind | die Kinder |
+| a | ein Mann | eine Frau | ein Kind | — |
+| the / a (after most verbs) | den / einen Mann | die / eine Frau | das / ein Kind | die Kinder |
+
+:::examples
+- Der Kaffee ist heiß. // The coffee is hot.
+- Ich habe **einen** Bruder. // I have a brother.
+- Ich sehe **den** Bus. // I can see the bus.
+:::
+
+:::tip
+Learn every noun with its article and its plural: not "Tisch" but **der Tisch, die Tische**. Plurals are irregular, so this saves you guessing later.
+:::
+
+:::mistake
+- Ich habe ein Bruder. => Ich habe einen Bruder.
+Bruder is masculine, and after haben (to have) the masculine "ein" becomes "einen".
+:::
+
+:::practice
+1. ___ Frau (the) = die
+2. ___ Kind (the) = das
+3. Ich kaufe ___ Tisch. (a) = einen
+4. Ich sehe ___ Mann. (the) = den
+:::
+
+## Sein, haben and the present tense | short: Present tense | kicker: Grammar · 2 of 4
+Most verbs follow one pattern; *sein* (to be) and *haben* (to have) are irregular and you will use them constantly.
+
+| | sein (be) | haben (have) | wohnen (live) |
+|---|---|---|---|
+| ich | bin | habe | wohne |
+| du | bist | hast | wohnst |
+| er / sie / es | ist | hat | wohnt |
+| wir | sind | haben | wohnen |
+| ihr | seid | habt | wohnt |
+| sie / Sie | sind | haben | wohnen |
+
+:::examples
+- Ich bin Anna. Ich komme aus Spanien. // I'm Anna. I'm from Spain.
+- Wohnst du in Berlin? // Do you live in Berlin?
+- Wir haben heute Zeit. // We have time today.
+:::
+
+:::tip
+Use **du** with friends, family and other students, and **Sie** (always with a capital S) with strangers, in shops and with officials. Sie takes the same verb form as "they": *Sie wohnen*.
+:::
+
+:::mistake
+- Ich bin 20 Jahre. => Ich bin 20 Jahre alt.
+German needs the "alt" (old) at the end, just as English needs "years old".
+:::
+
+:::practice
+1. Ich ___ müde. (sein) = bin
+2. Du ___ einen Hund. (haben) = hast
+3. Wir ___ in Madrid. (wohnen) = wohnen
+4. Ihr ___ Studenten. (sein) = seid
+:::
+
+## Word order and questions | short: Questions | kicker: Grammar · 3 of 4
+In a German statement the verb is always the **second** element, whatever comes first. In a yes/no question the verb comes first.
+
+| Word | Meaning | Example |
+|---|---|---|
+| was | what | Was machst du? // What are you doing? |
+| wer | who | Wer ist das? // Who is that? |
+| wo | where | Wo ist der Bahnhof? // Where is the station? |
+| woher | where from | Woher kommst du? // Where are you from? |
+| wann | when | Wann beginnt der Kurs? // When does the course start? |
+| wie | how | Wie heißt du? // What's your name? |
+| wie viel | how much | Wie viel kostet das? // How much is that? |
+
+:::examples
+- Heute **gehe** ich ins Kino. // Today I'm going to the cinema. (verb second)
+- **Kommst** du mit? // Are you coming along? (yes/no: verb first)
+:::
+
+:::mistake
+- Heute ich gehe ins Kino. => Heute gehe ich ins Kino.
+When something other than the subject comes first, the verb still stays in second place and the subject moves after it.
+:::
+
+:::practice
+1. Woher ___ du? (kommen) = kommst
+2. ___ heißt du? (how) = Wie
+3. ___ wohnst du? (where) = Wo
+:::
+
+## Nicht and kein | short: Saying no | kicker: Grammar · 4 of 4
+German has two words for "not". Use **kein** in front of a noun that would have "ein" or no article; use **nicht** everywhere else.
+
+:::examples
+- Ich habe **keine** Zeit. // I don't have time.
+- Das ist **kein** Problem. // That's no problem.
+- Das ist **nicht** teuer. // That isn't expensive.
+- Ich komme heute **nicht**. // I'm not coming today.
+:::
+
+:::mistake
+- Ich habe nicht Zeit. => Ich habe keine Zeit.
+Zeit (time) is a noun with no article, so it takes kein.
+:::
+
+:::practice
+1. Ich habe ___ Auto. = kein
+2. Das ist ___ teuer. = nicht
+3. Wir haben ___ Kinder. = keine
+:::
+
+## Words to know | short: Words | kicker: Vocabulary
+Aim for roughly 500 to 800 words you can actually remember when you need them. Start with these A1 themes.
+
+| Greetings and basics | English |
+|---|---|
+| Hallo / Tschüss | hello / bye |
+| Guten Morgen / Gute Nacht | good morning / good night |
+| bitte / danke | please / thank you |
+| Entschuldigung | sorry, excuse me |
+| ja / nein | yes / no |
+| Ich verstehe nicht. | I don't understand. |
+| Noch einmal, bitte. | Once more, please. |
+
+| About you | English |
+|---|---|
+| Wie heißen Sie? / Ich heiße… | What's your name? / My name is… |
+| Woher kommen Sie? / Ich komme aus… | Where are you from? / I'm from… |
+| Wie alt bist du? / Ich bin … Jahre alt. | How old are you? / I'm … years old. |
+| Was sind Sie von Beruf? | What do you do for a living? |
+
+| Family | English |
+|---|---|
+| die Familie | family |
+| der Vater / die Mutter | father / mother |
+| der Bruder / die Schwester | brother / sister |
+| der Sohn / die Tochter | son / daughter |
+| die Großeltern | grandparents |
+
+| Numbers and money | English |
+|---|---|
+| eins, zwei, drei, vier, fünf | 1, 2, 3, 4, 5 |
+| sechs, sieben, acht, neun, zehn | 6, 7, 8, 9, 10 |
+| zwanzig, dreißig, fünfzig, hundert | 20, 30, 50, 100 |
+| Was kostet das? / Das kostet… | How much is that? / It costs… |
+
+| Time and days | English |
+|---|---|
+| Wie spät ist es? / Es ist drei Uhr. | What time is it? / It's three o'clock. |
+| heute / morgen / gestern | today / tomorrow / yesterday |
+| Montag, Dienstag, Mittwoch | Monday, Tuesday, Wednesday |
+| Donnerstag, Freitag, Samstag, Sonntag | Thursday, Friday, Saturday, Sunday |
+
+| Food and drink | English |
+|---|---|
+| das Wasser / der Kaffee / das Bier | water / coffee / beer |
+| das Brot / das Fleisch / der Fisch | bread / meat / fish |
+| das Frühstück / das Abendessen | breakfast / dinner |
+| Die Rechnung, bitte. | The bill, please. |
+
+| Getting around | English |
+|---|---|
+| der Bahnhof / der Flughafen | station / airport |
+| die Straße / der Platz | street / square |
+| der Supermarkt / die Apotheke | supermarket / pharmacy |
+| links / rechts / geradeaus | left / right / straight ahead |
+
+Beyond these, A1 also covers the home, colours and clothes, the weather, your daily routine and free time.
+
+## Your first conversation | short: Conversation | kicker: Put it together
+Ordering in a café, using almost everything above.
+
+:::dialogue
+- Kellner: Hallo! Was möchten Sie? // Hello! What would you like?
+- Lena: Einen Kaffee, bitte. // A coffee, please.
+- Kellner: Mit Milch? // With milk?
+- Lena: Ja, gern. Und ein Stück Kuchen. // Yes, please. And a piece of cake.
+- Kellner: Sonst noch etwas? // Anything else?
+- Lena: Nein, danke. Was macht das? // No, thanks. How much is that?
+- Kellner: Sechs Euro fünfzig. // Six euros fifty.
+- Lena: Danke schön. Tschüss! // Thank you. Bye!
+:::
+
+## Watch out for | short: Watch out | kicker: Common difficulties
+**Gender and endings.** Expect to get der, die and das wrong for a long time. Learning the article with every noun from day one is the only real shortcut.
+
+**Verbs that split.** Some verbs break in two: *aufstehen* (to get up) becomes *Ich stehe um sieben Uhr auf*. The small part goes to the end of the sentence.
+
+:::mistake
+- Ich bekomme müde. (meaning "I become tired") => Ich werde müde.
+Bekommen means to get, not to become. Other false friends: das Gift is poison, das Handy is a mobile phone, and "also" means "so", not "also".
+:::
+
+## Ready for A2? | short: Next | kicker: Next step
+You're ready when you can introduce yourself and talk about your day without rehearsing, and *sein*, *haben* and the verb-second rule come out without thinking. Next up is the German A2 guide, which adds the past tense and longer sentences.

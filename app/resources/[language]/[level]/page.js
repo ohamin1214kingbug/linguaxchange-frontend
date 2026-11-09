@@ -3,6 +3,7 @@ import { levelLabel, LANGUAGE_NAMES_EN } from '../../../../lib/languages'
 import LevelQuiz from '../../../../components/LevelQuiz'
 import GuideBody from '../../../../components/GuideBody'
 import { readGuide } from '../../../../lib/guideSource'
+import { guideLabels } from '../../../../lib/guideFormat.mjs'
 
 const API = 'https://linguaxchange-backend-production.up.railway.app'
 const SITE = 'https://gongbuleng.com'
@@ -48,7 +49,8 @@ export default async function ResourceDetail({ params }) {
   if (!resource) notFound()
   // A rewritten guide shows its whole text here; older ones stay download-only.
   const guide = readGuide(language, level)
-  const languageName = LANGUAGE_NAMES_EN[resource.language_code] || resource.language_code
+  // A guide written for speakers of another language names itself in it (en-*: Inglés).
+  const languageName = guide?.meta.language || LANGUAGE_NAMES_EN[resource.language_code] || resource.language_code
 
   return (
     <main className="min-h-screen bg-cream">
@@ -111,7 +113,7 @@ export default async function ResourceDetail({ params }) {
         )}
 
         {guide?.meta.source && (
-          <p className="mt-6 text-navy/65 text-xs leading-relaxed">Written by GongbuLeng. {guide.meta.source}</p>
+          <p className="mt-6 text-navy/65 text-xs leading-relaxed">{guideLabels(guide.meta.ui).writtenBy} {guide.meta.source}</p>
         )}
         {!guide && resource.attribution && (
           <p className="mt-6 text-navy/65 text-xs leading-relaxed">{resource.attribution}</p>
