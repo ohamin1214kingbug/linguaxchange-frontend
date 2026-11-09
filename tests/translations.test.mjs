@@ -1,4 +1,4 @@
-// Guards the five UI languages against drifting apart. Run with `npm test`
+// Guards the UI languages against drifting apart. Run with `npm test`
 // (Node's built-in runner; no test dependency added).
 //
 // What each check prevents on screen:
