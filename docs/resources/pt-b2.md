@@ -1,72 +1,157 @@
-# Portuguese B2 — What to Study
-
-**Level:** B2 (Vantage) · **Language:** Portuguese · **Audience:** Learners
-
-B2 is where you stop working around Portuguese and start working in it. You can follow a lecture or a meeting, argue a point, read an opinion column and write a structured text that a native speaker would take seriously. At this level the gap between relaxed spoken Portuguese and the formal written standard becomes something you manage deliberately. This guide follows Brazilian Portuguese and points out where Portugal differs.
-
-The Common European Framework describes B2 as being able to understand the main ideas of complex text on both concrete and abstract topics, including technical discussions in your field of specialisation; to interact with a degree of fluency and spontaneity that makes regular interaction with native speakers quite possible without strain for either party; and to produce clear, detailed text on a wide range of subjects and explain a viewpoint on a topical issue, giving the advantages and disadvantages of various options.
-
-## Grammar to master
-
-**The subjunctive in all tenses.**
-
-- Compound forms: *tenha feito*, *tivesse feito*, *tiver feito* — *Espero que ele tenha chegado bem*; *Quando você tiver terminado, me avise*
-- Concession and condition: *embora*, *ainda que*, *desde que* (provided that), *a menos que*, *contanto que*
-- The sequence of tenses: the tense of the main verb decides which subjunctive follows
-
-**Hypotheses in the past.** *Se eu tivesse sabido, teria vindo*; mixed forms such as *Se eu tivesse saído mais cedo, agora estaria em casa*. In speech you will hear *tinha* in place of *teria*: *Se eu soubesse, tinha vindo*.
-
-**Reported speech.** Tense shifts when the reporting verb is in the past: *Ele disse que estava cansado*, *Ela perguntou se eu viria*, *Eles explicaram que já tinham saído*.
-
-**The formal written standard.**
-
-- Pronoun placement in formal writing, including after the verb — *Envio-lhe o documento* — and the rare *mesóclise* of formal and legal texts: *far-se-á*, *dir-se-ia*
-- Nominal style in reports and articles: *a implementação da medida* rather than *implementar a medida*
-- Formal correspondence: *Prezado / Prezada*, *Venho por meio deste…*, *Atenciosamente*
-
-**Structuring an argument.**
-
-- Connectors for contrast and consequence: *no entanto*, *contudo*, *todavia*, *portanto*, *por conseguinte*, *por um lado … por outro*
-- Proportion and purpose: *à medida que*, *a fim de que*
-- Concession and nuance: *é verdade que … mas*, *apesar de*, *mesmo assim*
-
-## Vocabulary areas
-
-Aim for a broad passive vocabulary and at least 4,000 words you can use actively, with a clear sense of register.
-
-- Society and politics, the economy, current affairs
-- Science, technology and the environment
-- The world of work in formal terms: contracts, responsibilities, negotiations
-- Education and research
-- Culture: literature, music, film, the arts, criticism
-- The language of argument: stating a position, conceding, contrasting, concluding
-- Formal correspondence and phrases for presentations and meetings
-
-## What you should be able to do
-
-- Follow a lecture, presentation or meeting on a topic in your field
-- Argue for a position in a discussion, respond to objections and summarise the other side fairly
-- Understand newspaper articles and reports, including opinion pieces
-- Write a structured argued text or formal letter with a clear position, advantages and disadvantages
-- Write formal emails and letters in the appropriate register
-- Give a short presentation and answer questions on it
-- Understand most films and TV series in Brazilian Portuguese, and follow European Portuguese with some effort
-- Explain a complex process or problem clearly
-
-## Common difficulties
-
-**Two grammars in one language.** Relaxed Brazilian speech (*Me passa o sal*, *Eu vi ele*) and the written standard (*Passe-me o sal*, *Eu o vi*) differ more than in most languages. At B2 you are expected to switch between them deliberately.
-
-**The sequence of tenses.** Choosing between *seja*, *fosse*, *tenha sido* and *tivesse sido* depends on the main verb and on time. Practise transforming the same sentence from present to past until the pattern is familiar.
-
-**European Portuguese by ear.** Portugal's Portuguese drops many unstressed vowels, which makes it much harder to follow for learners trained on Brazilian audio. Regular listening to Portuguese radio or series is the fix.
-
-**Idioms and slang.** Everyday Brazilian speech is rich in fixed expressions — *pagar mico*, *ficar de boa*, *dar um jeito*. Understanding the common ones is a B2 goal; using them well comes with time.
-
-## How to know you are ready for C1
-
-You are ready when you can take part in a discussion on an unfamiliar abstract topic without falling back on simpler language, when an opinion column no longer needs a dictionary for its structure, and when your formal writing reads as organised Portuguese rather than translated thought. C1 moves from arguing clearly to arguing precisely: nuance, implication and style.
-
 ---
+layout: v2
+title: Precise and persuasive
+promise: Argue, report what others said and imagine what could have been: Brazilian Portuguese for study and work.
+read: 18
+source: Aligned with the Common European Framework of Reference (CEFR) B2 descriptors. This guide follows Brazilian Portuguese. For a CEFR-aligned certificate at this level, see the DIPLE exam from CAPLE at the University of Lisbon (European Portuguese); Brazil's official certificate is Celpe-Bras, run by INEP.
+---
+B2 is where you can argue in Portuguese with confidence. You can follow the news, report what someone said, talk about what would have happened, and switch to the formal written standard when you need to.
 
-*Written by GongbuLeng. Aligned with the Common European Framework of Reference for Languages (CEFR) B2 descriptors. For a CEFR-aligned certificate at this level, see the DIPLE exam from CAPLE at the University of Lisbon (European Portuguese). Brazil's official certificate is Celpe-Bras, run by INEP.*
+## What you'll be able to do | short: I can… | kicker: Your goal
+- [ ] Use the subjunctive in the present, past and future
+- [ ] Talk about what would have happened in the past
+- [ ] Report what someone said, even in the past
+- [ ] Write in the formal standard of emails, reports and exams
+- [ ] Concede and contrast with embora, no entanto and apesar de
+- [ ] Take part in a debate and defend your view
+
+## The subjunctive in full | short: Subjunctive | kicker: Grammar · 1 of 5
+| Tense | Form | Example |
+|---|---|---|
+| present | que eu faça | Espero que você **goste**. // I hope you like it. |
+| imperfect | se eu fizesse | Se eu **tivesse** tempo, viajaria. // If I had time, I'd travel. |
+| future | quando eu fizer | Quando você **chegar**, me liga. // When you arrive, call me. |
+| perfect | que eu tenha feito | Espero que ele **tenha chegado** bem. // I hope he arrived safely. |
+| pluperfect | se eu tivesse feito | Se eu **tivesse sabido**, teria ido. // If I'd known, I would have gone. |
+
+:::tip
+**Embora** always takes the subjunctive: *Embora esteja cansado, vou sair.* **Apesar de** takes a noun or an infinitive: *Apesar de estar cansado…*
+:::
+
+:::mistake
+- Embora está cansado, vai trabalhar. => Embora esteja cansado, vai trabalhar.
+*Embora* always takes the subjunctive.
+:::
+
+:::practice
+1. Espero que vocês ___ entendido. (ter) = tenham
+2. Se eu ___ dinheiro, compraria uma casa. (ter) = tivesse
+:::
+
+## Hypotheses in the past | short: Past "if" | kicker: Grammar · 2 of 5
+| Part | Form | Example |
+|---|---|---|
+| se clause | se + pluperfect subjunctive | Se eu tivesse estudado… // If I had studied… |
+| result | conditional perfect (teria + participle) | …teria passado na prova. // …I would have passed the exam. |
+| mixed | past cause, present result | Se eu tivesse estudado, teria um emprego melhor. // If I'd studied, I'd have a better job. |
+| regret | deveria ter + participle | Eu deveria ter saído mais cedo. // I should have left earlier. |
+
+:::tip
+In everyday Brazilian speech, *teria* is often replaced by *tinha*: *Se eu tivesse sabido, tinha ido.* Both are heard; *teria* is the safer choice in writing.
+:::
+
+:::mistake
+- Se eu teria sabido, teria ido. => Se eu tivesse sabido, teria ido.
+Never use the conditional after *se*.
+:::
+
+:::practice
+1. Se você tivesse me ligado, eu ___ ajudado. = teria
+2. Se nós ___ saído antes, teríamos chegado a tempo. = tivéssemos
+:::
+
+## Reported speech | short: Reported | kicker: Grammar · 3 of 5
+After a past verb like *ele disse que*, the tenses step back.
+
+| He said | He said that… |
+|---|---|
+| "Estou cansado." | Ele disse que **estava** cansado. // He said he was tired. |
+| "Terminei." | Ele disse que **tinha terminado**. // He said he had finished. |
+| "Vou chegar tarde." | Ele disse que **ia chegar** tarde. // He said he was going to arrive late. |
+| "Venha!" | Ele me pediu que **viesse**. // He asked me to come. |
+| "Você está com fome?" | Ele me perguntou **se** eu estava com fome. // He asked me if I was hungry. |
+
+:::tip
+Time words shift too: *amanhã* becomes *no dia seguinte*, *ontem* becomes *no dia anterior*, and *aqui* becomes *lá*.
+:::
+
+:::practice
+1. "Chego amanhã." → Ela disse que chegaria no dia ___. = seguinte
+2. "Você vem?" → Ele perguntou ___ eu vinha. = se
+:::
+
+## The formal standard | short: Formal | kicker: Grammar · 4 of 5
+Spoken Brazilian Portuguese and the written standard differ more than in most languages. In emails, reports and exams, use the written forms.
+
+| Spoken | Written standard |
+|---|---|
+| Eu vi ele ontem. | Eu o vi ontem. // I saw him yesterday. |
+| Me empresta o livro? | Empreste-me o livro, por favor. // Lend me the book, please. |
+| A gente vai sair. | Nós vamos sair. // We're going out. |
+| Tem muita gente aqui. | Há muitas pessoas aqui. // There are many people here. |
+| pra / pro | para / para o // for, to |
+
+:::tip
+Formal emails often open with *Prezado(a) Sr.(a)* and close with *Atenciosamente*. In informal emails, *Oi* and *Abraços* are fine.
+:::
+
+:::practice
+1. Eu ___ conheço há anos. (him, written) = o
+2. ___ muitos problemas nesse projeto. (there are, written) = Há
+:::
+
+## Argue and concede | short: Connectors | kicker: Grammar · 5 of 5
+| Connector | Meaning | Example |
+|---|---|---|
+| no entanto / porém | however | É caro; no entanto, vale a pena. // It's expensive; however, it's worth it. |
+| apesar de + noun | despite | Apesar da chuva, saímos. // Despite the rain, we went out. |
+| enquanto | whereas | Ele trabalha, enquanto eu descanso. // He works, whereas I rest. |
+| de fato | indeed (adds proof) | Ele está cansado; de fato, não dormiu. // He's tired; indeed, he didn't sleep. |
+| portanto | therefore | O trem atrasou; portanto, a reunião foi adiada. // The train was late; therefore the meeting was postponed. |
+
+:::mistake
+- Apesar que chove, vamos sair. => Embora chova, vamos sair.
+Before a clause, use *embora* + subjunctive. *Apesar de* takes a noun or an infinitive.
+:::
+
+## Words to know | short: Words | kicker: Vocabulary
+| Debating | English |
+|---|---|
+| Na minha opinião… / A meu ver… | In my opinion… |
+| Por um lado… por outro… | On the one hand… on the other… |
+| Discordo de… | I disagree with… |
+| É verdade que…, mas… | It's true that…, but… |
+
+| Work and study | English |
+|---|---|
+| a entrevista de emprego / o currículo | the job interview / the CV |
+| a tese / o diploma | the thesis / the degree |
+| a reunião / o prazo | the meeting / the deadline |
+
+| Society | English |
+|---|---|
+| o meio ambiente / as mudanças climáticas | the environment / climate change |
+| a educação / a saúde pública | education / public health |
+| o desemprego / a economia | unemployment / the economy |
+
+## A debate | short: Conversation | kicker: Put it together
+:::dialogue
+- Lucas: O prefeito disse que ia fechar o centro para carros. // The mayor said he was going to close the centre to cars.
+- Ana: Acho uma boa ideia, embora nem todo mundo goste. // I think it's a good idea, although not everyone likes it.
+- Lucas: Os comerciantes estão preocupados. Se tivessem sido consultados, estariam mais tranquilos. // The shopkeepers are worried. If they'd been consulted, they'd be calmer.
+- Ana: No entanto, nas cidades onde fizeram isso, as vendas aumentaram. // However, in the cities where they did it, sales went up.
+- Lucas: Então é preciso que eles vejam os números. // Then they need to see the numbers.
+:::
+
+## Watch out for | short: Watch out | kicker: Common difficulties
+**Two conditionals in one sentence.** Portuguese never puts a conditional after *se*. Look for the subjunctive after *se*, and the conditional in the other half.
+
+**Speech in writing.** *A gente*, *pra* and *me* at the start of a sentence are normal in speech, but in an exam essay or a formal email, use *nós*, *para* and the written pronoun positions.
+
+:::mistake
+- Tenho certeza que ele venha. => Tenho certeza de que ele vem.
+Certainty takes the indicative, and *ter certeza* takes *de*.
+:::
+
+## Ready for C1? | short: Next | kicker: Next step
+You're ready when you can follow a news broadcast, report a conversation in the past without mixing tenses, and write a formal email in the written standard. From here, read widely: newspapers, essays and podcasts are your best C1 teachers.

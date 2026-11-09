@@ -1,87 +1,165 @@
-# French B1 — What to Study
-
-**Level:** B1 (Threshold) · **Language:** French · **Audience:** Learners
-
-B1 is the level at which French becomes a tool rather than a subject. You can travel on your own, deal with most everyday problems, follow a conversation between native speakers when they speak clearly, and explain what you think and why. It is also the level at which the subjunctive stops being a curiosity and becomes something you use every day.
-
-The Common European Framework describes B1 as being able to understand the main points of clear standard input on familiar matters regularly encountered in work, school and leisure; to deal with most situations likely to arise while travelling; to produce simple connected text on topics that are familiar or of personal interest; and to describe experiences and events, dreams, hopes and ambitions, and briefly give reasons and explanations for opinions and plans.
-
-## Grammar to master
-
-**Narrating in the past.**
-
-- *Passé composé* and *imparfait* used together confidently in a story
-- The *plus-que-parfait* for an earlier past: *Quand je suis arrivé, le film avait déjà commencé*
-- Recognising the *passé simple* in written stories and books, without needing to produce it
-
-**The conditional.** The key to politeness and to hypotheses.
-
-- Forms: the future stem plus the *imparfait* endings — *je voudrais*, *je pourrais*, *j'aimerais*, *ce serait*
-- Polite requests and advice: *Pourriez-vous m'aider ?*, *Tu devrais te reposer*
-- Hypotheses: *si* plus the *imparfait*, then the conditional — *Si j'avais le temps, je voyagerais*
-- Real conditions with *si* plus the present, then the future — *Si tu viens, on ira au cinéma*
-
-**The present subjunctive.** Used after expressions of necessity, will, emotion and doubt, and after certain conjunctions.
-
-- After *il faut que*, *je veux que*, *je voudrais que*, *je suis content que*, *j'ai peur que*
-- After *pour que*, *bien que*, *avant que*, *à condition que*
-- The irregular forms you will use most: *que je sois*, *que j'aie*, *que j'aille*, *que je fasse*, *que je puisse*, *que je sache*
-
-**Pronouns in depth.**
-
-- *y* and *en* in all their common uses
-- Two object pronouns together in the right order: *Je te le donne*, *Il le lui a dit*
-- Relative pronouns *dont* and *ce qui / ce que*: *le livre dont je parle*, *Ce qui me plaît, c'est…*
-
-**More structures.**
-
-- The passive with *être*: *La décision a été prise hier*, and *on* as the everyday alternative: *On a pris la décision hier*
-- Reported speech in the present: *Il dit qu'il viendra*, *Elle demande si tu es libre*
-- The *gérondif* for simultaneous actions and manner: *en marchant*, *en travaillant*
-- Connectors: *pourtant*, *cependant*, *donc*, *alors que*, *puisque*, *afin de / afin que*
-
-## Vocabulary areas
-
-Aim for roughly 2,500 active words and a much larger passive vocabulary.
-
-- Work: applications, interviews, the workplace, colleagues and conflicts
-- Education and training, including the French school and university system
-- Media: news, the internet, social networks
-- Health and lifestyle, sport and nutrition
-- Relationships, feelings and personal problems
-- Travel problems: complaints, lost property, changing plans
-- The environment, the city and the countryside
-- Opinions, agreement and disagreement
-
-## What you should be able to do
-
-- Handle most situations on a trip, including problems and complaints
-- Describe experiences, events, hopes and plans in connected speech
-- Give your opinion on a familiar topic and support it with reasons and examples
-- Follow the main points of a discussion or talk in clear standard French
-- Understand the main points of news items and articles on familiar subjects
-- Write a personal letter or a simple formal email: a complaint, a request, an application
-- Tell the story of a film or book and say what you thought of it
-- Take part in a conversation on familiar topics without preparation
-
-## Common difficulties
-
-**When the subjunctive is required.** Learn the triggers as fixed expressions — *il faut que*, *bien que*, *pour que* — and note the trap: *penser que* and *croire que* take the indicative when affirmative (*Je pense qu'il vient*), and often the subjunctive when negative (*Je ne pense pas qu'il vienne*).
-
-**Future or conditional?** *J'irai* and *j'irais* sound almost identical in many accents. Context, and the *si* clause, tell you which one is meant.
-
-**Dont.** It replaces *de* plus a noun and has no single English equivalent: *le film dont tout le monde parle*. Collect examples rather than trying to translate it.
-
-**Real spoken French.** Outside the classroom, *ne* disappears, *il y a* becomes "y'a", and words are cut short. You will also meet slang and *verlan*. Understanding it is a B1 goal; imitating it can wait.
-
-## How to know you are ready for B2
-
-You are ready when you can explain your opinion on a familiar topic for a few minutes without searching for basic structures, when you use the conditional and the common subjunctive triggers without thinking, and when you can read a newspaper article on a familiar topic and follow its main argument. If you still avoid the subjunctive in speech, spend more time at B1.
-
-## Next step
-
-Move on to the French B2 guide, which takes you into abstract topics, argued writing and the more formal registers of the language.
-
 ---
+layout: v2
+title: Saying what you think
+promise: Give opinions, wishes and advice, imagine and connect your ideas: French for real conversations.
+read: 17
+source: Aligned with the Common European Framework of Reference (CEFR) B1 descriptors. For the official French exam at this level, the DELF B1, see France Éducation international's DELF page.
+---
+B1 is where French becomes a tool for real conversations. You can say what you would do, give advice, express wishes and doubts, and tell a longer story. Two new pieces carry most of this: the conditional and the subjunctive.
 
-*Written by GongbuLeng. Aligned with the Common European Framework of Reference for Languages (CEFR) B1 descriptors. For the official French examination at this level, the DELF B1, see France Éducation international's DELF page.*
+## What you'll be able to do | short: I can… | kicker: Your goal
+- [ ] Give and justify your opinion on familiar topics
+- [ ] Say what you would do and make polite requests
+- [ ] Express wishes, doubts and necessity
+- [ ] Describe people and things in detail with relative clauses
+- [ ] Tell a longer story with earlier events
+- [ ] Handle most situations while travelling, and deal with problems
+
+## The conditional | short: Conditional | kicker: Grammar · 1 of 5
+Future stem + the imparfait endings. For imagined situations, use **si + imparfait**, then the conditional.
+
+| | parler | être | avoir | pouvoir |
+|---|---|---|---|---|
+| je | parlerais | serais | aurais | pourrais |
+| tu | parlerais | serais | aurais | pourrais |
+| il / elle | parlerait | serait | aurait | pourrait |
+| nous | parlerions | serions | aurions | pourrions |
+| ils / elles | parleraient | seraient | auraient | pourraient |
+
+:::examples
+- Je **voudrais** un café, s'il vous plaît. // I'd like a coffee, please.
+- **Pourriez**-vous m'aider ? // Could you help me?
+- Si j'**avais** le temps, je **voyagerais** plus. // If I had time, I'd travel more.
+:::
+
+:::mistake
+- Si j'aurais le temps… => Si j'avais le temps…
+Never use the conditional right after si.
+:::
+
+:::practice
+1. Je ___ bien partir en Italie. (aimer) = aimerais
+2. Si j'étais riche, j'___ une maison. (acheter) = achèterais
+3. ___-vous fermer la porte ? (pouvoir) = Pourriez
+:::
+
+## The subjunctive | short: Subjunctive | kicker: Grammar · 2 of 5
+It appears after expressions of necessity, wishes, feelings and doubt, always after **que** and with a different subject. Take the ils form, drop -ent, add -e, -es, -e, -ions, -iez, -ent.
+
+| Trigger | Example |
+|---|---|
+| il faut que | Il faut que tu **viennes**. // You have to come. |
+| je veux que | Je veux que vous **soyez** à l'heure. // I want you to be on time. |
+| je suis content que | Je suis content que tu **sois** là. // I'm glad you're here. |
+| je ne pense pas que | Je ne pense pas qu'il **ait** raison. // I don't think he's right. |
+| bien que, pour que | Je t'explique pour que tu **comprennes**. // I'm explaining so you understand. |
+
+Irregular: **sois** (être), **aie** (avoir), **aille** (aller), **fasse** (faire), **puisse** (pouvoir), **sache** (savoir).
+
+:::tip
+*Je pense que* takes the normal indicative: *je pense qu'il a raison*. Only the negative *je ne pense pas que* takes the subjunctive.
+:::
+
+:::mistake
+- Il faut que tu viens. => Il faut que tu viennes.
+:::
+
+:::practice
+1. Il faut que nous ___ attention. (faire) = fassions
+2. Je veux qu'il ___ là. (être) = soit
+3. Je pense qu'elle ___ raison. (avoir) = a
+:::
+
+## Who, which, where, whose | short: Relatives | kicker: Grammar · 3 of 5
+| Pronoun | Use | Example |
+|---|---|---|
+| qui | subject | L'homme qui parle est mon prof. // The man who's speaking is my teacher. |
+| que | object | Le film que j'ai vu était génial. // The film I saw was great. |
+| où | place, time | La ville où j'habite est petite. // The town where I live is small. |
+| dont | "of which", with de-verbs | Le livre dont je parle… // The book I'm talking about… |
+
+:::tip
+Use **dont** when the verb takes **de**: *parler de* → *le sujet dont on parle*, *avoir besoin de* → *ce dont j'ai besoin*.
+:::
+
+:::mistake
+- Le livre que je parle => Le livre dont je parle
+:::
+
+:::practice
+1. C'est la femme ___ habite à côté. = qui
+2. Voici le gâteau ___ j'ai fait. = que
+3. C'est le restaurant ___ on a dîné. = où
+:::
+
+## Telling longer stories | short: Past perfect | kicker: Grammar · 4 of 5
+The **plus-que-parfait** (imparfait of avoir / être + participle) places one past event before another: "had done".
+
+:::examples
+- Quand je suis arrivé, le film **avait** déjà **commencé**. // When I arrived, the film had already started.
+- Elle **était partie** avant midi. // She had left before noon.
+:::
+
+:::tip
+A good story uses three tenses: the **imparfait** for the background, the **passé composé** for events and the **plus-que-parfait** for what happened before them.
+:::
+
+## Y and en | short: Y and en | kicker: Grammar · 5 of 5
+**y** replaces a place or *à + thing*; **en** replaces *de + thing* or a quantity.
+
+:::examples
+- Tu vas à Lyon ? Oui, j'**y** vais demain. // Are you going to Lyon? Yes, I'm going there tomorrow.
+- Tu penses à ton examen ? Oui, j'**y** pense. // Are you thinking about your exam? Yes, I'm thinking about it.
+- Tu as des frères ? Oui, j'**en** ai deux. // Do you have brothers? Yes, I have two.
+- Tu veux du café ? Non merci, j'**en** ai déjà bu. // Do you want some coffee? No thanks, I've already had some.
+:::
+
+:::practice
+1. Tu viens de Paris ? Oui, j'___ viens. = en
+2. Tu vas au cinéma ? Oui, j'___ vais. = y
+:::
+
+## Words to know | short: Words | kicker: Vocabulary
+| Giving your opinion | English |
+|---|---|
+| À mon avis… / Pour moi… | In my opinion… / For me… |
+| Je (ne) suis (pas) d'accord. | I (don't) agree. |
+| Tu as raison, mais… | You're right, but… |
+| Ça dépend. | It depends. |
+
+| Work and studies | English |
+|---|---|
+| le poste / l'entretien | position / interview |
+| le salaire / le contrat | salary / contract |
+| la licence / le master | bachelor's / master's |
+| chercher du travail / réussir un examen | look for work / pass an exam |
+
+| Feelings and relationships | English |
+|---|---|
+| en avoir marre de | be fed up with |
+| (quelqu'un) me manque | I miss (someone) |
+| s'entendre bien avec | get on well with |
+| avoir envie de | feel like |
+
+## Asking for advice | short: Conversation | kicker: Put it together
+:::dialogue
+- Camille: J'en ai marre de mon travail. Je ne sais pas quoi faire. // I'm fed up with my job. I don't know what to do.
+- Thomas: À ta place, je chercherais autre chose. // If I were you, I'd look for something else.
+- Camille: Oui, mais je ne pense pas que ce soit facile. // Yes, but I don't think it's easy.
+- Thomas: Il faut que tu parles à ma sœur, elle travaille dans une entreprise qui recrute. // You should talk to my sister, she works at a company that's hiring.
+- Camille: C'est vrai ? Tu pourrais me donner son numéro ? // Really? Could you give me her number?
+- Thomas: Je te l'envoie tout de suite pour que tu ne l'oublies pas. // I'll send it right away so you don't forget it.
+:::
+
+## Watch out for | short: Watch out | kicker: Common difficulties
+**Real spoken French.** People drop *ne* (*je sais pas*), say *on* for "we" and *ouais* for yes. Understand it, but keep *ne* in writing.
+
+**When the subjunctive is required.** Learn the trigger phrases as chunks rather than as a rule.
+
+:::mistake
+- Il faut que je vais à la banque. => Il faut que j'aille à la banque.
+Aller is irregular in the subjunctive: que j'aille, que tu ailles, que nous allions.
+:::
+
+## Ready for B2? | short: Next | kicker: Next step
+You're ready when you can argue an opinion for a few minutes, use the conditional and the common subjunctive triggers without stopping, and tell a story with three past tenses. Next up is the French B2 guide, which adds the past conditional and more formal connectors.
