@@ -1,91 +1,202 @@
-# German A2 — What to Study
-
-**Level:** A2 (Waystage) · **Language:** German · **Audience:** Learners
-
-A2 is where German opens up in time. At A1 everything happened now; at A2 you can tell someone what you did at the weekend, where you went on holiday and why you were late. It is also the level where the dative case arrives, and with it the grammar that makes German feel like German.
-
-The Common European Framework describes A2 as being able to understand sentences and frequently used expressions related to areas of immediate relevance — basic personal and family information, shopping, local geography, employment; to communicate in simple and routine tasks requiring a simple and direct exchange of information on familiar matters; and to describe in simple terms aspects of your background, immediate environment and matters of immediate need.
-
-## Grammar to master
-
-**The perfect tense.** In spoken German the *Perfekt* is the everyday past tense. Build it with *haben* or *sein* plus a past participle at the end of the clause — *Ich habe Pizza gegessen*, *Wir sind nach Hamburg gefahren*.
-
-- Regular participles: *ge-…-t* — *gemacht*, *gekauft*, *gewohnt*
-- Irregular participles: *ge-…-en*, often with a vowel change — *gegessen*, *getrunken*, *geschrieben*
-- Separable verbs put *ge* in the middle: *aufstehen → aufgestanden*, *einkaufen → eingekauft*
-- No *ge* for inseparable prefixes and *-ieren* verbs: *bekommen*, *verstanden*, *studiert*
-- *sein* for movement from place to place and changes of state — *gehen*, *fahren*, *kommen*, *aufstehen*, *einschlafen* — plus *sein* and *bleiben* themselves
-
-**The simple past of a few key verbs.** Even in speech, Germans use the *Präteritum* for a small group of verbs rather than the perfect: *ich war*, *ich hatte*, and the modals *konnte*, *musste*, *wollte*, *durfte*. Learn these as the normal way to say them.
-
-**The dative.** The third case marks the person something is given to, and follows a fixed set of prepositions.
-
-- Articles: *dem / der / dem*, plural *den* plus *-n* on the noun — *mit den Kindern*
-- Pronouns: *mir*, *dir*, *ihm*, *ihr*, *uns*, *euch*, *ihnen*, *Ihnen*
-- Prepositions that always take the dative: *aus*, *bei*, *mit*, *nach*, *seit*, *von*, *zu*
-- Common dative verbs: *helfen*, *gefallen*, *gehören*, *schmecken*, *danken*, *passen*
-- Verbs with two objects: *Ich gebe dem Kind das Buch*
-
-**Two-way prepositions.** *In*, *an*, *auf*, *über*, *unter*, *vor*, *hinter*, *neben* and *zwischen* take the dative for location (*Wo?*) and the accusative for movement towards a place (*Wohin?*): *Das Buch liegt auf dem Tisch* but *Ich lege das Buch auf den Tisch*. Learn the verb pairs that go with them: *liegen / legen*, *stehen / stellen*, *hängen / hängen*.
-
-**Connecting sentences.**
-
-- *und*, *aber*, *oder*, *denn* join two main clauses without changing word order
-- *weil*, *dass*, *wenn* and *ob* send the verb to the end of their clause: *…, weil ich keine Zeit habe*
-- When the subordinate clause comes first, the main clause starts with the verb: *Wenn es regnet, bleibe ich zu Hause*
-
-**More tools.**
-
-- Comparative and superlative: *schnell, schneller, am schnellsten*; the irregular *gut, besser, am besten* and *gern, lieber, am liebsten*
-- Reflexive verbs: *sich freuen*, *sich interessieren für*, *sich treffen*
-- The imperative for *du*, *ihr* and *Sie*: *Komm!*, *Kommt!*, *Kommen Sie!*
-- Ordinal numbers and dates: *am dritten Mai*
-- A first contact with adjective endings after the definite article; the full system is a B1 task
-
-## Vocabulary areas
-
-Aim for roughly 1,000 to 1,500 active words, still with article and plural for every noun.
-
-- Past events: the weekend, holidays, life stages
-- Travel: booking, the station and airport, hotels, delays
-- Health: the body, symptoms, the doctor's and the pharmacy
-- Shopping: clothes and sizes, returns, comparing prices
-- Housing: looking for a flat, rooms and furniture, neighbours
-- Work and study: the working day, appointments, simple emails
-- Celebrations, invitations and gifts
-- Weather and the seasons in more detail
-- Directions and describing where things are
-
-## What you should be able to do
-
-- Describe what you did last weekend or on your last holiday
-- Make, change and cancel an appointment by phone or email
-- Explain a simple health problem to a doctor or pharmacist
-- Give a reason for something with *weil* and an opinion with *Ich finde, dass…*
-- Compare two things: flats, products, cities, plans
-- Buy a train ticket and deal with a simple problem such as a delay
-- Say where something is and where to put it
-- Write a short informal email or message about everyday matters
-- Understand the main point of short, clear announcements and messages
-
-## Common difficulties
-
-**Haben or sein?** Most verbs take *haben*. The ones that take *sein* describe moving from A to B or a change of state. When in doubt, ask yourself whether the subject ended up somewhere or became something different.
-
-**The verb at the end.** In *weil* and *dass* clauses the verb is last, and with the perfect tense two verbs pile up there: *…, dass ich das Buch gelesen habe*. You will hear *weil* followed by normal word order in casual speech, but learn the standard version first; it is what exams and writing require.
-
-**Dative or accusative after in, an, auf?** This is not a rule you apply once. It is a question — *Wo?* or *Wohin?* — you ask every time until it becomes automatic.
-
-**The dative plural -n.** *Mit den Freunden*, *von den Kindern*: the noun itself gets an extra *-n* in the dative plural unless it already ends in *-n* or *-s*.
-
-## How to know you are ready for B1
-
-You are ready when you can talk about the past in the perfect tense without stopping to build each participle, when *mit dem*, *mit der* and *mit den* come out right most of the time, and when you can hold a short conversation on everyday topics that you have not prepared. Persistent confusion between the dative and the accusative is a sign to consolidate A2 before moving on.
-
-## Next step
-
-Move on to the German B1 guide, where the conditional, the passive and relative clauses let you talk about what would, could or should happen — not only what did.
-
 ---
+layout: v2
+title: Talking about your life
+promise: Say what you did, what you can and must do, and why: German beyond the present.
+read: 16
+source: Aligned with the Common European Framework of Reference (CEFR) A2 descriptors. For the official German exam at this level, the Goethe-Zertifikat A2, see the Goethe-Institut's exam overview.
+---
+A2 is where German opens up in time and in reasons. You can tell someone about your weekend, say what you can, want and must do, and explain why, still in simple sentences, on familiar topics.
 
-*Written by GongbuLeng. Aligned with the Common European Framework of Reference for Languages (CEFR) A2 descriptors. For the official German examinations at this level, such as the Goethe-Zertifikat A2, see the Goethe-Institut's examination overview.*
+## What you'll be able to do | short: I can… | kicker: Your goal
+- [ ] Say what you did yesterday, last weekend or on holiday
+- [ ] Say what you can, want, must and are allowed to do
+- [ ] Give reasons with "because" and say what you think with "that"
+- [ ] Say where things are and where you're putting them
+- [ ] Shop, see a doctor and deal with simple appointments
+- [ ] Write a short message telling a friend your news
+
+## The perfect tense | short: Perfekt | kicker: Grammar · 1 of 5
+In spoken German, the past is almost always the **Perfekt**: *haben* or *sein* in second place, and the past participle at the very end.
+
+| Verb | Helper | Past participle |
+|---|---|---|
+| machen (do) | haben | gemacht |
+| arbeiten (work) | haben | gearbeitet |
+| essen (eat) | haben | gegessen |
+| fahren (drive, go) | sein | gefahren |
+| gehen (go) | sein | gegangen |
+| aufstehen (get up) | sein | aufgestanden |
+
+:::examples
+- Ich **habe** gestern lange **gearbeitet**. // I worked late yesterday.
+- Wir **sind** nach Berlin **gefahren**. // We went to Berlin.
+- **Hast** du schon **gegessen**? // Have you eaten yet?
+:::
+
+:::tip
+Verbs of movement from A to B (gehen, fahren, fliegen) and change of state (aufstehen, einschlafen) take **sein**. Almost everything else takes haben.
+:::
+
+:::mistake
+- Ich habe nach Berlin gefahren. => Ich bin nach Berlin gefahren.
+:::
+
+:::practice
+1. Ich ___ einen Film gesehen. = habe
+2. Sie ___ nach Hause gegangen. = ist
+3. Wir haben Pizza ___. (essen) = gegessen
+:::
+
+## War, hatte and modal verbs | short: Modals | kicker: Grammar · 2 of 5
+For *sein* and *haben*, Germans prefer the simple past: **war** (was) and **hatte** (had). Modal verbs add "can, must, want" and send the main verb to the end.
+
+| | können (can) | müssen (must) | wollen (want) | dürfen (may) |
+|---|---|---|---|---|
+| ich | kann | muss | will | darf |
+| du | kannst | musst | willst | darfst |
+| er / sie | kann | muss | will | darf |
+| wir / sie | können | müssen | wollen | dürfen |
+
+:::examples
+- Gestern **war** ich krank. // I was ill yesterday.
+- Ich **kann** heute nicht **kommen**. // I can't come today.
+- Hier **darf** man nicht **rauchen**. // You're not allowed to smoke here.
+:::
+
+:::mistake
+- Ich kann kommen nicht heute. => Ich kann heute nicht kommen.
+With a modal verb, the second verb goes to the very end.
+:::
+
+:::practice
+1. Gestern ___ ich müde. (sein) = war
+2. Du ___ das Fenster öffnen. (können) = kannst
+3. Ich muss morgen früh ___. (aufstehen) = aufstehen
+:::
+
+## The dative | short: Dative | kicker: Grammar · 3 of 5
+The dative marks the person who receives something, and follows prepositions like **mit, bei, nach, von, zu, aus, seit**.
+
+| | Masculine | Feminine | Neuter | Plural |
+|---|---|---|---|---|
+| the | dem Mann | der Frau | dem Kind | den Kindern |
+| a | einem Mann | einer Frau | einem Kind | — |
+| my | meinem | meiner | meinem | meinen |
+
+:::examples
+- Ich gebe **dem** Kind ein Buch. // I give the child a book.
+- Ich fahre **mit dem** Bus. // I go by bus.
+- Sie wohnt **bei ihrer** Mutter. // She lives with her mother.
+:::
+
+:::tip
+In the dative plural, the noun itself adds **-n** if it doesn't already end in -n or -s: *mit den Kindern*, *mit den Freunden*.
+:::
+
+:::mistake
+- Ich fahre mit der Bus. => Ich fahre mit dem Bus.
+Mit always takes the dative, and Bus is masculine: dem Bus.
+:::
+
+:::practice
+1. Ich wohne bei ___ Eltern. (my) = meinen
+2. Er kommt aus ___ Schweiz. = der
+3. Ich spreche mit ___ Lehrer. = dem
+:::
+
+## Where: in, auf, an | short: Where | kicker: Grammar · 4 of 5
+Nine prepositions (in, an, auf, über, unter, vor, hinter, neben, zwischen) take the **dative** for where something **is**, and the **accusative** for where something is **going**.
+
+| | Where? (dative) | Where to? (accusative) |
+|---|---|---|
+| in | Ich bin im Büro. // I'm in the office. | Ich gehe ins Büro. // I'm going to the office. |
+| auf | Das Buch liegt auf dem Tisch. // The book is on the table. | Ich lege das Buch auf den Tisch. // I put the book on the table. |
+| an | Das Bild hängt an der Wand. // The picture hangs on the wall. | Ich hänge das Bild an die Wand. // I hang the picture on the wall. |
+
+:::tip
+Ask yourself **wo?** (where, no movement → dative) or **wohin?** (where to, movement → accusative).
+:::
+
+:::mistake
+- Ich gehe im Kino. => Ich gehe ins Kino.
+Going somewhere is movement, so it takes the accusative: in + das = ins.
+:::
+
+:::practice
+1. Die Katze schläft auf ___ Sofa. (where) = dem
+2. Ich stelle die Tasse auf ___ Tisch. (where to) = den
+3. Wir sind ___ Park. (in the, where) = im
+:::
+
+## Because and that | short: Weil, dass | kicker: Grammar · 5 of 5
+After **weil** (because), **dass** (that), **wenn** (if, when) and **ob** (whether), the verb jumps to the **end** of the clause. *Deshalb* (that's why) instead keeps the verb in second place.
+
+:::examples
+- Ich bleibe zu Hause, **weil** ich krank **bin**. // I'm staying at home because I'm ill.
+- Ich glaube, **dass** er heute **kommt**. // I think that he's coming today.
+- Ich bin krank, **deshalb bleibe** ich zu Hause. // I'm ill, that's why I'm staying home.
+:::
+
+:::mistake
+- Ich lerne Deutsch, weil ich will in Berlin arbeiten. => …, weil ich in Berlin arbeiten will.
+:::
+
+:::practice
+1. Ich komme nicht, weil ich keine Zeit ___. (haben) = habe
+2. Ich weiß, dass sie Ärztin ___. (sein) = ist
+3. Es regnet, deshalb ___ ich zu Hause. (bleiben) = bleibe
+:::
+
+## Words to know | short: Words | kicker: Vocabulary
+| Travel | English |
+|---|---|
+| die Reise / der Urlaub | trip / holiday |
+| die Fahrkarte / das Gleis | ticket / platform |
+| umsteigen / abfahren | change trains / depart |
+| das Hotelzimmer reservieren | book a hotel room |
+
+| Health | English |
+|---|---|
+| Ich habe Kopfschmerzen. | I have a headache. |
+| Ich habe Fieber / Husten. | I have a fever / a cough. |
+| der Arzt / die Ärztin | doctor |
+| der Termin / das Rezept | appointment / prescription |
+
+| Shopping | English |
+|---|---|
+| die Größe / die Umkleidekabine | size / fitting room |
+| Kann ich das anprobieren? | Can I try this on? |
+| Das ist zu teuer / zu groß. | It's too expensive / too big. |
+| umtauschen | exchange (an item) |
+
+| Time words for the past | English |
+|---|---|
+| gestern / vorgestern | yesterday / the day before yesterday |
+| letzte Woche / letztes Jahr | last week / last year |
+| vor zwei Tagen | two days ago |
+| früher | in the past, used to |
+
+## Your weekend | short: Conversation | kicker: Put it together
+:::dialogue
+- Jonas: Wie war dein Wochenende? // How was your weekend?
+- Mia: Super! Ich bin mit meiner Schwester nach Hamburg gefahren. // Great! I went to Hamburg with my sister.
+- Jonas: Toll! Was habt ihr gemacht? // Great! What did you do?
+- Mia: Wir haben den Hafen gesehen und Fisch gegessen. // We saw the harbour and ate fish.
+- Jonas: Und am Sonntag? // And on Sunday?
+- Mia: Da war ich müde, deshalb bin ich zu Hause geblieben. // I was tired, so I stayed at home.
+- Jonas: Ich möchte auch mal nach Hamburg fahren. // I'd like to go to Hamburg too sometime.
+- Mia: Dann musst du im Sommer fahren, weil es dann schöner ist. // Then you have to go in summer, because it's nicer then.
+:::
+
+## Watch out for | short: Watch out | kicker: Common difficulties
+**The verb at the end.** Participles, modal infinitives and weil-clauses all push a verb to the end. In long sentences, hold on: the key verb comes last.
+
+**Dative endings.** The plural -n (*mit den Kindern*) is easy to forget in speech. Say the phrases aloud until they sound wrong without it.
+
+:::mistake
+- Ich habe nach Hause gegangen. => Ich bin nach Hause gegangen.
+Movement verbs take sein in the perfect.
+:::
+
+## Ready for B1? | short: Next | kicker: Next step
+You're ready when you can tell a story about your weekend in the Perfekt, give reasons with weil without losing the verb, and use the modal verbs freely. Next up is the German B1 guide, which adds the Konjunktiv II and relative clauses.

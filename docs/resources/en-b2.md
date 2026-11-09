@@ -1,76 +1,167 @@
-# Inglés B2 — Qué estudiar
-
-**Nivel:** B2 (Avanzado) · **Idioma:** Inglés · **Público:** Estudiantes
-
-B2 es donde dejas de sortear el inglés y empiezas a trabajar en él. Puedes seguir una clase o una reunión, defender una postura, leer un artículo de opinión y escribir un texto estructurado que un nativo tomaría en serio. Es el nivel que piden muchas universidades y programas de movilidad, y aquel en el que los *phrasal verbs*, las colocaciones y el registro pasan a ser parte central de lo que aprendes.
-
-El Marco Común Europeo de Referencia describe el B2 como la capacidad de entender las ideas principales de textos complejos sobre temas tanto concretos como abstractos, incluidos debates técnicos de tu especialidad; de relacionarte con hablantes nativos con un grado suficiente de fluidez y naturalidad para que la comunicación se realice sin esfuerzo por ninguna de las partes; y de producir textos claros y detallados sobre temas diversos, así como defender un punto de vista sobre temas de actualidad exponiendo las ventajas y los inconvenientes de las distintas opciones.
-
-## Gramática que debes dominar
-
-**Condicionales completos.**
-
-- Tercer condicional para el pasado imaginario: *If I had known, I would have come*
-- Condicionales mixtos: *If I had studied harder, I would have a better job now*
-- *wish* e *if only*: *I wish I had more time*, *I wish I hadn't said that*
-- *unless*, *provided that*, *as long as*, *in case*
-
-**Modales en pasado.** *should have*, *could have*, *might have*, *must have* y *can't have* para arrepentimientos y deducciones sobre el pasado: *You should have told me*, *She must have forgotten*.
-
-**La pasiva avanzada.**
-
-- En todos los tiempos: *The report has been sent*, *It is being repaired*
-- La pasiva impersonal de las noticias: *It is said that…*, *He is believed to be…*
-- *have something done*: *I had my car repaired*
-
-**Estilo indirecto completo.** El cambio de tiempos al narrar en pasado y los verbos introductorios con su estructura: *suggest doing*, *advise someone to do*, *deny doing*, *admit doing*, *warn someone not to do*.
-
-**Oraciones de relativo explicativas.** Entre comas y sin *that*: *My sister, who lives in Berlin, is a doctor.*
-
-**Argumentar y matizar.**
-
-- Conectores de contraste: *although*, *even though*, *despite*, *in spite of*, *whereas*, *nevertheless*
-- Conectores de consecuencia y adición: *therefore*, *as a result*, *moreover*, *furthermore*
-- La inversión de los textos formales, para reconocerla: *Not only did he…*, *Rarely have I seen…*
-- Colocaciones: *make a decision*, *take a risk*, *pay attention*, *heavy traffic*, *strong coffee*
-
-## Áreas de vocabulario
-
-Apunta a un vocabulario pasivo amplio y al menos 4.000 palabras que puedas usar activamente, con un sentido claro del registro.
-
-- Sociedad y política, economía, actualidad
-- Ciencia, tecnología y medio ambiente
-- El mundo laboral en términos formales: contratos, responsabilidades, negociaciones
-- Educación e investigación
-- Cultura: literatura, cine, las artes, la crítica
-- El lenguaje de la argumentación: exponer una postura, conceder, contrastar, concluir
-- Correspondencia formal y fórmulas para presentaciones y reuniones
-
-## Lo que deberías poder hacer
-
-- Seguir una clase, una presentación o una reunión sobre un tema de tu campo
-- Defender una postura en un debate, responder a objeciones y resumir con justicia la opinión contraria
-- Entender artículos de prensa e informes, incluidos los de opinión
-- Escribir un ensayo o un informe estructurado con un argumento claro, ventajas e inconvenientes
-- Escribir correos y cartas formales en el registro adecuado
-- Hacer una presentación breve y responder preguntas sobre ella
-- Entender la mayoría de las películas y series en inglés estándar
-- Explicar con claridad un proceso o un problema complejo
-
-## Dificultades habituales
-
-**Despite y although.** *Despite* va seguido de un sustantivo o de *-ing* (*despite the rain*, *despite being tired*); *although*, de una oración completa (*although it was raining*). Mezclarlos es uno de los errores más típicos del B2.
-
-**Colocaciones.** Se dice *make a mistake*, no *do a mistake*, y *heavy rain*, no *strong rain*. No hay regla: aprende las palabras en combinación, no sueltas.
-
-**Registro.** *Can you send me…?* está bien con un compañero, pero en un correo formal queda mejor *Could you please send me…?* o *I would be grateful if you could…*. En B2 tienes que elegir el registro a propósito.
-
-**Falsos amigos avanzados.** *Realise* es darse cuenta. *Sensible* significa sensato. *Argument* suele ser una discusión. *Career* es la trayectoria profesional, no la carrera universitaria (*degree*).
-
-## Cómo saber si estás preparado para C1
-
-Estás preparado cuando puedes participar en un debate sobre un tema abstracto que no conoces sin recurrir a un lenguaje más simple, cuando un artículo de opinión ya no necesita diccionario para su estructura y cuando tus textos formales se leen como inglés organizado y no como pensamiento traducido. El C1 pasa de argumentar con claridad a argumentar con precisión: matices, implicaciones y estilo.
-
 ---
+layout: v2
+ui: es
+language: Inglés
+title: Preciso y convincente
+promise: Argumenta, cuenta lo que dijeron otros e imagina lo que pudo haber sido: el inglés para estudiar y trabajar.
+read: 18
+source: Alineada con los descriptores B2 del Marco Común Europeo de Referencia para las lenguas (MCER). El examen oficial de Cambridge English para este nivel es B2 First; consulta la página de certificados de Cambridge English.
+---
+En el B2 puedes argumentar en inglés con seguridad. Sigues las noticias, cuentas lo que dijo otra persona, hablas de lo que habría pasado y defiendes tu punto de vista con conectores formales.
 
-*Escrita por GongbuLeng. Alineada con los descriptores B2 del Marco Común Europeo de Referencia para las lenguas (MCER). El examen oficial de Cambridge English para este nivel es B2 First; consulta la página de certificados de Cambridge English.*
+## Lo que podrás hacer | short: Puedo… | kicker: Tu objetivo
+- [ ] Hablar de lo que habría pasado con el tercer condicional
+- [ ] Expresar arrepentimiento y deducciones sobre el pasado
+- [ ] Contar lo que dijo alguien con el estilo indirecto
+- [ ] Usar la pasiva avanzada y have something done
+- [ ] Contrastar ideas con although, despite y whereas
+- [ ] Participar en un debate y defender tu opinión
+
+## El tercer condicional | short: Third conditional | kicker: Gramática · 1 de 5
+Para imaginar un pasado distinto: **if + past perfect**, y después **would have + participio**.
+
+| Tipo | Forma | Ejemplo |
+|---|---|---|
+| tercero | if + had done, would have done | If I had known, I would have come. // Si lo hubiera sabido, habría venido. |
+| mixto (pasado → presente) | if + had done, would do | If I had studied, I would have a better job. // Si hubiera estudiado, ahora tendría un trabajo mejor. |
+| mixto (presente → pasado) | if + did, would have done | If I were braver, I would have said something. // Si fuera más valiente, habría dicho algo. |
+| deseo | I wish + past perfect | I wish I had left earlier. // Ojalá hubiera salido antes. |
+
+:::tip
+En la conversación, *had* y *would* se contraen igual: *If I'd known, I'd have come.* El primer *'d* es *had*; el segundo, *would*.
+:::
+
+:::mistake
+- If I would have known, I would have come. => If I had known, I would have come.
+Nunca va would detrás de if, tampoco en el pasado.
+:::
+
+:::practice
+1. If you had called me, I ___ have helped you. = would
+2. If we ___ left earlier, we wouldn't have missed the train. = had
+:::
+
+## Modales en pasado | short: Past modals | kicker: Gramática · 2 de 5
+**Modal + have + participio** sirve para lamentar y para deducir lo que pasó.
+
+| Modal | Significado | Ejemplo |
+|---|---|---|
+| should have | debería haber (arrepentimiento) | I should have studied more. // Debería haber estudiado más. |
+| must have | seguro que (deducción) | She must have missed the bus. // Seguro que perdió el autobús. |
+| might / could have | puede que (posibilidad) | He might have forgotten. // Puede que se le haya olvidado. |
+| can't have | no puede ser que | They can't have finished already. // No pueden haber terminado ya. |
+| needn't have | no hacía falta (pero lo hice) | You needn't have brought anything. // No hacía falta que trajeras nada. |
+
+:::mistake
+- You should have came earlier. => You should have come earlier.
+Detrás de have va siempre el participio, no el pasado.
+:::
+
+:::practice
+1. The lights are off. They ___ have gone out. (seguro que) = must
+2. I ___ have told her. Now she's upset. (arrepentimiento) = shouldn't
+:::
+
+## Estilo indirecto | short: Reported speech | kicker: Gramática · 3 de 5
+Después de un verbo en pasado como *said* o *told*, los tiempos dan un paso atrás.
+
+| Dijo | Dijo que… |
+|---|---|
+| "I'm tired." | She said (that) she **was** tired. // Dijo que estaba cansada. |
+| "I've finished." | She said she **had finished**. // Dijo que había terminado. |
+| "I'll call you." | She said she **would** call me. // Dijo que me llamaría. |
+| "Come here!" | She told me **to come**. // Me dijo que fuera. |
+| "Are you hungry?" | She asked me **if** I was hungry. // Me preguntó si tenía hambre. |
+
+:::tip
+**Say** no lleva persona; **tell** siempre la lleva: *She said that…* pero *She told me that…* Las palabras de tiempo también cambian: *tomorrow* pasa a *the next day*, *yesterday* a *the day before*.
+:::
+
+:::mistake
+- She said me that she was tired. => She told me that she was tired.
+:::
+
+:::practice
+1. "I can't come." → He said he ___ come. = couldn't
+2. "Do you like it?" → She asked me ___ I liked it. = if
+:::
+
+## Pasiva avanzada | short: Passive | kicker: Gramática · 4 de 5
+| Estructura | Ejemplo |
+|---|---|
+| pasiva con modal | The report must be finished by Friday. // El informe tiene que estar terminado el viernes. |
+| pasiva continua | The road is being repaired. // Están arreglando la carretera. |
+| it is said that… | It is said that the castle is haunted. // Se dice que el castillo está embrujado. |
+| he is said to… | He is believed to be in Paris. // Se cree que está en París. |
+| have something done | I had my hair cut. // Me corté el pelo (me lo cortaron). |
+
+:::tip
+**Have something done** es para lo que otra persona hace por ti: *I'm having my car repaired* significa que lo arregla el mecánico, no tú.
+:::
+
+:::practice
+1. The bridge is ___ built right now. (pasiva continua) = being
+2. I need to have my phone ___. (repair) = repaired
+:::
+
+## Contrastar y conceder | short: Connectors | kicker: Gramática · 5 de 5
+| Conector | Significado | Ejemplo |
+|---|---|---|
+| although + frase | aunque | Although it was raining, we went out. // Aunque llovía, salimos. |
+| despite / in spite of + nombre o -ing | a pesar de | Despite the rain, we went out. // A pesar de la lluvia, salimos. |
+| whereas | mientras que | He works, whereas I rest. // Él trabaja, mientras que yo descanso. |
+| however | sin embargo | It's expensive. However, it's worth it. // Es caro. Sin embargo, merece la pena. |
+| therefore | por lo tanto | The train was late. Therefore, the meeting was postponed. // El tren llegó tarde; por lo tanto, se aplazó la reunión. |
+
+:::mistake
+- Despite it was raining, we went out. => Despite the rain, we went out.
+Despite va con un nombre o con -ing. Delante de una frase, usa although.
+:::
+
+:::practice
+1. ___ being tired, she kept working. = Despite
+2. ___ he studied hard, he failed the exam. = Although
+:::
+
+## Palabras clave | short: Palabras | kicker: Vocabulario
+| Debatir | Español |
+|---|---|
+| In my view… / As I see it… | En mi opinión… |
+| On the one hand… on the other hand… | Por un lado… por otro… |
+| I see your point, but… | Entiendo lo que dices, pero… |
+| That depends on whether… | Depende de si… |
+
+| Collocations | Español |
+|---|---|
+| make a decision / make progress | tomar una decisión / avanzar |
+| do research / do your best | investigar / hacerlo lo mejor posible |
+| take a risk / take into account | arriesgarse / tener en cuenta |
+| raise a question / meet a deadline | plantear una pregunta / cumplir un plazo |
+
+| Trabajo y sociedad | Español |
+|---|---|
+| job interview / CV (UK), résumé (US) | entrevista de trabajo / currículum |
+| climate change / renewable energy | cambio climático / energía renovable |
+| unemployment / the economy | el desempleo / la economía |
+
+## Un debate | short: Conversación | kicker: Ponlo en práctica
+:::dialogue
+- Tom: The council said they would close the centre to cars. // El ayuntamiento dijo que cerraría el centro a los coches.
+- Sara: I think it's a good idea, although not everyone agrees. // Me parece buena idea, aunque no todo el mundo está de acuerdo.
+- Tom: Shop owners are worried. If they had been asked, they would feel better about it. // Los comerciantes están preocupados. Si les hubieran preguntado, estarían más tranquilos.
+- Sara: True. However, sales went up in cities that did it. // Es verdad. Sin embargo, las ventas subieron en las ciudades que lo hicieron.
+- Tom: Then they should have shown people the figures. // Entonces deberían haber enseñado las cifras a la gente.
+:::
+
+## Cuidado con | short: Cuidado | kicker: Dificultades frecuentes
+**Make y do.** En español ambos son *hacer*, pero en inglés no se intercambian: *make a mistake*, *do homework*. Apréndelos en pareja con su nombre.
+
+**Falsos amigos.** *Actually* es *en realidad*, no *actualmente* (*currently*). *Eventually* es *al final*, no *eventualmente*. *Sensible* es *sensato*.
+
+:::mistake
+- Actually I live in Madrid. => Currently I live in Madrid.
+Si quieres decir *actualmente*, usa currently o at the moment.
+:::
+
+## ¿Listo para el C1? | short: Siguiente | kicker: Próximo paso
+Estás listo cuando puedes seguir un telediario, contar una conversación pasada sin mezclar tiempos y defender una opinión con although, despite y however. A partir de aquí, lee mucho: prensa, ensayos y pódcasts son tus mejores profesores para el C1.

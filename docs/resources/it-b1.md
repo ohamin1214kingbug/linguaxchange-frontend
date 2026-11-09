@@ -1,86 +1,165 @@
-# Italian B1 — What to Study
-
-**Level:** B1 (Threshold) · **Language:** Italian · **Audience:** Learners
-
-B1 is the level at which Italian becomes a tool rather than a subject. You can travel on your own, deal with most everyday problems, follow a conversation between native speakers when they speak clearly, and explain what you think and why. It is also the level at which the *congiuntivo* — the subjunctive — moves from textbook exercise to something you need in ordinary conversation.
-
-The Common European Framework describes B1 as being able to understand the main points of clear standard input on familiar matters regularly encountered in work, school and leisure; to deal with most situations likely to arise while travelling; to produce simple connected text on topics that are familiar or of personal interest; and to describe experiences and events, dreams, hopes and ambitions, and briefly give reasons and explanations for opinions and plans.
-
-## Grammar to master
-
-**Narrating in the past.**
-
-- *Passato prossimo* and *imperfetto* used together confidently in a story
-- The *trapassato prossimo* for an earlier past: *Quando sono arrivato, il film era già cominciato*
-- Recognising the *passato remoto*, which you will meet in books, historical texts and the everyday speech of much of southern Italy
-
-**The conditional.**
-
-- The present conditional for politeness and wishes: *Vorrei un caffè*, *Potresti aiutarmi?*, *Dovresti riposarti*
-- The past conditional for regrets: *Avrei voluto venire*
-- Italian also uses the past conditional for a future seen from the past: *Ha detto che sarebbe venuto* — "he said he would come"
-
-**The congiuntivo.** Used after verbs of opinion, will, emotion and doubt, and after certain conjunctions.
-
-- After *penso che*, *credo che*, *spero che*, *voglio che*, *è importante che*: *Penso che sia vero*
-- After *benché*, *sebbene*, *affinché*, *prima che*, *a meno che*
-- The irregular forms you will use most: *sia*, *abbia*, *vada*, *faccia*, *possa*, *debba*, *sappia*
-- A first contact with the *congiuntivo imperfetto* in hypotheses: *Se avessi tempo, viaggerei di più*
-
-**Pronouns in depth.**
-
-- Combined pronouns: *me lo*, *te la*, *glielo*, *ce ne* — *Te lo do domani*, *Gliel'ho detto*
-- The relative pronoun *cui* after prepositions: *la ragazza con cui parlavo*, *il libro di cui ti ho parlato*
-- *il quale* and its forms in more formal language
-
-**More structures.**
-
-- The passive with *essere* or *venire*: *La casa è stata costruita nel 1990*, *Il pranzo viene servito alle due*
-- The impersonal *si*: *Qui si mangia bene*, *In Italia si parla italiano*
-- Connectors: *quindi*, *però*, *invece*, *mentre*, *anche se*, *siccome*, *dato che*
-
-## Vocabulary areas
-
-Aim for roughly 2,500 active words and a much larger passive vocabulary.
-
-- Work: applications, interviews, the workplace, colleagues and conflicts
-- Education and training, including the Italian school and university system
-- Media: news, the internet, social networks
-- Health and lifestyle, sport and nutrition
-- Relationships, feelings and personal problems
-- Travel problems: complaints, lost property, changing plans
-- The environment, the city and the countryside
-- Opinions, agreement and disagreement
-
-## What you should be able to do
-
-- Handle most situations on a trip, including problems and complaints
-- Describe experiences, events, hopes and plans in connected speech
-- Give your opinion on a familiar topic and support it with reasons and examples
-- Follow the main points of a discussion or talk in clear standard Italian
-- Understand the main points of news items and articles on familiar subjects
-- Write a personal letter or a simple formal email: a complaint, a request, an application
-- Tell the story of a film or book and say what you thought of it
-- Take part in a conversation on familiar topics without preparation
-
-## Common difficulties
-
-**When the congiuntivo is needed.** Opinions introduced by *penso che* and *credo che* take the *congiuntivo* in standard Italian, even though English uses an ordinary verb. You will hear native speakers use the indicative in casual speech; learn the standard form first.
-
-**Combined pronouns.** *Glielo* can mean "it to him", "it to her" or "it to them". Learn the combinations as single words and use them in short, repeated phrases.
-
-**Regional Italian.** Pronunciation, vocabulary and even tense use vary across Italy; the *passato remoto*, rare in the north, is everyday speech in parts of the south. Understand the variety; aim your own speech at standard Italian.
-
-**Speed and linking.** Native speech runs words together. Wide listening — podcasts, series, radio — is the only reliable fix.
-
-## How to know you are ready for B2
-
-You are ready when you can explain your opinion on a familiar topic for a few minutes without searching for basic structures, when *vorrei*, *potrei* and the common *congiuntivo* forms come out without thinking, and when you can read a newspaper article on a familiar topic and follow its main argument. If you still avoid the *congiuntivo* in speech, spend more time at B1.
-
-## Next step
-
-Move on to the Italian B2 guide, which takes you into abstract topics, argued writing and the more formal registers of the language.
-
 ---
+layout: v2
+title: Saying what you think
+promise: Give opinions, wishes and advice, imagine and connect your ideas: Italian for real conversations.
+read: 17
+source: Aligned with the Common European Framework of Reference (CEFR) B1 descriptors. For the official Italian certification at this level, CILS UNO-B1, see the Università per Stranieri di Siena's CILS levels page.
+---
+B1 is where Italian becomes a tool for real conversations. You can say what you would do, give advice, share opinions and doubts, and tell a longer story. Two new pieces carry most of this: the condizionale and the congiuntivo.
 
-*Written by GongbuLeng. Aligned with the Common European Framework of Reference for Languages (CEFR) B1 descriptors. For the official Italian certification at this level, CILS UNO-B1, see the Università per Stranieri di Siena's CILS levels page.*
+## What you'll be able to do | short: I can… | kicker: Your goal
+- [ ] Give and justify your opinion on familiar topics
+- [ ] Say what you would do and make polite requests
+- [ ] Express opinions, wishes and doubts with "penso che…"
+- [ ] Use pronouns to avoid repeating yourself
+- [ ] Tell a longer story with earlier events
+- [ ] Handle most situations while travelling, and deal with problems
+
+## The condizionale | short: Conditional | kicker: Grammar · 1 of 5
+For wishes, polite requests and advice. Same stem as the future, with its own endings.
+
+| | parlare | essere | avere | potere |
+|---|---|---|---|---|
+| io | parlerei | sarei | avrei | potrei |
+| tu | parleresti | saresti | avresti | potresti |
+| lui / lei | parlerebbe | sarebbe | avrebbe | potrebbe |
+| noi | parleremmo | saremmo | avremmo | potremmo |
+| loro | parlerebbero | sarebbero | avrebbero | potrebbero |
+
+:::examples
+- **Vorrei** un caffè, per favore. // I'd like a coffee, please.
+- **Potrebbe** aiutarmi? // Could you help me?
+- Al posto tuo, **parlerei** con lei. // If I were you, I'd talk to her.
+:::
+
+:::tip
+*Vorrei* is the polite "I'd like" for ordering and asking. *Voglio* (I want) can sound demanding.
+:::
+
+:::practice
+1. Mi ___ andare in Giappone. (piacere) = piacerebbe
+2. ___ chiudere la finestra? (potere, Lei) = Potrebbe
+3. Io ___ volentieri con te. (venire) = verrei
+:::
+
+## The congiuntivo | short: Congiuntivo | kicker: Grammar · 2 of 5
+After verbs of opinion, wish, doubt and feeling followed by **che**, Italian uses the congiuntivo.
+
+| | parlare | prendere / dormire | essere | avere |
+|---|---|---|---|---|
+| io, tu, lui / lei | parli | prenda / dorma | sia | abbia |
+| noi | parliamo | prendiamo | siamo | abbiamo |
+| voi | parliate | prendiate | siate | abbiate |
+| loro | parlino | prendano | siano | abbiano |
+
+:::examples
+- **Penso che sia** una buona idea. // I think it's a good idea.
+- Spero che tu **stia** bene. // I hope you're well.
+- È importante che **arriviate** in orario. // It's important that you arrive on time.
+:::
+
+:::tip
+The three singular forms are identical, so add the subject when it's unclear: *penso che **tu** abbia ragione*.
+:::
+
+:::mistake
+- Penso che è una buona idea. => Penso che sia una buona idea.
+Very common in speech, but the congiuntivo is correct and expected in writing.
+:::
+
+:::practice
+1. Credo che lui ___ ragione. (avere) = abbia
+2. Spero che voi ___ bene. (stare) = stiate
+3. Penso che ___ tardi. (essere) = sia
+:::
+
+## Combined pronouns | short: Pronouns | kicker: Grammar · 3 of 5
+When an indirect and a direct pronoun meet, the indirect one comes first and changes form: **mi → me, ti → te, gli / le → glie-**.
+
+| | + lo | + la | + ne |
+|---|---|---|---|
+| mi | me lo | me la | me ne |
+| ti | te lo | te la | te ne |
+| gli / le | glielo | gliela | gliene |
+| ci | ce lo | ce la | ce ne |
+
+:::examples
+- Il libro? **Te lo** presto. // The book? I'll lend it to you.
+- La lettera? **Gliel**'ho mandata ieri. // The letter? I sent it to him yesterday.
+:::
+
+:::practice
+1. Mi dai la penna? Sì, ___ do. = te la
+2. Hai detto la verità a Marco? Sì, ___ho detta. = gliel'
+:::
+
+## Telling longer stories | short: Past perfect | kicker: Grammar · 4 of 5
+The **trapassato prossimo** (imperfetto of avere / essere + participle) places one past event before another: "had done".
+
+:::examples
+- Quando sono arrivato, il film **era** già **cominciato**. // When I arrived, the film had already started.
+- Non **avevo** mai **visto** il mare prima. // I had never seen the sea before.
+:::
+
+:::tip
+A good story uses three tenses: the **imperfetto** for the background, the **passato prossimo** for the events and the **trapassato prossimo** for what happened before them.
+:::
+
+## Ci and ne | short: Ci and ne | kicker: Grammar · 5 of 5
+**ci** replaces a place or *a + thing*; **ne** replaces *di + thing* or a quantity.
+
+:::examples
+- Vai a Roma? Sì, **ci** vado domani. // Are you going to Rome? Yes, I'm going there tomorrow.
+- Quanti fratelli hai? **Ne** ho due. // How many brothers do you have? I have two.
+- Che **ne** pensi? // What do you think about it?
+:::
+
+:::practice
+1. Vai in palestra? Sì, ___ vado. = ci
+2. Quante mele vuoi? ___ voglio tre. = Ne
+:::
+
+## Words to know | short: Words | kicker: Vocabulary
+| Giving your opinion | English |
+|---|---|
+| Secondo me… / Per me… | In my opinion… / For me… |
+| (Non) sono d'accordo. | I (don't) agree. |
+| Hai ragione, però… | You're right, but… |
+| Dipende. | It depends. |
+
+| Work and studies | English |
+|---|---|
+| il posto / il colloquio | job / interview |
+| lo stipendio / il contratto | salary / contract |
+| la laurea / il master | degree / master's |
+| cercare lavoro / superare un esame | look for work / pass an exam |
+
+| Feelings and relationships | English |
+|---|---|
+| essere stufo/a di | be fed up with |
+| (qualcuno) mi manca | I miss (someone) |
+| andare d'accordo con | get on well with |
+| avere voglia di | feel like |
+
+## Asking for advice | short: Conversation | kicker: Put it together
+:::dialogue
+- Chiara: Sono stufa del mio lavoro. Non so cosa fare. // I'm fed up with my job. I don't know what to do.
+- Marco: Al posto tuo, ne cercherei un altro. // If I were you, I'd look for another one.
+- Chiara: Sì, ma non credo che sia facile. // Yes, but I don't think it's easy.
+- Marco: Mia sorella lavora in un'azienda che cerca persone. Ti do il suo numero? // My sister works at a company that's hiring. Shall I give you her number?
+- Chiara: Sì, grazie! Me lo mandi? // Yes, thanks! Will you send it to me?
+- Marco: Te lo mando subito, così non te lo dimentichi. // I'll send it now, so you don't forget it.
+:::
+
+## Watch out for | short: Watch out | kicker: Common difficulties
+**Regional Italian.** In much of the north the passato prossimo replaces the passato remoto in speech; in the south you'll hear the remoto more. Both are correct; follow where you are.
+
+**Speed and linking.** Native speech links words tightly. Listen to podcasts at normal speed and pick out the pronouns: they carry a lot of meaning.
+
+:::mistake
+- Se avrei tempo, verrei. => Se avessi tempo, verrei.
+After se (if), never use the condizionale. Se + congiuntivo imperfetto is the B2 structure; at B1, learn this sentence as a chunk.
+:::
+
+## Ready for B2? | short: Next | kicker: Next step
+You're ready when you can argue an opinion for a few minutes, use the condizionale and the congiuntivo after penso che without stopping, and tell a story with three past tenses. Next up is the Italian B2 guide, which adds hypotheses and more formal connectors.

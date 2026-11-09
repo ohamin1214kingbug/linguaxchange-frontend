@@ -1,94 +1,183 @@
-# German B1 — What to Study
-
-**Level:** B1 (Threshold) · **Language:** German · **Audience:** Learners
-
-B1 is the level at which German becomes a tool rather than a subject. You can travel on your own, deal with most everyday problems, follow a conversation between native speakers when they speak clearly, and explain what you think and why. It is also the level many German-speaking employers and universities treat as the first serious threshold.
-
-The Common European Framework describes B1 as being able to understand the main points of clear standard input on familiar matters regularly encountered in work, school and leisure; to deal with most situations likely to arise while travelling; to produce simple connected text on topics that are familiar or of personal interest; and to describe experiences and events, dreams, hopes and ambitions, and briefly give reasons and explanations for opinions and plans.
-
-## Grammar to master
-
-**More past tenses.**
-
-- The *Präteritum* of regular and irregular verbs, which you will meet in almost every written story, report and newspaper article: *sie ging*, *er kam*, *wir fuhren*
-- The pluperfect for events before another past event: *Nachdem ich gegessen hatte, bin ich gegangen*
-- *als* for a single event in the past, *wenn* for repeated ones, *wann* only in questions
-
-**The future and werden.**
-
-- The future with *werden* plus the infinitive, used for plans, promises and predictions: *Ich werde dich anrufen*
-- *werden* on its own meaning "to become": *Sie wird Ärztin*
-
-**The subjunctive II.** This is what makes German polite, and what lets you talk about situations that are not real.
-
-- *würde* plus the infinitive for most verbs: *Ich würde gern mitkommen*
-- The forms you use constantly on their own: *wäre*, *hätte*, *könnte*, *müsste*, *sollte*
-- Polite requests: *Könnten Sie mir bitte helfen?*
-- Unreal conditions and wishes: *Wenn ich mehr Zeit hätte, würde ich reisen*; *Ich wünschte, ich wäre schon fertig*
-
-**The passive.** German uses the passive far more than English, especially in instructions, news and anything describing a process.
-
-- Present and past with *werden*: *Das Haus wird gebaut*, *Das Haus wurde 1990 gebaut*
-- *von* for the agent when you need to name it
-- The passive with modal verbs: *Das muss heute gemacht werden*
-
-**Relative clauses.** Relative pronouns mostly look like the definite article and take the case of their role inside the clause: *der Mann, der dort steht*; *der Mann, den ich kenne*; *der Mann, dem ich helfe*. The verb goes to the end.
-
-**Full adjective endings.** At B1 you need the whole system — after the definite article, after *ein* and *kein*, and with no article at all — in all four cases. Learn the patterns as tables once, then build them into speech through repetition rather than calculation.
-
-**Linking ideas.**
-
-- Subordinating conjunctions: *obwohl*, *bevor*, *nachdem*, *während*, *seit*, *damit*, *sodass*
-- *um … zu*, *ohne … zu* and *statt … zu* with the infinitive
-- Indirect questions with *ob* and question words: *Weißt du, wann der Zug kommt?*
-- Two-part connectors: *entweder … oder*, *nicht nur … sondern auch*, *sowohl … als auch*
-
-**Verbs with fixed prepositions.** *Warten auf*, *sich freuen auf* and *über*, *denken an*, *sich interessieren für*: learn the preposition and its case with the verb, and the *da-* and *wo-* forms that replace them — *Ich warte darauf*, *Worauf wartest du?*
-
-**The genitive.** Recognise and use *des* and *der* plus the *-s* on masculine and neuter nouns, and the common genitive prepositions *wegen*, *trotz* and *während*. In speech you will often hear the dative instead; in writing the genitive is expected.
-
-## Vocabulary areas
-
-Aim for roughly 2,500 active words and a much larger passive vocabulary.
-
-- Work: applications, interviews, the workplace, colleagues and conflicts
-- Education and training, including the German school and university system
-- Media: news, the internet, social networks
-- Health and lifestyle, sport and nutrition
-- Relationships, feelings and personal problems
-- Travel problems: complaints, lost property, changing plans
-- The environment, the city and the countryside
-- Opinions, agreement and disagreement
-
-## What you should be able to do
-
-- Handle most situations on a trip, including problems and complaints
-- Describe experiences, events, hopes and plans in connected speech
-- Give your opinion on a familiar topic and support it with reasons and examples
-- Follow the main points of a discussion or talk in clear standard German
-- Understand the main points of news items and articles on familiar subjects
-- Write a personal letter or a simple formal email: a complaint, a request, an application
-- Tell the story of a film or book and say what you thought of it
-- Take part in a conversation on familiar topics without preparation
-
-## Common difficulties
-
-**Adjective endings in real time.** Most learners can fill in a table correctly long before they can produce the right ending while speaking. Short, frequent speaking practice matters more here than more grammar study.
-
-**Als, wenn or wann.** English uses "when" for all three. A single past occasion takes *als*, a repeated or future one *wenn*, and a question *wann*.
-
-**Long verb clusters at the end.** Subordinate clauses with the perfect or the passive stack verbs at the end — *…, weil das Haus renoviert werden muss*. Read such sentences aloud until the rhythm is familiar.
-
-**Regional German.** Once you leave the textbook, you will hear Austrian and Swiss German, regional accents and dialect. It is normal not to follow everything; focus first on understanding standard German well, then widen your ear.
-
-## How to know you are ready for B2
-
-You are ready when you can explain your opinion on a familiar topic for a few minutes without searching for basic structures, when you use the subjunctive for polite requests without thinking, and when you can read a newspaper article on a familiar topic and understand its main argument. If you still avoid the passive and relative clauses in speech, spend more time at B1.
-
-## Next step
-
-Move on to the German B2 guide, which takes you into abstract topics, reported speech and the dense, noun-heavy style of formal and academic German.
-
 ---
+layout: v2
+title: Saying what you think
+promise: Give opinions, make polite requests, imagine and explain: German for real conversations.
+read: 17
+source: Aligned with the Common European Framework of Reference (CEFR) B1 descriptors. For the official German exam at this level, the Goethe-Zertifikat B1, see the Goethe-Institut's exam overview.
+---
+B1 is where German becomes a tool for real conversations. You can say what you would do, ask politely, describe people and things in detail, and explain how something is done. Your sentences get longer, and the endings start to matter.
 
-*Written by GongbuLeng. Aligned with the Common European Framework of Reference for Languages (CEFR) B1 descriptors. For the official German examinations at this level, such as the Goethe-Zertifikat B1, see the Goethe-Institut's examination overview.*
+## What you'll be able to do | short: I can… | kicker: Your goal
+- [ ] Give and justify your opinion on familiar topics
+- [ ] Make polite requests and say what you would do
+- [ ] Describe people and things in detail
+- [ ] Explain how something is made or done
+- [ ] Tell a longer story with clear time links
+- [ ] Handle most situations while travelling, and deal with problems
+
+## Would, could, had: Konjunktiv II | short: Konjunktiv II | kicker: Grammar · 1 of 5
+Use it for wishes, polite requests and imagined situations. Most verbs use **würde + infinitive**; a few common ones have their own forms.
+
+| | würde (would) | hätte (had) | wäre (were) | könnte (could) |
+|---|---|---|---|---|
+| ich | würde | hätte | wäre | könnte |
+| du | würdest | hättest | wärst | könntest |
+| er / sie | würde | hätte | wäre | könnte |
+| wir / sie | würden | hätten | wären | könnten |
+
+:::examples
+- Ich **würde** gern nach Wien **fahren**. // I'd like to go to Vienna.
+- **Könnten** Sie mir helfen? // Could you help me?
+- Wenn ich Zeit **hätte**, **würde** ich mehr lesen. // If I had time, I'd read more.
+:::
+
+:::tip
+*Ich hätte gern…* is the polite way to order: *Ich hätte gern einen Kaffee.*
+:::
+
+:::mistake
+- Wenn ich würde Zeit haben… => Wenn ich Zeit hätte…
+:::
+
+:::practice
+1. ___ Sie das Fenster öffnen? (could) = Könnten
+2. Wenn ich reich ___, würde ich reisen. (sein) = wäre
+3. Ich ___ gern ein Wasser. (haben, polite) = hätte
+:::
+
+## Relative clauses | short: Relative clauses | kicker: Grammar · 2 of 5
+Relative clauses describe a noun: "the man **who**…", "the book **that**…". The pronoun looks like the article, and the verb goes to the end.
+
+| | Masculine | Feminine | Neuter | Plural |
+|---|---|---|---|---|
+| subject | der | die | das | die |
+| object | den | die | das | die |
+| dative | dem | der | dem | denen |
+
+:::examples
+- Das ist der Mann, **der** neben mir **wohnt**. // That's the man who lives next to me.
+- Der Film, **den** ich gestern **gesehen habe**, war super. // The film I saw yesterday was great.
+- Die Freundin, mit **der** ich **reise**, heißt Ana. // The friend I'm travelling with is called Ana.
+:::
+
+:::mistake
+- Der Film, der ich gesehen habe… => Der Film, den ich gesehen habe…
+Ich is the subject, so the film is the object: den.
+:::
+
+:::practice
+1. Das ist das Buch, ___ ich lese. = das
+2. Der Kollege, ___ ich helfe, ist neu. (dative) = dem
+3. Die Leute, ___ hier wohnen, sind nett. = die
+:::
+
+## The passive | short: Passive | kicker: Grammar · 3 of 5
+**werden + past participle** puts the focus on what is done, not who does it. It's common in instructions, news and rules.
+
+:::examples
+- Das Haus **wird** renoviert. // The house is being renovated.
+- Hier **wird** Deutsch **gesprochen**. // German is spoken here.
+- Das Paket **wurde** gestern **geliefert**. // The parcel was delivered yesterday.
+:::
+
+:::mistake
+- Das Auto ist repariert. (meaning it's being done now) => Das Auto wird repariert.
+Ist repariert means it's already done.
+:::
+
+:::practice
+1. Das Essen ___ gekocht. (is being) = wird
+2. Die Briefe ___ gestern geschickt. (were) = wurden
+:::
+
+## Adjective endings | short: Adjectives | kicker: Grammar · 4 of 5
+Before a noun, adjectives take an ending. After **der / die / das**, it's mostly **-e** or **-en**.
+
+| | Masculine | Feminine | Neuter | Plural |
+|---|---|---|---|---|
+| nominative | der neue Laptop | die neue Jacke | das neue Handy | die neuen Schuhe |
+| accusative | den neuen Laptop | die neue Jacke | das neue Handy | die neuen Schuhe |
+| dative | dem neuen Laptop | der neuen Jacke | dem neuen Handy | den neuen Schuhen |
+
+:::tip
+Shortcut: after der/die/das, the ending is **-e** in the five "simple" spots (nominative singular, and accusative feminine and neuter), and **-en** everywhere else.
+:::
+
+:::mistake
+- Ich trage den neue Mantel. => Ich trage den neuen Mantel.
+:::
+
+:::practice
+1. Ich kaufe die rot___ Tasche. = e
+2. Mit dem klein___ Hund. = en
+3. Der alt___ Mann wohnt hier. = e
+:::
+
+## When, although, so that | short: Connectors | kicker: Grammar · 5 of 5
+These all send the verb to the end of their clause.
+
+| Connector | Meaning | Example |
+|---|---|---|
+| als | when (one time in the past) | Als ich klein war, … // When I was little, … |
+| wenn | when, whenever, if | Wenn es regnet, bleibe ich zu Hause. // When it rains, I stay home. |
+| obwohl | although | Obwohl ich müde bin, gehe ich aus. // Although I'm tired, I'm going out. |
+| damit | so that | Ich spreche langsam, damit du mich verstehst. // I speak slowly so you understand me. |
+
+:::mistake
+- Wenn ich in Berlin war, habe ich viel gelernt. => Als ich in Berlin war, …
+A single period in the past takes als; wenn is for repeated events or the present and future.
+:::
+
+:::practice
+1. ___ ich 18 war, bin ich umgezogen. = Als
+2. ___ es kalt ist, trinke ich Tee. = Wenn
+3. ___ es regnet, gehen wir spazieren. (although) = Obwohl
+:::
+
+## Words to know | short: Words | kicker: Vocabulary
+| Giving your opinion | English |
+|---|---|
+| Meiner Meinung nach… | In my opinion… |
+| Ich finde, dass… | I think that… |
+| Da hast du recht, aber… | You're right there, but… |
+| Das kommt darauf an. | It depends. |
+
+| Verbs with prepositions | English |
+|---|---|
+| sich freuen auf (+ acc.) | look forward to |
+| sich interessieren für | be interested in |
+| warten auf | wait for |
+| denken an | think of |
+| Angst haben vor (+ dat.) | be afraid of |
+
+| Work and studies | English |
+|---|---|
+| die Stelle / das Vorstellungsgespräch | position / job interview |
+| das Gehalt / der Vertrag | salary / contract |
+| das Studium / die Ausbildung | degree / vocational training |
+| sich bewerben um | apply for |
+
+## Asking for advice | short: Conversation | kicker: Put it together
+:::dialogue
+- Lena: Ich habe keine Lust mehr auf meinen Job. // I've had enough of my job.
+- Tim: An deiner Stelle würde ich etwas Neues suchen. // If I were you, I'd look for something new.
+- Lena: Das wäre schön, aber es ist nicht so einfach. // That would be nice, but it's not that easy.
+- Tim: Meine Schwester arbeitet bei einer Firma, die Leute sucht. // My sister works at a company that's looking for people.
+- Lena: Wirklich? Könntest du mir ihre Nummer geben? // Really? Could you give me her number?
+- Tim: Klar, ich schicke sie dir gleich, damit du sie nicht vergisst. // Sure, I'll send it now so you don't forget it.
+:::
+
+## Watch out for | short: Watch out | kicker: Common difficulties
+**Adjective endings in real time.** You'll know the rule long before you can apply it while speaking. Practise fixed phrases (*mit freundlichen Grüßen*, *im nächsten Jahr*) so the right ending becomes a habit.
+
+**Long verb clusters.** *…, weil ich es nicht hätte machen können.* The verbs pile up at the end. Read longer texts and notice where they land.
+
+**The written past.** In books and news, the simple past (*ging, kam, sagte*) replaces the Perfekt. Learn to recognise the common ones.
+
+:::mistake
+- Ich freue mich für das Wochenende. => Ich freue mich auf das Wochenende.
+Verbs come with fixed prepositions: learn them together, like a single word.
+:::
+
+## Ready for B2? | short: Next | kicker: Next step
+You're ready when you can explain and defend an opinion for a few minutes, use würde, hätte and wäre freely, and build relative clauses without losing the verb. Next up is the German B2 guide, which adds reported speech and a more formal style.

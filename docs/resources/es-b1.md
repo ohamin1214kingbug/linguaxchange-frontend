@@ -1,92 +1,181 @@
-# Spanish B1 — What to Study
-
-**Level:** B1 (Threshold) · **Language:** Spanish · **Audience:** Learners
-
-B1 is the level at which Spanish becomes independently usable. Below it you are handling situations; at B1 you are handling conversations. You can deal with most things that come up while travelling, follow a discussion about a familiar topic, and — the real marker of the level — give reasons, opinions and explanations rather than just facts.
-
-The Common European Framework describes B1 as being able to understand the main points of clear standard input on familiar matters regularly encountered in work, school and leisure; to deal with most situations likely to arise while travelling in an area where the language is spoken; to produce simple connected text on familiar or personal-interest topics; and to describe experiences, events, dreams, hopes and ambitions, and briefly give reasons and explanations for opinions and plans.
-
-Two things define B1 in Spanish specifically: the subjunctive, and connected discourse. One is grammatical, the other rhetorical, and they are equally important.
-
-## Grammar to master
-
-**The present subjunctive.** The defining structure of the level. It is not a tense but a mood — it marks how the speaker relates to what is being said. Learn the formation quickly, then spend most of your time on the triggers.
-
-- Formation from the *yo* form of the present indicative, plus the irregulars: *sea*, *vaya*, *haya*, *sepa*, *dé*, *esté*
-- Influence and volition: *quiero que vengas*, *te recomiendo que lo hagas*
-- Emotion and value judgement: *me alegra que estés aquí*, *es importante que lo sepas*
-- Doubt and denial: *no creo que sea verdad*, and the way negation flips the mood
-- Unknown or non-existent antecedents: *busco un piso que tenga balcón*
-- Future time after temporal connectors: *cuando llegues*, *en cuanto termine*
-- Purpose clauses: *para que puedas entenderlo*
-
-The rule to internalise is that the subjunctive appears in the subordinate clause, triggered by what is in the main clause. Learners who study it as a list of memorised phrases stall; learners who study the trigger categories generalise.
-
-**Completing the verb system.**
-
-- *Pluscuamperfecto* for events prior to another past event: *cuando llegué, ya se había ido*
-- The conditional, for hypotheses, politeness and future-in-the-past: *me gustaría*, *dijo que vendría*
-- Conditional sentences: real conditions with *si* plus indicative, and unreal present conditions with *si* plus imperfect subjunctive — *si tuviera tiempo, iría*
-- The imperfect subjunctive, at least in conditional sentences and in reported requests
-- The full imperative system, affirmative and negative, with attached pronouns
-
-**Discourse and structure.** This is what separates a B1 speaker from an A2 speaker with more vocabulary.
-
-- Reported speech, and the tense shifts it forces
-- Relative clauses: *que*, *quien*, *el que*, *cuyo*, and the difference restrictive and non-restrictive commas make
-- The passive and impersonal *se*, and why Spanish prefers them to the English passive
-- Verbal periphrases: *acabar de*, *volver a*, *ponerse a*, *seguir* plus gerund, *llevar* plus gerund
-- Connectors that structure an argument: *sin embargo*, *aunque*, *por lo tanto*, *a pesar de*, *mientras que*, *en cambio*
-- *Ser* and *estar* with adjectives that change meaning: *es aburrido* versus *está aburrido*
-
-## Vocabulary areas
-
-Target roughly 3,000 to 4,000 words, and shift the way you acquire them. At B1 you need collocations and register, not just headwords: knowing *tomar una decisión* rather than the incorrect *hacer una decisión* is what makes speech sound native rather than assembled.
-
-- Work and careers: applications, interviews, conditions, workplace conflict
-- Education and academic life
-- Media, news and current events
-- Environment and sustainability
-- Health, wellbeing, lifestyle and habits
-- Technology, social media and its effects
-- Culture: film, literature, music, festivals across the Spanish-speaking world
-- Migration, cities and social issues, at a general level
-- Nuanced emotion and personality vocabulary
-- Opinion language: agreeing, disagreeing, conceding, qualifying
-- Idiomatic expressions in frequent everyday use
-
-## What you should be able to do
-
-- Give and justify an opinion on a familiar topic
-- Narrate a complex sequence of events with clear ordering of time
-- Speculate about the future and discuss hypothetical situations
-- Make a complaint, negotiate a solution, or handle an unexpected problem while travelling
-- Follow the main thread of a TV programme, podcast or lecture on a familiar topic
-- Read a newspaper article and summarise its argument
-- Write a structured text of several paragraphs: a letter of complaint, an opinion piece, a detailed personal account
-- Report what someone else said
-- Sustain a conversation with a native speaker who is not adapting their speech for you
-
-## Common difficulties
-
-**Avoiding the subjunctive.** The most common B1 failure is not using it wrongly but routing around it — saying *creo que es difícil* forever and never *no creo que sea difícil*. Avoidance keeps you sounding A2 indefinitely. Force the structure into production deliberately.
-
-**Overusing connectors.** Learners who discover *sin embargo* tend to deploy it in every paragraph. Connected text means logical connection, not connector density.
-
-**The past-tense system under pressure.** *Indefinido* and *imperfecto* are supposedly settled at A2, but they break down again once sentences get longer and the *pluscuamperfecto* enters. Expect to revisit them.
-
-**Fossilisation.** By B1 you are comprehensible, so errors stop being corrected by the people you talk to and start becoming permanent. This is the level at which structured feedback from a teacher stops being optional and starts being the main thing that moves you forward.
-
-**Register.** B1 is where the gap between what you can say and how appropriately you can say it becomes visible. The same content needs different wording in a message to a friend and an email to a landlord.
-
-## How to know you are ready for B2
-
-You are ready when the subjunctive appears in your speech without being planned, when you can disagree with someone and explain why in real time, and when you can follow a conversation between two native speakers who are not accommodating you. B2 assumes all three.
-
-## Next step
-
-B2 is where Spanish moves from familiar topics to abstract ones, and from expressing opinions to defending them under challenge. See the Spanish B2 guide.
-
 ---
+layout: v2
+title: Saying what you think
+promise: Give opinions, wishes and advice, and connect your ideas: Spanish for real conversations.
+read: 17
+source: Aligned with the Common European Framework of Reference (CEFR) B1 descriptors. For the official Spanish B1 exam syllabus, see UNED's published prueba libre syllabus.
+---
+B1 is where Spanish becomes a tool for real conversations. You can give your opinion and defend it, say what you hope will happen, give advice, and link your ideas into longer explanations. The big new piece is the subjunctive.
 
-*Written by GongbuLeng. Aligned with the Common European Framework of Reference for Languages (CEFR) B1 descriptors. For the official Spanish B1 examination syllabus, see UNED's published prueba libre syllabus.*
+## What you'll be able to do | short: I can… | kicker: Your goal
+- [ ] Give and justify your opinion on familiar topics
+- [ ] Say what you want, hope or need other people to do
+- [ ] Give advice and recommendations
+- [ ] Talk about hypothetical plans and what you would do
+- [ ] Tell a longer story with background and earlier events
+- [ ] Handle most situations while travelling, and deal with problems
+
+## The present subjunctive | short: Subjunctive | kicker: Grammar · 1 of 5
+The subjunctive appears when one person wants, hopes or feels something about what **another** person does. To form it, take the yo form, drop -o, and swap the vowel: -ar verbs take **e**, -er / -ir verbs take **a**.
+
+| | hablar | comer | tener (tengo) |
+|---|---|---|---|
+| yo | hable | coma | tenga |
+| tú | hables | comas | tengas |
+| él / ella / usted | hable | coma | tenga |
+| nosotros | hablemos | comamos | tengamos |
+| vosotros | habléis | comáis | tengáis |
+| ellos / ustedes | hablen | coman | tengan |
+
+Irregular: **sea** (ser), **vaya** (ir), **esté** (estar), **haya** (haber), **sepa** (saber), **dé** (dar).
+
+:::examples
+- Quiero que **vengas** a la fiesta. // I want you to come to the party.
+- **Ojalá** no **llueva** mañana. // I hope it doesn't rain tomorrow.
+- Es importante que **descanses**. // It's important that you rest.
+:::
+
+:::tip
+Same subject, use the infinitive: *quiero ir*. Different subjects, use que + subjunctive: *quiero que vayas*.
+:::
+
+:::mistake
+- Quiero que vienes. => Quiero que vengas.
+:::
+
+:::practice
+1. Espero que ___ bien. (estar, tú) = estés
+2. Es necesario que ___ más. (estudiar, nosotros) = estudiemos
+3. Ojalá ___ sol el sábado. (hacer) = haga
+:::
+
+## When to use it | short: Triggers | kicker: Grammar · 2 of 5
+Most uses fall into a few groups. Learn the trigger phrase and the subjunctive comes with it.
+
+| Group | Trigger | Example |
+|---|---|---|
+| wishes, requests | querer que, pedir que | Te pido que me ayudes. // I'm asking you to help me. |
+| feelings | me alegra que, me molesta que | Me alegra que estés aquí. // I'm glad you're here. |
+| doubt, denial | no creo que, dudo que | No creo que sea verdad. // I don't think it's true. |
+| purpose | para que | Te lo explico para que lo entiendas. // I'm explaining so you understand. |
+| future time | cuando, en cuanto | Cuando llegues, llámame. // When you arrive, call me. |
+
+:::tip
+*Creo que* (I think) takes the normal indicative: *creo que es verdad*. Only the negative, *no creo que*, takes the subjunctive.
+:::
+
+:::mistake
+- Cuando llegarás, llámame. => Cuando llegues, llámame.
+After cuando, a future event takes the subjunctive, never the future tense.
+:::
+
+:::practice
+1. No creo que ___ tarde. (ser) = sea
+2. Llámame cuando ___ a casa. (llegar) = llegues
+3. Creo que ___ razón. (tener, tú) = tienes
+:::
+
+## Future and conditional | short: Future | kicker: Grammar · 3 of 5
+Add these endings to the whole infinitive. The same dozen verbs are irregular in both: **tendr-**, **har-**, **podr-**, **saldr-**, **dir-**, **querr-**, **vendr-**, **sabr-**.
+
+| | Future (will) | Conditional (would) |
+|---|---|---|
+| yo | hablaré | hablaría |
+| tú | hablarás | hablarías |
+| él / ella | hablará | hablaría |
+| nosotros | hablaremos | hablaríamos |
+| ellos | hablarán | hablarían |
+
+:::examples
+- El año que viene **viviré** en Barcelona. // Next year I'll live in Barcelona.
+- Yo que tú, **hablaría** con ella. // If I were you, I'd talk to her.
+- ¿**Podría** ayudarme? // Could you help me?
+:::
+
+:::tip
+The conditional is the polite way to ask: *¿Podría…?*, *Me gustaría…*. It softens almost any request.
+:::
+
+:::practice
+1. Mañana ___ calor. (hacer, future) = hará
+2. Me ___ ir a Japón. (gustar, conditional) = gustaría
+3. ¿___ abrir la ventana? (poder, usted, conditional) = Podría
+:::
+
+## Telling longer stories | short: Past perfect | kicker: Grammar · 4 of 5
+The **pluscuamperfecto** (había + participle) places one past event before another: "had done".
+
+:::examples
+- Cuando llegué, la película ya **había empezado**. // When I arrived, the film had already started.
+- Nunca **había visto** el mar antes. // I had never seen the sea before.
+:::
+
+:::tip
+A good story uses three tenses: the **imperfecto** for the background, the **indefinido** for the events and the **pluscuamperfecto** for what happened before them.
+:::
+
+:::mistake
+- Cuando llegué, la película ya empezó. => …, la película ya había empezado.
+:::
+
+## Connecting ideas | short: Connectors | kicker: Grammar · 5 of 5
+Connectors turn a list of sentences into an argument.
+
+| Connector | Meaning | Example |
+|---|---|---|
+| sin embargo | however | Es caro; sin embargo, vale la pena. // It's expensive; however, it's worth it. |
+| aunque | although | Aunque llueve, salgo. // Although it's raining, I'm going out. |
+| por eso | that's why | Estaba cansado, por eso me fui. // I was tired, that's why I left. |
+| además | besides | Además, está muy cerca. // Besides, it's very close. |
+| en cambio | on the other hand | Yo trabajo; ella, en cambio, estudia. // I work; she, on the other hand, studies. |
+
+:::mistake
+- Pero sin embargo… => Sin embargo… (or just pero)
+Pero and sin embargo both mean "but / however": use one.
+:::
+
+## Words to know | short: Words | kicker: Vocabulary
+| Giving your opinion | English |
+|---|---|
+| En mi opinión… / Para mí… | In my opinion… / For me… |
+| (No) estoy de acuerdo. | I (don't) agree. |
+| Tienes razón, pero… | You're right, but… |
+| Depende de… | It depends on… |
+| Lo que pasa es que… | The thing is… |
+
+| Work and studies | English |
+|---|---|
+| el puesto / la entrevista | position / interview |
+| el sueldo / el contrato | salary / contract |
+| la carrera / el máster | degree / master's |
+| buscar trabajo / aprobar un examen | look for work / pass an exam |
+
+| Feelings and relationships | English |
+|---|---|
+| estar harto/a de | be fed up with |
+| echar de menos | to miss (someone) |
+| llevarse bien con | to get on well with |
+| tener ganas de | to look forward to, feel like |
+
+## Asking for advice | short: Conversation | kicker: Put it together
+:::dialogue
+- Lucía: Estoy harta de mi trabajo. No sé qué hacer. // I'm fed up with my job. I don't know what to do.
+- Diego: Yo que tú, buscaría otro. // If I were you, I'd look for another one.
+- Lucía: Ya, pero no creo que sea fácil encontrar algo. // Yeah, but I don't think it's easy to find something.
+- Diego: Te recomiendo que hables con mi hermana; trabaja en recursos humanos. // I recommend you talk to my sister; she works in HR.
+- Lucía: ¡Gracias! Cuando tenga su número, la llamo. // Thanks! When I have her number, I'll call her.
+- Diego: Te lo mando ahora para que no se te olvide. // I'll send it now so you don't forget.
+:::
+
+## Watch out for | short: Watch out | kicker: Common difficulties
+**Avoiding the subjunctive.** Many learners build sentences to dodge it. Use the trigger phrases on purpose until they feel natural.
+
+**Fossilisation.** At B1 you can communicate, so mistakes stop getting corrected and settle in. Record yourself, or ask a teacher to point out your three most repeated errors.
+
+:::mistake
+- Si tendría dinero, viajaría. => Si tuviera dinero, viajaría.
+After si (if), never use the conditional. Si + imperfect subjunctive is the B2 structure; at B1, learn this one sentence as a chunk.
+:::
+
+## Ready for B2? | short: Next | kicker: Next step
+You're ready when you can give an opinion and argue it for a few minutes, use the present subjunctive after the common triggers without stopping, and tell a story with all three past tenses. Next up is the Spanish B2 guide, which adds the past subjunctive and hypotheses.

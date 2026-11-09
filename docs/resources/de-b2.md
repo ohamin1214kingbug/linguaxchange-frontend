@@ -1,81 +1,161 @@
-# German B2 — What to Study
-
-**Level:** B2 (Vantage) · **Language:** German · **Audience:** Learners
-
-B2 is where you stop working around German and start working in it. You can follow a lecture or a meeting, argue a point, read a newspaper editorial and write a structured text that a native speaker would take seriously. It is the level most German universities and many employers ask for, and the one where the formal, written side of the language finally comes into view.
-
-The Common European Framework describes B2 as being able to understand the main ideas of complex text on both concrete and abstract topics, including technical discussions in your field of specialisation; to interact with a degree of fluency and spontaneity that makes regular interaction with native speakers quite possible without strain for either party; and to produce clear, detailed text on a wide range of subjects and explain a viewpoint on a topical issue, giving the advantages and disadvantages of various options.
-
-## Grammar to master
-
-**The passive in all its forms.**
-
-- The state passive with *sein*, which describes a result rather than a process: *Die Tür ist geöffnet*
-- The passive in every tense, including the perfect: *Das Problem ist gelöst worden*
-- Alternatives to the passive, common in formal German: *sich lassen* (*Das lässt sich ändern*), *sein … zu* (*Die Aufgabe ist bis Montag zu erledigen*), adjectives in *-bar* (*machbar*, *lesbar*)
-
-**The subjunctive I and reported speech.** News reports and formal writing use the *Konjunktiv I* to report what someone said without taking responsibility for it: *Der Minister sagte, er sei nicht informiert gewesen*. At B2 you need to recognise it reliably and use the most common forms in writing — *sei*, *habe*, *werde*, *könne*.
-
-**The subjunctive II in the past.** *Wenn ich das gewusst hätte, wäre ich früher gekommen.* With modal verbs this produces a double infinitive at the end of the clause: *Ich hätte früher anfangen sollen*.
-
-**Nominal style.** Formal and academic German packs actions into nouns: *nach der Durchführung der Maßnahme* instead of *nachdem man die Maßnahme durchgeführt hat*. You need to read this style without translating it back step by step, and to produce a moderate amount of it in formal writing.
-
-- Nouns formed from verbs: *-ung*, *-heit*, *-keit*, nominalised infinitives (*das Lernen*)
-- Genitive chains: *die Ergebnisse der Untersuchung des Instituts*
-- Genitive prepositions of formal writing: *aufgrund*, *infolge*, *innerhalb*, *außerhalb*, *anstatt*, *bezüglich*
-
-**Participles as adjectives.** German can put a whole clause in front of a noun: *die im letzten Jahr eröffnete Bibliothek* — the library that was opened last year. These extended participle phrases are standard in newspapers and textbooks, and reading them fluently is a real marker of B2.
-
-**Connectors for argument.**
-
-- *je … desto*: *Je früher, desto besser*
-- *zwar … aber*, *weder … noch*, *einerseits … andererseits*
-- *indem*, *sofern*, *falls*, *es sei denn*
-- *außerdem*, *dennoch*, *folglich*, *demnach* at the start of a sentence, followed by the verb
-
-**Natural spoken German.**
-
-- Modal particles — *doch*, *ja*, *mal*, *eben*, *halt*, *wohl* — which carry tone rather than meaning, and which make you sound far less like a textbook
-- The future perfect for assumptions about the past: *Er wird den Zug verpasst haben*
-- Fixed verb–noun combinations: *eine Entscheidung treffen*, *in Frage kommen*, *zur Verfügung stehen*, *Kritik üben*
-
-## Vocabulary areas
-
-Aim for a broad passive vocabulary and at least 4,000 words you can use actively, with a clear sense of register.
-
-- Society and politics, the economy, current affairs
-- Science, technology and the environment
-- The world of work in formal terms: contracts, responsibilities, negotiations
-- Education and research
-- Culture: literature, film, the arts, criticism
-- The language of argument: stating a position, conceding, contrasting, concluding
-- Formal correspondence and phrases for presentations and meetings
-
-## What you should be able to do
-
-- Follow a lecture, presentation or meeting on a topic in your field
-- Argue for a position in a discussion, respond to objections and summarise the other side fairly
-- Understand newspaper articles and reports, including opinion pieces
-- Write a structured essay or report with a clear argument, advantages and disadvantages
-- Write formal emails and letters in the appropriate register
-- Give a short presentation and answer questions on it
-- Understand most films and TV series in standard German
-- Explain a complex process or problem clearly
-
-## Common difficulties
-
-**Nominal style is hard to read at speed.** The information is all there, but it is compressed into nouns and genitives. Practise by rewriting dense sentences in plain verbal German, then reading the original again.
-
-**Konjunktiv I looks like a mistake.** *Er sei*, *sie habe* can look like errors until you know the form. Once you recognise it, news reports become much easier to follow.
-
-**Register.** B2 speakers need to switch between *du* and *Sie*, and between spoken and written German, correctly. What sounds natural with friends can sound careless in a formal email, and textbook German can sound stiff at a party.
-
-**Modal particles.** Learners tend either to avoid them entirely or to scatter them at random. Learn them in the fixed phrases where they occur — *Komm doch mit!*, *Das ist ja interessant* — rather than as rules.
-
-## How to know you are ready for C1
-
-You are ready when you can take part in a discussion on an unfamiliar abstract topic without falling back on simpler language, when a newspaper editorial no longer needs a dictionary for its structure, and when your formal writing reads as organised German rather than translated thought. C1 moves from arguing clearly to arguing precisely: nuance, implication and style.
-
 ---
+layout: v2
+title: Precise and persuasive
+promise: Report what others said, talk about what could have been, and write in a formal style: German for study and work.
+read: 18
+source: Aligned with the Common European Framework of Reference (CEFR) B2 descriptors. For the official German exam at this level, the Goethe-Zertifikat B2, see the Goethe-Institut's exam overview.
+---
+B2 is where you can argue, report and write in German with confidence. You can follow the news, report what someone said, discuss what would have happened, and read the dense, noun-heavy style of reports and articles.
 
-*Written by GongbuLeng. Aligned with the Common European Framework of Reference for Languages (CEFR) B2 descriptors. For the official German examinations at this level, such as the Goethe-Zertifikat B2, see the Goethe-Institut's examination overview.*
+## What you'll be able to do | short: I can… | kicker: Your goal
+- [ ] Use the passive in every tense, with and without modal verbs
+- [ ] Report what others said, the way newspapers do
+- [ ] Talk about regrets and what would have happened
+- [ ] Read and write the formal noun style of reports
+- [ ] Link ideas with two-part connectors like je … desto
+- [ ] Take part in a discussion and defend your view
+
+## The passive | short: Passive | kicker: Grammar · 1 of 5
+The passive puts the action first and the person doing it in the background. It's built with **werden** + past participle.
+
+| Tense | Form | Example |
+|---|---|---|
+| present | wird gebaut | Die Brücke wird gebaut. // The bridge is being built. |
+| simple past | wurde gebaut | Die Brücke wurde 1990 gebaut. // The bridge was built in 1990. |
+| perfect | ist gebaut worden | Die Brücke ist gebaut worden. // The bridge has been built. |
+| with a modal | muss gebaut werden | Die Brücke muss repariert werden. // The bridge must be repaired. |
+| state | ist gebaut | Die Brücke ist fertig gebaut. // The bridge is (already) built. |
+
+:::tip
+The person doing the action comes in with **von** + dative: *Das Buch wurde von Kafka geschrieben.* A means or cause often takes **durch**: *durch den Sturm zerstört.*
+:::
+
+:::mistake
+- Die Brücke ist gebaut geworden. => Die Brücke ist gebaut worden.
+In the passive perfect, *geworden* shortens to *worden*.
+:::
+
+:::practice
+1. Das Haus ___ 1950 gebaut. (simple past) = wurde
+2. Der Fehler muss sofort korrigiert ___. = werden
+:::
+
+## Reported speech | short: Reported speech | kicker: Grammar · 2 of 5
+News reports use **Konjunktiv I** to show that they're passing on what someone said, without claiming it's true.
+
+| Verb | Konjunktiv I | Example |
+|---|---|---|
+| sein | er sei | Der Minister sagte, er sei zufrieden. // The minister said he was satisfied. |
+| haben | sie habe | Sie erklärte, sie habe keine Zeit. // She explained that she had no time. |
+| können | er könne | Er meinte, er könne nicht kommen. // He said he couldn't come. |
+| kommen | sie komme | Sie sagte, sie komme morgen. // She said she was coming tomorrow. |
+| past | er habe gesagt | Er behauptet, er habe nichts gewusst. // He claims he knew nothing. |
+
+:::tip
+When Konjunktiv I looks the same as the normal present (mostly *ich*, *wir*, *sie*), switch to Konjunktiv II: *Sie sagten, sie hätten keine Zeit* rather than *sie haben*. In everyday speech, most people just use the indicative or *würde*.
+:::
+
+:::practice
+1. Er sagt, er ___ krank. (sein) = sei
+2. Sie behauptet, sie ___ das nicht gewusst. (haben) = habe
+:::
+
+## What could have been | short: Past wishes | kicker: Grammar · 3 of 5
+For the past, Konjunktiv II uses **hätte** or **wäre** + past participle.
+
+| Use | Example |
+|---|---|
+| regret | Ich hätte mehr lernen sollen. // I should have studied more. |
+| unreal past | Wenn ich das gewusst hätte, wäre ich gekommen. // If I had known, I would have come. |
+| wish | Wäre ich doch früher losgefahren! // If only I had left earlier! |
+| almost | Fast hätte ich den Zug verpasst. // I almost missed the train. |
+
+:::mistake
+- Wenn ich Zeit gehabt würde, … => Wenn ich Zeit gehabt hätte, …
+The past Konjunktiv II is hätte / wäre + participle; würde doesn't belong here.
+:::
+
+:::practice
+1. Wenn du angerufen ___, hätte ich dich abgeholt. = hättest
+2. Wir ___ früher gehen sollen. = hätten
+:::
+
+## The noun style | short: Noun style | kicker: Grammar · 4 of 5
+Formal German turns verbs into nouns. You'll see it in reports, letters and the news.
+
+| Verbal (spoken) | Nominal (written) |
+|---|---|
+| weil die Preise steigen | wegen des Anstiegs der Preise // because of the rise in prices |
+| nachdem er angekommen war | nach seiner Ankunft // after his arrival |
+| während wir verhandelten | während der Verhandlungen // during the negotiations |
+| um Kosten zu sparen | zur Senkung der Kosten // to reduce costs |
+
+:::tip
+Extended adjectives are part of the same style: *die **in Berlin lebende** Autorin* means the author who lives in Berlin. Read them from the article to the noun, then go back.
+:::
+
+:::practice
+1. wegen ___ schlechten Wetters (genitive article) = des
+2. nach ___ Ankunft (his) = seiner
+:::
+
+## Two-part connectors | short: Connectors | kicker: Grammar · 5 of 5
+| Connector | Meaning | Example |
+|---|---|---|
+| je … desto | the more … the more | Je mehr ich übe, desto besser spreche ich. // The more I practise, the better I speak. |
+| sowohl … als auch | both … and | Sie spricht sowohl Englisch als auch Spanisch. // She speaks both English and Spanish. |
+| weder … noch | neither … nor | Er hat weder Zeit noch Geld. // He has neither time nor money. |
+| zwar … aber | admittedly … but | Das ist zwar teuer, aber gut. // It's expensive, but it's good. |
+| nicht nur … sondern auch | not only … but also | Nicht nur die Preise, sondern auch die Mieten steigen. // Not only prices but also rents are rising. |
+
+:::mistake
+- Je mehr ich übe, desto ich spreche besser. => Je mehr ich übe, desto besser spreche ich.
+After *desto* + comparative, the verb comes next.
+:::
+
+:::practice
+1. Je früher wir anfangen, ___ schneller sind wir fertig. = desto
+2. Ich habe ___ Hunger noch Durst. = weder
+:::
+
+## Words to know | short: Words | kicker: Vocabulary
+| Discussing | English |
+|---|---|
+| Meiner Meinung nach … | In my opinion … |
+| Einerseits … andererseits … | On the one hand … on the other … |
+| Ich bin davon überzeugt, dass … | I'm convinced that … |
+| Das hängt davon ab, ob … | That depends on whether … |
+
+| Work and study | English |
+|---|---|
+| die Bewerbung / das Vorstellungsgespräch | application / job interview |
+| die Abschlussarbeit / das Studium | thesis / degree course |
+| die Frist / die Besprechung | deadline / meeting |
+
+| Society | English |
+|---|---|
+| die Umwelt / der Klimawandel | the environment / climate change |
+| die Gesellschaft / die Bildung | society / education |
+| die Wirtschaft / die Arbeitslosigkeit | economy / unemployment |
+
+## A discussion | short: Conversation | kicker: Put it together
+:::dialogue
+- Jonas: Hast du gelesen? Der Bürgermeister sagt, das neue Stadion sei notwendig. // Did you read it? The mayor says the new stadium is necessary.
+- Mia: Ja, aber das Geld hätte man besser in Schulen investieren sollen. // Yes, but the money would have been better invested in schools.
+- Jonas: Zwar kostet es viel, aber es schafft auch Arbeitsplätze. // It costs a lot, admittedly, but it also creates jobs.
+- Mia: Das hängt davon ab, wie lange. Je länger die Bauarbeiten dauern, desto teurer wird es. // That depends for how long. The longer the building work takes, the more expensive it gets.
+- Jonas: Da hast du recht. Darüber sollte öffentlich diskutiert werden. // You're right there. That should be discussed in public.
+:::
+
+## Watch out for | short: Watch out | kicker: Common difficulties
+**Werden has three jobs.** Future (*Ich werde fahren*), passive (*Das wird gemacht*) and "to become" (*Er wird Arzt*). Look at what comes with it: an infinitive, a participle or a noun.
+
+**Genitive in formal style.** *wegen*, *während*, *trotz* and *aufgrund* take the genitive in writing: *trotz des Regens*. In speech you'll often hear the dative.
+
+:::mistake
+- Trotz dem schlechten Wetter sind wir gefahren. => Trotz des schlechten Wetters sind wir gefahren.
+Fine in speech, but write the genitive in exams and formal texts.
+:::
+
+## Ready for C1? | short: Next | kicker: Next step
+You're ready when you can follow a news broadcast, report an interview in Konjunktiv I, and argue a point in writing with the noun style and two-part connectors. From here, read widely: newspapers, non-fiction and podcasts are your best C1 teachers.

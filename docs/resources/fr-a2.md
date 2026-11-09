@@ -1,85 +1,192 @@
-# French A2 — What to Study
-
-**Level:** A2 (Waystage) · **Language:** French · **Audience:** Learners
-
-A2 is where French opens up in time. At A1 everything happened now; at A2 you can tell someone what you did at the weekend, describe what your childhood town was like and make plans for next month. It is also where object pronouns start to appear in front of the verb — the first thing that makes French sentences look unfamiliar to an English speaker.
-
-The Common European Framework describes A2 as being able to understand sentences and frequently used expressions related to areas of immediate relevance — basic personal and family information, shopping, local geography, employment; to communicate in simple and routine tasks requiring a simple and direct exchange of information on familiar matters; and to describe in simple terms aspects of your background, immediate environment and matters of immediate need.
-
-## Grammar to master
-
-**The passé composé.** The everyday past tense for completed actions: *avoir* or *être* plus a past participle — *J'ai mangé*, *Elle est partie*.
-
-- Regular participles: *-er → -é*, *-ir → -i*, *-re → -u* — *parlé*, *fini*, *vendu*
-- Common irregular participles: *été*, *eu*, *fait*, *pris*, *mis*, *dit*, *vu*, *venu*, *pu*, *voulu*
-- *être* for a fixed group of movement and change-of-state verbs — *aller*, *venir*, *arriver*, *partir*, *entrer*, *sortir*, *monter*, *descendre*, *naître*, *mourir*, *rester*, *tomber*, *retourner* — and for all reflexive verbs
-- With *être*, the participle agrees with the subject: *Elle est allée*, *Ils sont venus*
-
-**The imparfait.** The past tense for description, background and habit: *Quand j'étais petit, j'habitais à Lyon.* At A2 you need the forms and the basic contrast: the *imparfait* sets the scene, the *passé composé* moves the story — *Il pleuvait quand je suis sorti.*
-
-**The future.** Keep using *aller* plus the infinitive for plans, and learn the *futur simple* of regular verbs and the main irregular stems: *je serai*, *j'aurai*, *j'irai*, *je ferai*, *je pourrai*, *je viendrai*.
-
-**Object pronouns.** French puts them before the verb: *Je le vois*, *Je lui parle*.
-
-- Direct: *me*, *te*, *le*, *la*, *nous*, *vous*, *les*
-- Indirect: *me*, *te*, *lui*, *nous*, *vous*, *leur*
-- *y* for places and things introduced by *à*: *J'y vais*
-- *en* for quantities and things introduced by *de*: *J'en veux deux*
-
-**Reflexive verbs.** *Se lever*, *s'appeler*, *s'habiller*, *se coucher* — in the present and in the *passé composé* with *être*: *Je me suis levée à sept heures.*
-
-**More tools.**
-
-- Negation beyond *pas*: *ne … jamais*, *ne … plus*, *ne … rien*, *ne … personne*
-- Comparatives and superlatives: *plus / moins / aussi … que*, *le plus*, and the irregular *meilleur* and *mieux*
-- The relative pronouns *qui*, *que* and *où*: *le film que j'ai vu*, *la ville où j'habite*
-- Time expressions: *depuis* with the present (*J'apprends le français depuis un an*), *il y a* meaning "ago", *pendant*
-- The imperative: *Viens !*, *Venez !*, *Allons-y !*
-
-## Vocabulary areas
-
-Aim for roughly 1,000 to 1,500 active words, still learning each noun with its article.
-
-- Past events: the weekend, holidays, childhood, life stages
-- Travel: booking, the station and airport, hotels, delays
-- Health: the body, symptoms, the doctor's and the pharmacy
-- Shopping: clothes and sizes, returns, comparing prices
-- Housing: looking for a flat, rooms and furniture, neighbours
-- Work and study: the working day, appointments, simple emails
-- Celebrations, invitations and gifts
-- Weather and the seasons in more detail
-- Directions and describing where things are
-
-## What you should be able to do
-
-- Describe what you did last weekend or on your last holiday
-- Describe a place or a person from your past using the *imparfait*
-- Make, change and cancel an appointment by phone or email
-- Explain a simple health problem to a doctor or pharmacist
-- Give a reason with *parce que* and a simple opinion with *Je pense que…*
-- Compare two things: flats, products, cities, plans
-- Buy a train ticket and deal with a simple problem such as a delay
-- Write a short informal email or message about everyday matters
-- Understand the main point of short, clear announcements and messages
-
-## Common difficulties
-
-**Avoir or être?** Most verbs take *avoir*. Learn the *être* group as a list, add all reflexive verbs, and practise them in sentences until the auxiliary comes out automatically.
-
-**Passé composé or imparfait?** English does not force this choice. Ask whether the action is a completed event that moves the story on, or background: a description, a habit, something that was in progress.
-
-**Pronoun order.** *Je le lui donne*, *Il y en a*: two pronouns in a row follow a fixed order. At A2, aim to handle one pronoun reliably and recognise combinations.
-
-**Agreement you cannot hear.** *Elle est allée* and *il est allé* sound the same; the agreement only shows in writing. Build the habit in written practice.
-
-## How to know you are ready for B1
-
-You are ready when you can tell a simple story in the past — mixing *passé composé* and *imparfait* mostly correctly — without stopping to build every verb, and when single object pronouns land before the verb without planning. If you still avoid talking about the past, consolidate A2 before moving on.
-
-## Next step
-
-Move on to the French B1 guide, which adds the conditional and the subjunctive so you can talk about what would, could or should happen.
-
 ---
+layout: v2
+title: Telling your story
+promise: Say what you did, what things used to be like and what you'll do: French beyond the present.
+read: 16
+source: Aligned with the Common European Framework of Reference (CEFR) A2 descriptors. For the official French exam at this level, the DELF A2, see France Éducation international's DELF page.
+---
+A2 is where French opens up in time. You can tell someone about last weekend, describe how things used to be and talk about your plans, still in simple sentences, on familiar topics.
 
-*Written by GongbuLeng. Aligned with the Common European Framework of Reference for Languages (CEFR) A2 descriptors. For the official French examination at this level, the DELF A2, see France Éducation international's DELF page.*
+## What you'll be able to do | short: I can… | kicker: Your goal
+- [ ] Say what you did yesterday, last weekend or on holiday
+- [ ] Describe what your life used to be like
+- [ ] Talk about your plans and the future
+- [ ] Describe your daily routine
+- [ ] Shop, see a doctor and book things by phone
+- [ ] Write a short message telling a friend your news
+
+## The passé composé | short: Passé composé | kicker: Grammar · 1 of 5
+The everyday past is **avoir** or **être** + past participle. Regular participles: parler → **parlé**, finir → **fini**, vendre → **vendu**.
+
+| Verb | Helper | Example |
+|---|---|---|
+| manger (eat) | avoir | J'ai mangé. // I ate. |
+| faire (do) | avoir | Tu as fait tes devoirs ? // Did you do your homework? |
+| voir (see) | avoir | Nous avons vu un film. // We saw a film. |
+| aller (go) | être | Elle est allée à Paris. // She went to Paris. |
+| venir (come) | être | Ils sont venus hier. // They came yesterday. |
+| rester (stay) | être | Je suis resté à la maison. // I stayed at home. |
+
+:::tip
+About 15 verbs of movement and change take **être** (aller, venir, arriver, partir, entrer, sortir, rester, naître, mourir…), and so do all reflexive verbs. With être, the participle agrees: *elle est allée*, *ils sont partis*.
+:::
+
+:::mistake
+- J'ai allé au cinéma. => Je suis allé(e) au cinéma.
+:::
+
+:::practice
+1. Hier, j'___ regardé la télé. = ai
+2. Elle ___ partie à huit heures. = est
+3. Nous avons ___ du français. (parler) = parlé
+:::
+
+## The imparfait | short: Imparfait | kicker: Grammar · 2 of 5
+The *imparfait* describes the background: what things were like, what used to happen, what was going on. Take the nous form, drop -ons, add the endings.
+
+| | Ending | parler (nous parl-ons) | être (irregular) |
+|---|---|---|---|
+| je | -ais | parlais | étais |
+| tu | -ais | parlais | étais |
+| il / elle | -ait | parlait | était |
+| nous | -ions | parlions | étions |
+| vous | -iez | parliez | étiez |
+| ils / elles | -aient | parlaient | étaient |
+
+:::examples
+- Quand j'**étais** petit, j'**habitais** à Lyon. // When I was little, I lived in Lyon.
+- Il **pleuvait** quand je suis sorti. // It was raining when I went out.
+:::
+
+:::tip
+Think of a film: the imparfait is the scenery and what's happening in the background, the passé composé is what happens next in the plot.
+:::
+
+:::mistake
+- Quand j'ai été petit, j'ai habité à Lyon. => Quand j'étais petit, j'habitais à Lyon.
+Childhood and "used to" describe a long background period.
+:::
+
+:::practice
+1. Avant, nous ___ à la campagne. (habiter) = habitions
+2. Il ___ beau ce jour-là. (faire) = faisait
+3. Quand j'___ enfant, j'aimais le chocolat. (être) = étais
+:::
+
+## The future | short: Future | kicker: Grammar · 3 of 5
+For plans, use **aller + infinitive**. The simple future (infinitive + -ai, -as, -a…) is for predictions and more formal plans.
+
+:::examples
+- Je **vais partir** en vacances demain. // I'm going on holiday tomorrow.
+- Qu'est-ce que tu **vas faire** ce week-end ? // What are you going to do this weekend?
+- Il **fera** beau demain. // The weather will be nice tomorrow.
+- Je t'**appellerai** ce soir. // I'll call you this evening.
+:::
+
+:::mistake
+- Je vais à partir demain. => Je vais partir demain.
+:::
+
+:::practice
+1. Nous ___ visiter le musée. (aller, near future) = allons
+2. Demain, il ___ chaud. (faire, future) = fera
+:::
+
+## Object pronouns | short: Pronouns | kicker: Grammar · 4 of 5
+Pronouns replace things already mentioned and go **before** the verb.
+
+| | Direct (it, him, her) | Indirect (to him, to her) |
+|---|---|---|
+| me / you | me / te | me / te |
+| him, her, it | le / la (l') | lui |
+| us / you | nous / vous | nous / vous |
+| them | les | leur |
+
+:::examples
+- Le gâteau ? Je **le** mange. // The cake? I'm eating it.
+- Je **lui** téléphone ce soir. // I'm calling him/her this evening.
+- Je ne **les** connais pas. // I don't know them.
+:::
+
+:::tip
+**Y** replaces a place (*J'y vais* = I'm going there) and **en** replaces a quantity (*J'en veux deux* = I want two of them).
+:::
+
+:::mistake
+- Je téléphone le. => Je lui téléphone.
+Téléphoner à takes an indirect pronoun, and it goes before the verb.
+:::
+
+:::practice
+1. Tu vois Marie ? Oui, je ___ vois. = la
+2. Tu parles à Paul ? Oui, je ___ parle. = lui
+3. Tu vas à Paris ? Oui, j'___ vais. = y
+:::
+
+## Reflexive verbs | short: Routine | kicker: Grammar · 5 of 5
+Daily-routine verbs are reflexive: the action is done to yourself. *Se lever* (to get up) → **je me lève**.
+
+:::examples
+- Je **me lève** à sept heures. // I get up at seven.
+- Tu **te couches** tard ? // Do you go to bed late?
+- Nous **nous sommes promenés** au parc. // We went for a walk in the park.
+:::
+
+:::mistake
+- Je lève à sept heures. => Je me lève à sept heures.
+Without me, it means "I lift (something) at seven".
+:::
+
+## Words to know | short: Words | kicker: Vocabulary
+| Travel | English |
+|---|---|
+| le voyage / les vacances | trip / holidays |
+| le billet / la réservation | ticket / booking |
+| la valise / la gare | suitcase / station |
+| À quelle heure part le train ? | What time does the train leave? |
+
+| Health | English |
+|---|---|
+| J'ai mal à la tête. | I have a headache. |
+| J'ai de la fièvre. | I have a fever. |
+| le médecin / la pharmacie | doctor / pharmacy |
+| l'ordonnance / le médicament | prescription / medicine |
+
+| Shopping | English |
+|---|---|
+| la taille / la cabine d'essayage | size / fitting room |
+| Je peux l'essayer ? | Can I try it on? |
+| C'est trop cher / trop grand. | It's too expensive / too big. |
+| les soldes | the sales |
+
+| Time words for the past | English |
+|---|---|
+| hier / avant-hier | yesterday / the day before yesterday |
+| la semaine dernière / l'année dernière | last week / last year |
+| il y a deux jours | two days ago |
+| autrefois / quand j'étais petit | in the past / when I was little |
+
+## Your weekend | short: Conversation | kicker: Put it together
+:::dialogue
+- Hugo: Tu as passé un bon week-end ? // Did you have a good weekend?
+- Léa: Oui ! Samedi, je suis allée à la mer avec ma sœur. // Yes! On Saturday I went to the seaside with my sister.
+- Hugo: Super ! Il faisait beau ? // Great! Was the weather nice?
+- Léa: Il faisait chaud, mais il y avait beaucoup de monde. // It was hot, but there were lots of people.
+- Hugo: Et dimanche ? // And on Sunday?
+- Léa: Je suis restée à la maison, j'étais fatiguée. // I stayed at home, I was tired.
+- Hugo: Tu vas y retourner ? // Are you going to go back there?
+- Léa: Oui, je vais y aller avec mes parents en juillet. // Yes, I'm going to go there with my parents in July.
+:::
+
+## Watch out for | short: Watch out | kicker: Common difficulties
+**Pronoun order.** With two pronouns, the order is fixed: *Je te le donne*, *Je le lui donne*. Learn the common combinations as chunks.
+
+**Agreement you can't hear.** *Elle est allée* and *il est allé* sound the same but are written differently. It matters in writing, not in speech.
+
+:::mistake
+- Je suis allé au cinéma hier soir, il a été génial. => …, c'était génial.
+To describe how something was, French uses the imparfait: c'était.
+:::
+
+## Ready for B1? | short: Next | kicker: Next step
+You're ready when you can tell a story about your past mixing the passé composé and the imparfait, and talk about your plans without stopping to think. Next up is the French B1 guide, which adds the conditional and the subjunctive.

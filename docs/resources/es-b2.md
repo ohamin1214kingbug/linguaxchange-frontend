@@ -1,93 +1,146 @@
-# Spanish B2 — What to Study
-
-**Level:** B2 (Vantage) · **Language:** Spanish · **Audience:** Learners
-
-B2 is the level at which you stop being a learner that native speakers accommodate. Below it, conversations work because the other person adjusts; at B2 they no longer have to. This is the level most universities and employers mean when they ask for "working proficiency", and it is the longest, least satisfying stretch of the whole framework, because progress stops being visible from one week to the next.
-
-The Common European Framework describes B2 as being able to understand the main ideas of complex text on both concrete and abstract topics, including technical discussion in your own field; to interact with a degree of fluency and spontaneity that makes regular interaction with native speakers quite possible without strain for either party; and to produce clear, detailed text on a wide range of subjects, explaining a viewpoint on a topical issue and giving the advantages and disadvantages of various options.
-
-Two shifts define it. The first is **abstraction**: you move from talking about your life to talking about ideas. The second is **register**: you stop having one way of saying things and start choosing between several.
-
-## Grammar to master
-
-**The rest of the subjunctive.** B1 gave you the present subjunctive and the trigger categories. B2 completes the system and, more importantly, moves it out of clauses where it is obligatory and into clauses where it is a *choice* that changes meaning.
-
-- The imperfect subjunctive across its full range, not only in conditional sentences — *quería que vinieras*, *me pidió que lo hiciera*
-- The perfect subjunctive: *no creo que haya llegado*
-- The pluperfect subjunctive: *si hubiera sabido…*
-- Sequence of tenses: which subjunctive follows which main-clause tense, and why *me alegro de que vinieras* and *me alegré de que vinieras* are not interchangeable
-- Third-conditional sentences: *si hubiera estudiado, habría aprobado*, including the very common *hubiera* for *habría* in speech
-- The meaningful alternations, which are the real B2 content:
-  - *aunque* plus indicative concedes a fact; plus subjunctive concedes a hypothetical — *aunque es caro* versus *aunque sea caro*
-  - Relative clauses: *busco a la persona que sabe* versus *busco una persona que sepa*
-  - *el hecho de que*, *no porque*, *de ahí que* and similar structures that force the mood regardless of the verb
-
-**Structure and style.** At B1 you built sentences. At B2 you build texts, and Spanish has strong preferences about how.
-
-- Cleft and emphatic structures: *lo que me molesta es que…*, *fue entonces cuando…*
-- Word order for emphasis, and the fact that Spanish moves constituents where English uses stress
-- *ser* plus participle versus passive *se* versus an impersonal third-person plural — and why the true passive is much rarer in Spanish than English learners assume
-- Nominalisation: turning verbs into nouns for formal writing, and knowing when it makes a text worse
-- Complex reported speech across tense and mood shifts
-- Discourse markers sorted by register, not just by meaning: *no obstante* and *pero* do the same logical work in different rooms
-
-**Vocabulary-building grammar.** This is the highest-leverage and most neglected area at B2.
-
-- Verbs with a fixed preposition: *soñar con*, *insistir en*, *confiar en*, *carecer de*, *contar con*. Getting these wrong is the most audible remaining error at this level.
-- Derivation: forming nouns from verbs (*-ción*, *-miento*, *-aje*), adjectives from nouns (*-oso*, *-al*, *-ivo*), verbs from adjectives (*-izar*, *-ecer*). One learned pattern unlocks hundreds of words.
-- Diminutives and augmentatives as tools of *tone* rather than size — *ahorita*, *un cafecito*, *un problemón*
-- Expanded verbal periphrases: *venir haciendo*, *llegar a ser*, *dar por hecho*
-
-## Vocabulary areas
-
-Target roughly 6,000 to 8,000 words, but the count matters less than the shift in *kind*. At B2 you need synonyms with different weights, not more headwords: *decir*, *afirmar*, *sostener*, *alegar* and *soltar* are all "say" and none is a substitute for another.
-
-- Politics, institutions and public debate
-- Economy, work culture and labour issues
-- Science, health and technology at a general-press level
-- Environment and sustainability in argumentative terms
-- Art, literature and film, including how to discuss them critically
-- History and society across the Spanish-speaking world, not only Spain
-- Law and bureaucracy as encountered by a resident: contracts, paperwork, rights
-- Academic language: hypothesis, evidence, method, argument, conclusion
-- Hedging and qualification: *cabe señalar*, *en cierta medida*, *no del todo*
-- Idioms and fixed expressions in genuine circulation, not phrasebook curiosities
-- Colloquial and regional registers, at least receptively
-
-## What you should be able to do
-
-- Argue a position, anticipate the counterargument, and concede a point without losing the thread
-- Follow a debate, a lecture or a podcast at natural speed and take useful notes
-- Read a broadsheet opinion column or a general-science article without a dictionary
-- Write a structured essay, a formal complaint, a cover letter or a report
-- Summarise and synthesise several sources into one coherent account
-- Switch register deliberately between a message to a friend and an email to an institution
-- Handle a job interview or a university seminar in Spanish
-- Understand film and television without subtitles, allowing for accent and slang
-- Repair a conversation smoothly when you have misunderstood, rather than stalling
-
-## Common difficulties
-
-**The plateau is real and it is long.** B2 typically takes as long as A1 through B1 combined, and unlike earlier levels it produces no obvious weekly wins. Learners often conclude they have stopped improving when they have simply stopped improving *visibly*. Measuring against a fixed benchmark — the same podcast every two months, an essay rewritten — is more reliable than how you feel.
-
-**Optional subjunctive.** Once the mood becomes a choice rather than a rule, there is no exercise book that can settle it for you. It requires exposure to a lot of real Spanish and someone who will tell you when your choice changed the meaning you intended.
-
-**Fossilised errors from B1.** Anything wrong that never blocked communication is now permanent unless it is deliberately targeted. Prepositional regime and gender on low-frequency nouns are the usual survivors. Fixing them takes focused correction, not more input.
-
-**Register collapse.** The most common B2 writing failure is a text that is uniformly too formal, built from connectors and nominalisations because those feel advanced. Native formal Spanish is much plainer than learners expect.
-
-**Comprehension outpacing production.** You will understand far more than you can say for the whole of this level. That gap is normal, but only closes if you spend time producing, not only consuming.
-
-**Translating your personality.** Being funny, ironic or diplomatic in Spanish is a distinct skill from being accurate in it, and it is what most learners actually mean when they say they want to sound natural.
-
-## How to know you are ready for C1
-
-You are ready when you can hold your own in a group conversation between native speakers who are not including you deliberately, when you can read a full-length book in Spanish for pleasure rather than as study, and when you can write something a native speaker would edit for style rather than for correctness. Until all three are true, more B2 is the right answer.
-
-## Next step
-
-C1 shifts again, from arguing clearly to arguing *precisely*: implication, nuance, irony, and the ability to use the language flexibly for social, academic and professional purposes. A C1 guide is planned.
-
 ---
+layout: v2
+title: Arguing and nuance
+promise: Imagine, argue, hedge and adapt your register: Spanish with nuance, for discussions, work and study.
+read: 18
+source: Aligned with the Common European Framework of Reference (CEFR) B2 descriptors.
+---
+B2 is where Spanish gains nuance. You can argue a point, imagine what would have happened, express doubt precisely and shift between casual and formal Spanish. The grammar is mostly in place; now it's about range, accuracy and register.
 
-*Written by GongbuLeng. Aligned with the Common European Framework of Reference for Languages (CEFR) B2 descriptors.*
+## What you'll be able to do | short: I can… | kicker: Your goal
+- [ ] Argue for and against a point of view in a discussion
+- [ ] Talk about hypothetical situations in the present and the past
+- [ ] Express nuance: doubt, concession, conditions
+- [ ] Follow the news, lectures and films on familiar subjects
+- [ ] Write clear, detailed texts such as reports and formal emails
+- [ ] Switch between casual and formal register
+
+## The imperfect subjunctive | short: Past subjunctive | kicker: Grammar · 1 of 5
+Take the ellos form of the simple past, drop **-ron**, add **-ra**. It's used after triggers in the past and in hypotheses.
+
+| | hablar (hablaron) | tener (tuvieron) | ser / ir (fueron) |
+|---|---|---|---|
+| yo | hablara | tuviera | fuera |
+| tú | hablaras | tuvieras | fueras |
+| él / ella | hablara | tuviera | fuera |
+| nosotros | habláramos | tuviéramos | fuéramos |
+| ellos | hablaran | tuvieran | fueran |
+
+:::examples
+- Quería que **vinieras**. // I wanted you to come.
+- Me pidió que lo **ayudara**. // He asked me to help him.
+- Ojalá **tuviera** más tiempo. // I wish I had more time.
+:::
+
+:::tip
+You'll also see the **-se** form (*hablase, tuviese*). It means the same; -ra is more common in speech.
+:::
+
+:::practice
+1. Me dijo que ___ temprano. (llegar, yo) = llegara
+2. Ojalá ___ verdad. (ser) = fuera
+3. Era importante que ___ todos. (venir) = vinieran
+:::
+
+## Hypotheses | short: Hypotheses | kicker: Grammar · 2 of 5
+| Type | Structure | Example |
+|---|---|---|
+| present, unreal | si + imperfect subj., conditional | Si tuviera tiempo, iría. // If I had time, I'd go. |
+| past, unreal | si + pluperfect subj., past conditional | Si hubiera tenido tiempo, habría ido. // If I had had time, I would have gone. |
+| mixed | si + pluperfect subj., conditional | Si hubiera estudiado, ahora sería médico. // If I'd studied, I'd be a doctor now. |
+
+:::mistake
+- Si habría sabido, te habría llamado. => Si hubiera sabido, te habría llamado.
+Never put a conditional after si.
+:::
+
+:::practice
+1. Si ___ dinero, compraría una casa. (tener) = tuviera
+2. Si hubiera llovido, ___ quedado en casa. (nosotros) = nos habríamos
+:::
+
+## Subjunctive for nuance | short: Nuance | kicker: Grammar · 3 of 5
+At B2 the subjunctive starts to change meaning, not just follow a trigger.
+
+| Structure | Indicative | Subjunctive |
+|---|---|---|
+| aunque | Aunque llueve, salgo. // Although it's raining (it is), I'm going out. | Aunque llueva, saldré. // Even if it rains, I'll go out. |
+| relative clause | Busco el piso que tiene terraza. // I'm looking for the flat (a known one) with a terrace. | Busco un piso que tenga terraza. // I'm looking for any flat with a terrace. |
+| cuando | Cuando llego, ceno. // When I get home (habitually), I have dinner. | Cuando llegue, cenaré. // When I get home (future), I'll have dinner. |
+
+:::tip
+The indicative states a fact; the subjunctive leaves it open: unknown, hypothetical or not yet real.
+:::
+
+:::practice
+1. Necesito a alguien que ___ alemán. (hablar, unknown person) = hable
+2. Aunque ___ cansado, iré a la fiesta. (estar, even if) = esté
+:::
+
+## Passive and impersonal se | short: Se | kicker: Grammar · 4 of 5
+Spanish prefers **se** over the passive with ser, which sounds formal or journalistic.
+
+:::examples
+- **Se habla** español en 20 países. // Spanish is spoken in 20 countries.
+- **Se venden** pisos. // Flats for sale.
+- La ley **fue aprobada** por el Congreso. // The law was passed by Congress. (formal, news)
+:::
+
+:::mistake
+- Se vende pisos. => Se venden pisos.
+The verb agrees with the thing: pisos is plural.
+:::
+
+## Arguing a point | short: Argue | kicker: Grammar · 5 of 5
+| Connector | Meaning | Register |
+|---|---|---|
+| no obstante | however | formal |
+| por lo tanto | therefore | neutral |
+| dado que, puesto que | given that, since | neutral / formal |
+| a pesar de que | despite the fact that | neutral |
+| en cambio | on the other hand | neutral |
+| es decir | that is | neutral |
+
+:::examples
+- El proyecto es caro; **no obstante**, es necesario. // The project is expensive; however, it is necessary.
+- **Dado que** no hay acuerdo, aplazamos la reunión. // Given that there's no agreement, we'll postpone the meeting.
+:::
+
+## Words to know | short: Words | kicker: Vocabulary
+Building words from words is the fastest way to grow your vocabulary at B2.
+
+| Pattern | Meaning | Example |
+|---|---|---|
+| -ción, -miento | action → noun | organizar → organización; crecer → crecimiento |
+| -dad | adjective → noun | posible → posibilidad |
+| des-, in- | opposite | hacer → deshacer; útil → inútil |
+| -mente | adjective → adverb | rápido → rápidamente |
+
+| Discussing ideas | English |
+|---|---|
+| Desde mi punto de vista… | From my point of view… |
+| Hay que tener en cuenta que… | We have to bear in mind that… |
+| No es que…, sino que… | It's not that…, but that… |
+| Estoy de acuerdo en parte. | I partly agree. |
+
+## A discussion | short: Conversation | kicker: Put it together
+:::dialogue
+- Marta: ¿Crees que el teletrabajo es mejor? // Do you think remote work is better?
+- Iván: Depende. Si tuviera hijos, lo preferiría, sin duda. // It depends. If I had children, I'd definitely prefer it.
+- Marta: A mí me pasa lo contrario: aunque sea más cómodo, echo de menos a mis compañeros. // It's the opposite for me: even if it's more comfortable, I miss my colleagues.
+- Iván: Ya, pero hay que tener en cuenta el tiempo que se pierde en el transporte. // Sure, but we have to bear in mind the time lost commuting.
+- Marta: Es verdad. Si lo hubiera sabido antes, habría buscado un piso más cerca. // True. If I'd known earlier, I'd have looked for a flat closer by.
+:::
+
+## Watch out for | short: Watch out | kicker: Common difficulties
+**The plateau.** B2 takes longer than any level before it, and progress is harder to feel. Read and listen a lot, and focus on range: new connectors, collocations and idioms.
+
+**Register collapse.** Under pressure, learners slip back to casual Spanish in formal situations. Practise writing formal emails with *usted* and set phrases (*Le escribo para…*, *Quedo a la espera de…*).
+
+:::mistake
+- Si sería posible, preferiría… => Si fuera posible, preferiría…
+A formal request after si still takes the imperfect subjunctive, never the conditional.
+:::
+
+## Ready for C1? | short: Next | kicker: Next step
+You're ready when you can argue a complex point fluently, use every subjunctive tense when meaning requires it, and adapt your Spanish to the situation without thinking. Beyond B2, the best guide is real material: novels, podcasts, the news and long conversations.
