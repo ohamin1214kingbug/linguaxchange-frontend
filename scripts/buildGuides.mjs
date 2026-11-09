@@ -39,6 +39,8 @@ import { readFileSync, writeFileSync, readdirSync, mkdirSync, unlinkSync } from 
 import { execFileSync } from 'node:child_process'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { isGuideV2, parseGuide } from '../lib/guideFormat.mjs'
+import { guidePdfHtml } from './guidePdf.mjs'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const SRC = join(ROOT, 'docs/resources')
@@ -220,7 +222,11 @@ let failed = false
 
 for (const file of guides) {
   const name = file.replace(/\.md$/, '')
-  const html = page(toHtmlBody(readFileSync(join(SRC, file), 'utf8')), file.startsWith('en-') ? 'es' : 'en')
+  const source = readFileSync(join(SRC, file), 'utf8')
+  // Rewritten guides (layout: v2) get the new design; the rest keep this one.
+  const html = isGuideV2(source)
+    ? guidePdfHtml(parseGuide(source), name)
+    : page(toHtmlBody(source), file.startsWith('en-') ? 'es' : 'en')
   const tmp = join(OUT, `${name}.html`)
   const pdf = join(OUT, `${name}.pdf`)
 
@@ -230,6 +236,8 @@ for (const file of guides) {
       '--headless',
       '--disable-gpu',
       '--no-pdf-header-footer',
+      // Lets the web fonts finish loading before the page is printed.
+      '--virtual-time-budget=10000',
       `--print-to-pdf=${pdf}`,
       tmp,
     ], { stdio: 'pipe' })
