@@ -10,6 +10,8 @@ import countryNamesKo from 'react-phone-number-input/locale/ko'
 import countryNamesEs from 'react-phone-number-input/locale/es'
 import countryNamesDe from 'react-phone-number-input/locale/de'
 import countryNamesPt from 'react-phone-number-input/locale/pt'
+import countryNamesFr from 'react-phone-number-input/locale/fr'
+import countryNamesIt from 'react-phone-number-input/locale/it'
 
 // Fallback only. The UI language is NOT where someone's phone is: a Korean
 // living in Madrid reading the site in English was shown +44. This map is
@@ -21,12 +23,14 @@ const DEFAULT_COUNTRY_BY_LANGUAGE = {
   DE: 'DE',
   EN: 'GB',
   PT: 'BR',
+  FR: 'FR',
+  IT: 'IT',
 }
 
 // Same country-name locale files used for the nationality dropdown, so the
 // country picker inside the phone field reads in the site's own language
 // instead of always English.
-const COUNTRY_LABELS_BY_LANGUAGE = { EN: countryNamesEn, KO: countryNamesKo, ES: countryNamesEs, DE: countryNamesDe, PT: countryNamesPt }
+const COUNTRY_LABELS_BY_LANGUAGE = { EN: countryNamesEn, KO: countryNamesKo, ES: countryNamesEs, DE: countryNamesDe, PT: countryNamesPt, FR: countryNamesFr, IT: countryNamesIt }
 
 export { isValidPhoneNumber }
 
