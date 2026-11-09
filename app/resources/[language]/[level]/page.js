@@ -61,17 +61,22 @@ export default async function ResourceDetail({ params }) {
       <div className="max-w-2xl mx-auto px-4 md:px-8 py-12">
         <a href="/resources" className="text-brand-red font-bold text-sm hover:underline">← All study guides</a>
 
-        <div className="flex gap-2 mt-6 mb-3">
-          <span className="bg-navy text-white text-xs font-bold px-3 py-1 rounded-full">{levelLabel(resource.language_code, resource.level)}</span>
-          <span className="bg-white text-navy border-2 border-navy/20 text-xs font-bold px-3 py-1 rounded-full">{guide ? languageName : resource.language_code}</span>
-        </div>
-
         {guide ? (
           <>
-            <h1 className="font-display font-extrabold text-4xl md:text-5xl text-navy leading-[1.05] mb-3">
-              {languageName} {resource.level}: <span className="text-brand-red">{guide.meta.title}</span>
-            </h1>
-            {guide.meta.promise && <p className="text-navy/70 text-lg leading-relaxed mb-5">{guide.meta.promise}</p>}
+            {/* Colour-block cover, like the guide sections below it. */}
+            <div className="mt-6 mb-5 rounded-3xl border-[3px] border-navy shadow-[0_6px_0_#1a1a2e] overflow-hidden">
+              <div className="bg-brand-red text-white px-6 pt-6 overflow-hidden">
+                <h1 className="font-display font-extrabold text-4xl md:text-5xl leading-[1.02]">
+                  <span className="block text-xs font-extrabold uppercase tracking-[0.16em] text-white/85 mb-3">{languageName} {resource.level} · free study guide</span>
+                  {guide.meta.title}
+                </h1>
+                <div className="flex items-end justify-between gap-3 mt-3">
+                  <span className="mb-6 bg-navy text-white text-xs font-extrabold tracking-wide px-3.5 py-2 rounded-full whitespace-nowrap">{levelLabel(resource.language_code, resource.level)}</span>
+                  <span aria-hidden="true" className="font-display font-extrabold text-[8rem] md:text-[10rem] leading-[0.75] -mb-3 tracking-tight">{resource.level}</span>
+                </div>
+              </div>
+              {guide.meta.promise && <p className="bg-navy text-white px-6 py-4 leading-relaxed">{guide.meta.promise}</p>}
+            </div>
             <div className="flex gap-3 flex-wrap">
               <a href={resource.pdf_url}
                 className="flex-1 min-w-36 text-center bg-brand-red text-white px-5 py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red/90 transition-colors">
@@ -89,6 +94,10 @@ export default async function ResourceDetail({ params }) {
           </>
         ) : (
           <>
+            <div className="flex gap-2 mt-6 mb-3">
+              <span className="bg-navy text-white text-xs font-bold px-3 py-1 rounded-full">{levelLabel(resource.language_code, resource.level)}</span>
+              <span className="bg-white text-navy border-2 border-navy/20 text-xs font-bold px-3 py-1 rounded-full">{resource.language_code}</span>
+            </div>
             <h1 className="font-display font-extrabold text-3xl text-navy mb-3">{resource.title}</h1>
             {resource.description && (
               <p className="text-navy/70 leading-relaxed mb-8">{resource.description}</p>
