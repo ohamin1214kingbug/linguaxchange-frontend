@@ -1,10 +1,10 @@
 # GongbuLeng — Progress Notes
 
-_Last updated: 2026-11-07 (evening). Written so a fresh Claude session can pick up this project with zero prior context. Earlier name: LinguaXchange (renamed 2026-09-22)._
+_Last updated: 2026-11-10. Written so a fresh Claude session can pick up this project with zero prior context. Earlier name: LinguaXchange (renamed 2026-09-22)._
 
 ## 1. Project overview
 
-**GongbuLeng** (공부 "study" + *leng* from *lenguaje*; always written with a capital L) is a language-exchange platform: members teach the language they know and learn the ones they don't, in small live video classes paid for with credits instead of money. Classes cover seven languages — Korean, Spanish, German, English, Portuguese, French, Italian — and the UI is translated into five (EN, KO, ES, DE, PT). Free study guides (A1–B2, all seven languages) bring in visitors from search.
+**GongbuLeng** (공부 "study" + *leng* from *lenguaje*; always written with a capital L) is a language-exchange platform: members teach the language they know and learn the ones they don't, in small live video classes paid for with credits instead of money. Classes cover seven languages — Korean, Spanish, German, English, Portuguese, French, Italian — and the UI is translated into seven (EN, KO, ES, DE, PT, FR, IT). Free study guides (A1–B2, all seven languages) bring in visitors from search.
 
 Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid student): a Next.js frontend and an Express/Supabase backend.
 
@@ -41,6 +41,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - Cream/navy/red "sticker" design, Baloo 2 + Inter fonts.
 - Pages: home, browse classes (with a class-request board and writing-feedback tab), class detail, create class, classroom (JaaS), dashboard, history, people, saved teachers, profile/settings, teacher profiles, participation record, study guides, legal pages, admin, all auth flows.
 - Study guides: 28 PDFs (7 languages × A1–B2). Source markdown in `docs/resources/*.md`, built by `scripts/buildGuides.mjs` (headless Chrome, Noto Sans KR), uploaded through the admin page, served at `/guides/:file` via a rewrite to the Supabase storage bucket `resources`. English guides (`en-*`) are written in Spanish for Spanish speakers; the rest in English. Portuguese follows Brazilian usage.
+- Guides page (`/resources`, `app/resources/ResourcesGridClient.js`, redesigned 2026-11-10): the site Navbar, then one card per language in its own brand colour (`LANGUAGE_COLORS`: band, flag circle, tinted level buttons; Italian uses `brand-coral`), a guide count, and a last yellow card linking to classes. Colours are decoration only; text stays navy on the tints. A missing level shows as a dashed "coming soon" button.
 - Dashboard welcome card (dismissible, `localStorage` key `welcomeCardDismissed`) explains the banana cycle and the rules above in all five languages. The home page's final "Join today" section is hidden from logged-in members.
 - Sign-up funnel: a logged-out visitor who requests or joins a class is sent to register and returned afterwards to the same filtered board (`rememberReturnPath` / `takeReturnPath` in `lib/auth.js`), with any half-typed request restored (`lib/requestDraft.js`).
 - Turning readers into teachers: each guide page has "Teach a class with this guide", which opens the class form prefilled with language, level, topic and the guide as material (logged-out visitors sign up first and come back). The dashboard shows a "Teach your first class" checklist until the member has an `earned` transaction (hideable, `localStorage` key `firstClassChecklistDismissed`).
@@ -50,7 +51,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - Invites: any page with `?invite=U000012` keeps the code for a logged-out visitor until signup (`lib/invite.js`, `localStorage` key `inviteCode`); the dashboard's invite card shows the member's link and counts.
 - Gift reveal (`components/GiftReveal.js`): an unread `credit_added` notification (invite reward or admin grant) opens as a small card with a gift box to tap, a banana with the amount, and Collect, which marks it read. Oldest first, one at a time; reduced-motion users get no animation. A first full-screen version was judged too much.
 - Push: Settings → "Notifications on this device" (`components/PushToggle.js`, `lib/push.js`); hidden while the backend has no keys or the browser can't push; on an iPhone not added to the Home Screen it explains how. `public/sw.js` shows each push and opens the page it is about. Logout unsubscribes the device.
-- Tests: Node's built-in runner, **34 tests** (`npm test`) — translation parity across the five UI languages, return-path safety, request drafts, time zone aliases, calendar files, level-check sets and scoring, invite codes, push key conversion.
+- Tests: Node's built-in runner, **45 tests** (`npm test`) — translation parity across the seven UI languages, return-path safety, request drafts, time zone aliases, calendar files, level-check sets and scoring, invite codes, push key conversion.
 
 ## 3. Tech stack & architecture
 
@@ -61,7 +62,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
   - Four upload endpoints (`/api/classes/:id/materials-pdf`, `/api/resources/:id/pdf`, `/api/users/:id/avatar`, `/api/reports`) are excluded from `proxy.js`'s matcher and go through a plain rewrite in `next.config.mjs` instead: a Vercel function rejects request bodies over 4.5MB (`FUNCTION_PAYLOAD_TOO_LARGE`), a rewrite does not (20MB tested). Those routes have no rate limit. Keep the two lists in sync. Locally, `next dev` still stops rewrites at ~10MB.
   - Server-rendered files (`app/sitemap.js`, `app/record/[token]/page.js`, `app/classes/page.js`, `app/classes/[id]/page.js`, `app/resources/page.js`, `app/resources/[language]/[level]/page.js` and its `opengraph-image.js`) call the Railway host directly; they run on Vercel, not on campus.
 - **Database**: Supabase Postgres. RLS is enabled with no policies on every table (deny-all for the public key); only the backend's service-role key reads or writes. `EXECUTE` on the SECURITY DEFINER functions is revoked from `anon` and `authenticated`.
-- **i18n**: hand-rolled. `lib/i18n/translations.js` (keys `EN`/`KO`/`ES`/`DE`/`PT`), `lib/i18n/LanguageContext.js` (`useLanguage()` → `t(key, vars)`, falls back to English, then to the key). `tests/translations.test.mjs` fails if the languages drift apart.
+- **i18n**: hand-rolled. `lib/i18n/translations.js` (keys `EN`/`KO`/`ES`/`DE`/`PT`/`FR`/`IT`), `lib/i18n/LanguageContext.js` (`useLanguage()` → `t(key, vars)`, falls back to English, then to the key). `tests/translations.test.mjs` fails if the languages drift apart.
 - **SEO**: sitemap (`app/sitemap.js`, revalidates hourly), robots, per-page metadata, `WebSite` structured data naming the site GongbuLeng. Search Console domain property `gongbuleng.com`; sitemap reads "Success"; change of address filed from `linguaxchange.com`.
 - **Security headers** (frontend `next.config.mjs`): `frame-ancestors 'none'`, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`. No `Permissions-Policy` (the classroom iframe needs camera/microphone/screen share) and no full CSP yet.
 - **Conventions**: backend logic that can break is pulled into `utils/*.js` so Jest can test it without a database; route tests drive `router.handle()` with mocked Supabase clients (no supertest).
@@ -69,7 +70,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 ## 4. Current state / what's working
 
 - Rename to GongbuLeng is complete and live: `linguaxchange.com` 308-redirects to `gongbuleng.com` (paths kept), `www.gongbuleng.com` redirects to the apex, Google sign-in shows "GongbuLeng", email comes from the new domain, guides and PDFs carry the new name.
-- Accessibility: home, classes, guides, a guide page and login score 100 on Lighthouse; brand red is `#da1f33` and secondary text uses `text-navy/65`.
+- Accessibility: home and login score 100 on Lighthouse; brand red is `#da1f33` and secondary text uses `text-navy/65`. Since real classes appeared, the class list scores 94 and a class page 96 (2026-11-07): see the brand-teal gotcha in section 6. The redesigned guides page (2026-11-10) has not been re-scored.
 - 28 guides live; the guides page title and description are built from the guides that exist.
 - Dependabot (2026-11-05): frontend 0 open alerts (Next.js 16.4.5); backend 2 open, both dev-only (`minimatch` moderate, `deepmerge` low with no fix yet). `follow-redirects` (via twilio → axios) patched to 1.16.2.
 - 2026-11-01: every backend secret was rotated after Railway's October security incident (Supabase now on an `sb_secret_` key, legacy JWT keys revoked). `CRON_SECRET` also lives in the URLs of the two cron-job.org jobs.
@@ -100,6 +101,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - **Supabase reads that ignore `error`** were the source of real bugs (shared records showing 0 classes, refunds silently skipped). New code checks `error` and fails loudly or retries.
 - The API base is still repeated per file (`const API = ''` in client code, the Railway URL in the server-rendered files listed in section 3); there is no central config.
 - Both repos' `origin` remotes embed a GitHub token in the URL — never print `git remote -v` into shared output.
+- **Brand teal (`#2ec4b6`) fails as text colour**: 1.8–1.9:1 on its own tint, 4.5:1 needed. Lighthouse flags the class level badge (`bg-brand-teal/15 text-brand-teal`, "A1 · TOPIK 1") on `/classes` and class pages; `text-brand-teal` is used about 44 times across 15 files. Fix by adding a darker teal for text only, as was done for red. Also on `/classes`: the class card title is an `h3` with no `h2` above it (heading order).
 - Pages are cached (ISR, mostly hourly): after an admin change, the guides page and sitemap can take up to an hour or two to update.
 - **A member who can't get a phone code** sees the generic "can't send a code right now" (`auth.otpUnavailable`). Check in this order: their country is allowed in Twilio Geo Permissions (section 5; enable it there if not); Railway logs show `[SEND_OTP] 60410`, meaning Fraud Guard blocked it (unblock from Twilio Verify > Logs, which adds the number to the Safe List); Twilio's Verify logs show no attempt at all, meaning Railway's `TWILIO_*` variables point at a different Twilio account than the console (happened in August 2026).
 
