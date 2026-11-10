@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import Navbar from '../components/Navbar'
+import { LANGUAGE_COLORS } from '../lib/languages'
 
 export default function Home() {
   const { t } = useLanguage()
@@ -76,23 +77,14 @@ export default function Home() {
           className="absolute inset-0 -z-10 opacity-40"
           style={{ backgroundImage: 'radial-gradient(circle, #1a1a2e22 1.5px, transparent 1.5px)', backgroundSize: '22px 22px' }}
         />
-        <div className="absolute top-10 right-4 md:right-16 w-48 h-48 md:w-64 md:h-64 rounded-full bg-brand-red/10 -z-10" />
-        <div className="absolute bottom-0 right-24 w-24 h-24 rounded-full bg-brand-yellow/20 -z-10 hidden md:block" />
-
-        <div className="max-w-5xl mx-auto relative">
-          <span className="hidden md:inline-block absolute -top-16 left-4 bg-brand-blue text-white font-display font-bold px-4 py-2 rounded-full -rotate-6 shadow-sm">
-            Hola
-          </span>
-          <span className="hidden md:inline-block absolute top-16 right-0 bg-brand-teal text-white font-display font-bold px-4 py-2 rounded-full rotate-6 shadow-sm">
-            안녕하세요
-          </span>
-
+        <div className="max-w-6xl mx-auto grid md:grid-cols-[1.2fr_1fr] gap-12 lg:gap-16 items-center">
+          <div>
           <div className="inline-flex items-center gap-2 bg-white border-2 border-navy rounded-full px-4 py-1.5 mb-8 text-xs md:text-sm font-bold text-navy">
             <span className="w-2 h-2 rounded-full bg-brand-red animate-pulse" />
             {t('home.heroBadge')}
           </div>
 
-          <h1 className="font-display font-extrabold text-navy leading-[1.15] text-5xl sm:text-6xl md:text-7xl mb-6">
+          <h1 className="font-display font-extrabold text-navy leading-[1.15] text-5xl sm:text-6xl md:text-5xl lg:text-6xl mb-6">
             {t('home.heroTitle1')}<span className="text-brand-red underline decoration-brand-yellow decoration-[6px] md:decoration-[8px] underline-offset-8">
               {t('home.heroTitle2')}
             </span><br/>
@@ -112,6 +104,48 @@ export default function Home() {
               className="bg-white text-navy px-8 py-4 rounded-full text-lg font-bold border-2 border-navy hover:bg-navy hover:text-white transition-colors">
               {t('home.ctaBrowseClasses')}
             </a>
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center gap-1.5">
+            {LANGUAGES.map(lang => (
+              <span key={lang.code} title={lang.name}
+                className={`w-8 h-8 rounded-full border-2 border-navy flex items-center justify-center text-base ${LANGUAGE_COLORS[lang.code].tint}`}>
+                {lang.flag}
+              </span>
+            ))}
+            <span className="ml-2 text-sm text-navy/65">{t('home.languagesCount', { n: LANGUAGES.length })}</span>
+          </div>
+          </div>
+
+          {/* The empty half of the hero now answers the first question a
+              visitor has: what does it cost? Only the real rules (sign-up
+              grant, join price, teacher pay) — no invented stats. The
+              stickers are decoration, pinned to the card's corners rather
+              than floating, and left out on phones to keep it calm. */}
+          <div className="relative md:py-5 md:px-3">
+            <span aria-hidden="true" className="hidden md:inline-block absolute top-0 left-0 z-10 bg-brand-blue text-white font-display font-bold text-sm px-3.5 py-1 rounded-full border-2 border-navy shadow-[2px_2px_0_var(--color-navy)] -rotate-3">Hola</span>
+            <span aria-hidden="true" className="hidden md:inline-block absolute top-0 right-0 z-10 bg-brand-teal text-navy font-display font-bold text-sm px-3.5 py-1 rounded-full border-2 border-navy shadow-[2px_2px_0_var(--color-navy)] rotate-3">안녕하세요</span>
+            <span aria-hidden="true" className="hidden md:inline-block absolute bottom-0 left-1 z-10 bg-brand-yellow text-navy font-display font-bold text-sm px-3.5 py-1 rounded-full border-2 border-navy shadow-[2px_2px_0_var(--color-navy)] rotate-2">Bonjour</span>
+            <span aria-hidden="true" className="hidden md:inline-block absolute bottom-0 right-2 z-10 bg-brand-purple text-white font-display font-bold text-sm px-3.5 py-1 rounded-full border-2 border-navy shadow-[2px_2px_0_var(--color-navy)] -rotate-2">Ciao</span>
+
+            <div className="bg-white border-2 border-navy rounded-2xl overflow-hidden shadow-[4px_4px_0_var(--color-navy)]">
+              <h2 className="bg-brand-yellow border-b-2 border-navy px-5 py-3 font-display font-bold text-lg text-navy">🍌 {t('home.bananaCardTitle')}</h2>
+              <ul>
+                {[
+                  { icon: '🎤', tint: 'bg-brand-green/20', title: t('home.bananaTeach'), sub: t('home.bananaTeachSub') },
+                  { icon: '🎧', tint: 'bg-brand-blue/15', title: t('home.bananaJoin'), sub: t('home.bananaJoinSub') },
+                  { icon: '🎁', tint: 'bg-brand-red/15', title: t('home.bananaStart'), sub: t('home.bananaStartSub') },
+                ].map((row, i) => (
+                  <li key={row.icon} className={`flex items-center gap-4 px-5 py-3.5 ${i ? 'border-t border-navy/10' : ''}`}>
+                    <span aria-hidden="true" className={`w-10 h-10 shrink-0 rounded-full border-2 border-navy flex items-center justify-center text-lg ${row.tint}`}>{row.icon}</span>
+                    <span>
+                      <span className="block font-bold text-navy">{row.title}</span>
+                      <span className="block text-sm text-navy/65">{row.sub}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
 

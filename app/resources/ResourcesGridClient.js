@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
-import { languageOptions, LEVELS } from '../../lib/languages'
+import { languageOptions, LEVELS, LANGUAGE_COLORS } from '../../lib/languages'
 import Link from 'next/link'
 import Navbar from '../../components/Navbar'
 
@@ -12,19 +12,6 @@ const API = ''
 // abandoned rather than growing.
 const GRID_LEVELS = LEVELS.slice(0, 4)
 
-// One brand colour per language, for decoration only: the band, the flag
-// circle and the level-button tint. Text stays navy on these light tints,
-// since brand teal or yellow as text fails contrast. Full class names, not
-// built strings, so Tailwind can see them.
-const LANGUAGE_COLORS = {
-  KO: { band: 'bg-brand-blue', tint: 'bg-brand-blue/15', hover: 'hover:bg-brand-blue/30' },
-  ES: { band: 'bg-brand-red', tint: 'bg-brand-red/15', hover: 'hover:bg-brand-red/30' },
-  DE: { band: 'bg-brand-yellow', tint: 'bg-brand-yellow/20', hover: 'hover:bg-brand-yellow/40' },
-  EN: { band: 'bg-brand-purple', tint: 'bg-brand-purple/15', hover: 'hover:bg-brand-purple/30' },
-  PT: { band: 'bg-brand-green', tint: 'bg-brand-green/15', hover: 'hover:bg-brand-green/30' },
-  FR: { band: 'bg-brand-teal', tint: 'bg-brand-teal/15', hover: 'hover:bg-brand-teal/30' },
-  IT: { band: 'bg-brand-coral', tint: 'bg-brand-coral/15', hover: 'hover:bg-brand-coral/30' },
-}
 const CARD = 'border-2 border-navy rounded-2xl overflow-hidden shadow-[4px_4px_0_var(--color-navy)]'
 
 // `initialResources` comes from the server component in page.js. Without it
