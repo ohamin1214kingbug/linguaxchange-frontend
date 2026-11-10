@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import Navbar from '../components/Navbar'
+import Link from 'next/link'
 import { LANGUAGE_COLORS } from '../lib/languages'
 
 export default function Home() {
@@ -14,13 +15,15 @@ export default function Home() {
   }, [])
 
   const LANGUAGES = [
-    { code: 'KO', flag: '🇰🇷', name: t('home.langKorean'), greeting: '안녕하세요', color: 'bg-brand-red' },
-    { code: 'ES', flag: '🇪🇸', name: t('home.langSpanish'), greeting: 'Hola', color: 'bg-brand-blue' },
-    { code: 'DE', flag: '🇩🇪', name: t('home.langGerman'), greeting: 'Hallo', color: 'bg-brand-yellow', ink: 'text-navy' },
-    { code: 'EN', flag: '🇬🇧', name: t('home.langEnglish'), greeting: 'Hello', color: 'bg-brand-teal', ink: 'text-navy' },
-    { code: 'PT', flag: '🇧🇷', name: t('home.langPortuguese'), greeting: 'Olá', color: 'bg-brand-purple' },
-    { code: 'FR', flag: '🇫🇷', name: t('home.langFrench'), greeting: 'Bonjour', color: 'bg-brand-coral', ink: 'text-navy' },
-    { code: 'IT', flag: '🇮🇹', name: t('home.langItalian'), greeting: 'Ciao', color: 'bg-brand-red-dark' },
+    // Greeting chips use the same per-language colour as LANGUAGE_COLORS,
+    // with navy ink on the light ones (white on green or teal fails contrast).
+    { code: 'KO', flag: '🇰🇷', name: t('home.langKorean'), greeting: '안녕하세요', ink: 'text-white' },
+    { code: 'ES', flag: '🇪🇸', name: t('home.langSpanish'), greeting: 'Hola', ink: 'text-white' },
+    { code: 'DE', flag: '🇩🇪', name: t('home.langGerman'), greeting: 'Hallo', ink: 'text-navy' },
+    { code: 'EN', flag: '🇬🇧', name: t('home.langEnglish'), greeting: 'Hello', ink: 'text-white' },
+    { code: 'PT', flag: '🇧🇷', name: t('home.langPortuguese'), greeting: 'Olá', ink: 'text-navy' },
+    { code: 'FR', flag: '🇫🇷', name: t('home.langFrench'), greeting: 'Bonjour', ink: 'text-navy' },
+    { code: 'IT', flag: '🇮🇹', name: t('home.langItalian'), greeting: 'Ciao', ink: 'text-navy' },
   ]
 
   const STEPS = [
@@ -176,20 +179,27 @@ export default function Home() {
           {t('home.methodTitle1')}<br/>{t('home.methodTitle2')}
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {STEPS.map(step => (
-            <div key={step.n} className="relative bg-white border-2 border-navy rounded-2xl p-6 pt-10">
-              <div className={`absolute -top-5 -right-3 w-11 h-11 rounded-full ${step.color} border-2 border-navy flex items-center justify-center ${step.ink || 'text-white'} font-display font-bold text-sm`}>
-                {step.n}
+        {/* An arrow between the cards (sideways on wide screens, downwards on
+            phones) so the three read as one sequence, not three features. */}
+        <ol className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch gap-3 md:gap-4">
+          {STEPS.map((step, i) => (
+            <li key={step.n} className="contents">
+              {i > 0 && <span aria-hidden="true" className="self-center justify-self-center text-2xl text-navy/30 rotate-90 md:rotate-0">→</span>}
+              <div className="relative bg-white border-2 border-navy rounded-2xl p-6 shadow-[4px_4px_0_var(--color-navy)]">
+                <div className="flex items-center justify-between mb-5">
+                  <div className={`w-14 h-14 rounded-xl ${step.color} border-2 border-navy flex items-center justify-center text-2xl`}>
+                    {step.icon}
+                  </div>
+                  <div className={`w-10 h-10 rounded-full ${step.color} border-2 border-navy flex items-center justify-center ${step.ink || 'text-white'} font-display font-bold`}>
+                    {Number(step.n)}
+                  </div>
+                </div>
+                <h3 className="font-display font-bold text-xl text-navy mb-2">{step.title}</h3>
+                <p className="text-navy/65 leading-relaxed">{step.text}</p>
               </div>
-              <div className={`w-14 h-14 rounded-xl ${step.color} border-2 border-navy flex items-center justify-center text-2xl mb-5`}>
-                {step.icon}
-              </div>
-              <h3 className="font-display font-bold text-xl text-navy mb-2">{step.title}</h3>
-              <p className="text-navy/65 leading-relaxed">{step.text}</p>
-            </div>
+            </li>
           ))}
-        </div>
+        </ol>
 
         {/* Second and last cue. The hero's earns its place because nothing
             above the fold hints at a page below it; this one carries a reader
@@ -204,28 +214,38 @@ export default function Home() {
       {/* Languages */}
       <section id="languages" className="bg-navy-dark px-4 md:px-8 py-16 md:py-24 scroll-mt-20">
         <div className="max-w-5xl mx-auto">
-          <div className="flex flex-wrap items-end justify-between gap-4 mb-12">
-            <div>
-              <p className="text-brand-yellow font-bold tracking-widest text-sm mb-3">{t('home.languagesEyebrow')}</p>
-              <h2 className="font-display font-extrabold text-white text-4xl md:text-5xl leading-tight">
-                {t('home.languagesTitle1')}<br/>{t('home.languagesTitle2')}
-              </h2>
-            </div>
-            <a href="/classes" className="border-2 border-white text-white px-5 py-2.5 rounded-full font-bold hover:bg-white hover:text-navy-dark transition-colors inline-flex items-center gap-2">
-              {t('home.browseAllClasses')}
-            </a>
+          <div className="mb-12">
+            <p className="text-brand-yellow font-bold tracking-widest text-sm mb-3">{t('home.languagesEyebrow')}</p>
+            <h2 className="font-display font-extrabold text-white text-4xl md:text-5xl leading-tight">
+              {t('home.languagesTitle1')}<br/>{t('home.languagesTitle2')}
+            </h2>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+          {/* Four across, so seven languages plus "browse all" fill two
+              rows; at three across Italian sat alone. Each tile leads to that
+              language's classes and to its A1 guide, which every language has. */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {LANGUAGES.map(lang => (
-              <div key={lang.code} className="relative bg-navy border border-white/10 rounded-2xl p-6 overflow-hidden">
-                <span className={`absolute top-4 right-4 ${lang.color} ${lang.ink || 'text-white'} text-xs font-bold px-3 py-1 rounded-full border border-white/20`}>
-                  {lang.greeting}
-                </span>
-                <div className="text-4xl mb-4">{lang.flag}</div>
-                <p className="text-white font-display font-bold text-xl">{lang.name}</p>
+              <div key={lang.code} className="relative bg-navy border border-white/10 rounded-2xl p-5 pl-6 overflow-hidden">
+                <span aria-hidden="true" className={`absolute left-0 inset-y-0 w-1.5 ${LANGUAGE_COLORS[lang.code].band}`} />
+                <div className="flex items-start justify-between gap-2 mb-4">
+                  <span className="text-3xl">{lang.flag}</span>
+                  <span className={`${LANGUAGE_COLORS[lang.code].band} ${lang.ink} text-xs font-bold px-2.5 py-0.5 rounded-full`}>
+                    {lang.greeting}
+                  </span>
+                </div>
+                <p className="text-white font-display font-bold text-xl mb-1">{lang.name}</p>
+                <p className="text-sm text-white/65">
+                  <Link href={`/classes?language=${lang.code}`} className="hover:text-white">{t('classes.browseClasses')}</Link>
+                  {' · '}
+                  <Link href={`/resources/${lang.code.toLowerCase()}/a1`} className="hover:text-white">{t('nav.resources')}</Link>
+                </p>
               </div>
             ))}
+            <Link href="/classes" className="bg-brand-yellow border-2 border-brand-yellow rounded-2xl p-5 flex flex-col justify-between gap-4 text-navy hover:bg-brand-yellow/90 transition-colors">
+              <span aria-hidden="true" className="text-3xl">🌍</span>
+              <span className="font-display font-bold text-xl">{t('home.browseAllClasses')}</span>
+            </Link>
           </div>
         </div>
       </section>
@@ -233,21 +253,31 @@ export default function Home() {
       {/* Final CTA — a sign-up pitch, so members never see it. Its button
           went to /auth/register even for someone already logged in. */}
       {!isLoggedIn && (
-      <section className="relative overflow-hidden px-4 md:px-8 py-20 md:py-28 text-center">
-        <div className="absolute top-8 left-6 md:left-16 w-16 h-16 bg-brand-blue/10 rotate-45 -z-10" />
-        <div className="absolute bottom-8 right-6 md:right-24 w-32 h-32 rounded-full bg-brand-red/10 -z-10" />
+      <section className="px-4 md:px-8 py-20 md:py-28">
+        <div className="relative max-w-4xl mx-auto bg-brand-yellow border-2 border-navy rounded-3xl px-6 py-12 md:px-12 md:py-16 text-center shadow-[6px_6px_0_var(--color-navy)]">
+          <span aria-hidden="true" className="absolute -top-4 left-6 md:left-12 bg-brand-blue text-white font-display font-bold text-sm px-3.5 py-1 rounded-full border-2 border-navy -rotate-3">Hola</span>
+          <span aria-hidden="true" className="absolute -top-4 right-6 md:right-12 bg-brand-teal text-navy font-display font-bold text-sm px-3.5 py-1 rounded-full border-2 border-navy rotate-3">안녕하세요</span>
 
-        <p className="text-brand-red font-bold tracking-widest text-sm mb-4">{t('home.ctaJoinEyebrow')}</p>
-        <h2 className="font-display font-extrabold text-navy text-4xl sm:text-5xl md:text-6xl leading-tight mb-6 max-w-3xl mx-auto">
-          {t('home.ctaJoinTitle')}
-        </h2>
-        <p className="text-navy/65 text-lg mb-10 max-w-xl mx-auto">
-          {t('home.ctaJoinSubtext')}
-        </p>
-        <a href="/auth/register"
-          className="inline-block bg-brand-red text-white px-10 py-4 rounded-full text-lg font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">
-          {t('home.ctaStartFree')}
-        </a>
+          <p className="text-navy font-bold tracking-widest text-sm mb-4">{t('home.ctaJoinEyebrow')}</p>
+          <h2 className="font-display font-extrabold text-navy text-4xl sm:text-5xl leading-tight mb-5 max-w-2xl mx-auto">
+            {t('home.ctaJoinTitle')}
+          </h2>
+          <p className="text-navy/80 text-lg mb-8 max-w-xl mx-auto">
+            {t('home.ctaJoinSubtext')}
+          </p>
+          {/* A second, softer door for visitors not ready to sign up: the
+              guides need no account. */}
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link href="/auth/register"
+              className="bg-brand-red text-white px-8 py-3.5 rounded-full text-lg font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">
+              {t('home.ctaStartFree')}
+            </Link>
+            <Link href="/resources"
+              className="bg-white text-navy px-8 py-3.5 rounded-full text-lg font-bold border-2 border-navy hover:bg-cream transition-colors">
+              {t('resources.title')}
+            </Link>
+          </div>
+        </div>
       </section>
       )}
 
