@@ -1,6 +1,6 @@
 # GongbuLeng — Progress Notes
 
-_Last updated: 2026-11-10. Written so a fresh Claude session can pick up this project with zero prior context. Earlier name: LinguaXchange (renamed 2026-09-22)._
+_Last updated: 2026-11-10 (teal fix). Written so a fresh Claude session can pick up this project with zero prior context. Earlier name: LinguaXchange (renamed 2026-09-22)._
 
 ## 1. Project overview
 
@@ -70,7 +70,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 ## 4. Current state / what's working
 
 - Rename to GongbuLeng is complete and live: `linguaxchange.com` 308-redirects to `gongbuleng.com` (paths kept), `www.gongbuleng.com` redirects to the apex, Google sign-in shows "GongbuLeng", email comes from the new domain, guides and PDFs carry the new name.
-- Accessibility: home and login score 100 on Lighthouse; brand red is `#da1f33` and secondary text uses `text-navy/65`. Since real classes appeared, the class list scores 94 and a class page 96 (2026-11-07): see the brand-teal gotcha in section 6. The redesigned guides page (2026-11-10) has not been re-scored.
+- Accessibility: home and login score 100 on Lighthouse; brand red is `#da1f33` and secondary text uses `text-navy/65`. On 2026-11-07 the class list scored 94 and a class page 96 because of teal text; fixed 2026-11-10 (see section 6) but not re-scored, since no class was live and the Lighthouse tool was disconnected. The redesigned guides page (2026-11-10) has not been re-scored either.
 - 28 guides live; the guides page title and description are built from the guides that exist.
 - Dependabot (2026-11-05): frontend 0 open alerts (Next.js 16.4.5); backend 2 open, both dev-only (`minimatch` moderate, `deepmerge` low with no fix yet). `follow-redirects` (via twilio → axios) patched to 1.16.2.
 - 2026-11-01: every backend secret was rotated after Railway's October security incident (Supabase now on an `sb_secret_` key, legacy JWT keys revoked). `CRON_SECRET` also lives in the URLs of the two cron-job.org jobs.
@@ -101,7 +101,7 @@ Two repos, one developer (Hamin Oh, `ohamin1214kingbug` on GitHub, a UCM Madrid 
 - **Supabase reads that ignore `error`** were the source of real bugs (shared records showing 0 classes, refunds silently skipped). New code checks `error` and fails loudly or retries.
 - The API base is still repeated per file (`const API = ''` in client code, the Railway URL in the server-rendered files listed in section 3); there is no central config.
 - Both repos' `origin` remotes embed a GitHub token in the URL — never print `git remote -v` into shared output.
-- **Brand teal (`#2ec4b6`) fails as text colour**: 1.8–1.9:1 on its own tint, 4.5:1 needed. Lighthouse flags the class level badge (`bg-brand-teal/15 text-brand-teal`, "A1 · TOPIK 1") on `/classes` and class pages; `text-brand-teal` is used about 44 times across 15 files. Fix by adding a darker teal for text only, as was done for red. Also on `/classes`: the class card title is an `h3` with no `h2` above it (heading order).
+- **Teal has two shades**: `brand-teal` (`#2ec4b6`) is for backgrounds, borders and decoration only (2.2:1 on white); text uses `brand-teal-dark` (`#0b7268`, 4.6:1 or better on white, cream and the 10–20% teal tints). All 44 former `text-brand-teal` uses were switched on 2026-11-10; new teal text must use `text-brand-teal-dark`. Still open on `/classes`: the class card title is an `h3` with no `h2` above it (heading order).
 - Pages are cached (ISR, mostly hourly): after an admin change, the guides page and sitemap can take up to an hour or two to update.
 - **A member who can't get a phone code** sees the generic "can't send a code right now" (`auth.otpUnavailable`). Check in this order: their country is allowed in Twilio Geo Permissions (section 5; enable it there if not); Railway logs show `[SEND_OTP] 60410`, meaning Fraud Guard blocked it (unblock from Twilio Verify > Logs, which adds the number to the Safe List); Twilio's Verify logs show no attempt at all, meaning Railway's `TWILIO_*` variables point at a different Twilio account than the console (happened in August 2026).
 
