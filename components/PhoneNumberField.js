@@ -62,7 +62,7 @@ function PhoneHint({ value, country, t }) {
     try {
       formatted = parsePhoneNumber(value)?.formatInternational() || value
     } catch {}
-    return <p className="text-brand-teal text-xs mt-1 font-medium">{t('auth.phoneWillUse', { n: formatted })}</p>
+    return <p className="text-brand-teal-dark text-xs mt-1 font-medium">{t('auth.phoneWillUse', { n: formatted })}</p>
   }
 
   let example = ''

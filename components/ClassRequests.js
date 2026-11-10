@@ -166,7 +166,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
       </div>
 
       {posted && !showForm && (
-        <div className="bg-brand-teal/10 text-brand-teal border-2 border-brand-teal/30 px-4 py-3 rounded-xl mb-6 text-sm font-medium">
+        <div className="bg-brand-teal/10 text-brand-teal-dark border-2 border-brand-teal/30 px-4 py-3 rounded-xl mb-6 text-sm font-medium">
           {t('requests.posted')}
         </div>
       )}
@@ -255,7 +255,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
               <div className="flex flex-wrap items-center gap-2 mb-2">
                 <span className="text-lg">{langs[req.language_code]?.flag}</span>
                 {req.level ? (
-                  <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{req.level}</span>
+                  <span className="bg-brand-teal/15 text-brand-teal-dark px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{req.level}</span>
                 ) : (
                   <span className="bg-navy/5 text-navy/65 px-2 py-0.5 rounded-full text-xs font-bold">{t('requests.anyLevel')}</span>
                 )}
@@ -299,7 +299,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
                     </a>
                     <button onClick={() => toggleInterest(req)} disabled={busy === req.id}
                       className={`px-4 py-2 rounded-full text-sm font-bold border-2 transition-colors disabled:opacity-50 ${
-                        iWantThis ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/40' : 'bg-white text-navy border-navy/20 hover:border-navy'}`}>
+                        iWantThis ? 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/40' : 'bg-white text-navy border-navy/20 hover:border-navy'}`}>
                       {iWantThis ? `✓ ${t('requests.wantingThis')}` : `+1 ${t('requests.wantThis')}`}
                     </button>
                   </>

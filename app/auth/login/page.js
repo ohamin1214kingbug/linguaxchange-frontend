@@ -68,7 +68,7 @@ function LoginForm() {
         <p className="text-navy/65 mb-8">{t('auth.loginSubtitle')}</p>
 
         {notice && !error && (
-          <div className="bg-brand-teal/10 text-brand-teal border-2 border-brand-teal/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{notice}</div>
+          <div className="bg-brand-teal/10 text-brand-teal-dark border-2 border-brand-teal/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{notice}</div>
         )}
 
         {error && (

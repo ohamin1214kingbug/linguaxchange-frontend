@@ -166,7 +166,7 @@ export default function ClassDetailClient({ initialClass = null }) {
 
         <div className="flex items-center gap-2 mt-4 mb-1">
           <span className="text-lg">{LANGS[cls.language_code]?.flag}</span>
-          <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{levelLabel(cls.language_code, cls.level)}</span>
+          <span className="bg-brand-teal/15 text-brand-teal-dark px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{levelLabel(cls.language_code, cls.level)}</span>
           <span className="bg-navy/5 text-navy/65 px-2 py-0.5 rounded-full text-xs font-medium">{cls.duration_minutes} {t('classes.min')}</span>
         </div>
         <h1 className="font-display font-extrabold text-3xl text-navy mb-6">{cls.title}</h1>
@@ -292,7 +292,7 @@ export default function ClassDetailClient({ initialClass = null }) {
                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border-2 ${
                       s.students.length >= roster.max_students
                         ? 'bg-brand-red/10 text-brand-red border-brand-red/30'
-                        : 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'}`}>
+                        : 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30'}`}>
                       {s.students.length} / {roster.max_students}
                     </span>
                   </div>
@@ -308,7 +308,7 @@ export default function ClassDetailClient({ initialClass = null }) {
                           <a href={`/teachers/${st.id}`} className="text-navy text-sm font-medium hover:underline">
                             {st.first_name} {st.last_name}
                           </a>
-                          {st.attended && <span className="text-brand-teal text-xs font-bold">✓</span>}
+                          {st.attended && <span className="text-brand-teal-dark text-xs font-bold">✓</span>}
                         </li>
                       ))}
                     </ul>

@@ -19,7 +19,8 @@
   --color-brand-red-dark: #c01f31;
   --color-brand-blue: #4361ee;
   --color-brand-yellow: #f4a623;
-  --color-brand-teal: #2ec4b6;
+  --color-brand-teal: #2ec4b6; /* decoration only: 2.2:1 on white, too light for text */
+  --color-brand-teal-dark: #0b7268; /* text-safe teal: 4.6:1 or better on white, cream and the teal tints it sits on */
   --color-brand-purple: #7b2cbf;
   --color-brand-coral: #f4696e;
   --color-brand-green: #3ec46d;

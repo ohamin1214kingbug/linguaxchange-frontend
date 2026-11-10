@@ -182,7 +182,7 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
         </div>
 
         {message && (
-          <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${messageOk ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>
+          <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${messageOk ? 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30' : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>
             {t(message)}
           </div>
         )}
@@ -249,7 +249,7 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lg">{LANGS[cls.language_code]?.flag}</span>
-                    <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{levelLabel(cls.language_code, cls.level)}</span>
+                    <span className="bg-brand-teal/15 text-brand-teal-dark px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{levelLabel(cls.language_code, cls.level)}</span>
                     <span className="bg-navy/5 text-navy/65 px-2 py-0.5 rounded-full text-xs font-medium">{cls.duration_minutes} {t('classes.min')}</span>
                   </div>
                   {/* The card's only link to the class for anyone who isn't its
@@ -286,7 +286,7 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
                       {t('classes.yourClass')}
                     </a>
                   ) : joinedClassIds.has(cls.id) ? (
-                    <span className="bg-brand-teal/10 text-brand-teal px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-teal/30">
+                    <span className="bg-brand-teal/10 text-brand-teal-dark px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-teal/30">
                       {t('classes.joined')}
                     </span>
                   ) : (

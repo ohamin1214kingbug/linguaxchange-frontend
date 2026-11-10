@@ -376,7 +376,7 @@ export default function SettingsPage() {
 
           {prefsMessage && (
             <div className={`px-4 py-3 rounded-xl mb-4 text-sm font-medium border-2 ${prefsOk
-              ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
+              ? 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30'
               : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>{t(prefsMessage)}</div>
           )}
 
@@ -441,7 +441,7 @@ export default function SettingsPage() {
 
           {prefsMessage && (
             <div className={`px-4 py-3 rounded-xl mb-4 text-sm font-medium border-2 ${prefsOk
-              ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
+              ? 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30'
               : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>{t(prefsMessage)}</div>
           )}
 
@@ -474,7 +474,7 @@ export default function SettingsPage() {
 
           {pwMessage && (
             <div className={`px-4 py-3 rounded-xl mb-4 text-sm font-medium border-2 ${pwOk
-              ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
+              ? 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30'
               : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>{t(pwMessage)}</div>
           )}
 
@@ -541,7 +541,7 @@ export default function SettingsPage() {
               <p className="text-navy/65 text-sm mb-4">{t('university.subtitle')}</p>
 
               {uniState?.verifiedAt ? (
-                <p className="text-brand-teal font-bold text-sm">
+                <p className="text-brand-teal-dark font-bold text-sm">
                   🎓 {uniState.domain} · {t('university.verifiedAt', {
                     date: formatDay(uniState.verifiedAt)
                   })}
@@ -554,7 +554,7 @@ export default function SettingsPage() {
                     className="w-full border-2 border-navy/20 rounded-full px-4 py-2 text-sm mb-3 focus:border-brand-red focus:outline-none"/>
                   {uniSent ? (
                     <div className="flex items-center gap-3 flex-wrap">
-                      <span className="inline-block bg-brand-teal/10 text-brand-teal px-5 py-2 rounded-full text-sm font-bold border-2 border-brand-teal/30">
+                      <span className="inline-block bg-brand-teal/10 text-brand-teal-dark px-5 py-2 rounded-full text-sm font-bold border-2 border-brand-teal/30">
                         {t('university.sentButton')}
                       </span>
                       {/* Still reachable: the address may have been mistyped, or

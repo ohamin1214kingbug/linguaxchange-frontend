@@ -242,7 +242,7 @@ export default function TeacherProfile() {
     <div>
       <div className="flex items-center gap-2 mb-1">
         <span>{LANGS[cls.language_code]?.flag}</span>
-        <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{levelLabel(cls.language_code, cls.level)}</span>
+        <span className="bg-brand-teal/15 text-brand-teal-dark px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{levelLabel(cls.language_code, cls.level)}</span>
         <span className="text-navy/65 text-xs">{cls.duration_minutes} {t('classes.min')}</span>
       </div>
       <p className="font-bold text-navy text-sm">{cls.title}</p>
@@ -348,7 +348,7 @@ export default function TeacherProfile() {
                 /* The date is the point: a university address keeps working after
                    graduation, so the badge states when it was checked rather than
                    implying the person is enrolled today. */
-                <p className="text-brand-teal font-bold text-sm mt-1">
+                <p className="text-brand-teal-dark font-bold text-sm mt-1">
                   🎓 {teacher.university_domain}
                   <span className="text-navy/65 font-medium">
                     {' · '}{formatDay(teacher.university_verified_at)}
@@ -363,7 +363,7 @@ export default function TeacherProfile() {
                   </span>
                 )}
                 {teacher.has_certificate && (
-                  <span className="bg-brand-teal/10 text-brand-teal px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-teal/30">
+                  <span className="bg-brand-teal/10 text-brand-teal-dark px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-teal/30">
                     {t('teacher.certified')}
                   </span>
                 )}
@@ -410,7 +410,7 @@ export default function TeacherProfile() {
             <h2 className="font-display font-bold text-navy mb-4">{t('teacher.upcomingClasses')}</h2>
 
             {message && (
-              <div className={`px-4 py-3 rounded-xl mb-4 text-sm font-medium border-2 ${messageOk ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>
+              <div className={`px-4 py-3 rounded-xl mb-4 text-sm font-medium border-2 ${messageOk ? 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30' : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>
                 {t(message)}
               </div>
             )}
@@ -428,7 +428,7 @@ export default function TeacherProfile() {
                       {t('classes.yourClass')}
                     </a>
                   ) : joinedClassIds.has(cls.id) ? (
-                    <span className="bg-brand-teal/10 text-brand-teal px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-teal/30 flex-shrink-0 ml-4 whitespace-nowrap">
+                    <span className="bg-brand-teal/10 text-brand-teal-dark px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-teal/30 flex-shrink-0 ml-4 whitespace-nowrap">
                       {t('classes.joined')}
                     </span>
                   ) : (
