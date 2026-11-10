@@ -46,14 +46,14 @@ export default function AssignmentBoard({ language, currentUser, langs }) {
         <div className="flex items-center gap-2 mb-2">
           <span className="text-lg">{langs[r.language_code]?.flag}</span>
           {r.level && (
-            <span className="bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">
+            <span className="bg-brand-teal/15 text-brand-teal-dark px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">
               {levelLabel(r.language_code, r.level)}
             </span>
           )}
           {/* Answered wins over expired: once someone has written feedback the
               request's expiry stops mattering to the student, and "expired" on
               a request that actually got answered reads as a failure. */}
-          <span className={`ml-auto text-xs font-bold ${answered ? 'text-brand-teal' : expired ? 'text-navy/65' : 'text-navy/65'}`}>
+          <span className={`ml-auto text-xs font-bold ${answered ? 'text-brand-teal-dark' : expired ? 'text-navy/65' : 'text-navy/65'}`}>
             {answered
               ? t('assignments.answered')
               : showExpiry && expired

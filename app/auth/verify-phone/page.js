@@ -126,7 +126,7 @@ export default function VerifyPhone() {
 
           {phoneVerified ? (
             <>
-              <div className="bg-brand-teal/10 text-brand-teal border-2 border-brand-teal/30 rounded-xl px-4 py-3 text-sm font-bold flex items-center justify-between">
+              <div className="bg-brand-teal/10 text-brand-teal-dark border-2 border-brand-teal/30 rounded-xl px-4 py-3 text-sm font-bold flex items-center justify-between">
                 {t('auth.phoneVerifiedMsg')}
                 <button onClick={() => { setPhoneVerified(false); setOtpSent(false); setOtpCode(''); setVerifiedToken('') }}
                   className="text-navy/65 font-medium underline text-xs">

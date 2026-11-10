@@ -26,7 +26,7 @@ const SCORE_STYLE = {
   1: { dot: 'bg-brand-red border-brand-red', text: 'text-brand-red', key: 'poor' },
   2: { dot: 'bg-brand-yellow border-brand-yellow', text: 'text-brand-yellow', key: 'fair' },
   3: { dot: 'bg-brand-blue border-brand-blue', text: 'text-brand-blue', key: 'good' },
-  4: { dot: 'bg-brand-teal border-brand-teal', text: 'text-brand-teal', key: 'veryGood' },
+  4: { dot: 'bg-brand-teal border-brand-teal', text: 'text-brand-teal-dark', key: 'veryGood' },
   5: { dot: 'bg-brand-green border-brand-green', text: 'text-brand-green', key: 'excellent' },
 }
 
@@ -274,7 +274,7 @@ function RateStudents({ sessionId, t }) {
 
             {msg?.studentId === student.id && (
               <p className={`text-xs mt-2 font-bold text-right ${
-                msg.key === 'feedback.saved' ? 'text-brand-teal' : 'text-brand-red'}`}>
+                msg.key === 'feedback.saved' ? 'text-brand-teal-dark' : 'text-brand-red'}`}>
                 {msg.text || t(msg.key, { n: MIN_SKILLS })}
               </p>
             )}
@@ -291,7 +291,7 @@ function Row({ flag, title, level, when, meta, badge, badgeTone, divider = true 
       <div className="min-w-0">
         <p className="text-navy text-sm font-bold truncate">
           {flag} {title}
-          {level && <span className="ml-2 bg-brand-teal/15 text-brand-teal px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{level}</span>}
+          {level && <span className="ml-2 bg-brand-teal/15 text-brand-teal-dark px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{level}</span>}
         </p>
         <p className="text-navy/65 text-xs mt-0.5">{when}{meta ? ` · ${meta}` : ''}</p>
       </div>
@@ -397,7 +397,7 @@ export default function History() {
                         ? t('history.cancelled')
                         : e.status === 'attended' ? t('dashboard.attended') : t('history.notConfirmed')}
                       badgeTone={e.status === 'attended'
-                        ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
+                        ? 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30'
                         : 'bg-navy/5 text-navy/65 border-navy/10'}
                       divider={false}
                     />
@@ -425,7 +425,7 @@ export default function History() {
                     badge={s.status === 'cancelled' ? t('history.cancelled') : t('history.done')}
                     badgeTone={s.status === 'cancelled'
                       ? 'bg-brand-red/10 text-brand-red border-brand-red/30'
-                      : 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'}
+                      : 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30'}
                     divider={false}
                   />
                   {s.status !== 'cancelled' && <RateStudents sessionId={s.id} t={t} />}

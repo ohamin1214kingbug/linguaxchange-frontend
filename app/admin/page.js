@@ -512,7 +512,7 @@ export default function Admin() {
             <p className="text-navy/65 text-sm font-medium">Pending users</p>
           </div>
           <div className="bg-white rounded-2xl p-4 border-2 border-navy text-center">
-            <p className="font-display font-extrabold text-3xl text-brand-teal">{approvedUsers.length}</p>
+            <p className="font-display font-extrabold text-3xl text-brand-teal-dark">{approvedUsers.length}</p>
             <p className="text-navy/65 text-sm font-medium">Approved users</p>
           </div>
           <div className="bg-white rounded-2xl p-4 border-2 border-navy text-center">
@@ -615,7 +615,7 @@ export default function Admin() {
                           <p className="text-navy/65 text-xs">{user.nationality}</p>
                         </div>
                       </div>
-                      <span className="bg-brand-teal/10 text-brand-teal px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-teal/30">Approved</span>
+                      <span className="bg-brand-teal/10 text-brand-teal-dark px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-teal/30">Approved</span>
                     </div>
                     <button onClick={() => setOpenUser(openUser === user.id ? null : user.id)}
                       className="mt-3 text-navy/65 hover:text-navy text-xs font-bold transition-colors">
@@ -778,7 +778,7 @@ export default function Admin() {
                         <p className="text-navy/65 text-sm mt-1">{report.reason}</p>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-bold border-2 whitespace-nowrap ${
-                        report.status === 'resolved' ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-navy/5 text-navy/65 border-navy/10'}`}>
+                        report.status === 'resolved' ? 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30' : 'bg-navy/5 text-navy/65 border-navy/10'}`}>
                         {report.status}
                       </span>
                     </div>

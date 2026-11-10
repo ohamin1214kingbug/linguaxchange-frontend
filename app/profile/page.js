@@ -185,7 +185,7 @@ export default function ProfilePage() {
           /* The date is the point: a university address keeps working after
              graduation, so the badge states when it was checked rather than
              implying the person is enrolled today. */
-          <p className="text-brand-teal font-bold text-sm mt-1">
+          <p className="text-brand-teal-dark font-bold text-sm mt-1">
             🎓 {profile.university_domain}
             <span className="text-navy/65 font-medium">
               {' · '}{formatDay(profile.university_verified_at)}
@@ -197,7 +197,7 @@ export default function ProfilePage() {
             ? `${t('profile.longestStreak')}: ${t('profile.weeksCount', { n: profile.longest_streak })}`
             : t('profile.noStreakYet')}
         </p>
-        <span className="inline-block bg-brand-teal/10 text-brand-teal px-3 py-1 rounded-full text-sm font-bold font-mono border-2 border-brand-teal/30 mb-8">
+        <span className="inline-block bg-brand-teal/10 text-brand-teal-dark px-3 py-1 rounded-full text-sm font-bold font-mono border-2 border-brand-teal/30 mb-8">
           {t('profile.yourCode', { code: userCode(profile.id) })}
         </span>
 
@@ -206,7 +206,7 @@ export default function ProfilePage() {
         {message && (
           <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${
             messageOk
-              ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
+              ? 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30'
               : 'bg-brand-red/10 text-brand-red border-brand-red/30'
           }`}>
             {t(message)}

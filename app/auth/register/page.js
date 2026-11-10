@@ -329,7 +329,7 @@ export default function Register() {
                 </button>
               </div>
               {form.password.length > 0 && (
-                <p className={`text-xs mt-1 font-medium ${form.password.length >= 8 ? 'text-brand-teal' : 'text-brand-red'}`}>
+                <p className={`text-xs mt-1 font-medium ${form.password.length >= 8 ? 'text-brand-teal-dark' : 'text-brand-red'}`}>
                   {form.password.length >= 8 ? t('auth.strongEnough') : t('auth.moreCharactersNeeded', { n: 8 - form.password.length })}
                 </p>
               )}
@@ -379,7 +379,7 @@ export default function Register() {
             </div>
 
             {phoneVerified ? (
-              <div className="bg-brand-teal/10 text-brand-teal border-2 border-brand-teal/30 rounded-xl px-4 py-3 text-sm font-bold flex items-center justify-between">
+              <div className="bg-brand-teal/10 text-brand-teal-dark border-2 border-brand-teal/30 rounded-xl px-4 py-3 text-sm font-bold flex items-center justify-between">
                 {t('auth.phoneVerifiedMsg')}
                 <button onClick={() => { setPhoneVerified(false); setOtpSent(false); setOtpCode(''); setVerifiedToken('') }}
                   className="text-navy/65 font-medium underline text-xs">

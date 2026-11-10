@@ -106,7 +106,7 @@ function RatingForm({ classSessionId, existingReview, onReviewed }) {
 
   if (existingReview) return (
     <div className="mt-3 flex items-center gap-2 text-sm">
-      <span className="text-brand-teal font-bold">{t('dashboard.reviewSubmitted')}</span>
+      <span className="text-brand-teal-dark font-bold">{t('dashboard.reviewSubmitted')}</span>
       <Stars rating={existingReview.rating} />
       {existingReview.comment && <span className="text-navy/65 italic truncate">"{existingReview.comment}"</span>}
     </div>
@@ -457,7 +457,7 @@ export default function Dashboard() {
         {message && (
           <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${
             messageOk
-              ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30'
+              ? 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30'
               : 'bg-brand-red/10 text-brand-red border-brand-red/30'
           }`}>
             {t(message)}
@@ -529,7 +529,7 @@ export default function Dashboard() {
           </div>
           <div className="bg-white rounded-2xl p-4 sm:p-6 border-2 border-navy">
             <p className="text-navy/65 text-sm mb-1 font-medium">{t('dashboard.classesJoined')}</p>
-            <p className="font-display font-extrabold text-4xl sm:text-5xl text-brand-teal">{enrollments.length}</p>
+            <p className="font-display font-extrabold text-4xl sm:text-5xl text-brand-teal-dark">{enrollments.length}</p>
             <p className="text-navy/65 text-sm mt-1">{t('dashboard.totalEnrollments')}</p>
           </div>
         </div>
@@ -559,7 +559,7 @@ export default function Dashboard() {
         {reporting && (
           <div className="bg-white rounded-2xl p-6 border-2 border-brand-red/30 mb-6">
             {reportState === 'sent' ? (
-              <p className="text-brand-teal text-sm font-bold">✅ {t('teacher.reportSent')}</p>
+              <p className="text-brand-teal-dark text-sm font-bold">✅ {t('teacher.reportSent')}</p>
             ) : (
               <div className="space-y-3 max-w-xl">
                 <div className="grid sm:grid-cols-2 gap-3">
@@ -694,7 +694,7 @@ export default function Dashboard() {
                           </button>
                         )}
                         {enrollment.status === 'attended' && (
-                          <span className="bg-brand-teal/10 text-brand-teal px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-teal/30">
+                          <span className="bg-brand-teal/10 text-brand-teal-dark px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-teal/30">
                             {t('dashboard.confirmed')}
                           </span>
                         )}
@@ -823,7 +823,7 @@ export default function Dashboard() {
                     </p>
                   </div>
                   <span className={tx.amount > 0
-                    ? 'text-brand-teal font-bold'
+                    ? 'text-brand-teal-dark font-bold'
                     : 'text-brand-red font-bold'}>
                     {tx.amount > 0 ? '+' : ''}{tx.amount}
                   </span>

@@ -168,7 +168,7 @@ export default function Classroom() {
         <div className="bg-navy border-b border-white/10 px-6 py-4">
           <div className="max-w-xl space-y-3">
             {reportState === 'sent' ? (
-              <p className="text-brand-teal text-sm font-bold">✅ {t('teacher.reportSent')}</p>
+              <p className="text-brand-teal-dark text-sm font-bold">✅ {t('teacher.reportSent')}</p>
             ) : (
               <>
                 <div className="grid sm:grid-cols-2 gap-3">
