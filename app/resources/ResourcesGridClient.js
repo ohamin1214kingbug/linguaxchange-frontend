@@ -2,7 +2,8 @@
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import { languageOptions, LEVELS } from '../../lib/languages'
-import LanguageSwitcher from '../../components/LanguageSwitcher'
+import Link from 'next/link'
+import Navbar from '../../components/Navbar'
 
 const API = ''
 
@@ -10,6 +11,21 @@ const API = ''
 // schema but showing empty columns for them would make the grid look
 // abandoned rather than growing.
 const GRID_LEVELS = LEVELS.slice(0, 4)
+
+// One brand colour per language, for decoration only: the band, the flag
+// circle and the level-button tint. Text stays navy on these light tints,
+// since brand teal or yellow as text fails contrast. Full class names, not
+// built strings, so Tailwind can see them.
+const LANGUAGE_COLORS = {
+  KO: { band: 'bg-brand-blue', tint: 'bg-brand-blue/15', hover: 'hover:bg-brand-blue/30' },
+  ES: { band: 'bg-brand-red', tint: 'bg-brand-red/15', hover: 'hover:bg-brand-red/30' },
+  DE: { band: 'bg-brand-yellow', tint: 'bg-brand-yellow/20', hover: 'hover:bg-brand-yellow/40' },
+  EN: { band: 'bg-brand-purple', tint: 'bg-brand-purple/15', hover: 'hover:bg-brand-purple/30' },
+  PT: { band: 'bg-brand-green', tint: 'bg-brand-green/15', hover: 'hover:bg-brand-green/30' },
+  FR: { band: 'bg-brand-teal', tint: 'bg-brand-teal/15', hover: 'hover:bg-brand-teal/30' },
+  IT: { band: 'bg-brand-coral', tint: 'bg-brand-coral/15', hover: 'hover:bg-brand-coral/30' },
+}
+const CARD = 'border-2 border-navy rounded-2xl overflow-hidden shadow-[4px_4px_0_var(--color-navy)]'
 
 // `initialResources` comes from the server component in page.js. Without it
 // the whole grid sat behind a `loading` gate, so the server HTML was the word
@@ -38,55 +54,70 @@ export default function ResourcesGridClient({ initialResources = [], serverFetch
 
   return (
     <main className="min-h-screen bg-cream">
-      <nav className="flex items-center justify-between px-4 md:px-8 py-4 border-b border-navy/10 bg-white">
-        <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">Leng</span></a>
-        <LanguageSwitcher />
-      </nav>
+      <Navbar />
 
-      <div className="max-w-4xl mx-auto px-4 md:px-8 py-12">
+      <div className="max-w-4xl mx-auto px-4 md:px-8 py-10 md:py-12">
+        <div className="flex flex-wrap gap-2 mb-4 text-sm font-bold text-navy">
+          <span className="bg-brand-yellow border-2 border-navy rounded-full px-3 py-0.5">{t('resources.badgeFree')}</span>
+          <span className="bg-brand-blue/15 border-2 border-navy rounded-full px-3 py-0.5">A1 → B2</span>
+          <span className="bg-white border-2 border-navy rounded-full px-3 py-0.5" aria-hidden="true">{languages.map(l => l.flag).join(' ')}</span>
+        </div>
         <h1 className="font-display font-extrabold text-3xl md:text-4xl text-navy mb-2">{t('resources.title')}</h1>
-        <p className="text-navy/65 mb-10 max-w-xl">{t('resources.subtitle')}</p>
+        <p className="text-navy/65 mb-8 max-w-xl">{t('resources.subtitle')}</p>
 
         {loading && <p className="text-navy/65">{t('common.loading')}</p>}
 
-        {/* Tighter on a phone so all four levels fit; at full padding the
-            table was 423px wide and B2 sat past the edge of the screen. */}
         {!loading && (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr>
-                  <th className="text-left text-navy/65 text-xs font-bold uppercase tracking-wide pb-3 pr-2 sm:pr-4"></th>
-                  {GRID_LEVELS.map(level => (
-                    <th key={level} className="text-navy/65 text-xs font-bold uppercase tracking-wide pb-3 px-1 sm:px-2">{level}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {languages.map(lang => (
-                  <tr key={lang.code} className="border-t border-navy/10">
-                    <th scope="row" className="py-3 pr-2 sm:pr-4 font-bold text-navy whitespace-nowrap text-left">
-                      <span className="mr-1.5 sm:mr-2">{lang.flag}</span>{lang.name}
-                    </th>
-                    {GRID_LEVELS.map(level => (
-                      <td key={level} className="py-3 px-1 sm:px-2 text-center">
-                        {has(lang.code, level) ? (
-                          <a href={`/resources/${lang.code.toLowerCase()}/${level.toLowerCase()}`}
-                            className="inline-block bg-brand-yellow/20 text-navy border-2 border-navy px-2.5 sm:px-4 py-1.5 rounded-full text-sm font-bold hover:bg-brand-yellow/40 transition-colors">
-                            {level}
-                          </a>
-                        ) : (
-                          // Greyed and unlinked rather than hidden, so sparse
-                          // coverage reads as a grid still filling up instead
-                          // of a broken page.
-                          <span className="inline-block text-navy/20 text-xs px-2 py-1.5" title={t('resources.comingSoon')}>—</span>
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {languages.map(lang => {
+              const color = LANGUAGE_COLORS[lang.code]
+              const count = GRID_LEVELS.filter(level => has(lang.code, level)).length
+              return (
+                <section key={lang.code} className={`${CARD} bg-white`}>
+                  <div className={`h-2.5 border-b-2 border-navy ${color.band}`} />
+                  <div className="p-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className={`w-12 h-12 shrink-0 rounded-full border-2 border-navy flex items-center justify-center text-2xl ${color.tint}`} aria-hidden="true">{lang.flag}</span>
+                      <div>
+                        <h2 className="font-display font-bold text-lg text-navy leading-tight">{lang.name}</h2>
+                        <p className="text-navy/65 text-sm">{t('resources.guideCount', { n: count })}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      {GRID_LEVELS.map(level => has(lang.code, level) ? (
+                        <a key={level} href={`/resources/${lang.code.toLowerCase()}/${level.toLowerCase()}`}
+                          aria-label={`${lang.name} ${level}`}
+                          className={`flex-1 text-center text-navy border-2 border-navy py-1.5 rounded-full text-sm font-bold transition-colors ${color.tint} ${color.hover}`}>
+                          {level}
+                        </a>
+                      ) : (
+                        // Shown, not hidden, so sparse coverage reads as a
+                        // grid still filling up instead of a broken page.
+                        <span key={level} title={t('resources.comingSoon')}
+                          className="flex-1 text-center text-navy/65 border-2 border-dashed border-navy/30 py-1.5 rounded-full text-sm font-bold">
+                          {level}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              )
+            })}
+
+            {/* The guides are how most visitors arrive; this sends them on
+                to the thing the site is actually for. */}
+            <section className={`${CARD} bg-brand-yellow`}>
+              <div className="h-2.5 border-b-2 border-navy bg-navy" />
+              <div className="p-4 flex flex-col gap-3">
+                <div>
+                  <h2 className="font-display font-bold text-lg text-navy leading-tight">{t('resources.ctaTitle')} 🍌</h2>
+                  <p className="text-navy text-sm mt-1">{t('resources.ctaBody')}</p>
+                </div>
+                <Link href="/classes" className="self-start bg-brand-red text-white border-2 border-navy rounded-full px-5 py-2 text-sm font-bold hover:bg-brand-red-dark transition-colors">
+                  {t('common.explore')}
+                </Link>
+              </div>
+            </section>
           </div>
         )}
       </div>
