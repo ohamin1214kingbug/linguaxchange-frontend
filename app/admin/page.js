@@ -4,27 +4,36 @@ import { useRouter } from 'next/navigation'
 import { languageOptions, LEVELS, levelLabel } from '../../lib/languages'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import { userCode } from '../../lib/userCode'
-import { nextSessionDate } from '../../lib/classSchedule'
+import { nextSessionDate, lastSessionDate } from '../../lib/classSchedule'
+import { regionOf } from '../../lib/countries'
+import { REGIONS } from '../../lib/regions'
+
+const DAY_MS = 24 * 60 * 60 * 1000
+const startsWithinDays = (date, days) => date - new Date() < days * DAY_MS
+const isSuspended = user => Boolean(user.suspended_until) && new Date(user.suspended_until) > new Date()
+const FILTER = 'border-2 border-navy/20 rounded-full px-3 py-2 text-sm bg-white focus:border-brand-red focus:outline-none transition-colors'
 
 // A user's DB id is already permanent and unique — no new column needed,
 // just a friendlier alphabet-led format for admins to reference in reports.
 
 // The class title, who teaches it, and who signed up — the three things an
-// admin needs to approve or complete a class.
+// admin needs to judge a class.
 //
 // The class description is deliberately not shown. It is written to sell the
 // class to a student, it runs to several lines, and it pushed the people out
 // of view on a screen whose whole job is deciding about people. It is still
 // on the public class page, where it belongs.
-function ClassPeople({ cls, students }) {
+function ClassPeople({ cls, students, language }) {
   return (
     <div className="min-w-0">
       <p className="font-bold text-navy">{cls.title}</p>
       <p className="text-navy/65 text-sm">
-        {cls.level} · {cls.duration_minutes} min ·{' '}
+        {language ? `${language} ` : ''}{cls.level} · {cls.duration_minutes} min ·{' '}
         {nextSessionDate(cls)
           ? nextSessionDate(cls).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
-          : <span className="text-brand-red font-bold">no upcoming session</span>}
+          : lastSessionDate(cls)
+            ? `ended ${lastSessionDate(cls).toLocaleDateString(undefined, { dateStyle: 'medium' })}`
+            : 'no session scheduled'}
       </p>
       <p className="text-navy/70 text-sm mt-2">
         <span className="text-navy/65">Teacher</span>{' '}
@@ -172,6 +181,9 @@ export default function Admin() {
   const [confirmDelete, setConfirmDelete] = useState({})
   const [actionMessage, setActionMessage] = useState({})
   const [userSearch, setUserSearch] = useState('')
+  const [regionFilter, setRegionFilter] = useState('')
+  const [languageFilter, setLanguageFilter] = useState('')
+  const [statusFilter, setStatusFilter] = useState('')
   const [creditSearch, setCreditSearch] = useState('')
   const [creditAmounts, setCreditAmounts] = useState({})
   const [creditMessages, setCreditMessages] = useState({})
@@ -430,19 +442,15 @@ export default function Admin() {
     fetchClasses()
   }
 
-  const rejectClass = async (id) => {
+  // Cancelling refunds every enrolled student and emails them, so it asks
+  // first and says what went wrong instead of failing in silence.
+  const cancelClass = async (cls) => {
+    if (!window.confirm(`Cancel '${cls.title}'? Enrolled students are refunded and emailed.`)) return
     const token = localStorage.getItem('token')
-    await fetch(`${API}/api/classes/${id}/reject`, {
+    const res = await fetch(`${API}/api/classes/${cls.id}/cancel`, {
       method: 'POST', headers: { Authorization: `Bearer ${token}` }
     })
-    fetchClasses()
-  }
-
-  const completeClass = async (id) => {
-    const token = localStorage.getItem('token')
-    await fetch(`${API}/api/admin/classes/${id}/complete`, {
-      method: 'POST', headers: { Authorization: `Bearer ${token}` }
-    })
+    if (!res.ok) window.alert(await readError(res, 'Could not cancel the class'))
     fetchClasses()
   }
 
@@ -463,21 +471,39 @@ export default function Admin() {
   // Every other route already filters on deleted_at — public search, public
   // profiles, login, the report pickers. This list was the one that did not.
   const liveUsers = users.filter(u => !u.deleted_at)
-  const pendingUsers = liveUsers.filter(u => !u.is_approved && matchesUserSearch(u))
-  const approvedUsers = liveUsers.filter(u => u.is_approved && matchesUserSearch(u))
+  const statusOf = u => isSuspended(u) ? 'suspended' : u.is_approved ? 'approved' : 'waiting'
+  const shownUsers = liveUsers.filter(u => matchesUserSearch(u)
+    && (!regionFilter || regionOf(u.nationality) === regionFilter)
+    && (!languageFilter || u.teach_language === languageFilter)
+    && (!statusFilter || statusOf(u) === statusFilter))
+  const pendingUsers = shownUsers.filter(u => !u.is_approved)
+  const approvedUsers = shownUsers.filter(u => u.is_approved)
+  // Approved members under a heading per region, in REGIONS order; empty
+  // regions are dropped.
+  const approvedByRegion = REGIONS
+    .map(region => [region, approvedUsers.filter(u => regionOf(u.nationality) === region)])
+    .filter(([, group]) => group.length > 0)
+  // The count at the top ignores the filters: it says what is waiting, not
+  // what the current view happens to show.
+  const waitingCount = liveUsers.filter(u => !u.is_approved).length
   const creditSearchResults = liveUsers.filter(u => matchesSearch(u, creditSearch))
-  const pendingClasses = classes.filter(c => c.status === 'pending')
-  const approvedClasses = classes.filter(c => c.status === 'approved')
 
-  // One list per language, in the order the shared language list defines, so
-  // this screen and the create form agree. Empty languages are dropped.
-  const byLanguage = list => {
-    const known = languageOptions(t).map(l => [`${l.flag} ${l.name}`, list.filter(c => c.language_code === l.code)])
-    // A code outside the shared list still has to show up. Silently hiding a
-    // class from the only screen that can approve it is worse than an odd
-    // heading.
-    const rest = list.filter(c => !languageOptions(t).some(l => l.code === c.language_code))
-    return [...known, ['🌐 Other', rest]].filter(([, cs]) => cs.length > 0)
+  // A class is one of three things to an admin. Live: students can still
+  // join it. Waiting: created by a member who is not approved yet, and
+  // published when they are. Finished: its last session is over; the backend
+  // closes those by itself (utils/classCompletion.js).
+  const liveClasses = classes
+    .filter(c => c.status === 'approved' && nextSessionDate(c))
+    .sort((a, b) => nextSessionDate(a) - nextSessionDate(b))
+  const waitingClasses = classes.filter(c => c.status === 'pending')
+  const finishedClasses = classes
+    .filter(c => c.status === 'completed' || (c.status === 'approved' && !nextSessionDate(c)))
+  const classesThisWeek = liveClasses.filter(c => startsWithinDays(nextSessionDate(c), 7)).length
+  const teacherIsApproved = cls => Boolean(users.find(u => u.id === cls.teacher_id)?.is_approved)
+
+  const languageLabel = code => {
+    const match = languageOptions(t).find(l => l.code === code)
+    return match ? `${match.flag} ${match.name}` : code
   }
 
   // Enrollments hang off sessions, and a class with several sessions repeats
@@ -492,6 +518,61 @@ export default function Admin() {
     }
     return [...byId.values()]
   }
+  const renderUser = user => {
+    const waiting = !user.is_approved
+    const theirClasses = classes.filter(c => c.teacher_id === user.id && c.status !== 'cancelled' && c.status !== 'rejected')
+    const waitingClassCount = theirClasses.filter(c => c.status === 'pending').length
+    const facts = [
+      user.nationality,
+      user.teach_language && `teaches ${languageLabel(user.teach_language)}`,
+      `${theirClasses.length} class${theirClasses.length === 1 ? '' : 'es'}`,
+      waiting && `joined ${new Date(user.created_at).toLocaleDateString()}`,
+    ].filter(Boolean)
+    return (
+      <div key={user.id} className={`bg-white rounded-2xl p-5 border-2 ${waiting ? 'border-brand-yellow' : 'border-navy/10'}`}>
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className={`w-12 h-12 shrink-0 rounded-full flex items-center justify-center font-display font-bold border-2 border-navy ${waiting ? 'bg-brand-yellow text-navy' : 'bg-brand-teal text-navy'}`}>
+              {user.first_name?.[0]}{user.last_name?.[0]}
+            </div>
+            <div className="min-w-0">
+              <p className="font-bold text-navy">{user.first_name} {user.last_name}</p>
+              <p className="text-navy/65 text-sm break-all">{user.email} · <span className="font-mono font-bold">{userCode(user.id)}</span></p>
+              <p className="text-navy/65 text-xs">{facts.join(' · ')}</p>
+            </div>
+          </div>
+          {waiting ? (
+            <div className="flex gap-2">
+              <button onClick={() => approveUser(user.id)}
+                className="bg-brand-teal text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
+                ✓ Approve
+              </button>
+              <button onClick={() => rejectUser(user.id)}
+                className="bg-brand-red/10 text-brand-red px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-red/30">
+                ✗ Reject
+              </button>
+            </div>
+          ) : isSuspended(user) ? (
+            <span className="bg-brand-red/10 text-brand-red px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-red/30">Suspended</span>
+          ) : (
+            <span className="bg-brand-teal/10 text-brand-teal-dark px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-teal/30">Approved</span>
+          )}
+        </div>
+        {waiting && waitingClassCount > 0 && (
+          <p className="text-navy/65 text-xs mt-2">Approving also publishes their {waitingClassCount === 1 ? 'waiting class' : `${waitingClassCount} waiting classes`}.</p>
+        )}
+        <button onClick={() => setOpenUser(openUser === user.id ? null : user.id)}
+          className="mt-3 text-navy/65 hover:text-navy text-xs font-bold transition-colors">
+          {openUser === user.id ? '▾ Hide details' : '▸ Details'}
+        </button>
+        {openUser === user.id && <UserDetail user={user} t={t} />}
+        <CreditControl amount={creditAmounts[user.id] || ''} message={creditMessages[user.id]}
+          onAmountChange={e => setCreditAmounts(a => ({ ...a, [user.id]: e.target.value }))}
+          onSubmit={() => addCredit(user.id)}/>
+      </div>
+    )
+  }
+
   const pendingReports = reports.filter(r => r.status === 'pending')
   const handledReports = reports.filter(r => r.status !== 'pending')
 
@@ -506,33 +587,27 @@ export default function Admin() {
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">Admin Dashboard</h1>
         <p className="text-navy/65 mb-8">Manage users and classes</p>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          <div className="bg-white rounded-2xl p-4 border-2 border-navy text-center">
-            <p className="font-display font-extrabold text-3xl text-brand-yellow">{pendingUsers.length}</p>
-            <p className="text-navy/65 text-sm font-medium">Pending users</p>
-          </div>
-          <div className="bg-white rounded-2xl p-4 border-2 border-navy text-center">
-            <p className="font-display font-extrabold text-3xl text-brand-teal-dark">{approvedUsers.length}</p>
-            <p className="text-navy/65 text-sm font-medium">Approved users</p>
-          </div>
-          <div className="bg-white rounded-2xl p-4 border-2 border-navy text-center">
-            <p className="font-display font-extrabold text-3xl text-brand-yellow">{pendingClasses.length}</p>
-            <p className="text-navy/65 text-sm font-medium">Pending classes</p>
-          </div>
-          <div className="bg-white rounded-2xl p-4 border-2 border-navy text-center">
-            <p className="font-display font-extrabold text-3xl text-brand-red">{approvedClasses.length}</p>
-            <p className="text-navy/65 text-sm font-medium">Active classes</p>
-          </div>
-          <div className="bg-white rounded-2xl p-4 border-2 border-navy text-center">
-            <p className="font-display font-extrabold text-3xl text-brand-yellow">{pendingReports.length}</p>
-            <p className="text-navy/65 text-sm font-medium">Open reports</p>
-          </div>
+        {/* What needs a decision comes first and lights up; the plain cards
+            are reference. Each one opens the tab it counts. */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {[
+            { count: waitingCount, label: 'Members to approve', tab: 'users', alert: 'bg-brand-yellow text-navy' },
+            { count: pendingReports.length, label: 'Open reports', tab: 'reports', alert: 'bg-brand-red text-white' },
+            { count: classesThisWeek, label: 'Classes this week', tab: 'classes' },
+            { count: liveUsers.length, label: 'Members', tab: 'users' },
+          ].map(card => (
+            <button key={card.label} onClick={() => setTab(card.tab)}
+              className={`rounded-2xl p-4 border-2 border-navy text-center transition-transform hover:-translate-y-0.5 ${card.alert && card.count > 0 ? `${card.alert} shadow-[4px_4px_0_var(--color-navy)]` : 'bg-white text-navy'}`}>
+              <p className="font-display font-extrabold text-3xl">{card.count}</p>
+              <p className="text-sm font-medium">{card.label}</p>
+            </button>
+          ))}
         </div>
 
-        <div className="flex gap-3 mb-6">
+        <div className="flex gap-3 mb-6 flex-wrap">
           <button onClick={() => setTab('users')}
             className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'users' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
-            👥 Users
+            👥 Members
           </button>
           <button onClick={() => setTab('classes')}
             className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'classes' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
@@ -556,81 +631,44 @@ export default function Admin() {
 
         {tab === 'users' && !loading && (
           <>
-          <input value={userSearch} onChange={e => setUserSearch(e.target.value)}
-            placeholder="Find a user by code, name, or email..."
-            className="w-full border-2 border-navy/20 rounded-full px-4 py-2 text-sm mb-4 focus:border-brand-red focus:outline-none transition-colors"/>
+          <div className="flex flex-wrap gap-2 mb-4">
+            <input value={userSearch} onChange={e => setUserSearch(e.target.value)}
+              placeholder="Find a member by code, name, or email..." aria-label="Search members"
+              className={`${FILTER} flex-1 min-w-48 px-4`}/>
+            <select value={regionFilter} onChange={e => setRegionFilter(e.target.value)} aria-label="Region" className={FILTER}>
+              <option value="">All regions</option>
+              {REGIONS.map(region => (
+                <option key={region} value={region}>{region} ({liveUsers.filter(u => regionOf(u.nationality) === region).length})</option>
+              ))}
+            </select>
+            <select value={languageFilter} onChange={e => setLanguageFilter(e.target.value)} aria-label="Language taught" className={FILTER}>
+              <option value="">Teaches any language</option>
+              {languageOptions(t).map(l => <option key={l.code} value={l.code}>{l.flag} {l.name}</option>)}
+            </select>
+            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} aria-label="Status" className={FILTER}>
+              <option value="">Any status</option>
+              <option value="waiting">Waiting</option>
+              <option value="approved">Approved</option>
+              <option value="suspended">Suspended</option>
+            </select>
+          </div>
           <div className="space-y-4">
             {pendingUsers.length > 0 && (
               <>
-                <h2 className="font-display font-bold text-navy">⏳ Waiting for approval</h2>
-                {pendingUsers.map(user => (
-                  <div key={user.id} className="bg-white rounded-2xl p-5 border-2 border-brand-yellow">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-brand-red rounded-full flex items-center justify-center text-white font-display font-bold border-2 border-navy">
-                          {user.first_name?.[0]}{user.last_name?.[0]}
-                        </div>
-                        <div>
-                          <p className="font-bold text-navy">{user.first_name} {user.last_name}</p>
-                          <p className="text-navy/65 text-sm">{user.email} · <span className="font-mono font-bold">{userCode(user.id)}</span></p>
-                          <p className="text-navy/65 text-xs">{user.nationality} · {new Date(user.created_at).toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button onClick={() => approveUser(user.id)}
-                          className="bg-brand-teal text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
-                          ✓ Approve
-                        </button>
-                        <button onClick={() => rejectUser(user.id)}
-                          className="bg-brand-red/10 text-brand-red px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-red/30">
-                          ✗ Reject
-                        </button>
-                      </div>
-                    </div>
-                    <button onClick={() => setOpenUser(openUser === user.id ? null : user.id)}
-                      className="mt-3 text-navy/65 hover:text-navy text-xs font-bold transition-colors">
-                      {openUser === user.id ? '▾ Hide details' : '▸ Details'}
-                    </button>
-                    {openUser === user.id && <UserDetail user={user} t={t} />}
-                    <CreditControl amount={creditAmounts[user.id] || ''} message={creditMessages[user.id]}
-                      onAmountChange={e => setCreditAmounts(a => ({ ...a, [user.id]: e.target.value }))}
-                      onSubmit={() => addCredit(user.id)}/>
-                  </div>
-                ))}
+                <h2 className="font-display font-bold text-navy">⏳ Waiting for approval · {pendingUsers.length}</h2>
+                {pendingUsers.map(renderUser)}
               </>
             )}
-            {approvedUsers.length > 0 && (
-              <>
-                <h2 className="font-display font-bold text-navy mt-6">✅ Approved users</h2>
-                {approvedUsers.map(user => (
-                  <div key={user.id} className="bg-white rounded-2xl p-5 border-2 border-navy/10">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-brand-teal rounded-full flex items-center justify-center text-white font-display font-bold border-2 border-navy">
-                          {user.first_name?.[0]}{user.last_name?.[0]}
-                        </div>
-                        <div>
-                          <p className="font-bold text-navy">{user.first_name} {user.last_name}</p>
-                          <p className="text-navy/65 text-sm">{user.email} · <span className="font-mono font-bold">{userCode(user.id)}</span></p>
-                          <p className="text-navy/65 text-xs">{user.nationality}</p>
-                        </div>
-                      </div>
-                      <span className="bg-brand-teal/10 text-brand-teal-dark px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-teal/30">Approved</span>
-                    </div>
-                    <button onClick={() => setOpenUser(openUser === user.id ? null : user.id)}
-                      className="mt-3 text-navy/65 hover:text-navy text-xs font-bold transition-colors">
-                      {openUser === user.id ? '▾ Hide details' : '▸ Details'}
-                    </button>
-                    {openUser === user.id && <UserDetail user={user} t={t} />}
-                    <CreditControl amount={creditAmounts[user.id] || ''} message={creditMessages[user.id]}
-                      onAmountChange={e => setCreditAmounts(a => ({ ...a, [user.id]: e.target.value }))}
-                      onSubmit={() => addCredit(user.id)}/>
-                  </div>
-                ))}
-              </>
-            )}
-            {pendingUsers.length === 0 && approvedUsers.length === 0 && (
-              <p className="text-navy/65 text-center py-12">{liveUsers.length === 0 ? 'No users yet' : 'No users match your search'}</p>
+            {approvedByRegion.map(([region, group]) => (
+              // <details>, not a useState toggle: the browser already has
+              // this widget, keyboard and screen-reader behaviour included.
+              <details key={region} open className="pt-2">
+                <summary className="font-display font-bold text-navy mb-3 cursor-pointer select-none marker:text-navy/50">🌍 {region} · {group.length}</summary>
+                <div className="space-y-4">{group.map(renderUser)}</div>
+              </details>
+            ))}
+            {shownUsers.length === 0 && (
+              <p className="text-navy/65 text-center py-12">{liveUsers.length === 0 ? 'No members yet' : 'No members match these filters'}</p>
             )}
           </div>
           </>
@@ -638,70 +676,58 @@ export default function Admin() {
 
         {tab === 'classes' && !loading && (
           <div className="space-y-4">
-            {pendingClasses.length > 0 && (
+            <h2 className="font-display font-bold text-navy">📅 Upcoming · {liveClasses.length}</h2>
+            {liveClasses.length === 0 && (
+              <p className="text-navy/65 text-sm">No upcoming classes. Visitors see an empty class list until a teacher posts one.</p>
+            )}
+            {liveClasses.map(cls => (
+              <div key={cls.id} className="bg-white rounded-2xl p-4 border-2 border-brand-teal">
+                <div className="flex items-start justify-between gap-3">
+                  <ClassPeople cls={cls} students={studentsOf(cls)} language={languageLabel(cls.language_code)}/>
+                  <button onClick={() => cancelClass(cls)}
+                    className="bg-brand-red/10 text-brand-red px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-red/30 flex-shrink-0">
+                    Cancel class
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {waitingClasses.length > 0 && (
               <>
-                <h2 className="font-display font-bold text-navy">⏳ Pending approval</h2>
-                {byLanguage(pendingClasses).map(([label, group]) => (
-                  // <details>, not a useState toggle: the browser already has
-                  // this widget, keyboard and screen-reader behaviour included.
-                  // Pending opens by default because it is the queue that needs
-                  // a decision.
-                  <details key={label} open className="mt-4">
-                    <summary className="font-display font-bold text-navy/65 text-sm mb-2 cursor-pointer select-none hover:text-navy marker:text-navy/50">{label} · {group.length}</summary>
-                    {group.map(cls => (
-                      <div key={cls.id} className="bg-white rounded-2xl p-4 border-2 border-brand-yellow mb-2">
-                        <div className="flex items-start justify-between gap-3">
-                          <ClassPeople cls={cls} students={studentsOf(cls)}/>
-                          <div className="flex gap-2 flex-shrink-0">
-                            {nextSessionDate(cls) ? (
-                              <button onClick={() => approveClass(cls.id)}
-                                className="bg-brand-teal text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
-                                ✓ Approve
-                              </button>
-                            ) : (
-                              // approveClass ignores the response, so leaving a
-                              // live button here would fail in silence.
-                              <span className="text-navy/65 text-xs self-center max-w-32">Needs a new date before it can be approved</span>
-                            )}
-                            <button onClick={() => rejectClass(cls.id)}
-                              className="bg-brand-red/10 text-brand-red px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-red/30">
-                              ✗ Reject
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </details>
+                <h2 className="font-display font-bold text-navy pt-4">⏳ Hidden until the teacher is approved · {waitingClasses.length}</h2>
+                <p className="text-navy/65 text-sm">These go live by themselves when you approve their teacher under Members.</p>
+                {waitingClasses.map(cls => (
+                  <div key={cls.id} className="bg-white rounded-2xl p-4 border-2 border-brand-yellow">
+                    <div className="flex items-start justify-between gap-3">
+                      <ClassPeople cls={cls} students={studentsOf(cls)} language={languageLabel(cls.language_code)}/>
+                      {/* Only for a class left behind: its teacher is approved
+                          already, so nothing else would ever publish it. */}
+                      {teacherIsApproved(cls) && nextSessionDate(cls) && (
+                        <button onClick={() => approveClass(cls.id)}
+                          className="bg-brand-teal text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy flex-shrink-0">
+                          Publish
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 ))}
               </>
             )}
-            {approvedClasses.length > 0 && (
-              <>
-                <h2 className="font-display font-bold text-navy mt-6">✅ Active classes</h2>
-                <p className="text-navy/65 text-sm">Mark complete once the class has happened. Credit is earned separately, when students confirm they attended.</p>
-                {byLanguage(approvedClasses).map(([label, group]) => (
-                  // Collapsed by default. Active classes are reference, not a
-                  // to-do list, and eight of them pushed the pending queue —
-                  // the part that needs acting on — off the screen.
-                  <details key={label} className="mt-4">
-                    <summary className="font-display font-bold text-navy/65 text-sm mb-2 cursor-pointer select-none hover:text-navy marker:text-navy/50">{label} · {group.length}</summary>
-                    {group.map(cls => (
-                      <div key={cls.id} className="bg-white rounded-2xl p-4 border-2 border-brand-teal mb-2">
-                        <div className="flex items-start justify-between gap-3">
-                          <ClassPeople cls={cls} students={studentsOf(cls)}/>
-                          <button onClick={() => completeClass(cls.id)}
-                            className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy flex-shrink-0">
-                            ✓ Mark complete
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </details>
-                ))}
-              </>
-            )}
-            {pendingClasses.length === 0 && approvedClasses.length === 0 && (
-              <p className="text-navy/65 text-center py-12">No classes yet</p>
+
+            {finishedClasses.length > 0 && (
+              // Collapsed: finished classes are a record, not a to-do list.
+              // They used to sit here open, each waiting for "Mark complete".
+              <details className="pt-4">
+                <summary className="font-display font-bold text-navy cursor-pointer select-none marker:text-navy/50">✅ Finished · {finishedClasses.length}</summary>
+                <p className="text-navy/65 text-sm mt-1 mb-3">Classes close by themselves once their last session is over.</p>
+                <div className="space-y-2">
+                  {finishedClasses.map(cls => (
+                    <div key={cls.id} className="bg-white rounded-2xl p-4 border-2 border-navy/10">
+                      <ClassPeople cls={cls} students={studentsOf(cls)} language={languageLabel(cls.language_code)}/>
+                    </div>
+                  ))}
+                </div>
+              </details>
             )}
           </div>
         )}
