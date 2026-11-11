@@ -36,6 +36,11 @@ export default function SettingsPage() {
   const { t } = useLanguage()
   const [user, setUser] = useState(null)
   const [tab, setTab] = useState('prefs')
+  // /settings?tab=university opens that tab: the profile checklist links here.
+  useEffect(() => {
+    const wanted = new URLSearchParams(window.location.search).get('tab')
+    if (wanted) setTab(wanted)
+  }, [])
   const [hasTaught, setHasTaught] = useState(false)
   const [prefs, setPrefs] = useState({
     timezone: '', timezone_source: 'auto', time_format: '', low_credit_nudge: true, request_emails: true,

@@ -364,7 +364,7 @@ export default function TeacherProfile() {
                 )}
                 {teacher.has_certificate && (
                   <span className="bg-brand-teal/10 text-brand-teal-dark px-3 py-1 rounded-full text-sm font-bold border-2 border-brand-teal/30">
-                    {t('teacher.certified')}
+                    {teacher.certificate_uploaded_at ? t('teacher.certificateOnFile') : t('teacher.certified')}
                   </span>
                 )}
                 {avgRating && (

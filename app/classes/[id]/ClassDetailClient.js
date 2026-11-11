@@ -309,6 +309,14 @@ export default function ClassDetailClient({ initialClass = null }) {
                             {st.first_name} {st.last_name}
                           </a>
                           {st.attended && <span className="text-brand-teal-dark text-xs font-bold">✓</span>}
+                          {/* What the student said about their level in this
+                              class's language, so the teacher can pitch it. */}
+                          {st.learn_details?.[cls?.language_code] && (
+                            <span className="text-navy/65 text-xs min-w-0">
+                              {[st.learn_details[cls.language_code].level && levelLabel(cls.language_code, st.learn_details[cls.language_code].level, t),
+                                st.learn_details[cls.language_code].note].filter(Boolean).join(' · ')}
+                            </span>
+                          )}
                         </li>
                       ))}
                     </ul>
