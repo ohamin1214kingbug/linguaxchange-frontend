@@ -331,10 +331,10 @@ export default function ProfilePage() {
 
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12">
         <h1 className="sr-only">{t('profile.yourProfile')}</h1>
-        {/* Yellow, at the owner's request: the checklist was the only yellow
-            on the page and it disappears once a profile is complete. On this
-            background red and 65% navy text fall below 4.5:1, hence navy. */}
-        <div className={`bg-brand-yellow rounded-2xl border-2 border-navy ${STICKER} p-5 sm:p-6 mb-6 flex items-start gap-4 sm:gap-6`}>
+        {/* Pale yellow, at the owner's request: the checklist was the only
+            yellow on the page and it disappears once a profile is complete,
+            and full-strength yellow was too loud for a whole card. */}
+        <div className={`bg-brand-yellow/35 rounded-2xl border-2 border-navy ${STICKER} p-5 sm:p-6 mb-6 flex items-start gap-4 sm:gap-6`}>
           <label className="shrink-0 text-center cursor-pointer group">
             <Avatar src={form.photo_url} name={form.first_name} size="w-16 h-16 sm:w-24 sm:h-24 text-3xl sm:text-4xl"/>
             <span className="block text-navy text-xs font-bold mt-2 underline decoration-2 underline-offset-2">
