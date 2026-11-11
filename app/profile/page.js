@@ -331,22 +331,25 @@ export default function ProfilePage() {
 
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12">
         <h1 className="sr-only">{t('profile.yourProfile')}</h1>
-        <div className={`${CARD} ${STICKER} p-5 sm:p-6 mb-6 flex items-start gap-4 sm:gap-6`}>
+        {/* Yellow, at the owner's request: the checklist was the only yellow
+            on the page and it disappears once a profile is complete. On this
+            background red and 65% navy text fall below 4.5:1, hence navy. */}
+        <div className={`bg-brand-yellow rounded-2xl border-2 border-navy ${STICKER} p-5 sm:p-6 mb-6 flex items-start gap-4 sm:gap-6`}>
           <label className="shrink-0 text-center cursor-pointer group">
             <Avatar src={form.photo_url} name={form.first_name} size="w-16 h-16 sm:w-24 sm:h-24 text-3xl sm:text-4xl"/>
-            <span className="block text-brand-red text-xs font-bold mt-2 group-hover:underline">
+            <span className="block text-navy text-xs font-bold mt-2 underline decoration-2 underline-offset-2">
               {uploading ? t('profile.uploading') : t('profile.changePhoto')}
             </span>
             <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" disabled={uploading}/>
           </label>
           <div className="min-w-0 flex-1">
             <p className="font-display font-extrabold text-2xl sm:text-3xl text-navy leading-tight break-words">{form.first_name} {form.last_name}</p>
-            <p className="text-navy/65 text-sm mt-0.5">
+            <p className="text-navy/80 text-sm mt-0.5">
               {[form.nationality, userCode(profile.id)].filter(Boolean).join(' · ')}
             </p>
             <div className="flex flex-wrap gap-2 mt-3">
               {teachLang && (
-                <span className="bg-brand-blue/15 text-navy px-3 py-0.5 rounded-full text-sm font-bold border-2 border-navy">
+                <span className="bg-white text-navy px-3 py-0.5 rounded-full text-sm font-bold border-2 border-navy">
                   {t('teacher.teaches', { lang: `${teachLang.flag} ${teachLang.name}` })}{form.teach_level ? ` · ${levelLabel(teachLang.code, form.teach_level, t)}` : ''}
                 </span>
               )}
@@ -356,7 +359,7 @@ export default function ProfilePage() {
                 </span>
               )}
             </div>
-            {facts.length > 0 && <p className="text-navy/65 text-sm mt-3">{facts.join(' · ')}</p>}
+            {facts.length > 0 && <p className="text-navy/80 text-sm mt-3">{facts.join(' · ')}</p>}
           </div>
         </div>
 
