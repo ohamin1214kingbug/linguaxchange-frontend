@@ -76,7 +76,7 @@ function CreditControl({ amount, message, onAmountChange, onSubmit }) {
 //
 // Behind a toggle rather than always open: the list is a scan-for-one-person
 // view first, and a dozen fields per card would bury the names.
-function UserDetail({ user, t }) {
+function UserDetail({ user, t, onChanged }) {
   const langName = code => {
     const match = languageOptions(t).find(l => l.code === code)
     return match ? `${match.flag} ${match.name}` : code
@@ -93,7 +93,13 @@ function UserDetail({ user, t }) {
     ['Teaches', user.teach_language
       ? `${langName(user.teach_language)}${user.teach_level ? ` · ${levelLabel(user.teach_language, user.teach_level, t)}` : ''}`
       : null],
-    ['Learning', learning.length ? learning.map(langName).join(', ') : null],
+    ['Learning', learning.length
+      ? learning.map(code => {
+          const detail = user.learn_details?.[code]
+          const extra = [detail?.level, detail?.note && `“${detail.note}”`].filter(Boolean).join(' ')
+          return extra ? `${langName(code)} (${extra})` : langName(code)
+        }).join(', ')
+      : null],
     ['Certificate', user.has_certificate ? user.certificate_explanation || 'Claimed, no explanation given' : 'Not claimed'],
     ['Phone', user.phone_number
       ? `${user.phone_number} ${user.phone_verified ? '✅ verified' : '⚠️ unverified'}`
@@ -104,6 +110,20 @@ function UserDetail({ user, t }) {
     ['Joined', user.created_at ? new Date(user.created_at).toLocaleString() : null],
     ['Approval note', user.approval_reason],
   ].filter(([, value]) => value)
+
+  // The file is in a private bucket: the backend hands back a 10-minute link.
+  const openCertificate = async () => {
+    const res = await fetch(`/api/admin/users/${user.id}/certificate`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
+    const data = await res.json().catch(() => ({}))
+    if (res.ok) window.open(data.url, '_blank', 'noopener')
+    else window.alert(data.error || 'Could not open the certificate')
+  }
+  const removeCertificate = async () => {
+    if (!window.confirm(`Remove ${user.first_name}'s certificate? They can upload another.`)) return
+    const res = await fetch(`/api/admin/users/${user.id}/certificate`, { method: 'DELETE', headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
+    if (!res.ok) window.alert('Could not remove the certificate')
+    onChanged?.()
+  }
 
   return (
     <div className="mt-3 border-t border-navy/10 pt-3 space-y-2">
@@ -118,6 +138,13 @@ function UserDetail({ user, t }) {
           </div>
         ))}
       </dl>
+      {user.certificate_uploaded_at && (
+        <div className="flex items-center gap-3 flex-wrap text-sm">
+          <span className="text-navy/80">📄 {user.certificate_name || 'Certificate'} · {new Date(user.certificate_uploaded_at).toLocaleDateString()}</span>
+          <button type="button" onClick={openCertificate} className="text-navy font-bold text-xs underline">View</button>
+          <button type="button" onClick={removeCertificate} className="text-brand-red font-bold text-xs underline">Remove</button>
+        </div>
+      )}
     </div>
   )
 }
@@ -565,7 +592,7 @@ export default function Admin() {
           className="mt-3 text-navy/65 hover:text-navy text-xs font-bold transition-colors">
           {openUser === user.id ? '▾ Hide details' : '▸ Details'}
         </button>
-        {openUser === user.id && <UserDetail user={user} t={t} />}
+        {openUser === user.id && <UserDetail user={user} t={t} onChanged={fetchUsers} />}
         <CreditControl amount={creditAmounts[user.id] || ''} message={creditMessages[user.id]}
           onAmountChange={e => setCreditAmounts(a => ({ ...a, [user.id]: e.target.value }))}
           onSubmit={() => addCredit(user.id)}/>

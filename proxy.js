@@ -32,5 +32,5 @@ export function proxy(request) {
 // carry no rate limit, so they don't need the visitor IP this adds.
 // Keep this list in sync with UPLOAD_ROUTES there.
 export const config = {
-  matcher: '/api/((?!classes/[^/]+/materials-pdf$|resources/[^/]+/pdf$|users/[^/]+/avatar$|reports$).*)',
+  matcher: '/api/((?!classes/[^/]+/materials-pdf$|resources/[^/]+/pdf$|users/[^/]+/avatar$|users/[^/]+/certificate$|reports$).*)',
 }

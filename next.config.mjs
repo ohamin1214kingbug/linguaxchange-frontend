@@ -7,6 +7,7 @@ const UPLOAD_ROUTES = [
   '/api/classes/:id/materials-pdf',
   '/api/resources/:id/pdf',
   '/api/users/:id/avatar',
+  '/api/users/:id/certificate',
   '/api/reports',
 ]
 
