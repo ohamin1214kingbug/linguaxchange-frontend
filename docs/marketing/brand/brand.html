@@ -1,0 +1,91 @@
+<!doctype html>
+<!-- Source for the brand pictures. One page, three pictures, picked with ?v=
+     Rebuild from the frontend folder (CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"):
+       $CHROME --headless --hide-scrollbars --force-device-scale-factor=1 --virtual-time-budget=10000 \
+         --window-size=1024,1024 --screenshot=docs/marketing/brand/profile.png "file://$PWD/docs/marketing/brand/brand.html?v=profile"
+       ... --window-size=2560,1440 --screenshot=docs/marketing/brand/youtube-banner.png ".../brand.html?v=banner"
+       ... --window-size=1200,240  --screenshot=docs/marketing/brand/email-header.png  ".../brand.html?v=email"
+     profile.png: Google, Instagram, TikTok and YouTube profile picture. All four
+     crop to a circle, so the mark sits inside it with room to spare.
+     youtube-banner.png: 2560x1440; everything that matters is inside YouTube's
+     safe area (the middle 1546x423), the rest is decoration that TVs show.
+     email-header.png: shown 600x120 at the top of emails (drawn at 2x). -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GongbuLeng brand pictures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow: hidden; }
+  body { font-family: Inter, system-ui, sans-serif; color: #1a1a2e; }
+  .v { display: none; position: relative; overflow: hidden; }
+  .display { font-family: 'Baloo 2', Inter, sans-serif; font-weight: 800; }
+  .red { color: #da1f33; }
+  /* The mark is a 1092px picture with stray white lines on its last 8px;
+     the wrapper cuts them off. */
+  .mark { overflow: hidden; background: #1a1a2e; }
+  .mark img { display: block; }
+
+  #profile { width: 1024px; height: 1024px; background: #1a1a2e; }
+  #profile .mark { position: absolute; left: 28px; top: 40px; width: 968px; height: 968px; }
+  #profile .mark img { width: 983px; }
+
+  #banner { width: 2560px; height: 1440px; background: #fdf3e7; }
+  #banner .safe { position: absolute; left: 507px; top: 508px; width: 1546px; height: 423px; display: flex; align-items: center; justify-content: center; gap: 64px; }
+  #banner .tile { width: 330px; height: 330px; border-radius: 76px; flex: none; }
+  #banner .tile img { width: 335px; }
+  #banner h1 { font-size: 168px; line-height: 1; letter-spacing: -3px; }
+  #banner .tag { font-size: 50px; font-weight: 600; margin-top: 10px; }
+  #banner .flags { font-size: 54px; margin-top: 22px; letter-spacing: 10px; }
+  .chip { position: absolute; font-family: 'Baloo 2', 'Apple SD Gothic Neo', sans-serif; font-weight: 800; font-size: 76px; padding: 14px 44px; border: 6px solid #1a1a2e; border-radius: 999px; box-shadow: 10px 10px 0 #1a1a2e; white-space: nowrap; }
+
+  #email { width: 1200px; height: 240px; background: #fdf3e7; }
+  #email .row { height: 228px; display: flex; align-items: center; justify-content: center; gap: 30px; }
+  #email .tile { width: 132px; height: 132px; border-radius: 32px; flex: none; }
+  #email .tile img { width: 134px; }
+  #email h1 { font-size: 104px; line-height: 1; letter-spacing: -2px; padding-top: 10px; }
+  #email .stripe { display: flex; height: 12px; border-top: 4px solid #1a1a2e; }
+  #email .stripe i { flex: 1; }
+</style>
+</head>
+<body>
+
+<div class="v" id="profile">
+  <div class="mark"><img src="../../../public/icons/l-mark-source.png" alt=""></div>
+</div>
+
+<div class="v" id="banner">
+  <span class="chip" style="left:150px; top:150px; background:#4361ee; color:#fff; transform:rotate(-6deg)">안녕하세요</span>
+  <span class="chip" style="left:1010px; top:110px; background:#f4a623; transform:rotate(3deg)">Hallo</span>
+  <span class="chip" style="right:190px; top:190px; background:#da1f33; color:#fff; transform:rotate(7deg)">¡Hola!</span>
+  <span class="chip" style="left:90px; top:650px; background:#7b2cbf; color:#fff; transform:rotate(5deg)">Hello</span>
+  <span class="chip" style="right:80px; top:660px; background:#3ec46d; transform:rotate(-5deg)">Olá</span>
+  <span class="chip" style="left:330px; bottom:140px; background:#2ec4b6; transform:rotate(4deg)">Bonjour</span>
+  <span class="chip" style="left:1130px; bottom:100px; background:#fff; transform:rotate(-3deg)">🍌 gongbuleng.com</span>
+  <span class="chip" style="right:330px; bottom:170px; background:#f4696e; transform:rotate(-6deg)">Ciao</span>
+  <div class="safe">
+    <div class="tile mark"><img src="../../../public/icons/l-mark-source.png" alt=""></div>
+    <div>
+      <h1 class="display">Gongbu<span class="red">Leng</span></h1>
+      <p class="tag">Learn by teaching, teach by learning.</p>
+      <p class="flags">🇰🇷🇪🇸🇩🇪🇬🇧🇧🇷🇫🇷🇮🇹</p>
+    </div>
+  </div>
+</div>
+
+<div class="v" id="email">
+  <div class="row">
+    <div class="tile mark"><img src="../../../public/icons/l-mark-source.png" alt=""></div>
+    <h1 class="display">Gongbu<span class="red">Leng</span></h1>
+  </div>
+  <div class="stripe"><i style="background:#4361ee"></i><i style="background:#da1f33"></i><i style="background:#f4a623"></i><i style="background:#7b2cbf"></i><i style="background:#3ec46d"></i><i style="background:#2ec4b6"></i><i style="background:#f4696e"></i></div>
+</div>
+
+<script>
+  const v = new URLSearchParams(location.search).get('v') || 'profile'
+  document.getElementById(v).style.display = 'block'
+</script>
+</body>
+</html>
