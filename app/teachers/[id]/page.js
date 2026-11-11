@@ -3,6 +3,7 @@ import { levelLabel } from '../../../lib/languages'
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
+import { profileColorClass } from '../../../lib/profileColors'
 import { userCode } from '../../../lib/userCode'
 import Navbar from '../../../components/Navbar'
 import { formatInTimezone, formatDay } from '../../../lib/timezone'
@@ -269,7 +270,8 @@ export default function TeacherProfile() {
 
       <div className="max-w-3xl mx-auto px-4 md:px-8 py-12">
         {/* Header card */}
-        <div className="bg-white rounded-2xl p-8 border-2 border-navy mb-6">
+        {/* The colour the teacher picked on their profile (lib/profileColors.js). */}
+        <div className={`${profileColorClass(teacher.profile_color)} rounded-2xl p-8 border-2 border-navy mb-6`}>
           <div className="flex justify-end items-center gap-4">
             <button onClick={toggleSaved} disabled={savingTeacher}
               className={`text-xs font-bold disabled:opacity-50 ${saved ? 'text-brand-red' : 'text-navy/65 hover:text-brand-red'}`}>

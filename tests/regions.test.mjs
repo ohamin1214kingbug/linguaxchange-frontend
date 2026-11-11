@@ -28,3 +28,15 @@ test('no country is listed under two regions', () => {
   assert.ok(codes.length > 200)
   assert.equal(new Set(codes).size, codes.length)
 })
+
+// Card colours: the frontend list must match the backend's, or a saved
+// colour renders as the default and a picked one is refused.
+import { PROFILE_COLORS, profileColorClass } from '../lib/profileColors.js'
+
+test('card colours match the backend list, and unknown ones fall back', () => {
+  const backend = readFileSync(new URL('../../linguaxchange-backend/utils/profileFields.js', import.meta.url), 'utf8')
+  const listed = /PROFILE_COLORS = \[([^\]]+)\]/.exec(backend)?.[1].match(/'(\w+)'/g).map(c => c.slice(1, -1))
+  if (listed) assert.deepEqual(Object.keys(PROFILE_COLORS), listed)
+  assert.equal(profileColorClass(undefined), PROFILE_COLORS.yellow)
+  assert.equal(profileColorClass('neon'), PROFILE_COLORS.yellow)
+})

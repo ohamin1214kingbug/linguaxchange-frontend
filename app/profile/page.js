@@ -1,6 +1,7 @@
 'use client'
 import { LEVELS, levelLabel } from '../../lib/languages'
 import { nextSessionDate } from '../../lib/classSchedule'
+import { PROFILE_COLORS, DEFAULT_PROFILE_COLOR, profileColorClass } from '../../lib/profileColors'
 import { useState, useEffect } from 'react'
 import { formatDay } from '../../lib/timezone'
 import { useRouter } from 'next/navigation'
@@ -61,7 +62,7 @@ function Checklist({ steps, t, onGo }) {
 function PublicPreview({ form, profile, langs, nextClass, rating, t }) {
   const teach = langs.find(l => l.code === form.teach_language)
   return (
-    <div className={`${CARD} ${STICKER} p-5`}>
+    <div className={`${profileColorClass(profile.profile_color)} rounded-2xl border-2 border-navy ${STICKER} p-5`}>
       <div className="flex items-center gap-3">
         <Avatar src={form.photo_url} name={form.first_name} size="w-14 h-14 text-2xl"/>
         <div className="min-w-0">
@@ -253,6 +254,25 @@ export default function ProfilePage() {
     }
   }
 
+  // Saved on the spot, like the photo: a colour is not something you
+  // expect to press Save for. Shown at once and put back if saving fails.
+  const pickColor = async (key) => {
+    const before = profile.profile_color
+    setProfile(p => ({ ...p, profile_color: key }))
+    try {
+      const res = await fetch(`${API}/api/users/${user.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
+        body: JSON.stringify({ profile_color: key })
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    } catch (e) {
+      setProfile(p => ({ ...p, profile_color: before }))
+      setMessage('profile.saveFailed')
+      setMessageOk(false)
+    }
+  }
+
   const setLearnDetail = (code, field, value) => setForm(f => ({
     ...f,
     learn_details: { ...f.learn_details, [code]: { ...f.learn_details[code], [field]: value } }
@@ -331,10 +351,9 @@ export default function ProfilePage() {
 
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12">
         <h1 className="sr-only">{t('profile.yourProfile')}</h1>
-        {/* Pale yellow, at the owner's request: the checklist was the only
-            yellow on the page and it disappears once a profile is complete,
-            and full-strength yellow was too loud for a whole card. */}
-        <div className={`bg-brand-yellow/35 rounded-2xl border-2 border-navy ${STICKER} p-5 sm:p-6 mb-6 flex items-start gap-4 sm:gap-6`}>
+        {/* The member picks this colour (lib/profileColors.js); students see
+            the same colour on the public teacher page. */}
+        <div className={`${profileColorClass(profile.profile_color)} rounded-2xl border-2 border-navy ${STICKER} p-5 sm:p-6 mb-6 flex items-start gap-4 sm:gap-6`}>
           <label className="shrink-0 text-center cursor-pointer group">
             <Avatar src={form.photo_url} name={form.first_name} size="w-16 h-16 sm:w-24 sm:h-24 text-3xl sm:text-4xl"/>
             <span className="block text-navy text-xs font-bold mt-2 underline decoration-2 underline-offset-2">
@@ -360,6 +379,20 @@ export default function ProfilePage() {
               )}
             </div>
             {facts.length > 0 && <p className="text-navy/80 text-sm mt-3">{facts.join(' · ')}</p>}
+            <div className="flex items-center gap-1.5 mt-3 flex-wrap" role="radiogroup" aria-label={t('profile.cardColor')}>
+              <span className="text-navy/80 text-xs font-bold mr-1">{t('profile.cardColor')}</span>
+              {Object.entries(PROFILE_COLORS).map(([key, cls]) => {
+                const on = (profile.profile_color || DEFAULT_PROFILE_COLOR) === key
+                const name = t(`profile.color${key[0].toUpperCase()}${key.slice(1)}`)
+                return (
+                  <button key={key} type="button" role="radio" aria-checked={on} aria-label={name} title={name}
+                    onClick={() => pickColor(key)}
+                    className={`w-6 h-6 rounded-full border-2 border-navy bg-cream ${on ? 'ring-2 ring-navy ring-offset-2 ring-offset-cream' : 'hover:scale-110'} transition-transform`}>
+                    <span className={`block w-full h-full rounded-full ${cls}`}/>
+                  </button>
+                )
+              })}
+            </div>
           </div>
         </div>
 
