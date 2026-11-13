@@ -46,9 +46,29 @@ const WELCOME_POINTS = [
 
 const MODE_KEY = 'dashboardMode'
 const FLAGS = { KO: '🇰🇷', ES: '🇪🇸', DE: '🇩🇪', EN: '🇬🇧', PT: '🇧🇷', FR: '🇫🇷', IT: '🇮🇹' }
-const CARD = 'bg-white rounded-2xl border-2 border-navy shadow-[4px_4px_0_var(--color-navy)] p-5 mb-6'
-const HERO = 'bg-brand-yellow rounded-2xl border-2 border-navy shadow-[4px_4px_0_var(--color-navy)] p-5 mb-6'
 const PILL = 'inline-flex items-center gap-1.5 border-2 border-navy rounded-full px-4 py-1.5 text-sm font-bold text-navy bg-white hover:bg-cream transition-colors'
+const PRIMARY = 'inline-flex items-center gap-1.5 border-2 border-navy rounded-full px-4 py-1.5 text-sm font-bold text-white bg-brand-red hover:bg-brand-red-dark transition-colors'
+
+// One foldable dashboard section. <details>, not state: the browser already
+// does the opening, keyboard and screen-reader parts. Folded, the header
+// still says what is inside (`note`), so a closed panel is not a blank one.
+// Each section has its own colour chip so they stop looking alike.
+function Panel({ id, icon, tone, title, note, badge, open, children }) {
+  return (
+    <details id={id} open={open} className="group bg-white rounded-2xl border-2 border-navy shadow-[4px_4px_0_var(--color-navy)] mb-4 overflow-hidden scroll-mt-24">
+      <summary className="flex items-center gap-3 px-4 py-3 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden hover:bg-cream/60">
+        <span aria-hidden="true" className={`w-10 h-10 shrink-0 rounded-xl border-2 border-navy flex items-center justify-center text-lg ${tone}`}>{icon}</span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-display font-extrabold text-navy text-lg leading-tight">{title}</span>
+          {note && <span className="block text-navy/65 text-sm truncate">{note}</span>}
+        </span>
+        {badge > 0 && <span className="bg-brand-red text-white text-xs font-bold rounded-full min-w-6 h-6 px-1.5 inline-flex items-center justify-center">{badge}</span>}
+        <span aria-hidden="true" className="text-navy text-lg transition-transform group-open:rotate-180">▾</span>
+      </summary>
+      <div className="px-4 pb-4 pt-3 border-t-2 border-navy/10">{children}</div>
+    </details>
+  )
+}
 
 // "in 2 h 15 min" for the next-class cards. Coarse on purpose: past a day
 // the minutes are noise.
@@ -606,43 +626,44 @@ export default function Dashboard() {
 
 
         {mode === 'learning' && (<>
-          {nextLearn ? (() => {
-            const cls = nextLearn.class_sessions.classes
-            const at = asUtcDate(nextLearn.class_sessions.session_date)
-            const { canJoin } = sessionTiming(nextLearn.class_sessions, cls?.duration_minutes)
+          {(() => {
+            const cls = nextLearn?.class_sessions.classes
+            const at = nextLearn && asUtcDate(nextLearn.class_sessions.session_date)
+            const { canJoin } = sessionTiming(nextLearn?.class_sessions, cls?.duration_minutes)
             return (
-              <section className={HERO}>
-                <p className="text-xs font-extrabold uppercase tracking-wide text-navy">{t('dashboard.nextClass')} · {countdown(at, t)}</p>
-                <h2 className="font-display font-extrabold text-2xl text-navy leading-tight mt-1">{FLAGS[cls?.language_code] || ''} {cls?.title}</h2>
+              <Panel icon="⏰" tone="bg-brand-yellow" title={t('dashboard.nextClass')} open
+                note={nextLearn ? `${cls?.title} · ${countdown(at, t)}` : t('dashboard.noUpcomingLearning')}>
+                {nextLearn ? (<>
+                <p className="font-display font-extrabold text-2xl text-navy leading-tight">{FLAGS[cls?.language_code] || ''} {cls?.title}</p>
                 <p className="text-navy text-sm mt-1">
                   {formatInTimezone(at, user.timezone, user.time_format)}
                   {cls?.teacher ? ` · ${cls.teacher.first_name} ${cls.teacher.last_name || ''}` : ''}
                 </p>
                 <div className="flex flex-wrap gap-2 mt-3">
-                  {canJoin && <a href={`/classroom/${nextLearn.class_session_id}`} className={`${PILL} bg-brand-red text-white hover:bg-brand-red-dark`}>{t('dashboard.joinMeeting')}</a>}
+                  {canJoin && <a href={`/classroom/${nextLearn.class_session_id}`} className={PRIMARY}>{t('dashboard.joinMeeting')}</a>}
                   <button type="button" className={PILL}
                     onClick={() => downloadClassIcs({ sessionId: nextLearn.class_session_id, title: cls?.title || 'Class', start: at, durationMinutes: cls?.duration_minutes })}>
                     {t('dashboard.addToCalendar')}
                   </button>
                   {cls?.id && <a href={`/classes/${cls.id}`} className={PILL}>{t('dashboard.classPage')}</a>}
                 </div>
-              </section>
+                </>) : (
+                  <Link href="/classes" className={PRIMARY}>{t('common.explore')}</Link>
+                )}
+              </Panel>
             )
-          })() : (
-            <section className={`${CARD} flex items-center justify-between gap-3 flex-wrap`}>
-              <p className="text-navy font-bold">{t('dashboard.noUpcomingLearning')}</p>
-              <Link href="/classes" className={`${PILL} bg-brand-red text-white hover:bg-brand-red-dark`}>{t('common.explore')}</Link>
-            </section>
-          )}
+          })()}
 
         {todos.length > 0 && (
-          <section id="todo" className="mb-6 bg-brand-yellow rounded-2xl border-2 border-navy shadow-[4px_4px_0_var(--color-navy)] p-5 scroll-mt-24">
-            <h2 className="font-display font-extrabold text-xl text-navy mb-3">{t('dashboard.todoTitle', { n: todos.length })}</h2>
+          <Panel id="todo" icon="✅" tone="bg-brand-green/40" title={t('dashboard.todoTitle', { n: todos.length })} badge={todos.length} open
+            note={todos[0] && (todos[0].kind === 'confirm'
+              ? t('dashboard.todoConfirm', { title: todos[0].e.class_sessions?.classes?.title || '' })
+              : t('dashboard.todoReview', { title: todos[0].e.class_sessions?.classes?.title || '' }))}>
             <ul className="space-y-2">
               {todos.map(({ kind, e }) => {
                 const title = e.class_sessions?.classes?.title || ''
                 return (
-                  <li key={`${kind}-${e.id}`} className="bg-white border-2 border-navy rounded-xl px-4 py-3">
+                  <li key={`${kind}-${e.id}`} className="bg-cream border-2 border-navy rounded-xl px-4 py-3">
                     <div className="flex items-center justify-between gap-3 flex-wrap">
                       <div className="min-w-0">
                         <p className="font-bold text-navy text-sm">
@@ -673,12 +694,12 @@ export default function Dashboard() {
                 )
               })}
             </ul>
-          </section>
+          </Panel>
         )}
 
 
-          <section className={CARD}>
-            <h2 className="font-display font-extrabold text-lg text-navy mb-3">{t('dashboard.forYou')}</h2>
+          <Panel icon="✨" tone="bg-brand-purple/25" title={t('dashboard.forYou')} open={forYou.length > 0}
+            note={forYou.length ? forYou.map(c => c.title).join(' · ') : t('dashboard.forYouEmpty')}>
             {forYou.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {forYou.map(cls => (
@@ -699,10 +720,11 @@ export default function Dashboard() {
                 <Link href="/classes?tab=requests" className={PILL}>🙋 {t('dashboard.askForClass')}</Link>
               </div>
             )}
-          </section>
+          </Panel>
 
-          <section className={CARD}>
-            <h2 className="font-display font-extrabold text-lg text-navy mb-2">{t('dashboard.yourUpcoming')}</h2>
+          <Panel icon="🗓️" tone="bg-brand-blue/25" title={t('dashboard.yourUpcoming')} open={upcomingEnrollments.length > 0}
+            badge={upcomingEnrollments.length}
+            note={upcomingEnrollments.length ? upcomingEnrollments.map(e => e.class_sessions?.classes?.title).join(' · ') : t('dashboard.noUpcomingLearning')}>
             {upcomingEnrollments.length === 0
               ? <p className="text-navy/65 text-sm">{t('dashboard.noUpcomingLearning')}</p>
               : <div className="space-y-1">
@@ -791,9 +813,10 @@ export default function Dashboard() {
               })}
             </div>}
             <a href="/history" className="inline-block mt-3 text-navy text-sm font-bold underline decoration-2 underline-offset-4">{t('dashboard.pastInHistory')} →</a>
-          </section>
+          </Panel>
 
-          <section className={CARD}>
+          <Panel icon="🍌" tone="bg-brand-yellow/50" title={`${credits ?? '...'} ${t('dashboard.creditsAvailable')}`}
+            note={transactions.length ? `${t('dashboard.recentBananas')}: ${transactions.slice(0, 3).map(tx => `${tx.amount > 0 ? '+' : ''}${tx.amount}`).join(' · ')}` : ''}>
             <div className="flex items-center gap-4">
               <p className="font-display font-extrabold text-4xl text-brand-red leading-none">{credits ?? '...'}</p>
               <p className="text-navy text-sm flex-1">{t('dashboard.creditsAvailable')}</p>
@@ -829,9 +852,11 @@ export default function Dashboard() {
             </div>
           )}
             </div>}
-          </section>
+          </Panel>
 
-          <InviteCard userId={user.id} t={t} />
+          <Panel icon="💌" tone="bg-brand-coral/30" title={t('dashboard.inviteTitle')} note={t('dashboard.inviteBody')}>
+            <InviteCard userId={user.id} t={t} />
+          </Panel>
         </>)}
 
         {mode === 'teaching' && (<>
@@ -856,9 +881,9 @@ export default function Dashboard() {
             const cls = nextTeach.cls
             const { canJoin, isLive } = sessionTiming(nextTeachSession, cls.duration_minutes, true)
             return (
-              <section className={HERO}>
-                <p className="text-xs font-extrabold uppercase tracking-wide text-navy">{t('dashboard.nextToTeach')} · {countdown(nextTeach.at, t)}</p>
-                <h2 className="font-display font-extrabold text-2xl text-navy leading-tight mt-1">{FLAGS[cls.language_code] || ''} {cls.title}</h2>
+              <Panel icon="⏰" tone="bg-brand-yellow" title={t('dashboard.nextToTeach')} open
+                note={`${cls.title} · ${countdown(nextTeach.at, t)}`}>
+                <p className="font-display font-extrabold text-2xl text-navy leading-tight">{FLAGS[cls.language_code] || ''} {cls.title}</p>
                 <p className="text-navy text-sm mt-1">
                   {formatInTimezone(nextTeach.at, user.timezone, user.time_format)} · {t('dashboard.studentsOf', { n: nextStudents.length, max: cls.max_students })}
                 </p>
@@ -876,7 +901,7 @@ export default function Dashboard() {
                 ) : <p className="text-navy text-sm mt-2">{t('dashboard.noStudentsYetShare')}</p>}
                 <div className="flex flex-wrap gap-2 mt-3">
                   {canJoin && nextTeachSession && (
-                    <a href={`/classroom/${nextTeachSession.id}`} className={`${PILL} bg-brand-red text-white hover:bg-brand-red-dark`}>
+                    <a href={`/classroom/${nextTeachSession.id}`} className={PRIMARY}>
                       {isLive ? t('dashboard.startClass') : t('dashboard.openClassroomEarly')}
                     </a>
                   )}
@@ -886,18 +911,17 @@ export default function Dashboard() {
                   </button>
                   <a href={`/classes/${cls.id}`} className={PILL}>📄 {t('dashboard.classPage')}</a>
                 </div>
-              </section>
+              </Panel>
             )
           })() : (
-            <section className={`${CARD} flex items-center justify-between gap-3 flex-wrap`}>
-              <p className="text-navy font-bold">{t('dashboard.noUpcomingTeaching')}</p>
-              <Link href="/classes/create" className={`${PILL} bg-brand-red text-white hover:bg-brand-red-dark`}>{t('dashboard.createAClass')}</Link>
-            </section>
+            <Panel icon="⏰" tone="bg-brand-yellow" title={t('dashboard.nextToTeach')} note={t('dashboard.noUpcomingTeaching')} open>
+              <Link href="/classes/create" className={PRIMARY}>{t('dashboard.createAClass')}</Link>
+            </Panel>
           )}
 
           {requests.length > 0 && (
-            <section className={CARD}>
-              <h2 className="font-display font-extrabold text-lg text-navy mb-2">🙋 {t('dashboard.studentsAsking')} · {FLAGS[profile?.teach_language] || ''}</h2>
+            <Panel icon="🙋" tone="bg-brand-blue/25" title={`${t('dashboard.studentsAsking')} · ${FLAGS[profile?.teach_language] || ''}`}
+              badge={requests.length} open note={requests.map(r => r.topic).join(' · ')}>
               <ul>
                 {requests.slice(0, 3).map(req => (
                   <li key={req.id} className="flex items-center justify-between gap-3 py-2 border-b border-navy/10 last:border-0">
@@ -918,12 +942,12 @@ export default function Dashboard() {
               {requests.length > 3 && (
                 <a href={`/classes?tab=requests&language=${profile?.teach_language}`} className="inline-block mt-2 text-navy text-sm font-bold underline decoration-2 underline-offset-4">{t('dashboard.seeAllRequests')} →</a>
               )}
-            </section>
+            </Panel>
           )}
 
           {ratingQueue.length > 0 && (
-            <section className={CARD}>
-              <h2 className="font-display font-extrabold text-lg text-navy mb-2">⭐ {t('dashboard.rateTitle')}</h2>
+            <Panel icon="⭐" tone="bg-brand-green/40" title={t('dashboard.rateTitle')} badge={ratingsWaiting} open
+              note={ratingQueue.map(x => x.cls.title).join(' · ')}>
               <ul>
                 {ratingQueue.map(sess => (
                   <li key={sess.id} className="flex items-center justify-between gap-3 py-2 border-b border-navy/10 last:border-0">
@@ -935,14 +959,13 @@ export default function Dashboard() {
                   </li>
                 ))}
               </ul>
-            </section>
+            </Panel>
           )}
 
-          <section className={CARD}>
-            <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
-              <h2 className="font-display font-extrabold text-lg text-navy">{t('dashboard.classesTeaching')}</h2>
-              <Link href="/classes/create" className={PILL}>+ {t('dashboard.createAClass')}</Link>
-            </div>
+          <Panel icon="🗓️" tone="bg-brand-purple/25" title={t('dashboard.classesTeaching')} badge={upcomingTeaching.length}
+            open={upcomingTeaching.length > 0}
+            note={upcomingTeaching.length ? upcomingTeaching.map(c => c.title).join(' · ') : t('dashboard.noUpcomingTeaching')}>
+            <Link href="/classes/create" className={`${PILL} mb-2`}>+ {t('dashboard.createAClass')}</Link>
             {upcomingTeaching.length === 0
               ? <p className="text-navy/65 text-sm">{t('dashboard.noUpcomingTeaching')}</p>
               : <div className="space-y-1">
@@ -1021,13 +1044,15 @@ export default function Dashboard() {
               })}
             </div>}
             <a href="/history?tab=taught" className="inline-block mt-3 text-navy text-sm font-bold underline decoration-2 underline-offset-4">{t('dashboard.pastInHistory')} →</a>
-          </section>
+          </Panel>
 
-          <section className={`${CARD} flex items-center gap-4`}>
-            <p className="font-display font-extrabold text-4xl text-brand-red leading-none">+{earnedThisMonth}</p>
-            <p className="text-navy text-sm flex-1">{t('dashboard.earnedThisMonth')}</p>
-            <p className="text-navy/65 text-sm">🍌 {credits ?? '...'}</p>
-          </section>
+          <Panel icon="🍌" tone="bg-brand-yellow/50" title={`+${earnedThisMonth} ${t('dashboard.earnedThisMonth')}`} note={`🍌 ${credits ?? '...'} ${t('dashboard.creditsAvailable')}`}>
+            <div className="flex items-center gap-4">
+              <p className="font-display font-extrabold text-4xl text-brand-red leading-none">+{earnedThisMonth}</p>
+              <p className="text-navy text-sm flex-1">{t('dashboard.earnedThisMonth')}</p>
+              <p className="text-navy/65 text-sm">🍌 {credits ?? '...'}</p>
+            </div>
+          </Panel>
         </>)}
       </div>
     </main>
