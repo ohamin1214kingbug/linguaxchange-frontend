@@ -429,6 +429,8 @@ export default function History() {
     if (!stored || !token) { router.push('/auth/login'); return }
     const me = JSON.parse(stored)
     setUser(me)
+    // /history?tab=taught opens that tab; the dashboard's rating links use it.
+    if (new URLSearchParams(window.location.search).get('tab') === 'taught') setTab('taught')
 
     const headers = { Authorization: `Bearer ${token}` }
 
