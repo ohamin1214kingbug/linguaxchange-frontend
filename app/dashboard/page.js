@@ -43,6 +43,9 @@ const WELCOME_POINTS = [
   ['🧑‍🏫', 'dashboard.welcomeTeach']
 ]
 
+const startedWithinDays = (date, days, now = new Date()) =>
+  Boolean(date) && now - date < days * 24 * 60 * 60 * 1000
+
 function sessionTiming(session, durationMinutes, isTeacher = false, now = new Date()) {
   const scheduledAt = session?.session_date ? asUtcDate(session.session_date) : null
   const durationMs = (durationMinutes || 60) * 60 * 1000
@@ -82,6 +85,7 @@ export default function Dashboard() {
   const [tab, setTab] = useState('enrolled')
   const [profile, setProfile] = useState(null)
   const [showWelcome, setShowWelcome] = useState(false)
+  const [reviewingId, setReviewingId] = useState(null)
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
@@ -322,6 +326,19 @@ export default function Dashboard() {
 
   const reviewFor = (sessionId) => myReviews.find(r => r.class_session_id === sessionId)
 
+  // What the member owes after a class: confirming they attended (pays the
+  // teacher now rather than after 72h) and then a review. Both used to sit
+  // inside the class list below, easy to scroll past. Only classes from the
+  // last 14 days, so an old one cannot nag forever.
+  const recent = enrollments.filter(e => {
+    const { scheduledAt, isClassOver } = sessionTiming(e.class_sessions, e.class_sessions?.classes?.duration_minutes)
+    return isClassOver && startedWithinDays(scheduledAt, 14)
+  })
+  const todos = [
+    ...recent.filter(e => e.status === 'confirmed').map(e => ({ kind: 'confirm', e })),
+    ...recent.filter(e => e.status === 'attended' && !reviewFor(e.class_session_id)).map(e => ({ kind: 'review', e })),
+  ]
+
   // Exactly the fields that render on /teachers/:id. Anything blank here is a
   // blank space a student sees while deciding whether to book you, and until
   // now nothing in the app told you it was blank. No dismiss button on
@@ -380,6 +397,47 @@ export default function Dashboard() {
           }`}>
             {t(message)}
           </div>
+        )}
+
+        {todos.length > 0 && (
+          <section id="todo" className="mb-6 bg-brand-yellow rounded-2xl border-2 border-navy shadow-[4px_4px_0_var(--color-navy)] p-5 scroll-mt-24">
+            <h2 className="font-display font-extrabold text-xl text-navy mb-3">{t('dashboard.todoTitle', { n: todos.length })}</h2>
+            <ul className="space-y-2">
+              {todos.map(({ kind, e }) => {
+                const title = e.class_sessions?.classes?.title || ''
+                return (
+                  <li key={`${kind}-${e.id}`} className="bg-white border-2 border-navy rounded-xl px-4 py-3">
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                      <div className="min-w-0">
+                        <p className="font-bold text-navy text-sm">
+                          {kind === 'confirm' ? `✓ ${t('dashboard.todoConfirm', { title })}` : `★ ${t('dashboard.todoReview', { title })}`}
+                        </p>
+                        <p className="text-navy/65 text-xs mt-0.5">
+                          {formatInTimezone(e.class_sessions.session_date, user.timezone, user.time_format)}
+                          {kind === 'confirm' ? ` · ${t('dashboard.todoConfirmNote')}` : ''}
+                        </p>
+                      </div>
+                      {kind === 'confirm' ? (
+                        <button onClick={() => confirmAttendance(e.id)} disabled={confirming === e.id}
+                          className="shrink-0 bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy disabled:opacity-50">
+                          {confirming === e.id ? t('dashboard.confirming') : t('dashboard.confirmAttendance')}
+                        </button>
+                      ) : (
+                        <button onClick={() => setReviewingId(reviewingId === e.id ? null : e.id)} aria-expanded={reviewingId === e.id}
+                          className="shrink-0 bg-white text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
+                          ★ {t('dashboard.todoReviewBtn')}
+                        </button>
+                      )}
+                    </div>
+                    {kind === 'review' && reviewingId === e.id && (
+                      <RatingForm classSessionId={e.class_session_id} existingReview={null}
+                        onReviewed={r => { setMyReviews(rs => [...rs, r]); setReviewingId(null) }}/>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
         )}
 
         {/* The main button points at requests, not browsing: with few public
