@@ -144,7 +144,10 @@ export default function ProfilePage() {
     if (!stored || !token) { router.push('/auth/login'); return }
     const u = JSON.parse(stored)
     setUser(u)
-    fetch(`${API}/api/users/${u.id}`, { headers: { Authorization: `Bearer ${token}` } })
+    // /me, not the public /:id: only /me carries learning levels, the
+    // certificate name and phone status. Loading the public view showed saved
+    // levels as empty, and Save would then have erased them.
+    fetch(`${API}/api/users/me`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())
       .then(data => {
         setProfile(data)
