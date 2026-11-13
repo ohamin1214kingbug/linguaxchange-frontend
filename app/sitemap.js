@@ -6,7 +6,7 @@ const API = 'https://linguaxchange-backend-production.up.railway.app'
 // Only the pages a logged-out visitor can actually read. Everything else
 // is behind login (dashboard, profile, history) or is an auth flow, so
 // there's nothing for a crawler to index.
-const STATIC_PATHS = ['', '/classes', '/resources', '/legal/privacy', '/legal/terms']
+const STATIC_PATHS = ['', '/how-it-works', '/classes', '/resources', '/legal/privacy', '/legal/terms']
 
 export const revalidate = 3600
 
