@@ -27,8 +27,9 @@ export default function InviteCard({ userId, t }) {
   }
 
   return (
-    <section className="mb-6 bg-white border-2 border-navy rounded-2xl px-5 py-5">
-      <h2 className="font-display font-bold text-lg text-navy mb-1">{t('dashboard.inviteTitle')}</h2>
+    // No frame or title of its own: the dashboard shows it inside a foldable
+    // panel that carries both.
+    <div>
       <p className="text-navy/65 text-sm mb-4">{t('dashboard.inviteBody')}</p>
       <div className="flex flex-col sm:flex-row gap-2">
         <input readOnly value={link} aria-label={t('dashboard.inviteTitle')} onFocus={e => e.target.select()}
@@ -43,6 +44,6 @@ export default function InviteCard({ userId, t }) {
           {t('dashboard.inviteStats', { joined: stats.joined, rewarded: stats.rewarded })}
         </p>
       )}
-    </section>
+    </div>
   )
 }
