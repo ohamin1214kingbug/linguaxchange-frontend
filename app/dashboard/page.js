@@ -5,11 +5,12 @@ import Link from 'next/link'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
 import RatingForm from '../../components/RatingForm'
-import Tabs from '../../components/Tabs'
 import { formatInTimezone, asUtcDate } from '../../lib/timezone'
 import { downloadClassIcs } from '../../lib/calendar'
 import FirstClassChecklist from '../../components/FirstClassChecklist'
 import InviteCard from '../../components/InviteCard'
+import { nextSessionDate, hasFinished } from '../../lib/classSchedule'
+import { LANGUAGE_COLORS, levelLabel } from '../../lib/languages'
 
 const API = ''
 
@@ -42,6 +43,26 @@ const WELCOME_POINTS = [
   ['🙋', 'dashboard.welcomeRequest'],
   ['🧑‍🏫', 'dashboard.welcomeTeach']
 ]
+
+const MODE_KEY = 'dashboardMode'
+const FLAGS = { KO: '🇰🇷', ES: '🇪🇸', DE: '🇩🇪', EN: '🇬🇧', PT: '🇧🇷', FR: '🇫🇷', IT: '🇮🇹' }
+const CARD = 'bg-white rounded-2xl border-2 border-navy shadow-[4px_4px_0_var(--color-navy)] p-5 mb-6'
+const HERO = 'bg-brand-yellow rounded-2xl border-2 border-navy shadow-[4px_4px_0_var(--color-navy)] p-5 mb-6'
+const PILL = 'inline-flex items-center gap-1.5 border-2 border-navy rounded-full px-4 py-1.5 text-sm font-bold text-navy bg-white hover:bg-cream transition-colors'
+
+// "in 2 h 15 min" for the next-class cards. Coarse on purpose: past a day
+// the minutes are noise.
+function countdown(date, t, now = new Date()) {
+  const mins = Math.max(0, Math.round((date - now) / 60000))
+  const d = Math.floor(mins / 1440), h = Math.floor((mins % 1440) / 60), m = mins % 60
+  const parts = d > 0
+    ? [t('dashboard.durDays', { n: d }), h > 0 && t('dashboard.durHours', { n: h })]
+    : [h > 0 && t('dashboard.durHours', { n: h }), (h === 0 || m > 0) && t('dashboard.durMinutes', { n: m })]
+  return t('dashboard.inTime', { time: parts.filter(Boolean).join(' ') })
+}
+
+const isThisMonth = (date, now = new Date()) =>
+  date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth()
 
 const startedWithinDays = (date, days, now = new Date()) =>
   Boolean(date) && now - date < days * 24 * 60 * 60 * 1000
@@ -82,10 +103,16 @@ export default function Dashboard() {
   const [cancellingClassId, setCancellingClassId] = useState(null)
   const [cancellingEnrollmentId, setCancellingEnrollmentId] = useState(null)
   const [myReviews, setMyReviews] = useState([])
-  const [tab, setTab] = useState('enrolled')
   const [profile, setProfile] = useState(null)
   const [showWelcome, setShowWelcome] = useState(false)
   const [reviewingId, setReviewingId] = useState(null)
+  // The member's own choice of mode; null until they pick, then remembered.
+  const [modeChoice, setModeChoice] = useState(null)
+  const [publicClasses, setPublicClasses] = useState([])
+  const [requests, setRequests] = useState([])
+  const [ratingQueue, setRatingQueue] = useState([])
+  const [nextRoster, setNextRoster] = useState(null)
+  const [showAllTx, setShowAllTx] = useState(false)
 
   useEffect(() => {
     const stored = localStorage.getItem('user')
@@ -94,6 +121,9 @@ export default function Dashboard() {
     const parsedUser = JSON.parse(stored)
     setUser(parsedUser)
     setShowWelcome(!localStorage.getItem(WELCOME_DISMISSED_KEY))
+    try { setModeChoice(localStorage.getItem(MODE_KEY)) } catch (e) {}
+    fetch(`${API}/api/classes`).then(r => r.json())
+      .then(d => setPublicClasses(Array.isArray(d) ? d : [])).catch(() => {})
     fetchCredits()
     fetchTransactions()
     fetchEnrollments()
@@ -102,11 +132,38 @@ export default function Dashboard() {
     // The cached localStorage user only carries what login returned, so the
     // public profile is fetched fresh — it's the same data a stranger sees
     // on /teachers/:id, which is exactly what the nudge below is about.
-    fetch(`${API}/api/users/${parsedUser.id}`)
+    fetch(`${API}/api/users/me`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json()).then(setProfile).catch(() => {})
   }, [])
 
   const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
+
+  // Open requests in the language this member teaches.
+  useEffect(() => {
+    if (!profile?.teach_language) return
+    fetch(`${API}/api/class-requests?language_code=${profile.teach_language}`)
+      .then(r => r.json())
+      .then(d => setRequests(Array.isArray(d) ? d.filter(r => r.student?.id !== profile.id) : []))
+      .catch(() => {})
+  }, [profile?.teach_language, profile?.id])
+
+  // Sessions taught in the last 14 days with students still unrated. One
+  // request per session; a teacher has a handful at most.
+  // ponytail: per-session requests; add a "pending feedback" endpoint if a
+  // teacher ever runs dozens of classes a fortnight.
+  useEffect(() => {
+    const recentSessions = teachingClasses.flatMap(cls => (cls.class_sessions || [])
+      .filter(s => s.status !== 'cancelled' && hasFinished(s.session_date, cls.duration_minutes)
+        && startedWithinDays(asUtcDate(s.session_date), 14))
+      .map(s => ({ ...s, cls })))
+    if (!recentSessions.length) return
+    Promise.all(recentSessions.map(s =>
+      fetch(`${API}/api/student-feedback/session/${s.id}`, { headers: authHeaders() })
+        .then(r => r.json())
+        .then(rows => ({ ...s, waiting: Array.isArray(rows) ? rows.filter(r => !r.feedback).length : 0 }))
+        .catch(() => ({ ...s, waiting: 0 }))))
+      .then(list => setRatingQueue(list.filter(s => s.waiting > 0)))
+  }, [teachingClasses])
 
   const fetchCredits = () => {
     fetch(`${API}/api/credits`, { headers: authHeaders() })
@@ -318,11 +375,9 @@ export default function Dashboard() {
   // between two you still have to show up for.
   const isEnrollmentOver = (e) => sessionTiming(e.class_sessions, e.class_sessions?.classes?.duration_minutes).isClassOver
   const upcomingEnrollments = enrollments.filter(e => !isEnrollmentOver(e))
-  const pastEnrollments = enrollments.filter(isEnrollmentOver)
 
   const isTeachingOver = (c) => sessionTiming(c.class_sessions?.[0], c.duration_minutes).isClassOver
   const upcomingTeaching = teachingClasses.filter(c => !isTeachingOver(c))
-  const pastTeaching = teachingClasses.filter(isTeachingOver)
 
   const reviewFor = (sessionId) => myReviews.find(r => r.class_session_id === sessionId)
 
@@ -339,6 +394,41 @@ export default function Dashboard() {
     ...recent.filter(e => e.status === 'attended' && !reviewFor(e.class_session_id)).map(e => ({ kind: 'review', e })),
   ]
 
+  // The class you are going to next, as a student.
+  const nextLearn = upcomingEnrollments
+    .filter(e => e.status !== 'cancelled' && e.class_sessions?.session_date)
+    .sort((a, b) => asUtcDate(a.class_sessions.session_date) - asUtcDate(b.class_sessions.session_date))[0]
+
+  // The session you teach next: the soonest future session of any class.
+  const nextTeach = upcomingTeaching
+    .map(cls => ({ cls, at: nextSessionDate(cls) }))
+    .filter(x => x.at)
+    .sort((a, b) => a.at - b.at)[0]
+  const nextTeachSession = nextTeach && nextTeach.cls.class_sessions
+    .find(s => asUtcDate(s.session_date).getTime() === nextTeach.at.getTime())
+
+  // Upcoming public classes in a language this member learns, at their
+  // level where they gave one. Not their own, not ones already booked.
+  const bookedSessions = new Set(enrollments.map(e => e.class_session_id))
+  const forYou = publicClasses.filter(cls => {
+    const learning = profile?.learn_languages || []
+    if (!learning.includes(cls.language_code) || cls.teacher_id === user?.id) return false
+    const level = profile?.learn_details?.[cls.language_code]?.level
+    if (level && cls.level !== level) return false
+    const next = nextSessionDate(cls)
+    return next && !(cls.class_sessions || []).some(s => bookedSessions.has(s.id))
+  }).slice(0, 4)
+
+  const earnedThisMonth = transactions
+    .filter(tx => tx.type === 'earned' && isThisMonth(new Date(tx.created_at)))
+    .reduce((sum, tx) => sum + tx.amount, 0)
+
+  // Default mode: teaching only for someone who teaches and is not booked
+  // into anything; everyone else starts on learning.
+  const mode = modeChoice || (upcomingTeaching.length > 0 && upcomingEnrollments.length === 0 ? 'teaching' : 'learning')
+  const pickMode = m => { setModeChoice(m); try { localStorage.setItem(MODE_KEY, m) } catch (e) {} }
+  const ratingsWaiting = ratingQueue.reduce((sum, s) => sum + s.waiting, 0)
+
   // Exactly the fields that render on /teachers/:id. Anything blank here is a
   // blank space a student sees while deciding whether to book you, and until
   // now nothing in the app told you it was blank. No dismiss button on
@@ -348,6 +438,14 @@ export default function Dashboard() {
     !profile.bio?.trim() && 'profile.bio',
     !profile.nationality?.trim() && 'auth.nationality'
   ].filter(Boolean) : []
+
+  useEffect(() => {
+    if (!nextTeach?.cls.id) return
+    fetch(`${API}/api/classes/${nextTeach.cls.id}/roster`, { headers: authHeaders() })
+      .then(r => r.json()).then(d => setNextRoster(d?.sessions ? d : null)).catch(() => {})
+  }, [nextTeach?.cls.id])
+  const nextStudents = (nextRoster?.sessions?.find(x => x.id === nextTeachSession?.id)?.students || [])
+    .filter(st => st.status !== 'cancelled')
 
   const dismissWelcome = () => {
     localStorage.setItem(WELCOME_DISMISSED_KEY, '1')
@@ -363,14 +461,28 @@ export default function Dashboard() {
       <Navbar />
 
       <div className="max-w-4xl mx-auto px-4 md:px-8 py-8 md:py-12">
-        <h1 className="font-display font-extrabold text-2xl md:text-3xl text-navy mb-2">
-          {t('dashboard.welcomeBack', { name: user.first_name })}
-        </h1>
-        <p className="text-navy/65 mb-8">{t('dashboard.accountOverview')}</p>
+        <div className="flex items-start justify-between gap-3 flex-wrap mb-4">
+          <h1 className="font-display font-extrabold text-2xl md:text-3xl text-navy">
+            {t('dashboard.welcomeBack', { name: user.first_name })}
+          </h1>
+          <button onClick={() => { setReporting(o => !o); setReportState('') }}
+            className="px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap border-2 border-navy/20 bg-white text-navy/65 hover:border-brand-red hover:text-brand-red transition-colors">
+            🚩 {t('dashboard.reportSomeone')}
+          </button>
+        </div>
 
-        {/* Unmissable on purpose — a class in progress is time-sensitive in
-            a way nothing else on this page is, so it sits above every other
-            card rather than waiting inside the list further down. */}
+        {/* Two modes, each showing only what that role needs. The badge is
+            what is waiting in the other mode, so nothing hides behind it. */}
+        <div role="tablist" className="inline-flex border-2 border-navy rounded-full overflow-hidden mb-6 bg-white">
+          {[['learning', 'dashboard.modeLearning', todos.length], ['teaching', 'dashboard.modeTeaching', ratingsWaiting]].map(([key, label, badge]) => (
+            <button key={key} role="tab" aria-selected={mode === key} onClick={() => pickMode(key)}
+              className={`px-4 sm:px-5 py-2 text-sm font-bold flex items-center gap-2 transition-colors ${mode === key ? 'bg-navy text-white' : 'text-navy hover:bg-cream'}`}>
+              {t(label)}
+              {badge > 0 && <span className="bg-brand-red text-white text-xs rounded-full min-w-5 h-5 px-1.5 inline-flex items-center justify-center">{badge}</span>}
+            </button>
+          ))}
+        </div>
+
         {live && (
           <a href={`/classroom/${live.sessionId}`}
             className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 bg-red-600 text-white rounded-2xl px-6 py-5 border-2 border-navy animate-pulse shadow-[0_0_24px_6px_rgba(220,38,38,0.5)] hover:bg-red-700 transition-colors">
@@ -398,139 +510,6 @@ export default function Dashboard() {
             {t(message)}
           </div>
         )}
-
-        {todos.length > 0 && (
-          <section id="todo" className="mb-6 bg-brand-yellow rounded-2xl border-2 border-navy shadow-[4px_4px_0_var(--color-navy)] p-5 scroll-mt-24">
-            <h2 className="font-display font-extrabold text-xl text-navy mb-3">{t('dashboard.todoTitle', { n: todos.length })}</h2>
-            <ul className="space-y-2">
-              {todos.map(({ kind, e }) => {
-                const title = e.class_sessions?.classes?.title || ''
-                return (
-                  <li key={`${kind}-${e.id}`} className="bg-white border-2 border-navy rounded-xl px-4 py-3">
-                    <div className="flex items-center justify-between gap-3 flex-wrap">
-                      <div className="min-w-0">
-                        <p className="font-bold text-navy text-sm">
-                          {kind === 'confirm' ? `✓ ${t('dashboard.todoConfirm', { title })}` : `★ ${t('dashboard.todoReview', { title })}`}
-                        </p>
-                        <p className="text-navy/65 text-xs mt-0.5">
-                          {formatInTimezone(e.class_sessions.session_date, user.timezone, user.time_format)}
-                          {kind === 'confirm' ? ` · ${t('dashboard.todoConfirmNote')}` : ''}
-                        </p>
-                      </div>
-                      {kind === 'confirm' ? (
-                        <button onClick={() => confirmAttendance(e.id)} disabled={confirming === e.id}
-                          className="shrink-0 bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy disabled:opacity-50">
-                          {confirming === e.id ? t('dashboard.confirming') : t('dashboard.confirmAttendance')}
-                        </button>
-                      ) : (
-                        <button onClick={() => setReviewingId(reviewingId === e.id ? null : e.id)} aria-expanded={reviewingId === e.id}
-                          className="shrink-0 bg-white text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
-                          ★ {t('dashboard.todoReviewBtn')}
-                        </button>
-                      )}
-                    </div>
-                    {kind === 'review' && reviewingId === e.id && (
-                      <RatingForm classSessionId={e.class_session_id} existingReview={null}
-                        onReviewed={r => { setMyReviews(rs => [...rs, r]); setReviewingId(null) }}/>
-                    )}
-                  </li>
-                )
-              })}
-            </ul>
-          </section>
-        )}
-
-        {/* The main button points at requests, not browsing: with few public
-            classes yet, a request is the step that works for everyone. */}
-        <FirstClassChecklist profile={profile} teachingClasses={teachingClasses} transactions={transactions} t={t} />
-
-        <InviteCard userId={user.id} t={t} />
-
-        {showWelcome && (
-          <section className="mb-6 bg-white border-2 border-navy rounded-2xl px-5 py-5">
-            <h2 className="font-display font-bold text-lg text-navy mb-3">{t('dashboard.welcomeTitle')}</h2>
-            <h3 className="font-bold text-navy text-sm mb-2">{t('dashboard.bananaCycleTitle')}</h3>
-            <ol className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
-              {BANANA_CYCLE.map(([icon, key], i) => (
-                <li key={key} className="flex items-center gap-2 bg-brand-yellow/15 border-2 border-navy rounded-xl px-3 py-2 text-sm font-bold text-navy">
-                  <span aria-hidden="true">{icon}</span>
-                  <span>{i + 1}. {t(key)}</span>
-                </li>
-              ))}
-            </ol>
-            <p className="text-navy/65 text-sm mb-4">{t('dashboard.bananaCycleNote')}</p>
-            <ul className="space-y-2 text-navy text-sm">
-              {WELCOME_POINTS.map(([icon, key]) => (
-                <li key={key} className="flex gap-3">
-                  <span aria-hidden="true">{icon}</span>
-                  <span>{t(key)}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="flex flex-wrap gap-3 mt-5">
-              <Link href="/classes?tab=requests"
-                className="bg-brand-red text-white px-5 py-2.5 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">
-                {t('dashboard.welcomeCta')}
-              </Link>
-              <button onClick={dismissWelcome}
-                className="px-5 py-2.5 rounded-full text-sm font-bold text-navy border-2 border-navy hover:bg-navy/5 transition-colors">
-                {t('dashboard.welcomeGotIt')}
-              </button>
-            </div>
-          </section>
-        )}
-
-        {missingProfileFields.length > 0 && (
-          <a href="/profile"
-            className="flex items-start gap-3 mb-6 bg-brand-yellow/10 border-2 border-brand-yellow rounded-2xl px-5 py-4 hover:bg-brand-yellow/20 transition-colors">
-            <span className="text-xl leading-none mt-0.5">👋</span>
-            <div>
-              <p className="font-display font-bold text-navy">{t('dashboard.completeProfileTitle')}</p>
-              <p className="text-navy/65 text-sm mt-0.5">
-                {t('dashboard.completeProfileNote', {
-                  fields: missingProfileFields.map(k => t(k)).join(', ')
-                })}
-              </p>
-            </div>
-          </a>
-        )}
-
-        {/* Side by side on a phone too: stacked, two single numbers took a
-            whole screen of scrolling before the class list. */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 mb-8 md:mb-10">
-          <div className="bg-white rounded-2xl p-4 sm:p-6 border-2 border-navy">
-            <p className="text-navy/65 text-sm mb-1 font-medium">{t('dashboard.creditBalance')}</p>
-            <p className="font-display font-extrabold text-4xl sm:text-5xl text-brand-red">{credits ?? '...'}</p>
-            <p className="text-navy/65 text-sm mt-1">{t('dashboard.creditsAvailable')}</p>
-          </div>
-          <div className="bg-white rounded-2xl p-4 sm:p-6 border-2 border-navy">
-            <p className="text-navy/65 text-sm mb-1 font-medium">{t('dashboard.classesJoined')}</p>
-            <p className="font-display font-extrabold text-4xl sm:text-5xl text-brand-teal-dark">{enrollments.length}</p>
-            <p className="text-navy/65 text-sm mt-1">{t('dashboard.totalEnrollments')}</p>
-          </div>
-        </div>
-
-        {/* The three lists were stacked one under the other, so reaching
-            credit history meant scrolling past every class. One at a time,
-            same pill tabs settings uses. */}
-        {/* Sits in the tab row rather than in Quick actions: this is where
-            the eye already is, and reporting is not a "quick action" you
-            take on purpose — it is something you go looking for. */}
-        {/* On a phone the report button goes under the tabs instead of
-            wrapping in between them. */}
-        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-start gap-2 mb-6">
-          <div className="flex-1 min-w-0">
-            <Tabs active={tab} onChange={setTab} tabs={[
-              { key: 'enrolled', label: t('dashboard.myClasses') },
-              { key: 'teaching', label: t('dashboard.classesTeaching') },
-              { key: 'credits', label: t('dashboard.creditHistory') }
-            ]} />
-          </div>
-          <button onClick={() => { setReporting(o => !o); setReportState('') }}
-            className="self-end sm:self-auto -mt-4 sm:mt-0 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-bold text-sm whitespace-nowrap border-2 border-navy/20 bg-white text-navy/65 hover:border-brand-red hover:text-brand-red transition-colors">
-            🚩 {t('dashboard.reportSomeone')}
-          </button>
-        </div>
 
         {reporting && (
           <div className="bg-white rounded-2xl p-6 border-2 border-brand-red/30 mb-6">
@@ -591,19 +570,143 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* My enrolled classes — upcoming first, finished ones below and
-            muted, so what you still have to show up for reads first. */}
-        {tab === 'enrolled' && (
-          <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
-            <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.myClasses')}</h2>
-            {enrollments.length === 0 && (
-              <p className="text-navy/65 text-sm">{t('history.noneTaken')}</p>
+        {showWelcome && (
+          <section className="mb-6 bg-white border-2 border-navy rounded-2xl px-5 py-5">
+            <h2 className="font-display font-bold text-lg text-navy mb-3">{t('dashboard.welcomeTitle')}</h2>
+            <h3 className="font-bold text-navy text-sm mb-2">{t('dashboard.bananaCycleTitle')}</h3>
+            <ol className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
+              {BANANA_CYCLE.map(([icon, key], i) => (
+                <li key={key} className="flex items-center gap-2 bg-brand-yellow/15 border-2 border-navy rounded-xl px-3 py-2 text-sm font-bold text-navy">
+                  <span aria-hidden="true">{icon}</span>
+                  <span>{i + 1}. {t(key)}</span>
+                </li>
+              ))}
+            </ol>
+            <p className="text-navy/65 text-sm mb-4">{t('dashboard.bananaCycleNote')}</p>
+            <ul className="space-y-2 text-navy text-sm">
+              {WELCOME_POINTS.map(([icon, key]) => (
+                <li key={key} className="flex gap-3">
+                  <span aria-hidden="true">{icon}</span>
+                  <span>{t(key)}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="flex flex-wrap gap-3 mt-5">
+              <Link href="/classes?tab=requests"
+                className="bg-brand-red text-white px-5 py-2.5 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">
+                {t('dashboard.welcomeCta')}
+              </Link>
+              <button onClick={dismissWelcome}
+                className="px-5 py-2.5 rounded-full text-sm font-bold text-navy border-2 border-navy hover:bg-navy/5 transition-colors">
+                {t('dashboard.welcomeGotIt')}
+              </button>
+            </div>
+          </section>
+        )}
+
+
+        {mode === 'learning' && (<>
+          {nextLearn ? (() => {
+            const cls = nextLearn.class_sessions.classes
+            const at = asUtcDate(nextLearn.class_sessions.session_date)
+            const { canJoin } = sessionTiming(nextLearn.class_sessions, cls?.duration_minutes)
+            return (
+              <section className={HERO}>
+                <p className="text-xs font-extrabold uppercase tracking-wide text-navy">{t('dashboard.nextClass')} · {countdown(at, t)}</p>
+                <h2 className="font-display font-extrabold text-2xl text-navy leading-tight mt-1">{FLAGS[cls?.language_code] || ''} {cls?.title}</h2>
+                <p className="text-navy text-sm mt-1">
+                  {formatInTimezone(at, user.timezone, user.time_format)}
+                  {cls?.teacher ? ` · ${cls.teacher.first_name} ${cls.teacher.last_name || ''}` : ''}
+                </p>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {canJoin && <a href={`/classroom/${nextLearn.class_session_id}`} className={`${PILL} bg-brand-red text-white hover:bg-brand-red-dark`}>{t('dashboard.joinMeeting')}</a>}
+                  <button type="button" className={PILL}
+                    onClick={() => downloadClassIcs({ sessionId: nextLearn.class_session_id, title: cls?.title || 'Class', start: at, durationMinutes: cls?.duration_minutes })}>
+                    {t('dashboard.addToCalendar')}
+                  </button>
+                  {cls?.id && <a href={`/classes/${cls.id}`} className={PILL}>{t('dashboard.classPage')}</a>}
+                </div>
+              </section>
+            )
+          })() : (
+            <section className={`${CARD} flex items-center justify-between gap-3 flex-wrap`}>
+              <p className="text-navy font-bold">{t('dashboard.noUpcomingLearning')}</p>
+              <Link href="/classes" className={`${PILL} bg-brand-red text-white hover:bg-brand-red-dark`}>{t('common.explore')}</Link>
+            </section>
+          )}
+
+        {todos.length > 0 && (
+          <section id="todo" className="mb-6 bg-brand-yellow rounded-2xl border-2 border-navy shadow-[4px_4px_0_var(--color-navy)] p-5 scroll-mt-24">
+            <h2 className="font-display font-extrabold text-xl text-navy mb-3">{t('dashboard.todoTitle', { n: todos.length })}</h2>
+            <ul className="space-y-2">
+              {todos.map(({ kind, e }) => {
+                const title = e.class_sessions?.classes?.title || ''
+                return (
+                  <li key={`${kind}-${e.id}`} className="bg-white border-2 border-navy rounded-xl px-4 py-3">
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                      <div className="min-w-0">
+                        <p className="font-bold text-navy text-sm">
+                          {kind === 'confirm' ? `✓ ${t('dashboard.todoConfirm', { title })}` : `★ ${t('dashboard.todoReview', { title })}`}
+                        </p>
+                        <p className="text-navy/65 text-xs mt-0.5">
+                          {formatInTimezone(e.class_sessions.session_date, user.timezone, user.time_format)}
+                          {kind === 'confirm' ? ` · ${t('dashboard.todoConfirmNote')}` : ''}
+                        </p>
+                      </div>
+                      {kind === 'confirm' ? (
+                        <button onClick={() => confirmAttendance(e.id)} disabled={confirming === e.id}
+                          className="shrink-0 bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy disabled:opacity-50">
+                          {confirming === e.id ? t('dashboard.confirming') : t('dashboard.confirmAttendance')}
+                        </button>
+                      ) : (
+                        <button onClick={() => setReviewingId(reviewingId === e.id ? null : e.id)} aria-expanded={reviewingId === e.id}
+                          className="shrink-0 bg-white text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
+                          ★ {t('dashboard.todoReviewBtn')}
+                        </button>
+                      )}
+                    </div>
+                    {kind === 'review' && reviewingId === e.id && (
+                      <RatingForm classSessionId={e.class_session_id} existingReview={null}
+                        onReviewed={r => { setMyReviews(rs => [...rs, r]); setReviewingId(null) }}/>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
+        )}
+
+
+          <section className={CARD}>
+            <h2 className="font-display font-extrabold text-lg text-navy mb-3">{t('dashboard.forYou')}</h2>
+            {forYou.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {forYou.map(cls => (
+                  <a key={cls.id} href={`/classes/${cls.id}`} className="rounded-xl border-2 border-navy overflow-hidden hover:-translate-y-0.5 transition-transform">
+                    <div className={`px-3 py-1.5 border-b-2 border-navy font-display font-extrabold text-navy ${LANGUAGE_COLORS[cls.language_code]?.tint || 'bg-cream'}`}>
+                      {FLAGS[cls.language_code] || ''} {cls.title}
+                    </div>
+                    <p className="px-3 py-2 text-navy/65 text-xs">
+                      {levelLabel(cls.language_code, cls.level, t)} · {formatInTimezone(nextSessionDate(cls), user.timezone, user.time_format)}
+                      {cls.teacher ? ` · ${cls.teacher.first_name}` : ''}
+                    </p>
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <p className="text-navy/65 text-sm">{t('dashboard.forYouEmpty')}</p>
+                <Link href="/classes?tab=requests" className={PILL}>🙋 {t('dashboard.askForClass')}</Link>
+              </div>
             )}
-            {[[upcomingEnrollments, 'teacher.upcomingClasses'], [pastEnrollments, 'dashboard.pastClassesTaken']].map(([group, heading]) => group.length > 0 && (
-            <div key={heading} className="mb-4 last:mb-0">
-            <p className="text-navy/65 text-xs font-bold uppercase tracking-wide mb-1">{t(heading)}</p>
-            <div className="space-y-1">
-              {group.map(enrollment => {
+          </section>
+
+          <section className={CARD}>
+            <h2 className="font-display font-extrabold text-lg text-navy mb-2">{t('dashboard.yourUpcoming')}</h2>
+            {upcomingEnrollments.length === 0
+              ? <p className="text-navy/65 text-sm">{t('dashboard.noUpcomingLearning')}</p>
+              : <div className="space-y-1">
+              {upcomingEnrollments.map(enrollment => {
                 const session = enrollment.class_sessions
                 const cls = session?.classes
                 const { scheduledAt, isClassOver, isLive } = sessionTiming(session, cls?.duration_minutes)
@@ -686,24 +789,164 @@ export default function Dashboard() {
                   </div>
                 )
               })}
+            </div>}
+            <a href="/history" className="inline-block mt-3 text-navy text-sm font-bold underline decoration-2 underline-offset-4">{t('dashboard.pastInHistory')} →</a>
+          </section>
+
+          <section className={CARD}>
+            <div className="flex items-center gap-4">
+              <p className="font-display font-extrabold text-4xl text-brand-red leading-none">{credits ?? '...'}</p>
+              <p className="text-navy text-sm flex-1">{t('dashboard.creditsAvailable')}</p>
+              <button type="button" onClick={() => setShowAllTx(v => !v)} className={PILL}>
+                {showAllTx ? t('dashboard.hideHistory') : t('dashboard.showAllHistory')}
+              </button>
             </div>
+            {!showAllTx && transactions.length > 0 && (
+              <p className="text-navy/65 text-xs mt-3">
+                {t('dashboard.recentBananas')}: {transactions.slice(0, 3).map(tx => `${tx.amount > 0 ? '+' : ''}${tx.amount} ${tx.description}`).join(' · ')}
+              </p>
+            )}
+            {showAllTx && <div className="mt-4">
+          {transactions.length === 0 ? (
+            <p className="text-navy/65 text-sm">{t('dashboard.noTransactionsYet')}</p>
+          ) : (
+            <div className="space-y-3">
+              {transactions.map((tx) => (
+                <div key={tx.id} className="flex justify-between items-center py-2 border-b border-navy/10 last:border-0">
+                  <div>
+                    <p className="text-navy text-sm font-medium">{tx.description}</p>
+                    <p className="text-navy/65 text-xs">
+                      {new Date(tx.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <span className={tx.amount > 0
+                    ? 'text-brand-teal-dark font-bold'
+                    : 'text-brand-red font-bold'}>
+                    {tx.amount > 0 ? '+' : ''}{tx.amount}
+                  </span>
+                </div>
+              ))}
             </div>
-            ))}
-          </div>
+          )}
+            </div>}
+          </section>
+
+          <InviteCard userId={user.id} t={t} />
+        </>)}
+
+        {mode === 'teaching' && (<>
+          <FirstClassChecklist profile={profile} teachingClasses={teachingClasses} transactions={transactions} t={t} />
+        {missingProfileFields.length > 0 && (
+          <a href="/profile"
+            className="flex items-start gap-3 mb-6 bg-brand-yellow/10 border-2 border-brand-yellow rounded-2xl px-5 py-4 hover:bg-brand-yellow/20 transition-colors">
+            <span className="text-xl leading-none mt-0.5">👋</span>
+            <div>
+              <p className="font-display font-bold text-navy">{t('dashboard.completeProfileTitle')}</p>
+              <p className="text-navy/65 text-sm mt-0.5">
+                {t('dashboard.completeProfileNote', {
+                  fields: missingProfileFields.map(k => t(k)).join(', ')
+                })}
+              </p>
+            </div>
+          </a>
         )}
 
-        {/* Classes I'm teaching — same upcoming/finished split as above. */}
-        {tab === 'teaching' && (
-          <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
-            <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.classesTeaching')}</h2>
-            {teachingClasses.length === 0 && (
-              <p className="text-navy/65 text-sm">{t('history.noneTaught')}</p>
-            )}
-            {[[upcomingTeaching, 'teacher.upcomingClasses'], [pastTeaching, 'teacher.pastClasses']].map(([group, heading]) => group.length > 0 && (
-            <div key={heading} className="mb-4 last:mb-0">
-            <p className="text-navy/65 text-xs font-bold uppercase tracking-wide mb-1">{t(heading)}</p>
-            <div className="space-y-1">
-              {group.map(cls => {
+
+          {nextTeach ? (() => {
+            const cls = nextTeach.cls
+            const { canJoin, isLive } = sessionTiming(nextTeachSession, cls.duration_minutes, true)
+            return (
+              <section className={HERO}>
+                <p className="text-xs font-extrabold uppercase tracking-wide text-navy">{t('dashboard.nextToTeach')} · {countdown(nextTeach.at, t)}</p>
+                <h2 className="font-display font-extrabold text-2xl text-navy leading-tight mt-1">{FLAGS[cls.language_code] || ''} {cls.title}</h2>
+                <p className="text-navy text-sm mt-1">
+                  {formatInTimezone(nextTeach.at, user.timezone, user.time_format)} · {t('dashboard.studentsOf', { n: nextStudents.length, max: cls.max_students })}
+                </p>
+                {nextStudents.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {nextStudents.map(st => {
+                      const level = st.learn_details?.[cls.language_code]?.level
+                      return (
+                        <span key={st.id} className="bg-white border-2 border-navy rounded-full px-2.5 py-0.5 text-xs font-bold text-navy">
+                          {st.first_name}{level ? ` · ${levelLabel(cls.language_code, level, t)}` : ''}
+                        </span>
+                      )
+                    })}
+                  </div>
+                ) : <p className="text-navy text-sm mt-2">{t('dashboard.noStudentsYetShare')}</p>}
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {canJoin && nextTeachSession && (
+                    <a href={`/classroom/${nextTeachSession.id}`} className={`${PILL} bg-brand-red text-white hover:bg-brand-red-dark`}>
+                      {isLive ? t('dashboard.startClass') : t('dashboard.openClassroomEarly')}
+                    </a>
+                  )}
+                  <button type="button" className={PILL}
+                    onClick={() => downloadClassIcs({ sessionId: nextTeachSession?.id, title: cls.title, start: nextTeach.at, durationMinutes: cls.duration_minutes })}>
+                    {t('dashboard.addToCalendar')}
+                  </button>
+                  <a href={`/classes/${cls.id}`} className={PILL}>📄 {t('dashboard.classPage')}</a>
+                </div>
+              </section>
+            )
+          })() : (
+            <section className={`${CARD} flex items-center justify-between gap-3 flex-wrap`}>
+              <p className="text-navy font-bold">{t('dashboard.noUpcomingTeaching')}</p>
+              <Link href="/classes/create" className={`${PILL} bg-brand-red text-white hover:bg-brand-red-dark`}>{t('dashboard.createAClass')}</Link>
+            </section>
+          )}
+
+          {requests.length > 0 && (
+            <section className={CARD}>
+              <h2 className="font-display font-extrabold text-lg text-navy mb-2">🙋 {t('dashboard.studentsAsking')} · {FLAGS[profile?.teach_language] || ''}</h2>
+              <ul>
+                {requests.slice(0, 3).map(req => (
+                  <li key={req.id} className="flex items-center justify-between gap-3 py-2 border-b border-navy/10 last:border-0">
+                    <div className="min-w-0">
+                      <p className="text-navy text-sm font-bold break-words">{req.topic}</p>
+                      <p className="text-navy/65 text-xs">
+                        {[req.level, req.preferred_time && formatInTimezone(req.preferred_time, user.timezone, user.time_format),
+                          (req.class_request_interest?.length || 0) > 0 && t('dashboard.interestedCount', { n: req.class_request_interest.length })].filter(Boolean).join(' · ')}
+                      </p>
+                    </div>
+                    <a className={PILL} href={'/classes/create?' + new URLSearchParams({
+                      request: req.id, language_code: req.language_code, level: req.level || '', topic: req.topic,
+                      max_students: req.max_students, preferred_time: req.preferred_time
+                    }).toString()}>{t('dashboard.teachIt')}</a>
+                  </li>
+                ))}
+              </ul>
+              {requests.length > 3 && (
+                <a href={`/classes?tab=requests&language=${profile?.teach_language}`} className="inline-block mt-2 text-navy text-sm font-bold underline decoration-2 underline-offset-4">{t('dashboard.seeAllRequests')} →</a>
+              )}
+            </section>
+          )}
+
+          {ratingQueue.length > 0 && (
+            <section className={CARD}>
+              <h2 className="font-display font-extrabold text-lg text-navy mb-2">⭐ {t('dashboard.rateTitle')}</h2>
+              <ul>
+                {ratingQueue.map(sess => (
+                  <li key={sess.id} className="flex items-center justify-between gap-3 py-2 border-b border-navy/10 last:border-0">
+                    <div className="min-w-0">
+                      <p className="text-navy text-sm font-bold">{sess.cls.title}</p>
+                      <p className="text-navy/65 text-xs">{formatInTimezone(sess.session_date, user.timezone, user.time_format)} · {t('dashboard.rateWaiting', { n: sess.waiting })}</p>
+                    </div>
+                    <a href="/history?tab=taught" className={PILL}>{t('dashboard.rateBtn')}</a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          <section className={CARD}>
+            <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
+              <h2 className="font-display font-extrabold text-lg text-navy">{t('dashboard.classesTeaching')}</h2>
+              <Link href="/classes/create" className={PILL}>+ {t('dashboard.createAClass')}</Link>
+            </div>
+            {upcomingTeaching.length === 0
+              ? <p className="text-navy/65 text-sm">{t('dashboard.noUpcomingTeaching')}</p>
+              : <div className="space-y-1">
+              {upcomingTeaching.map(cls => {
                 const session = cls.class_sessions?.[0]
                 const { scheduledAt, isClassOver, isLive, canJoin } = sessionTiming(session, cls.duration_minutes, true)
 
@@ -776,54 +1019,16 @@ export default function Dashboard() {
                   </div>
                 )
               })}
-            </div>
-            </div>
-            ))}
-          </div>
-        )}
+            </div>}
+            <a href="/history?tab=taught" className="inline-block mt-3 text-navy text-sm font-bold underline decoration-2 underline-offset-4">{t('dashboard.pastInHistory')} →</a>
+          </section>
 
-        {/* Credit history */}
-        {tab === 'credits' && (
-        <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-6">
-          <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.creditHistory')}</h2>
-          {transactions.length === 0 ? (
-            <p className="text-navy/65 text-sm">{t('dashboard.noTransactionsYet')}</p>
-          ) : (
-            <div className="space-y-3">
-              {transactions.map((tx) => (
-                <div key={tx.id} className="flex justify-between items-center py-2 border-b border-navy/10 last:border-0">
-                  <div>
-                    <p className="text-navy text-sm font-medium">{tx.description}</p>
-                    <p className="text-navy/65 text-xs">
-                      {new Date(tx.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <span className={tx.amount > 0
-                    ? 'text-brand-teal-dark font-bold'
-                    : 'text-brand-red font-bold'}>
-                    {tx.amount > 0 ? '+' : ''}{tx.amount}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        )}
-
-        {/* Quick actions */}
-        <div className="bg-white rounded-2xl p-6 border-2 border-navy">
-          <h2 className="font-display font-bold text-navy mb-4">{t('dashboard.quickActions')}</h2>
-          <div className="flex gap-4 flex-wrap">
-            <a href="/classes"
-              className="bg-brand-red text-white px-6 py-3 rounded-full text-sm font-bold border-2 border-navy">
-              {t('common.explore')}
-            </a>
-            <a href="/classes/create"
-              className="border-2 border-navy text-navy px-6 py-3 rounded-full text-sm font-bold hover:bg-navy hover:text-white transition-colors">
-              {t('dashboard.createAClass')}
-            </a>
-          </div>
-        </div>
+          <section className={`${CARD} flex items-center gap-4`}>
+            <p className="font-display font-extrabold text-4xl text-brand-red leading-none">+{earnedThisMonth}</p>
+            <p className="text-navy text-sm flex-1">{t('dashboard.earnedThisMonth')}</p>
+            <p className="text-navy/65 text-sm">🍌 {credits ?? '...'}</p>
+          </section>
+        </>)}
       </div>
     </main>
   )
