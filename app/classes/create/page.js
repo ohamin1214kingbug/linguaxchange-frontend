@@ -58,6 +58,9 @@ export default function CreateClass() {
   // locked: the teacher can change any of it, which is what "the time is
   // negotiable" means in practice.
   const [requestId, setRequestId] = useState(null)
+  // A request may come without a level (it is optional when asking). Then the
+  // teacher picks one here; a level the student gave stays locked.
+  const [requestHasLevel, setRequestHasLevel] = useState(false)
   useEffect(() => {
     // A study guide's "Teach this level" link lands here logged out more
     // often than not. Send the visitor to sign up and bring them back to this
@@ -76,7 +79,10 @@ export default function CreateClass() {
     // language and level; it used to be ignored because this only ran for
     // request links. Every field falls back to what the form already holds.
     const fromGuide = params.get('guide')
-    if (params.get('request')) setRequestId(params.get('request'))
+    if (params.get('request')) {
+      setRequestId(params.get('request'))
+      setRequestHasLevel(Boolean(params.get('level')))
+    }
     const preferred = params.get('preferred_time')
     setForm(f => ({
       ...f,
@@ -189,6 +195,25 @@ export default function CreateClass() {
     )
   }
 
+  const levelPicker = (
+          <div>
+            <label className="block text-sm font-bold text-navy mb-3">{t('classes.studentLevel')}</label>
+            {/* Wraps: six levels (wider still as "A1 · TOPIK 1" for Korean)
+                ran past the edge of a phone in one row. */}
+            <div className="flex flex-wrap gap-2">
+              {LEVELS.map(level => (
+                <button key={level} onClick={() => setForm({ ...form, level })}
+                  className={`px-4 py-2 rounded-full border-2 font-bold text-sm transition-colors
+                    ${form.level === level
+                      ? 'border-navy bg-brand-red text-white'
+                      : 'border-navy/15 text-navy hover:border-navy/40'}`}>
+                  {levelLabel(form.language_code, level)}
+                </button>
+              ))}
+            </div>
+          </div>
+  )
+
   return (
     <main className="min-h-screen bg-cream">
       <Navbar />
@@ -212,10 +237,12 @@ export default function CreateClass() {
             <div className="bg-cream rounded-xl px-4 py-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
               <span className="text-navy/65">{t('classes.answeringRequest')}</span>
               <span className="font-bold text-navy">
-                {LANGUAGES.find(l => l.code === form.language_code)?.flag} {LANGUAGES.find(l => l.code === form.language_code)?.name} · {levelLabel(form.language_code, form.level)} · {t('classes.studentsCount', { n: form.max_students })}
+                {LANGUAGES.find(l => l.code === form.language_code)?.flag} {LANGUAGES.find(l => l.code === form.language_code)?.name} · {form.level ? `${levelLabel(form.language_code, form.level)} · ` : ''}{t('classes.studentsCount', { n: form.max_students })}
               </span>
             </div>
-          ) : (
+          ) : null}
+          {requestId && !requestHasLevel && levelPicker}
+          {!requestId && (
           <>
           <div>
             <label className="block text-sm font-bold text-navy mb-3">{t('classes.languageTeach')}</label>
@@ -233,22 +260,7 @@ export default function CreateClass() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-bold text-navy mb-3">{t('classes.studentLevel')}</label>
-            {/* Wraps: six levels (wider still as "A1 · TOPIK 1" for Korean)
-                ran past the edge of a phone in one row. */}
-            <div className="flex flex-wrap gap-2">
-              {LEVELS.map(level => (
-                <button key={level} onClick={() => setForm({ ...form, level })}
-                  className={`px-4 py-2 rounded-full border-2 font-bold text-sm transition-colors
-                    ${form.level === level
-                      ? 'border-navy bg-brand-red text-white'
-                      : 'border-navy/15 text-navy hover:border-navy/40'}`}>
-                  {levelLabel(form.language_code, level)}
-                </button>
-              ))}
-            </div>
-          </div>
+          {levelPicker}
           </>
           )}
 
