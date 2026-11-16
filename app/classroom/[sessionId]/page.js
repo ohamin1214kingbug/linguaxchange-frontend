@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
+import { levelLabel } from '../../../lib/languages'
 
 const API = ''
 
@@ -26,6 +27,12 @@ export default function Classroom() {
   const [error, setError] = useState('')
   const [topic, setTopic] = useState('')
   const [participants, setParticipants] = useState([])
+  const [classInfo, setClassInfo] = useState(null)
+  const [isTeacher, setIsTeacher] = useState(false)
+  const [panelTab, setPanelTab] = useState('info')
+  // Phones: the panel sits under the video and starts closed, so the call
+  // gets the screen. Wide screens always show it beside the video.
+  const [panelOpen, setPanelOpen] = useState(false)
   const [reporting, setReporting] = useState(false)
   const [reportTarget, setReportTarget] = useState('')
   const [reportCategory, setReportCategory] = useState('harassment')
@@ -67,6 +74,8 @@ export default function Classroom() {
         if (cancelled) return
         setTopic(data.topic || '')
         setParticipants(data.participants || [])
+        setClassInfo(data.classInfo || null)
+        setIsTeacher(Boolean(data.isTeacher))
         // One other person in the room is the common case — a private class,
         // or a student reporting the teacher. Preselect them so reporting is
         // two taps, not four.
@@ -158,6 +167,12 @@ export default function Classroom() {
               🚩 {t('teacher.report')}
             </button>
           )}
+          {classInfo && (
+            <button onClick={() => setPanelOpen(o => !o)} aria-expanded={panelOpen}
+              className="lg:hidden text-white text-sm font-bold border-2 border-white/30 rounded-full px-3 py-1">
+              {panelOpen ? t('classroom.hideInfo') : t('classroom.showInfo')}
+            </button>
+          )}
           <a href="/dashboard" className="text-white/50 hover:text-white text-sm font-medium">
             ← {t('classroom.backToDashboard')}
           </a>
@@ -227,7 +242,68 @@ export default function Classroom() {
         </div>
       )}
 
-      <div ref={containerRef} style={{ height: 'calc(100vh - 65px)' }} />
+      {/* The class's PDF, notes and people stay one tap away during the call;
+          before, the classroom showed the video and nothing else. */}
+      <div className="flex-1 flex flex-col lg:flex-row min-h-0">
+        <div ref={containerRef} className={`flex-1 min-w-0 ${panelOpen ? 'h-[55vh]' : 'h-[calc(100vh-65px)]'} lg:h-[calc(100vh-65px)]`} />
+        {classInfo && (
+          <aside className={`${panelOpen ? 'block' : 'hidden'} lg:block lg:w-80 shrink-0 bg-cream text-navy border-t-2 lg:border-t-0 lg:border-l-2 border-navy overflow-y-auto lg:h-[calc(100vh-65px)]`}>
+            <div className="flex gap-2 p-3 border-b-2 border-navy/10 sticky top-0 bg-cream">
+              {[['info', 'classroom.tabInfo'], ['people', 'classroom.tabPeople']].map(([key, label]) => (
+                <button key={key} onClick={() => setPanelTab(key)} aria-pressed={panelTab === key}
+                  className={`flex-1 rounded-full border-2 border-navy py-1.5 text-sm font-bold ${panelTab === key ? 'bg-brand-yellow' : 'bg-white'}`}>
+                  {t(label)}{key === 'people' ? ` ${participants.length + 1}` : ''}
+                </button>
+              ))}
+            </div>
+            {panelTab === 'info' ? (
+              <div className="p-4 space-y-4">
+                <div>
+                  <p className="text-xs font-extrabold uppercase tracking-wide text-navy/65 mb-2">{t('dashboard.lessonMaterial')}</p>
+                  {classInfo.lesson_plan_url
+                    ? <a href={classInfo.lesson_plan_url} target="_blank" rel="noopener"
+                        className="inline-flex items-center gap-1.5 bg-brand-red text-white border-2 border-navy rounded-full px-4 py-1.5 text-sm font-bold hover:bg-brand-red-dark">
+                        📄 {t('dashboard.openPdf')}
+                      </a>
+                    : !classInfo.materials && <p className="text-navy/65 text-sm">{t('dashboard.noMaterial')}</p>}
+                </div>
+                {classInfo.materials && (
+                  <div>
+                    <p className="text-xs font-extrabold uppercase tracking-wide text-navy/65 mb-1">{isTeacher ? t('dashboard.yourNotes') : t('dashboard.teacherNotes')}</p>
+                    <p className="bg-white border-2 border-navy rounded-xl px-3 py-2 text-sm whitespace-pre-line break-words">{classInfo.materials}</p>
+                  </div>
+                )}
+                <div>
+                  <p className="text-xs font-extrabold uppercase tracking-wide text-navy/65 mb-1">{t('classroom.aboutClass')}</p>
+                  <p className="font-bold">{classInfo.title}</p>
+                  <p className="text-navy/65 text-sm">
+                    {[classInfo.level && levelLabel(classInfo.language_code, classInfo.level, t), classInfo.duration_minutes && `${classInfo.duration_minutes} min`].filter(Boolean).join(' · ')}
+                  </p>
+                  {classInfo.description && <p className="text-sm mt-2 whitespace-pre-line break-words">{classInfo.description}</p>}
+                  <a href={`/classes/${classInfo.id}`} target="_blank" rel="noopener" className="inline-block mt-2 text-sm font-bold underline decoration-2 underline-offset-4">{t('dashboard.classPage')} ↗</a>
+                </div>
+              </div>
+            ) : (
+              <ul className="p-4 space-y-2">
+                {isTeacher && <li className="text-sm text-navy/65">{t('classroom.youTeach')}</li>}
+                {participants.map(p => {
+                  const detail = p.learn_details?.[classInfo.language_code]
+                  return (
+                    <li key={p.id} className="bg-white border-2 border-navy rounded-xl px-3 py-2">
+                      <p className="font-bold text-sm">
+                        {p.first_name} {p.last_name || ''}
+                        {p.role === 'teacher' && <span className="ml-2 text-xs font-bold bg-brand-yellow border-2 border-navy rounded-full px-2">{t('classroom.teacherRole')}</span>}
+                        {detail?.level && <span className="ml-2 text-xs font-bold bg-brand-blue/15 border-2 border-navy rounded-full px-2">{levelLabel(classInfo.language_code, detail.level, t)}</span>}
+                      </p>
+                      {detail?.note && <p className="text-navy/65 text-xs mt-0.5">“{detail.note}”</p>}
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </aside>
+        )}
+      </div>
     </main>
   )
 }
