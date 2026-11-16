@@ -33,6 +33,7 @@ function notificationHref(n) {
   // browse page waiting to be joined, not on your dashboard yet.
   if (n.type === 'request_fulfilled') return '/classes'
   if (n.type === 'chat_message' && n.class_session_id) return `/chat/${n.class_session_id}`
+  if ((n.type === 'request_offer' || n.type === 'request_chat') && n.request_id) return `/chat/request/${n.request_id}`
   return '/dashboard'
 }
 

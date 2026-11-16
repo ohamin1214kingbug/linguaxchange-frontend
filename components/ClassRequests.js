@@ -1,6 +1,7 @@
 'use client'
 import { LEVELS, levelLabel } from '../lib/languages'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import DateTimePicker from './DateTimePicker'
 import { formatInTimezone, asUtcDate } from '../lib/timezone'
@@ -21,6 +22,7 @@ function hoursLeft(expiresAt) {
 // teachers browse it. Shares the parent page's language/level filters
 // instead of growing a second set of its own.
 export default function ClassRequests({ language, level, currentUser, langs }) {
+  const router = useRouter()
   const { t } = useLanguage()
   const [requests, setRequests] = useState([])
   const [loading, setLoading] = useState(true)
@@ -130,6 +132,15 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
 
   // Hands the request over to the class form, which posts back to
   // /fulfill once the class exists so everyone who asked gets told.
+  const offer = async (req) => {
+    setBusy(req.id)
+    setError('')
+    const res = await authed(`/api/requests/${req.id}/offer`, { method: 'POST' })
+    setBusy(null)
+    if (res?.ok) router.push(`/chat/request/${req.id}`)
+    else setError('reqchat.offerFailed')
+  }
+
   const teachHref = (req) => '/classes/create?' + new URLSearchParams({
     request: req.id,
     language_code: req.language_code,
@@ -248,6 +259,8 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
           const interested = (req.class_request_interest || []).map(i => i.user_id)
           const mine = req.student_id === currentUser?.id
           const iWantThis = currentUser && interested.includes(currentUser.id)
+          const offers = (req.request_offers || []).map(o => o.teacher_id)
+          const inChat = currentUser && (mine || iWantThis || offers.includes(currentUser.id))
           const hours = hoursLeft(req.expires_at)
 
           return (
@@ -283,6 +296,11 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
               </p>
 
               <div className="flex flex-wrap gap-2">
+                {inChat && offers.length > 0 && (
+                  <a href={`/chat/request/${req.id}`} className="bg-brand-yellow text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
+                    {t('reqchat.openChat', { n: offers.length })}
+                  </a>
+                )}
                 {mine ? (
                   <>
                     <span className="bg-navy/5 text-navy/65 px-4 py-2 rounded-full text-sm font-bold">{t('requests.yourRequest')}</span>
@@ -293,8 +311,16 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
                   </>
                 ) : (
                   <>
+                    {/* Talk first, then teach: offering opens the request chat
+                        and holds the student's refund clock while you agree a time. */}
+                    {currentUser && !offers.includes(currentUser.id) && (
+                      <button onClick={() => offer(req)} disabled={busy === req.id}
+                        className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors disabled:opacity-50">
+                        {t('reqchat.offer')}
+                      </button>
+                    )}
                     <a href={teachHref(req)}
-                      className="bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">
+                      className="bg-white text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-cream transition-colors">
                       {t('requests.teachThis')}
                     </a>
                     <button onClick={() => toggleInterest(req)} disabled={busy === req.id}
