@@ -32,6 +32,7 @@ function notificationHref(n) {
   // Someone answered a request you posted or backed — the class is on the
   // browse page waiting to be joined, not on your dashboard yet.
   if (n.type === 'request_fulfilled') return '/classes'
+  if (n.type === 'chat_message' && n.class_session_id) return `/chat/${n.class_session_id}`
   return '/dashboard'
 }
 

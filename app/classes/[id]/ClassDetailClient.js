@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import Navbar from '../../../components/Navbar'
+import ClassChat from '../../../components/ClassChat'
 import { formatInTimezone, utcLabel } from '../../../lib/timezone'
 
 const API = ''
@@ -275,6 +276,9 @@ export default function ClassDetailClient({ initialClass = null }) {
             </>
           )}
         </div>
+
+        {/* Shows only for the teacher and booked students, while open. */}
+        {currentUser && <ClassChat classId={id} user={currentUser} />}
 
         {/* Who joined — teacher/admin only, per session. */}
         {roster && (

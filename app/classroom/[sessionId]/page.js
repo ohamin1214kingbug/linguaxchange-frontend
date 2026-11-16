@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import { levelLabel } from '../../../lib/languages'
+import ClassChat from '../../../components/ClassChat'
 
 const API = ''
 
@@ -249,14 +250,16 @@ export default function Classroom() {
         {classInfo && (
           <aside className={`${panelOpen ? 'block' : 'hidden'} lg:block lg:w-80 shrink-0 bg-cream text-navy border-t-2 lg:border-t-0 lg:border-l-2 border-navy overflow-y-auto lg:h-[calc(100vh-65px)]`}>
             <div className="flex gap-2 p-3 border-b-2 border-navy/10 sticky top-0 bg-cream">
-              {[['info', 'classroom.tabInfo'], ['people', 'classroom.tabPeople']].map(([key, label]) => (
+              {[['info', 'classroom.tabInfo'], ['chat', 'chat.tab'], ['people', 'classroom.tabPeople']].map(([key, label]) => (
                 <button key={key} onClick={() => setPanelTab(key)} aria-pressed={panelTab === key}
                   className={`flex-1 rounded-full border-2 border-navy py-1.5 text-sm font-bold ${panelTab === key ? 'bg-brand-yellow' : 'bg-white'}`}>
                   {t(label)}{key === 'people' ? ` ${participants.length + 1}` : ''}
                 </button>
               ))}
             </div>
-            {panelTab === 'info' ? (
+            {panelTab === 'chat' ? (
+              <div className="p-4"><ClassChat sessionId={sessionId} compact /></div>
+            ) : panelTab === 'info' ? (
               <div className="p-4 space-y-4">
                 <div>
                   <p className="text-xs font-extrabold uppercase tracking-wide text-navy/65 mb-2">{t('dashboard.lessonMaterial')}</p>

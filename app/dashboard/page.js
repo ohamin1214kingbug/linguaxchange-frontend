@@ -574,6 +574,7 @@ export default function Dashboard() {
                   <div className="flex flex-wrap gap-2">
                     {cls.lesson_plan_url && <a href={cls.lesson_plan_url} target="_blank" rel="noopener" className={PRIMARY}>📄 {t('dashboard.openPdf')}</a>}
                     <a href={`/classes/${cls.id}`} className={PILL}>{t('dashboard.classPage')}</a>
+                    <a href={`/chat/${live.sessionId}`} className={PILL}>{t('chat.open')}</a>
                   </div>
                   {cls.materials ? (<>
                     <p className="text-xs font-extrabold uppercase tracking-wide text-navy/65 mt-3 mb-1">{teaching ? t('dashboard.yourNotes') : t('dashboard.teacherNotes')}</p>
@@ -710,6 +711,7 @@ export default function Dashboard() {
                     {t('dashboard.addToCalendar')}
                   </button>
                   {cls?.id && <a href={`/classes/${cls.id}`} className={PILL}>{t('dashboard.classPage')}</a>}
+                  <a href={`/chat/${nextLearn.class_session_id}`} className={PILL}>{t('chat.open')}</a>
                 </div>
                 </>) : (
                   <Link href="/classes" className={PRIMARY}>{t('common.explore')}</Link>
@@ -974,6 +976,7 @@ export default function Dashboard() {
                     {t('dashboard.addToCalendar')}
                   </button>
                   <a href={`/classes/${cls.id}`} className={PILL}>📄 {t('dashboard.classPage')}</a>
+                  {nextTeachSession && <a href={`/chat/${nextTeachSession.id}`} className={PILL}>{t('chat.open')}</a>}
                 </div>
               </Panel>
             )
