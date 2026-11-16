@@ -94,6 +94,12 @@ export default function Navbar() {
     fetchCredits()
     fetch(`${API}/api/users/${parsedUser.id}`, { headers }).then(r => r.json()).then(d => {
       setStreak(d?.current_streak ?? 0)
+      // Login only stores id/email/first_name, so the photo never reached
+      // the avatar. Take it from the profile and keep the stored copy fresh.
+      if (d?.photo_url !== undefined) {
+        setUser(u => ({ ...u, photo_url: d.photo_url }))
+        try { localStorage.setItem('user', JSON.stringify({ ...parsedUser, photo_url: d.photo_url })) } catch (e) {}
+      }
       // The zone is only re-detected at login and a session lasts 7 days, so
       // a member who travels keeps seeing the old zone's times. A manually
       // picked zone is never overwritten at login at all. Ask instead of
