@@ -591,6 +591,7 @@ export default function History() {
                         <a href={s.cls.lesson_plan_url} target="_blank" rel="noopener" className={BUTTON}>📄 {t('history.lessonPdf')}</a>
                       )}
                       <a href={`/classes/${s.cls.id}`} className={BUTTON}>👥 {t('history.students')}</a>
+                      <a href={`/classes/create?from=${s.cls.id}`} className="inline-flex items-center gap-1.5 border-2 border-navy rounded-full px-3 py-1 text-sm font-bold text-white bg-brand-red hover:bg-brand-red-dark transition-colors">🔁 {t('dashboard.teachAgain')}</a>
                     </div>
                     {/* Students, and the feedback form for each of them. */}
                     {!cancelled && <div className="mt-3"><RateStudents sessionId={s.id} t={t} /></div>}

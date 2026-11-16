@@ -43,7 +43,7 @@ export default function SettingsPage() {
   }, [])
   const [hasTaught, setHasTaught] = useState(false)
   const [prefs, setPrefs] = useState({
-    timezone: '', timezone_source: 'auto', time_format: '', low_credit_nudge: true, request_emails: true,
+    timezone: '', timezone_source: 'auto', time_format: '', low_credit_nudge: true, request_emails: true, teach_nudge: true,
     default_class_duration_minutes: '', default_max_students: ''
   })
   const [savingPrefs, setSavingPrefs] = useState(false)
@@ -98,6 +98,7 @@ export default function SettingsPage() {
         // DEFAULT and the backend's nudgeEnabledFromPrefs.
         low_credit_nudge: data.notification_preferences?.low_credit_nudge !== false,
         request_emails: data.notification_preferences?.request_emails !== false,
+        teach_nudge: data.notification_preferences?.teach_nudge !== false,
         default_class_duration_minutes: data.default_class_duration_minutes || '',
         default_max_students: data.default_max_students || ''
       }))
@@ -209,7 +210,7 @@ export default function SettingsPage() {
           timezone: prefs.timezone,
           timezone_source: prefs.timezone_source,
           time_format: prefs.time_format || null,
-          notification_preferences: { low_credit_nudge: prefs.low_credit_nudge, request_emails: prefs.request_emails },
+          notification_preferences: { low_credit_nudge: prefs.low_credit_nudge, request_emails: prefs.request_emails, teach_nudge: prefs.teach_nudge },
           // '' means "no saved default"; the column is nullable and NULL is
           // what the create-class form reads as "fall back to its own default".
           default_class_duration_minutes: prefs.default_class_duration_minutes || null,
@@ -238,6 +239,7 @@ export default function SettingsPage() {
           time_format: data.time_format || '',
           low_credit_nudge: data.notification_preferences?.low_credit_nudge !== false,
           request_emails: data.notification_preferences?.request_emails !== false,
+          teach_nudge: data.notification_preferences?.teach_nudge !== false,
           default_class_duration_minutes: data.default_class_duration_minutes || '',
           default_max_students: data.default_max_students || ''
         })
@@ -429,6 +431,13 @@ export default function SettingsPage() {
             <span className="text-sm font-bold text-navy">{t('settings.requestEmailsLabel')}</span>
           </label>
           <p className="text-navy/65 text-xs mt-1">{t('settings.requestEmailsNote')}</p>
+          <label className="flex items-center gap-2.5 mt-4 cursor-pointer select-none">
+            <input type="checkbox" checked={prefs.teach_nudge}
+              onChange={e => setPrefs(p => ({ ...p, teach_nudge: e.target.checked }))}
+              className="w-4 h-4 accent-brand-red"/>
+            <span className="text-sm font-bold text-navy">{t('settings.teachNudgeLabel')}</span>
+          </label>
+          <p className="text-navy/65 text-xs mt-1">{t('settings.teachNudgeNote')}</p>
           <PushToggle t={t} />
 
           <button onClick={savePrefs} disabled={savingPrefs}
