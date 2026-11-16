@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import Panel from './Panel'
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import { formatInTimezone } from '../lib/timezone'
 import { isUnread } from '../lib/chatSeen'
@@ -19,12 +18,10 @@ function ago(iso, language) {
   return rtf.format(-Math.round(mins / 1440), 'day')
 }
 
-// Every chat the member can write in now (GET /api/chat/mine), so they are
-// found from the dashboard instead of only from each class card. Opens by
-// itself when something is new.
+// Every chat the member can write in now (GET /api/chat/mine). The
+// dashboard loads it once for both the Chats tab and its new-message badge.
 // ponytail: polls once a minute; the chat pages poll every 8s themselves.
-export default function ChatsPanel({ user }) {
-  const { t, language } = useLanguage()
+export function useChats() {
   const [chats, setChats] = useState(null)
 
   useEffect(() => {
@@ -42,17 +39,19 @@ export default function ChatsPanel({ user }) {
     const timer = setInterval(load, POLL_MS)
     return () => { stopped = true; clearInterval(timer) }
   }, [])
+  return chats
+}
 
+// The dashboard's Chats tab: the list, always open.
+export default function ChatList({ chats, user }) {
+  const { t, language } = useLanguage()
   if (!chats) return null
   const when = iso => formatInTimezone(iso, user?.timezone, user?.time_format)
-  const unread = chats.filter(isUnread).length
-  const newest = chats.find(c => c.last)?.last
-  const preview = m => `${m.mine ? t('chat.you') : m.first_name}: ${m.body}`
 
   return (
-    <Panel id="chats" icon="💬" tone="bg-brand-blue/30" title={t('chat.inboxTitle', { n: chats.length })}
-      note={newest ? preview(newest) : t('chat.inboxEmpty')} badge={unread} open={unread > 0}>
-      {chats.length === 0 ? <p className="text-navy/65 text-sm">{t('chat.inboxEmpty')}</p> : (
+    <section id="chats" className="bg-white rounded-2xl border-2 border-navy shadow-[4px_4px_0_var(--color-navy)] mb-4 px-3 sm:px-4 py-3">
+      {chats.length === 0 ? <p className="text-navy/65 text-sm px-2 py-1">{t('chat.inboxEmpty')}</p> : (<>
+        <p className="text-navy/65 text-xs font-semibold px-2 mb-1">{t('chat.inboxNote', { n: chats.length })}</p>
         <ul className="space-y-1">
           {chats.map(c => {
             const isNew = isUnread(c)
@@ -91,7 +90,7 @@ export default function ChatsPanel({ user }) {
             )
           })}
         </ul>
-      )}
-    </Panel>
+      </>)}
+    </section>
   )
 }

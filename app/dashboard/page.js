@@ -10,7 +10,8 @@ import { downloadClassIcs } from '../../lib/calendar'
 import FirstClassChecklist from '../../components/FirstClassChecklist'
 import InviteCard from '../../components/InviteCard'
 import Panel from '../../components/Panel'
-import ChatsPanel from '../../components/ChatsPanel'
+import ChatList, { useChats } from '../../components/ChatsPanel'
+import { isUnread } from '../../lib/chatSeen'
 import { nextSessionDate, hasFinished } from '../../lib/classSchedule'
 import { LANGUAGE_COLORS, levelLabel } from '../../lib/languages'
 
@@ -116,6 +117,7 @@ export default function Dashboard() {
   const [reviewingId, setReviewingId] = useState(null)
   // The member's own choice of mode; null until they pick, then remembered.
   const [modeChoice, setModeChoice] = useState(null)
+  const chats = useChats()
   const [publicClasses, setPublicClasses] = useState([])
   const [requests, setRequests] = useState([])
   const [ratingQueue, setRatingQueue] = useState([])
@@ -442,6 +444,7 @@ export default function Dashboard() {
   // Default mode: teaching only for someone who teaches and is not booked
   // into anything; everyone else starts on learning.
   const mode = modeChoice || (upcomingTeaching.length > 0 && upcomingEnrollments.length === 0 ? 'teaching' : 'learning')
+  const unreadChats = (chats || []).filter(isUnread).length
   const pickMode = m => { setModeChoice(m); try { localStorage.setItem(MODE_KEY, m) } catch (e) {} }
   const ratingsWaiting = ratingQueue.reduce((sum, s) => sum + s.waiting, 0)
 
@@ -493,12 +496,13 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Two modes, each showing only what that role needs. The badge is
-            what is waiting in the other mode, so nothing hides behind it. */}
+        {/* Two modes, each showing only what that role needs, plus the chats
+            for both. The badge is what is waiting in each, so nothing hides
+            behind a tab. */}
         <div role="tablist" className="inline-flex border-2 border-navy rounded-full overflow-hidden mb-6 bg-white">
-          {[['learning', 'dashboard.modeLearning', todos.length], ['teaching', 'dashboard.modeTeaching', ratingsWaiting]].map(([key, label, badge]) => (
+          {[['learning', 'dashboard.modeLearning', todos.length], ['teaching', 'dashboard.modeTeaching', ratingsWaiting], ['chats', 'dashboard.modeChats', unreadChats]].map(([key, label, badge]) => (
             <button key={key} role="tab" aria-selected={mode === key} onClick={() => pickMode(key)}
-              className={`px-4 sm:px-5 py-2 text-sm font-bold flex items-center gap-2 transition-colors ${mode === key ? 'bg-navy text-white' : 'text-navy hover:bg-cream'}`}>
+              className={`px-3 sm:px-5 py-2 text-sm font-bold flex items-center gap-1.5 sm:gap-2 transition-colors ${mode === key ? 'bg-navy text-white' : 'text-navy hover:bg-cream'}`}>
               {t(label)}
               {badge > 0 && <span className="bg-brand-red text-white text-xs rounded-full min-w-5 h-5 px-1.5 inline-flex items-center justify-center">{badge}</span>}
             </button>
@@ -672,6 +676,8 @@ export default function Dashboard() {
         )}
 
 
+        {mode === 'chats' && <ChatList chats={chats} user={user} />}
+
         {mode === 'learning' && (<>
           {(() => {
             const cls = nextLearn?.class_sessions.classes
@@ -745,7 +751,6 @@ export default function Dashboard() {
           </Panel>
         )}
 
-        <ChatsPanel user={user} />
 
 
           <Panel icon="✨" tone="bg-brand-purple/25" title={t('dashboard.forYou')} open={forYou.length > 0}
