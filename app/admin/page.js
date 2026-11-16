@@ -109,6 +109,10 @@ function UserDetail({ user, t, onChanged }) {
     ['Streak', `${user.current_streak || 0} now · ${user.longest_streak || 0} best`],
     ['Joined', user.created_at ? new Date(user.created_at).toLocaleString() : null],
     ['Approval note', user.approval_reason],
+    ['No-show limits', [
+      user.teaching_paused_until && new Date(user.teaching_paused_until) > new Date() && `new classes paused until ${new Date(user.teaching_paused_until).toLocaleDateString()}`,
+      user.booking_limited_until && new Date(user.booking_limited_until) > new Date() && `one booking at a time until ${new Date(user.booking_limited_until).toLocaleDateString()}`,
+    ].filter(Boolean).join('; ') || null],
   ].filter(([, value]) => value)
 
   // The file is in a private bucket: the backend hands back a 10-minute link.
@@ -117,6 +121,13 @@ function UserDetail({ user, t, onChanged }) {
     const data = await res.json().catch(() => ({}))
     if (res.ok) window.open(data.url, '_blank', 'noopener')
     else window.alert(data.error || 'Could not open the certificate')
+  }
+  // After a no-show dispute the admin agrees with. Refunds already made stay.
+  const liftNoShow = async () => {
+    if (!window.confirm(`Lift ${user.first_name}'s no-show limits and undo their strikes?`)) return
+    const res = await fetch(`/api/admin/users/${user.id}/lift-no-show`, { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
+    if (!res.ok) window.alert('Could not lift the limits')
+    onChanged?.()
   }
   const removeCertificate = async () => {
     if (!window.confirm(`Remove ${user.first_name}'s certificate? They can upload another.`)) return
@@ -138,6 +149,9 @@ function UserDetail({ user, t, onChanged }) {
           </div>
         ))}
       </dl>
+      {((user.teaching_paused_until && new Date(user.teaching_paused_until) > new Date()) || (user.booking_limited_until && new Date(user.booking_limited_until) > new Date())) && (
+        <button type="button" onClick={liftNoShow} className="text-navy font-bold text-xs underline">Lift no-show limits and undo strikes</button>
+      )}
       {user.certificate_uploaded_at && (
         <div className="flex items-center gap-3 flex-wrap text-sm">
           <span className="text-navy/80">📄 {user.certificate_name || 'Certificate'} · {new Date(user.certificate_uploaded_at).toLocaleDateString()}</span>

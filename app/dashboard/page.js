@@ -564,6 +564,7 @@ export default function Dashboard() {
                           <li key={p.id} className="flex items-center gap-2 py-1.5 border-b border-navy/10 last:border-0 flex-wrap">
                             <b className="text-navy text-sm">{p.first_name}</b>
                             {detail?.level && <span className="text-xs font-bold border-2 border-navy rounded-full px-2 bg-brand-blue/15">{levelLabel(cls.language_code, detail.level, t)}</span>}
+                            {p.joined && <span className="text-brand-teal-dark text-xs font-bold ml-auto">● {t('classDetail.inRoom')}</span>}
                             {detail?.note && <span className="text-navy/65 text-xs basis-full">“{detail.note}”</span>}
                           </li>
                         )
