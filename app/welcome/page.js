@@ -228,7 +228,15 @@ export default function WelcomePage() {
 
           {step === 4 && (<>
             <h1 className="font-display font-extrabold text-2xl text-navy leading-tight text-center">{t('welcome.doneTitle', { name: me.first_name || '' })}</h1>
-            {bananas !== null && (<>
+            {me.phone_verified === false ? (
+              // A Google sign-up has no bananas until the phone is verified;
+              // "🍌 0" with no reason was a dead end.
+              <div className="bg-brand-yellow/20 border-2 border-navy rounded-xl p-3 mt-4">
+                <p className="font-bold text-navy">📱 {t('welcome.phoneCtaTitle')}</p>
+                <p className="text-navy/65 text-sm mt-0.5 mb-3">{t('welcome.phoneCtaNote')}</p>
+                <Link href="/auth/verify-phone" className="block text-center bg-brand-red text-white border-2 border-navy rounded-full py-2 font-bold">{t('welcome.phoneCtaBtn')}</Link>
+              </div>
+            ) : bananas !== null && (<>
               <p className="font-display font-extrabold text-5xl text-navy text-center mt-3">🍌 {bananas}</p>
               <p className="text-navy/65 text-sm text-center">{t('welcome.doneBananas')}</p>
             </>)}

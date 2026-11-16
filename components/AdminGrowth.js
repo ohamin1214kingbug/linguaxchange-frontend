@@ -7,6 +7,7 @@ import { LANGUAGE_NAMES_EN } from '../lib/languages'
 // the rest of the admin page.
 const STEPS = [
   ['signedUp', 'signed up', 'bg-brand-blue/30'],
+  ['phoneVerified', 'phone verified (gets the 3 bananas)', 'bg-brand-teal/20'],
   ['profileDone', 'profile done (photo + teach + learn)', 'bg-brand-blue/15'],
   ['booked', 'booked a class', 'bg-brand-yellow/40'],
   ['attended', 'attended a class', 'bg-brand-green/40'],

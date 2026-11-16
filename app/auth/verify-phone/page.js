@@ -17,9 +17,9 @@ export default function VerifyPhone() {
   const [otpSent, setOtpSent] = useState(false)
   const [otpLoading, setOtpLoading] = useState(false)
   const [verifyLoading, setVerifyLoading] = useState(false)
-  const [finishLoading, setFinishLoading] = useState(false)
-  const [phoneVerified, setPhoneVerified] = useState(false)
-  const [verifiedToken, setVerifiedToken] = useState('')
+  // null until done; then the number of bananas the server added (0 if the
+  // member already had a banana account).
+  const [granted, setGranted] = useState(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -65,8 +65,10 @@ export default function VerifyPhone() {
       if (!response.ok) {
         setError(data.error || 'auth.errorInvalidCode')
       } else {
-        setPhoneVerified(true)
-        setVerifiedToken(data.verified_token)
+        // A correct code saves the number and adds the bananas straight
+        // away. It used to stop at "verified" and wait for a separate
+        // "Finish setup" press, and closing the page there lost the bananas.
+        await savePhone(data.verified_token)
       }
     } catch (err) {
       setError('common.connectionError')
@@ -74,33 +76,41 @@ export default function VerifyPhone() {
     setVerifyLoading(false)
   }
 
-  const finishSetup = async () => {
-    setError('')
-    setFinishLoading(true)
-    try {
-      const response = await fetch(`${API}/api/auth/add-phone`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ phone_number: phone, verified_token: verifiedToken })
-      })
-      const data = await response.json()
-      if (!response.ok) {
-        setError(data.error || 'auth.errorSomethingWrong')
-      } else {
-        const stored = JSON.parse(localStorage.getItem('user') || '{}')
-        localStorage.setItem('user', JSON.stringify({ ...stored, ...data.user }))
-        router.push(takeReturnPath())
-      }
-    } catch (err) {
-      setError('common.connectionError')
+  const savePhone = async (verifiedToken) => {
+    const response = await fetch(`${API}/api/auth/add-phone`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ phone_number: phone, verified_token: verifiedToken })
+    })
+    const data = await response.json()
+    if (!response.ok) {
+      setError(data.error || 'auth.errorSomethingWrong')
+      return
     }
-    setFinishLoading(false)
+    const stored = JSON.parse(localStorage.getItem('user') || '{}')
+    localStorage.setItem('user', JSON.stringify({ ...stored, ...data.user }))
+    setGranted(data.granted || 0)
   }
 
   if (!token) return null
+
+  if (granted !== null) return (
+    <main className="min-h-screen bg-cream flex items-center justify-center py-12 px-4">
+      <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md text-center">
+        <h1 className="font-display font-extrabold text-navy text-3xl mb-2">
+          {granted > 0 ? t('auth.phoneDoneBananas', { n: granted }) : t('auth.phoneDoneVerified')}
+        </h1>
+        <p className="text-navy/65 mb-6">{t('auth.phoneDoneNext')}</p>
+        <button onClick={() => router.push(takeReturnPath())}
+          className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">
+          {t('auth.phoneDoneContinue')}
+        </button>
+      </div>
+    </main>
+  )
 
   return (
     <main className="min-h-screen bg-cream flex items-center justify-center py-12 px-4">
@@ -109,58 +119,54 @@ export default function VerifyPhone() {
       </div>
       <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md">
         <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">Leng</span></a>
-        <h1 className="font-display font-extrabold text-navy text-3xl mt-4 mb-2">{t('auth.verifyPhoneRequiredTitle')}</h1>
-        <p className="text-navy/65 mb-6">{t('auth.verifyPhoneRequiredSubtitle')}</p>
+        <h1 className="font-display font-extrabold text-navy text-3xl mt-4 mb-3">{t('auth.phoneTitle')} 🍌</h1>
 
         {error && (
           <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{t(error)}</div>
         )}
 
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-bold text-navy mb-1">{t('auth.phoneNumber')}</label>
-            <PhoneNumberField value={phone} language={language}
-              onChange={value => { setPhone(value || ''); setOtpSent(false); setPhoneVerified(false) }}
-              disabled={phoneVerified}/>
-          </div>
-
-          {phoneVerified ? (
-            <>
-              <div className="bg-brand-teal/10 text-brand-teal-dark border-2 border-brand-teal/30 rounded-xl px-4 py-3 text-sm font-bold flex items-center justify-between">
-                {t('auth.phoneVerifiedMsg')}
-                <button onClick={() => { setPhoneVerified(false); setOtpSent(false); setOtpCode(''); setVerifiedToken('') }}
-                  className="text-navy/65 font-medium underline text-xs">
-                  {t('auth.changeNumber')}
-                </button>
-              </div>
-              <button onClick={finishSetup} disabled={finishLoading}
-                className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors disabled:opacity-50">
-                {finishLoading ? t('auth.creating') : t('auth.finishSetup')}
-              </button>
-            </>
-          ) : !otpSent ? (
+        {!otpSent ? (
+          <div className="space-y-4">
+            <ul className="bg-brand-yellow/10 border-2 border-navy rounded-xl px-4 py-3 text-sm text-navy space-y-1">
+              <li>🍌 {t('auth.phonePerkBananas')}</li>
+              <li>📱 {t('auth.phonePerkFair')}</li>
+              <li>🔒 {t('auth.phonePerkPrivate')}</li>
+            </ul>
+            <div>
+              <label className="block text-sm font-bold text-navy mb-1">{t('auth.phoneNumber')}</label>
+              <PhoneNumberField value={phone} language={language}
+                onChange={value => { setPhone(value || ''); setOtpSent(false) }}/>
+            </div>
             <button onClick={sendOtp} disabled={otpLoading || !isValidPhoneNumber(phone || '')}
               className="w-full bg-navy text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-navy/90 transition-colors disabled:opacity-50">
-              {otpLoading ? t('auth.sendingCode') : t('auth.sendCode')}
+              {otpLoading ? t('auth.sendingCode') : t('auth.phoneSendCode')}
             </button>
-          ) : (
-            <div className="space-y-3">
-              <p className="text-navy/65 text-sm">{t('auth.codeSentTo', { phone })}</p>
-              <div>
-                <label className="block text-sm font-bold text-navy mb-1">{t('auth.verificationCode')}</label>
-                <input type="text" inputMode="numeric" value={otpCode} onChange={e => setOtpCode(e.target.value)}
-                  className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" placeholder="123456"/>
-              </div>
-              <button onClick={sendOtp} disabled={otpLoading} className="text-navy/65 font-bold text-sm underline">
-                {t('auth.resendCode')}
-              </button>
-              <button onClick={verifyOtp} disabled={verifyLoading || !otpCode}
-                className="w-full bg-navy text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-navy/90 transition-colors disabled:opacity-50">
-                {verifyLoading ? t('auth.verifyingCode') : t('auth.verifyCode')}
-              </button>
+            <p className="text-center text-xs text-navy/65">
+              <button type="button" onClick={() => router.push(takeReturnPath())} className="underline font-bold">{t('auth.phoneLater')}</button>
+              {' · '}{t('auth.phoneLaterNote')}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-navy/65 text-sm">
+              {t('auth.codeSentTo', { phone })}{' '}
+              <button type="button" onClick={() => { setOtpSent(false); setOtpCode('') }} className="underline font-bold">{t('auth.changeNumber')}</button>
+            </p>
+            <div>
+              <label className="block text-sm font-bold text-navy mb-1">{t('auth.verificationCode')}</label>
+              <input type="text" inputMode="numeric" autoComplete="one-time-code" value={otpCode} onChange={e => setOtpCode(e.target.value)}
+                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 tracking-widest font-bold focus:border-brand-red focus:outline-none transition-colors" placeholder="123456"/>
             </div>
-          )}
-        </div>
+            <button onClick={verifyOtp} disabled={verifyLoading || !otpCode}
+              className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors disabled:opacity-50">
+              {verifyLoading ? t('auth.verifyingCode') : t('auth.phoneConfirm')}
+            </button>
+            <p className="text-xs text-navy/65">
+              <button onClick={sendOtp} disabled={otpLoading} className="underline font-bold">{t('auth.resendCode')}</button>
+              {' · '}{t('auth.phoneResendHint')}
+            </p>
+          </div>
+        )}
       </div>
     </main>
   )
