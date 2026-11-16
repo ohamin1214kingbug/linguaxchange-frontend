@@ -4,15 +4,17 @@ import { useParams, useRouter } from 'next/navigation'
 import Navbar from '../../../../components/Navbar'
 import { useLanguage } from '../../../../lib/i18n/LanguageContext'
 import { formatInTimezone } from '../../../../lib/timezone'
+import { markSeen } from '../../../../lib/chatSeen'
 
 const POLL_MS = 8000
 const BUTTON = 'inline-flex items-center gap-1.5 border-2 border-navy rounded-full px-4 py-1.5 text-sm font-bold text-navy bg-white hover:bg-cream transition-colors'
 const PRIMARY = 'inline-flex items-center gap-1.5 border-2 border-navy rounded-full px-4 py-1.5 text-sm font-bold text-white bg-brand-red hover:bg-brand-red-dark transition-colors'
 
 // The chat on a class request: the student who asked, the +1s and the
-// teachers who offered agree a time. A teacher can attach a proposed time
-// to a message; the student accepts one; that teacher then creates the
-// class with the time filled in. The backend holds the request open while
+// teachers who offered agree a time. The student who asked and the teachers
+// can attach a suggested time to a message; the other side accepts it (a
+// teacher's time by the student, the student's by a teacher), and the
+// agreed teacher then creates the class with the time filled in. The backend holds the request open while
 // teachers talk (utils/requestChat.js).
 // ponytail: polling like the class chat; Realtime if chats get busy.
 export default function RequestChatPage() {
@@ -43,6 +45,7 @@ export default function RequestChatPage() {
         setData(d)
         if (d.messages.length) {
           lastId.current = d.messages.at(-1).id
+          markSeen('request', id, lastId.current)
           setMessages(m => [...m, ...d.messages.filter(n => !m.some(x => x.id === n.id))])
         }
       } catch {}
@@ -126,13 +129,14 @@ export default function RequestChatPage() {
               const mine = m.user_id === me?.id
               return (
                 <div key={m.id} className={`flex flex-col ${mine ? 'items-end' : 'items-start'}`}>
-                  {!mine && <span className="text-[11px] font-bold text-navy/65">{m.first_name}{m.is_teacher ? ` · ${t('chat.teacherTag')}` : ''}</span>}
+                  {!mine && <span className="text-[11px] font-bold text-navy/65">{m.first_name}{m.is_teacher ? ` · ${t('chat.teacherTag')}` : m.is_requester ? ` · ${t('reqchat.askedTag')}` : ''}</span>}
                   <div className={`max-w-[85%] border-2 border-navy rounded-xl px-3 py-1.5 text-sm text-navy whitespace-pre-line break-words ${mine ? 'bg-brand-blue/15' : 'bg-white'}`}>
                     {m.body}
                     {m.proposed_time && (
                       <div className="mt-1.5 pt-1.5 border-t border-navy/15">
                         <span className="text-xs font-bold">🗓️ {t('reqchat.proposed')}: {when(m.proposed_time)}</span>
-                        {data.is_requester && data.open && r.agreed_time !== m.proposed_time && (
+                        {data.open && !mine && r.agreed_time !== m.proposed_time &&
+                          ((data.is_requester && m.is_teacher) || (data.is_teacher && m.is_requester)) && (
                           <button type="button" onClick={() => accept(m.id)} className={`${PRIMARY} mt-1.5 text-xs`}>{t('reqchat.accept')}</button>
                         )}
                       </div>
@@ -145,7 +149,7 @@ export default function RequestChatPage() {
 
           {data.open ? (
             <form className="mt-3 space-y-2" onSubmit={e => { e.preventDefault(); send() }}>
-              {data.is_teacher && (
+              {(data.is_teacher || data.is_requester) && (
                 <label className="flex items-center gap-2 text-sm text-navy flex-wrap">
                   <span className="font-bold">🗓️ {t('reqchat.proposeTime')}</span>
                   <input type="datetime-local" value={proposal} onChange={e => setProposal(e.target.value)}

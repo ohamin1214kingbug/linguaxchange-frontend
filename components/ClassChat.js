@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import { formatInTimezone } from '../lib/timezone'
+import { markSeen } from '../lib/chatSeen'
 
 const API = ''
 const POLL_MS = 8000
@@ -49,6 +50,7 @@ export default function ClassChat({ sessionId: givenSession, classId, compact = 
         setThread(data)
         if (data.messages.length) {
           lastId.current = data.messages.at(-1).id
+          markSeen('session', sessionId, lastId.current)
           setMessages(m => [...m, ...data.messages.filter(n => !m.some(x => x.id === n.id))])
         }
       } catch {}
