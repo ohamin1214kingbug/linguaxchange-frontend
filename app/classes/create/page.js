@@ -61,6 +61,8 @@ export default function CreateClass() {
   // A request may come without a level (it is optional when asking). Then the
   // teacher picks one here; a level the student gave stays locked.
   const [requestHasLevel, setRequestHasLevel] = useState(false)
+  // "Teach it again": the class this form was copied from ({ id, title, hasPdf }).
+  const [copiedFrom, setCopiedFrom] = useState(null)
   useEffect(() => {
     // A study guide's "Teach this level" link lands here logged out more
     // often than not. Send the visitor to sign up and bring them back to this
@@ -95,6 +97,33 @@ export default function CreateClass() {
       max_students: parseInt(params.get('max_students')) || f.max_students,
       scheduled_at: preferred ? toLocalValue(asUtcDate(preferred)) : f.scheduled_at
     }))
+
+    // "Teach it again" (?from=<class id>): everything from that class except
+    // the date, which the teacher picks. Its PDF is copied on the server.
+    const from = params.get('from')
+    if (from) {
+      fetch(`/api/classes/${from}`)
+        .then(r => (r.ok ? r.json() : null))
+        .then(src => {
+          if (!src) return
+          setCopiedFrom({ id: src.id, title: src.title, hasPdf: Boolean(src.lesson_plan_url) })
+          setForm(f => ({
+            ...f,
+            title: src.title || f.title,
+            language_code: src.language_code || f.language_code,
+            level: src.level || f.level,
+            // The stored topic is text in whatever language the class was
+            // made in, so it goes in the free-text field rather than the list.
+            topic: 'custom',
+            custom_topic: src.topic || '',
+            description: src.description || '',
+            max_students: src.max_students || f.max_students,
+            duration_minutes: src.duration_minutes || f.duration_minutes,
+            materials: src.materials || '',
+          }))
+        })
+        .catch(() => {})
+    }
   }, [router])
 
   // Prefills from the teacher's own saved defaults (Settings → Teaching
@@ -153,6 +182,7 @@ export default function CreateClass() {
           ...form,
           topic: form.custom_topic || form.topic,
           scheduled_at: new Date(form.scheduled_at).toISOString(),
+          copy_pdf_from: copiedFrom?.hasPdf ? copiedFrom.id : undefined,
         })
       })
       const data = await response.json()
@@ -222,6 +252,12 @@ export default function CreateClass() {
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">{t('classes.createClass')}</h1>
         <p className="text-navy/65 mb-8">{t('classes.fillDetails')}</p>
 
+        {copiedFrom && (
+          <div className="bg-brand-yellow/20 border-2 border-navy rounded-xl px-4 py-3 mb-6 text-sm font-semibold text-navy">
+            🔁 {t('classes.copiedFrom', { title: copiedFrom.title })}{copiedFrom.hasPdf ? ` ${t('classes.copiedPdf')}` : ''}
+          </div>
+        )}
+
         {error && (
           <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-6 text-sm font-medium">{t(error)}</div>
         )}
@@ -273,7 +309,7 @@ export default function CreateClass() {
               <option value="custom">{t('classes.topicOther')}</option>
             </select>
             {form.topic === 'custom' && (
-              <input name="custom_topic" type="text" onChange={handleChange}
+              <input name="custom_topic" type="text" onChange={handleChange} value={form.custom_topic}
                 className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors"
                 placeholder={t('classes.customTopicPlaceholder')}/>
             )}

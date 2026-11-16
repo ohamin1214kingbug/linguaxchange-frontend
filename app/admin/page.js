@@ -1,4 +1,5 @@
 'use client'
+import AdminGrowth from '../../components/AdminGrowth'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { languageOptions, LEVELS, levelLabel } from '../../lib/languages'
@@ -666,7 +667,13 @@ export default function Admin() {
             className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'resources' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
             📄 Resources
           </button>
+          <button onClick={() => setTab('growth')}
+            className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'growth' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
+            📈 Growth
+          </button>
         </div>
+
+        {tab === 'growth' && <AdminGrowth />}
 
         {loading && <p className="text-navy/65">Loading...</p>}
 

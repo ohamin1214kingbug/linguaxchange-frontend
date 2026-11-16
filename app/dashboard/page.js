@@ -11,6 +11,7 @@ import FirstClassChecklist from '../../components/FirstClassChecklist'
 import InviteCard from '../../components/InviteCard'
 import Panel from '../../components/Panel'
 import ChatList, { useChats } from '../../components/ChatsPanel'
+import TeachNudge from '../../components/TeachNudge'
 import { isUnread } from '../../lib/chatSeen'
 import { nextSessionDate, hasFinished } from '../../lib/classSchedule'
 import { LANGUAGE_COLORS, levelLabel } from '../../lib/languages'
@@ -418,6 +419,12 @@ export default function Dashboard() {
     .sort((a, b) => asUtcDate(a.class_sessions.session_date) - asUtcDate(b.class_sessions.session_date))[0]
 
   // The session you teach next: the soonest future session of any class.
+  // The class taught most recently, for "Teach it again" when nothing is
+  // scheduled.
+  const lastTaught = teachingClasses
+    .filter(c => c.status === 'approved' || c.status === 'completed')
+    .map(c => ({ c, last: Math.max(0, ...(c.class_sessions || []).map(s => asUtcDate(s.session_date).getTime())) }))
+    .sort((a, b) => b.last - a.last)[0]?.c
   const nextTeach = upcomingTeaching
     .map(cls => ({ cls, at: nextSessionDate(cls) }))
     .filter(x => x.at)
@@ -916,6 +923,7 @@ export default function Dashboard() {
 
         {mode === 'teaching' && (<>
           <FirstClassChecklist profile={profile} teachingClasses={teachingClasses} transactions={transactions} t={t} />
+          <TeachNudge />
         {missingProfileFields.length > 0 && (
           <a href="/profile"
             className="flex items-start gap-3 mb-6 bg-brand-yellow/10 border-2 border-brand-yellow rounded-2xl px-5 py-4 hover:bg-brand-yellow/20 transition-colors">
@@ -971,7 +979,11 @@ export default function Dashboard() {
             )
           })() : (
             <Panel icon="⏰" tone="bg-brand-yellow" title={t('dashboard.nextToTeach')} note={t('dashboard.noUpcomingTeaching')} open>
-              <Link href="/classes/create" className={PRIMARY}>{t('dashboard.createAClass')}</Link>
+              {lastTaught && <p className="text-navy/65 text-sm mb-3">{t('dashboard.lastTaught', { title: lastTaught.title })}</p>}
+              <div className="flex flex-wrap gap-2">
+                {lastTaught && <Link href={`/classes/create?from=${lastTaught.id}`} className={PRIMARY}>🔁 {t('dashboard.teachAgain')}</Link>}
+                <Link href="/classes/create" className={lastTaught ? PILL : PRIMARY}>{t('dashboard.createAClass')}</Link>
+              </div>
             </Panel>
           )}
 
