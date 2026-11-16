@@ -202,6 +202,10 @@ export default function ProfilePage() {
         return
       }
       setForm(f => ({ ...f, photo_url: data.photo_url }))
+      try {
+        const stored = JSON.parse(localStorage.getItem('user') || '{}')
+        localStorage.setItem('user', JSON.stringify({ ...stored, photo_url: data.photo_url }))
+      } catch (e) {}
     } catch (e) {
       setMessage(t('profile.photoUploadFailed') + e.message)
       setMessageOk(false)
