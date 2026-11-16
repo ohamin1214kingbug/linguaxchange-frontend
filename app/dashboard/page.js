@@ -81,6 +81,13 @@ function countdown(date, t, now = new Date()) {
   return t('dashboard.inTime', { time: parts.filter(Boolean).join(' ') })
 }
 
+// "12 min" / "1 h 5 min" since the class started.
+function elapsed(date, t, now = new Date()) {
+  const mins = Math.max(0, Math.round((now - date) / 60000))
+  const h = Math.floor(mins / 60), m = mins % 60
+  return [h > 0 && t('dashboard.durHours', { n: h }), (h === 0 || m > 0) && t('dashboard.durMinutes', { n: m })].filter(Boolean).join(' ')
+}
+
 const isThisMonth = (date, now = new Date()) =>
   date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth()
 
@@ -131,7 +138,8 @@ export default function Dashboard() {
   const [publicClasses, setPublicClasses] = useState([])
   const [requests, setRequests] = useState([])
   const [ratingQueue, setRatingQueue] = useState([])
-  const [nextRoster, setNextRoster] = useState(null)
+  // Class rosters by class id: the live class and the next one taught.
+  const [rosters, setRosters] = useState({})
   const [showAllTx, setShowAllTx] = useState(false)
 
   useEffect(() => {
@@ -382,12 +390,18 @@ export default function Dashboard() {
   // Teaching checked first: if a teacher is also enrolled as a student
   // somewhere (unusual, but not prevented), the class they're expected to
   // run is the more urgent one to surface.
-  const liveTeaching = teachingClasses.find(cls => sessionTiming(cls.class_sessions?.[0], cls.duration_minutes).isLive)
-  const liveEnrollment = enrollments.find(e => sessionTiming(e.class_sessions, e.class_sessions?.classes?.duration_minutes).isLive)
+  // Every session is checked, not only the first: a recurring class's first
+  // session is usually long past.
+  const liveTeaching = teachingClasses.flatMap(cls => (cls.class_sessions || [])
+    .filter(s => s.status !== 'cancelled' && sessionTiming(s, cls.duration_minutes).isLive)
+    .map(session => ({ cls, session })))[0]
+  const liveEnrollment = enrollments.find(e => e.status !== 'cancelled'
+    && sessionTiming(e.class_sessions, e.class_sessions?.classes?.duration_minutes).isLive)
   const live = liveTeaching
-    ? { role: 'teaching', title: liveTeaching.title, sessionId: liveTeaching.class_sessions?.[0]?.id }
+    ? { role: 'teaching', cls: liveTeaching.cls, sessionId: liveTeaching.session.id, at: asUtcDate(liveTeaching.session.session_date) }
     : liveEnrollment
-      ? { role: 'attending', title: liveEnrollment.class_sessions?.classes?.title, sessionId: liveEnrollment.class_session_id }
+      ? { role: 'attending', cls: liveEnrollment.class_sessions.classes, sessionId: liveEnrollment.class_session_id,
+          at: asUtcDate(liveEnrollment.class_sessions.session_date), classmates: liveEnrollment.class_sessions.classmates || [] }
       : null
 
   // Same upcoming/past split the teacher profile and /history already use.
@@ -415,8 +429,9 @@ export default function Dashboard() {
   ]
 
   // The class you are going to next, as a student.
+  // The live one is shown in its own card above, so this is the one after it.
   const nextLearn = upcomingEnrollments
-    .filter(e => e.status !== 'cancelled' && e.class_sessions?.session_date)
+    .filter(e => e.status !== 'cancelled' && e.class_sessions?.session_date && e.class_session_id !== live?.sessionId)
     .sort((a, b) => asUtcDate(a.class_sessions.session_date) - asUtcDate(b.class_sessions.session_date))[0]
 
   // The session you teach next: the soonest future session of any class.
@@ -459,13 +474,19 @@ export default function Dashboard() {
     !profile.nationality?.trim() && 'auth.nationality'
   ].filter(Boolean) : []
 
+  // Rosters for the class being taught live and the next one; each fetched once.
+  const liveTeachId = live?.role === 'teaching' ? live.cls.id : null
   useEffect(() => {
-    if (!nextTeach?.cls.id) return
-    fetch(`${API}/api/classes/${nextTeach.cls.id}/roster`, { headers: authHeaders() })
-      .then(r => r.json()).then(d => setNextRoster(d?.sessions ? d : null)).catch(() => {})
-  }, [nextTeach?.cls.id])
-  const nextStudents = (nextRoster?.sessions?.find(x => x.id === nextTeachSession?.id)?.students || [])
+    for (const id of [liveTeachId, nextTeach?.cls.id]) {
+      if (!id) continue
+      fetch(`${API}/api/classes/${id}/roster`, { headers: authHeaders() })
+        .then(r => r.json()).then(d => d?.sessions && setRosters(m => ({ ...m, [id]: d }))).catch(() => {})
+    }
+  }, [liveTeachId, nextTeach?.cls.id])
+  const studentsFor = (classId, sessionId) => (rosters[classId]?.sessions?.find(x => x.id === sessionId)?.students || [])
     .filter(st => st.status !== 'cancelled')
+  const nextStudents = studentsFor(nextTeach?.cls.id, nextTeachSession?.id)
+  const liveStudents = live?.role === 'teaching' ? studentsFor(live.cls.id, live.sessionId) : []
 
   const dismissWelcome = () => {
     localStorage.setItem(WELCOME_DISMISSED_KEY, '1')
@@ -503,23 +524,66 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {live && (
-          <a href={`/classroom/${live.sessionId}`}
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 bg-red-600 text-white rounded-2xl px-6 py-5 border-2 border-navy animate-pulse shadow-[0_0_24px_6px_rgba(220,38,38,0.5)] hover:bg-red-700 transition-colors">
-            <div>
-              <p className="flex items-center gap-2 font-extrabold text-sm tracking-wide uppercase mb-1">
-                <span className="w-2.5 h-2.5 bg-white rounded-full" /> {t('dashboard.liveNow')}
-              </p>
-              <p className="font-display font-bold text-xl">{live.title}</p>
-              <p className="text-white/80 text-sm">
-                {live.role === 'teaching' ? t('dashboard.liveBannerTeaching') : t('dashboard.liveBannerAttending')}
-              </p>
-            </div>
-            <span className="flex-shrink-0 bg-white text-red-600 font-extrabold px-6 py-3 rounded-full text-center">
-              {live.role === 'teaching' ? t('dashboard.startClass') : t('dashboard.joinMeeting')}
-            </span>
-          </a>
-        )}
+        {/* A live class keeps its details: who is in it, the PDF and the notes.
+            It used to shrink to a red "Start class" bar exactly when the
+            teacher needed to see who had booked. */}
+        {live && (() => {
+          const cls = live.cls
+          const teaching = live.role === 'teaching'
+          const people = teaching ? liveStudents : live.classmates
+          const end = new Date(live.at.getTime() + (cls.duration_minutes || 60) * 60000)
+          const timeOnly = date => new Intl.DateTimeFormat(undefined, { timeStyle: 'short', timeZone: user.timezone || undefined,
+            hour12: user.time_format ? user.time_format === '12h' : undefined }).format(date)
+          return (
+            <section className="mb-6 bg-white rounded-2xl border-2 border-navy shadow-[4px_4px_0_var(--color-navy)] overflow-hidden">
+              <div className="bg-brand-red text-white px-5 py-4 flex items-center justify-between gap-3 flex-wrap">
+                <div className="min-w-0">
+                  <p className="text-xs font-extrabold uppercase tracking-wide flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 bg-white rounded-full animate-pulse" aria-hidden="true"/>
+                    {t('dashboard.liveSince', { time: elapsed(live.at, t) })} · {t('dashboard.liveEnds', { time: timeOnly(end) })}
+                  </p>
+                  <p className="font-display font-extrabold text-2xl leading-tight mt-1 break-words">{FLAGS[cls.language_code] || ''} {cls.title}</p>
+                </div>
+                <a href={`/classroom/${live.sessionId}`} className="shrink-0 bg-white text-brand-red font-extrabold px-5 py-2.5 rounded-full border-2 border-navy hover:bg-cream transition-colors">
+                  {teaching ? t('dashboard.startClass') : t('dashboard.joinMeeting')}
+                </a>
+              </div>
+              <div className="grid md:grid-cols-2 gap-5 p-5">
+                <div>
+                  <p className="text-xs font-extrabold uppercase tracking-wide text-navy/65 mb-2">
+                    {teaching ? t('dashboard.liveStudents', { n: people.length, max: cls.max_students }) : t('dashboard.liveClassmates')}
+                  </p>
+                  {!teaching && cls.teacher && (
+                    <p className="text-sm text-navy mb-2"><span className="text-navy/65">{t('dashboard.liveTeacherLabel')}:</span> <b>{cls.teacher.first_name} {cls.teacher.last_name || ''}</b></p>
+                  )}
+                  {people.length === 0
+                    ? <p className="text-navy/65 text-sm">{teaching ? t('dashboard.noStudentsYetShare') : t('history.onlyYou')}</p>
+                    : <ul>{people.map(p => {
+                        const detail = p.learn_details?.[cls.language_code]
+                        return (
+                          <li key={p.id} className="flex items-center gap-2 py-1.5 border-b border-navy/10 last:border-0 flex-wrap">
+                            <b className="text-navy text-sm">{p.first_name}</b>
+                            {detail?.level && <span className="text-xs font-bold border-2 border-navy rounded-full px-2 bg-brand-blue/15">{levelLabel(cls.language_code, detail.level, t)}</span>}
+                            {detail?.note && <span className="text-navy/65 text-xs basis-full">“{detail.note}”</span>}
+                          </li>
+                        )
+                      })}</ul>}
+                </div>
+                <div>
+                  <p className="text-xs font-extrabold uppercase tracking-wide text-navy/65 mb-2">{t('dashboard.lessonMaterial')}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {cls.lesson_plan_url && <a href={cls.lesson_plan_url} target="_blank" rel="noopener" className={PRIMARY}>📄 {t('dashboard.openPdf')}</a>}
+                    <a href={`/classes/${cls.id}`} className={PILL}>{t('dashboard.classPage')}</a>
+                  </div>
+                  {cls.materials ? (<>
+                    <p className="text-xs font-extrabold uppercase tracking-wide text-navy/65 mt-3 mb-1">{teaching ? t('dashboard.yourNotes') : t('dashboard.teacherNotes')}</p>
+                    <p className="bg-cream rounded-xl px-3 py-2 text-sm text-navy whitespace-pre-line break-words">{cls.materials}</p>
+                  </>) : !cls.lesson_plan_url && <p className="text-navy/65 text-sm mt-2">{t('dashboard.noMaterial')}</p>}
+                </div>
+              </div>
+            </section>
+          )
+        })()}
 
         {message && (
           <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${
