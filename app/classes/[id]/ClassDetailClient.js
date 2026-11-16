@@ -313,6 +313,10 @@ export default function ClassDetailClient({ initialClass = null }) {
                             {st.first_name} {st.last_name}
                           </a>
                           {st.attended && <span className="text-brand-teal-dark text-xs font-bold">✓</span>}
+                          {/* From who opened the video room (the no-show rules use the same record). */}
+                          {st.no_show
+                            ? <span className="text-brand-red text-xs font-bold">✗ {t('classDetail.noShow')}</span>
+                            : st.joined && <span className="text-brand-teal-dark text-xs font-bold">● {t('classDetail.joined')}</span>}
                           {/* What the student said about their level in this
                               class's language, so the teacher can pitch it. */}
                           {st.learn_details?.[cls?.language_code] && (
