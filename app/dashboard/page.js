@@ -145,7 +145,15 @@ export default function Dashboard() {
     // public profile is fetched fresh — it's the same data a stranger sees
     // on /teachers/:id, which is exactly what the nudge below is about.
     fetch(`${API}/api/users/me`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json()).then(setProfile).catch(() => {})
+      .then(r => r.json()).then(p => {
+        // Google sign-ups skip the form that asks for languages; nothing can
+        // be matched without them, so they finish the welcome steps first.
+        if (p?.id && (!p.teach_language?.trim() || !(p.learn_languages || []).some(Boolean))) {
+          router.replace('/welcome')
+          return
+        }
+        setProfile(p)
+      }).catch(() => {})
   }, [])
 
   const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
