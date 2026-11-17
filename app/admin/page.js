@@ -390,6 +390,7 @@ export default function Admin() {
   }
 
   const suspendUser = async (userId, days, reason) => {
+    if (!window.confirm(`Suspend this member ${days >= 3650 ? 'permanently' : `for ${days} days`}? Their upcoming classes are cancelled, their students refunded, and they get an email.`)) return
     const until = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString()
     const res = await fetch(`${API}/api/admin/users/${userId}/suspend`, {
       method: 'POST',
@@ -427,12 +428,20 @@ export default function Admin() {
   // The bucket is private, so the image has no URL until the server signs
   // one. Opened on click rather than rendered inline: an <img> per report
   // would sign every piece of evidence in the queue just to draw the page.
+  //
+  // Shown inside the report card, not in a new tab: Safari blocks a tab
+  // opened after waiting for the server (it has to happen during the click),
+  // so the old window.open silently did nothing there.
+  const [evidence, setEvidence] = useState({})
   const openEvidence = async (reportId, index) => {
+    const key = `${reportId}-${index}`
+    if (evidence[key]) { setEvidence(e => ({ ...e, [key]: null })); return }
+    setEvidence(e => ({ ...e, [key]: { loading: true } }))
     const res = await fetch(`${API}/api/reports/${reportId}/evidence/${index}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
     const data = await res.json().catch(() => ({}))
-    if (data.url) window.open(data.url, '_blank', 'noopener')
+    setEvidence(e => ({ ...e, [key]: data.url ? { url: data.url } : { error: data.error || 'Could not open the file' } }))
   }
 
   const setReportStatus = async (id, status) => {
@@ -813,13 +822,29 @@ export default function Admin() {
                         {report.evidence_paths?.length > 0 && (
                           <div className="flex gap-2 mt-2">
                             {report.evidence_paths.map((_, i) => (
-                              <button key={i} onClick={() => openEvidence(report.id, i)}
+                              <button key={i} onClick={() => openEvidence(report.id, i)} aria-expanded={Boolean(evidence[`${report.id}-${i}`])}
                                 className="bg-cream text-navy px-3 py-1 rounded-full text-xs font-bold border-2 border-navy/20 hover:border-navy transition-colors">
-                                📎 Evidence {i + 1}
+                                📎 Evidence {i + 1}{evidence[`${report.id}-${i}`] ? ' ▴' : ''}
                               </button>
                             ))}
                           </div>
                         )}
+                        {(report.evidence_paths || []).map((path, i) => {
+                          const shown = evidence[`${report.id}-${i}`]
+                          if (!shown) return null
+                          const isPdf = /\.pdf$/i.test(path)
+                          return (
+                            <div key={`ev-${i}`} className="mt-2 border-2 border-navy/20 rounded-xl p-2 bg-white">
+                              {shown.loading && <p className="text-navy/65 text-xs">Loading…</p>}
+                              {shown.error && <p className="text-brand-red text-xs font-bold">{shown.error}</p>}
+                              {shown.url && (isPdf
+                                ? <a href={shown.url} target="_blank" rel="noopener" className="text-navy text-sm font-bold underline">📄 Open the PDF (evidence {i + 1})</a>
+                                : <a href={shown.url} target="_blank" rel="noopener" title="Open full size">
+                                    <img src={shown.url} alt={`Evidence ${i + 1}`} className="max-h-96 max-w-full rounded-lg border border-navy/10"/>
+                                  </a>)}
+                            </div>
+                          )
+                        })}
                         {report.reported_user && !report.reported_user.deleted_at && (
                           <EnforcementControl
                             user={report.reported_user}
