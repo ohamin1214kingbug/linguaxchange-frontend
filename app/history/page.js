@@ -4,10 +4,9 @@ import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
 import Tabs from '../../components/Tabs'
-import { formatInTimezone } from '../../lib/timezone'
 import { hasFinished } from '../../lib/classSchedule'
-import { LANGUAGE_COLORS } from '../../lib/languages'
 import RatingForm from '../../components/RatingForm'
+import SharedClassCard from '../../components/ClassCard'
 
 const API = ''
 
@@ -334,32 +333,23 @@ function Totals({ items, minutesOf, languageOf, hoursLabel, t }) {
 // One class on the timeline. Folded, it is the coloured header and one
 // summary line; open, it shows everything. The newest class starts open,
 // because that is usually the one the member came for.
-function ClassCard({ cls, title, status, statusTone, summary, open, onToggle, attended, t, children }) {
-  const color = LANGUAGE_COLORS[cls?.language_code]
+// One timeline entry: the same card as Explore and the dashboard (date block,
+// level, title, 48px photo), with the status where Explore has spots and the
+// details folding out underneath. The dot sits on the timeline line.
+function ClassCard({ cls, session, user, person, status, statusTone, open, onToggle, attended, t, children }) {
   return (
     <div className="relative">
-      <span aria-hidden="true" className={`absolute -left-[31px] md:-left-[35px] top-4 w-[18px] h-[18px] rounded-full border-[3px] border-navy ${attended ? 'bg-brand-yellow' : 'bg-white'}`}/>
-      <div className={`bg-white rounded-2xl border-2 border-navy shadow-[4px_4px_0_var(--color-navy)] overflow-hidden ${open ? 'outline outline-[3px] outline-brand-yellow outline-offset-[3px]' : ''}`}>
-        <div className={`px-4 py-2.5 border-b-2 border-navy flex items-center justify-between gap-2 ${color?.tint || 'bg-cream'}`}>
-          <h3 className="font-display font-extrabold text-lg text-navy leading-tight min-w-0 break-words">
-            {FLAGS[cls?.language_code] || ''} {title}
-            {cls?.level && <span className="ml-2 align-middle bg-white/70 border border-navy/25 rounded-full px-2 text-xs font-bold font-sans">{cls.level}</span>}
-          </h3>
-          <span className={`shrink-0 px-2.5 py-0.5 rounded-full text-xs font-bold border-2 border-navy ${statusTone}`}>{status}</span>
-        </div>
-        <div className="px-4 py-3">
-          {open ? children : (
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <p className="text-navy/65 text-sm min-w-0">{summary}</p>
-            </div>
-          )}
-          <div className="flex justify-end mt-2">
+      <span aria-hidden="true" className={`absolute -left-[31px] md:-left-[35px] top-6 w-[18px] h-[18px] rounded-full border-[3px] border-navy ${attended ? 'bg-brand-yellow' : 'bg-white'}`}/>
+      <div className={open ? 'rounded-2xl outline outline-[3px] outline-brand-yellow outline-offset-[3px]' : ''}>
+        <SharedClassCard cls={cls} session={session} user={user} person={person} showBar={false}
+          status={status} statusTone={statusTone}
+          actions={
             <button type="button" onClick={onToggle} aria-expanded={open}
               className="text-navy text-sm font-bold underline decoration-2 underline-offset-4">
               {open ? `▴ ${t('history.hide')}` : `▾ ${t('history.details')}`}
             </button>
-          </div>
-        </div>
+          }
+          below={open && <div className="border-t-2 border-dashed border-navy/15 mt-3 pt-3">{children}</div>}/>
       </div>
     </div>
   )
@@ -507,27 +497,14 @@ export default function History() {
                 const received = feedbackBySession[e.class_session_id]
                 const attended = e.status === 'attended'
                 const open = (openTaken === undefined ? taken[0]?.id : openTaken) === e.id
-                const teacherName = teacher ? `${teacher.first_name} ${teacher.last_name || ''}`.trim() : ''
                 return (
-                  <ClassCard key={e.id} cls={cls} title={cls?.title || '-'} attended={attended} t={t}
+                  <ClassCard key={e.id} cls={cls} session={session} user={user} attended={attended} t={t}
                     open={open} onToggle={() => setOpenTaken(open ? null : e.id)}
                     status={e.status === 'cancelled' ? t('history.cancelled') : attended ? t('dashboard.attended') : t('history.notConfirmed')}
-                    statusTone={attended ? 'bg-brand-green/25 text-navy' : e.status === 'cancelled' ? 'bg-brand-red/10 text-brand-red' : 'bg-white text-navy'}
-                    summary={[formatInTimezone(session.session_date, user.timezone, user.time_format), teacherName,
-                      classmates.length ? t('history.classmatesCount', { n: classmates.length }) : null,
-                      cls?.lesson_plan_url ? '📄' : null, reviews[e.class_session_id] ? '★' : null].filter(Boolean).join(' · ')}>
-                    <p className="text-navy/65 text-sm">
-                      {formatInTimezone(session.session_date, user.timezone, user.time_format)}
-                      {cls?.duration_minutes ? ` · ${t('history.minutesShort', { n: cls.duration_minutes })}` : ''}
-                    </p>
-                    <div className="flex items-center justify-between gap-3 flex-wrap mt-2">
-                      {teacher && (
-                        <a href={`/teachers/${teacher.id}`} className="flex items-center gap-2 font-bold text-navy text-sm hover:underline">
-                          <Avatar person={teacher}/> {teacherName}
-                        </a>
-                      )}
+                    statusTone={attended ? 'text-brand-teal-dark font-bold' : e.status === 'cancelled' ? 'text-brand-red font-bold' : 'text-amber-700 font-bold'}>
+                    <div>
+                      <p className="text-xs font-extrabold text-navy/65 uppercase tracking-wide mb-1">{t('history.inThisClass')}</p>
                       <div className="flex items-center gap-2">
-                        <span className="sr-only">{t('history.inThisClass')}</span>
                         {classmates.length > 0 ? (<>
                           <span className="flex">{classmates.slice(0, 5).map((c, k) => <Avatar key={c.id} person={c} color={AVATAR_COLORS[k % AVATAR_COLORS.length]}/>)}</span>
                           <span className="text-navy/65 text-xs">{classmates.map(c => c.first_name).join(', ')}</span>
@@ -571,17 +548,13 @@ export default function History() {
                 const open = (openTaught === undefined ? taught[0]?.id : openTaught) === s.id
                 const cancelled = s.status === 'cancelled'
                 return (
-                  <ClassCard key={s.id} cls={s.cls} title={s.cls.title} attended={!cancelled} t={t}
+                  <ClassCard key={s.id} cls={s.cls} session={s} user={user} attended={!cancelled} t={t}
                     open={open} onToggle={() => setOpenTaught(open ? null : s.id)}
+                    person={<p className="font-bold text-navy text-sm">👥 {(s.taken ?? 0) > 0 ? t('dashboard.studentsBooked', { n: s.taken }) : t('dashboard.noStudentsYet')}</p>}
                     status={cancelled ? t('history.cancelled') : `✓ ${t('history.done')}`}
-                    statusTone={cancelled ? 'bg-brand-red/10 text-brand-red' : 'bg-brand-green/25 text-navy'}
-                    summary={[formatInTimezone(s.session_date, user.timezone, user.time_format), s.cls.lesson_plan_url ? '📄' : null].filter(Boolean).join(' · ')}>
-                    <p className="text-navy/65 text-sm">
-                      {formatInTimezone(s.session_date, user.timezone, user.time_format)}
-                      {s.cls.duration_minutes ? ` · ${t('history.minutesShort', { n: s.cls.duration_minutes })}` : ''}
-                    </p>
+                    statusTone={cancelled ? 'text-brand-red font-bold' : 'text-brand-teal-dark font-bold'}>
                     {s.cls.materials && (
-                      <div className="mt-3">
+                      <div>
                         <p className="text-xs font-extrabold text-navy/65 uppercase tracking-wide mb-1">📝 {t('history.notes')}</p>
                         <p className="text-navy text-sm whitespace-pre-line break-words">{s.cls.materials}</p>
                       </div>
