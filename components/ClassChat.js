@@ -109,7 +109,7 @@ export default function ClassChat({ sessionId: givenSession, classId, compact = 
           )}
         </div>
       )}
-      <p className="text-navy/65 text-xs mb-3">{t('chat.privacy')}</p>
+      <p className="text-navy/65 text-xs mb-3">🔒 {t('chat.privacy')} {t('chat.retention')}</p>
       <div ref={listRef} className={`space-y-2 overflow-y-auto pr-1 ${compact ? 'max-h-[45vh]' : 'max-h-96'}`}>
         {messages.length === 0 && <p className="text-navy/65 text-sm">{t('chat.empty')}</p>}
         {messages.map(m => {
