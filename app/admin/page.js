@@ -1,5 +1,7 @@
 'use client'
 import AdminGrowth from '../../components/AdminGrowth'
+import AdminActivity from '../../components/AdminActivity'
+import AdminAttention from '../../components/AdminAttention'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { languageOptions, LEVELS, levelLabel } from '../../lib/languages'
@@ -629,6 +631,8 @@ export default function Admin() {
         <h1 className="font-display font-extrabold text-3xl text-navy mb-2">Admin Dashboard</h1>
         <p className="text-navy/65 mb-8">Manage users and classes</p>
 
+        <AdminAttention />
+
         {/* What needs a decision comes first and lights up; the plain cards
             are reference. Each one opens the tab it counts. */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -671,9 +675,14 @@ export default function Admin() {
             className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'growth' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
             📈 Growth
           </button>
+          <button onClick={() => setTab('activity')}
+            className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'activity' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
+            🧾 Activity
+          </button>
         </div>
 
         {tab === 'growth' && <AdminGrowth />}
+        {tab === 'activity' && <AdminActivity />}
 
         {loading && <p className="text-navy/65">Loading...</p>}
 

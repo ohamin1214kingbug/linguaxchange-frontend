@@ -1,4 +1,27 @@
 // Same origin proxy.js forwards to; see that file for why the API is proxied.
+// Where pages may load things from and send data to. 'unsafe-inline' for
+// scripts because Next.js writes inline scripts without a nonce, so this
+// can't stop code already inside a page; it stops loading outside scripts
+// and sending data (like a login token) to outside sites.
+const SUPABASE = 'https://shrsxgzrdbxlptwzuevb.supabase.co'
+const CSP = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === 'production' ? '' : " 'unsafe-eval'"} https://8x8.vc https://va.vercel-scripts.com`,
+  "style-src 'self' 'unsafe-inline'",
+  `img-src 'self' data: blob: ${SUPABASE} https://lh3.googleusercontent.com`,
+  "font-src 'self' data:",
+  `connect-src 'self' ${SUPABASE} wss://shrsxgzrdbxlptwzuevb.supabase.co`,
+  'frame-src https://8x8.vc',
+  "media-src 'self' blob:",
+  "worker-src 'self'",
+  "manifest-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+  'report-uri /api/csp-report',
+].join('; ')
+
 const API_ORIGIN = process.env.API_ORIGIN || 'https://linguaxchange-backend-production.up.railway.app'
 
 // Base64 uploads bigger than a Vercel function accepts. proxy.js's matcher
@@ -52,6 +75,11 @@ const nextConfig = {
         source: '/:path*',
         headers: [
           { key: 'Content-Security-Policy', value: "frame-ancestors 'none'" },
+          // Watch only for now: browsers report what this would block to
+          // /api/csp-report (logged as [CSP] on the backend) and block
+          // nothing. Once a week of reports is clean, rename the key to
+          // Content-Security-Policy to enforce it.
+          { key: 'Content-Security-Policy-Report-Only', value: CSP },
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
