@@ -176,8 +176,17 @@ const CATEGORY_LABELS = {
 
 // Suspend is reversible and Delete is not, so they do not look alike and
 // Delete does not fire on one click — it needs the user's own code typed in.
-function EnforcementControl({ user, confirmText, message, onConfirmChange, onSuspend, onUnsuspend, onDelete }) {
+// The date a suspension of `days` would end. Outside components: reads the clock.
+function daysFromNow(days, now = Date.now()) {
+  return new Date(now + days * 24 * 60 * 60 * 1000)
+}
+
+function EnforcementControl({ user, confirmText, message, onConfirmChange, onSuspend, onUnsuspend, onDelete, defaultReason = '' }) {
   const code = 'U' + String(user.id).padStart(6, '0')
+  // A duration button only opens the confirm box: one mis-click suspended
+  // the owner's own account for 30 days (2026-11-17).
+  const [pendingDays, setPendingDays] = useState(null)
+  const [reason, setReason] = useState(defaultReason)
   const suspendedUntil = user.suspended_until && new Date(user.suspended_until) > new Date()
     ? new Date(user.suspended_until)
     : null
@@ -189,21 +198,40 @@ function EnforcementControl({ user, confirmText, message, onConfirmChange, onSus
           <span className="bg-brand-red/10 text-brand-red px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-red/30">
             Suspended until {suspendedUntil.toLocaleDateString()}
           </span>
-          <button onClick={onUnsuspend} className="text-navy/65 hover:text-navy text-xs font-bold underline">
-            Lift the suspension
+          {user.suspension_reason && <span className="text-navy/60 text-xs">{user.suspension_reason}</span>}
+          <button onClick={() => { if (window.confirm(`Cancel ${user.first_name || 'this member'}'s suspension now?`)) onUnsuspend() }}
+            className="ml-auto bg-brand-teal text-white px-3 py-1.5 rounded-full text-xs font-bold border-2 border-navy hover:opacity-90">
+            ↩ Cancel suspension
           </button>
         </div>
-      ) : (
+      ) : (<>
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-display font-bold text-navy text-xs">🚫 Suspend</span>
           {[7, 30, 3650].map(days => (
-            <button key={days} onClick={() => onSuspend(days)}
-              className="bg-white text-navy px-3 py-1 rounded-full text-xs font-bold border-2 border-navy/20 hover:border-navy transition-colors">
+            <button key={days} onClick={() => setPendingDays(pendingDays === days ? null : days)} aria-pressed={pendingDays === days}
+              className={`px-3 py-1 rounded-full text-xs font-bold border-2 transition-colors ${pendingDays === days ? 'bg-brand-yellow/30 border-navy text-navy' : 'bg-white text-navy border-navy/20 hover:border-navy'}`}>
               {days === 3650 ? 'Permanent' : `${days} days`}
             </button>
           ))}
         </div>
-      )}
+        {pendingDays && (
+          <div className="mt-2 border-2 border-brand-red rounded-xl bg-brand-red/5 p-3">
+            <p className="font-bold text-navy text-sm">
+              Suspend {user.first_name || 'this member'} {pendingDays >= 3650 ? 'permanently' : `for ${pendingDays} days, until ${daysFromNow(pendingDays).toLocaleDateString()}`}?
+            </p>
+            <p className="text-navy/65 text-xs mt-0.5">Their upcoming classes are cancelled, their students refunded, and they get an email with the reason.</p>
+            <textarea value={reason} onChange={e => setReason(e.target.value)} rows={2} aria-label="Reason"
+              className="w-full mt-2 border-2 border-navy/20 rounded-lg px-3 py-2 text-sm bg-white focus:border-brand-red focus:outline-none"/>
+            <div className="flex gap-2 mt-2">
+              <button onClick={() => { onSuspend(pendingDays, reason.trim()); setPendingDays(null) }} disabled={!reason.trim()}
+                className="bg-brand-red text-white px-3 py-1.5 rounded-full text-xs font-bold border-2 border-navy disabled:opacity-40">
+                Confirm suspension
+              </button>
+              <button onClick={() => setPendingDays(null)} className="bg-white text-navy px-3 py-1.5 rounded-full text-xs font-bold border-2 border-navy">Cancel</button>
+            </div>
+          </div>
+        )}
+      </>)}
       <div className="flex items-center gap-2 mt-2 flex-wrap">
         <span className="font-display font-bold text-brand-red text-xs">🗑 Delete</span>
         <input value={confirmText || ''} onChange={onConfirmChange} placeholder={`Type ${code}`}
@@ -390,7 +418,6 @@ export default function Admin() {
   }
 
   const suspendUser = async (userId, days, reason) => {
-    if (!window.confirm(`Suspend this member ${days >= 3650 ? 'permanently' : `for ${days} days`}? Their upcoming classes are cancelled, their students refunded, and they get an email.`)) return
     const until = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString()
     const res = await fetch(`${API}/api/admin/users/${userId}/suspend`, {
       method: 'POST',
@@ -444,13 +471,20 @@ export default function Admin() {
     setEvidence(e => ({ ...e, [key]: data.url ? { url: data.url } : { error: data.error || 'Could not open the file' } }))
   }
 
-  const setReportStatus = async (id, status) => {
+  // Closing a report asks why first (the server requires it): { id, status, text }.
+  const [closing, setClosing] = useState(null)
+  const setReportStatus = async (id, status, notes) => {
     const token = localStorage.getItem('token')
-    await fetch(`${API}/api/reports/${id}`, {
+    const res = await fetch(`${API}/api/reports/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ status })
+      body: JSON.stringify({ status, notes })
     })
+    if (res.ok) setClosing(null)
+    else {
+      const data = await res.json().catch(() => ({}))
+      window.alert(data.error || 'Could not update the report')
+    }
     fetchReports()
   }
 
@@ -606,7 +640,13 @@ export default function Admin() {
               </button>
             </div>
           ) : isSuspended(user) ? (
-            <span className="bg-brand-red/10 text-brand-red px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-red/30">Suspended</span>
+            <div className="flex items-center gap-2 flex-wrap justify-end">
+              <span className="bg-brand-red/10 text-brand-red px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-red/30">Suspended until {new Date(user.suspended_until).toLocaleDateString()}</span>
+              <button onClick={() => { if (window.confirm(`Cancel ${user.first_name || 'this member'}'s suspension now?`)) unsuspendUser(user.id) }}
+                className="bg-brand-teal text-white px-3 py-1 rounded-full text-xs font-bold border-2 border-navy hover:opacity-90">
+                ↩ Cancel suspension
+              </button>
+            </div>
           ) : (
             <span className="bg-brand-teal/10 text-brand-teal-dark px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-teal/30">Approved</span>
           )}
@@ -851,22 +891,39 @@ export default function Admin() {
                             confirmText={confirmDelete[report.reported_user.id]}
                             message={actionMessage[report.reported_user.id]}
                             onConfirmChange={e => setConfirmDelete(c => ({ ...c, [report.reported_user.id]: e.target.value }))}
-                            onSuspend={days => suspendUser(report.reported_user.id, days, `Report #${report.id}: ${report.category || 'other'}`)}
+                            defaultReason={`Report #${report.id}: ${report.category || 'other'}`}
+                            onSuspend={(days, reason) => suspendUser(report.reported_user.id, days, reason)}
                             onUnsuspend={() => unsuspendUser(report.reported_user.id)}
                             onDelete={() => deleteUser(report.reported_user.id)}/>
                         )}
                       </div>
                       <div className="flex gap-2 flex-shrink-0">
-                        <button onClick={() => setReportStatus(report.id, 'resolved')}
+                        <button onClick={() => setClosing({ id: report.id, status: 'resolved', text: '' })}
                           className="bg-brand-teal text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy whitespace-nowrap">
                           ✓ Resolve
                         </button>
-                        <button onClick={() => setReportStatus(report.id, 'rejected')}
+                        <button onClick={() => setClosing({ id: report.id, status: 'rejected', text: '' })}
                           className="bg-brand-red/10 text-brand-red px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-red/30 whitespace-nowrap">
                           ✗ Dismiss
                         </button>
                       </div>
                     </div>
+                    {closing?.id === report.id && (
+                      <div className="mt-3 border-2 border-navy rounded-xl bg-cream/60 p-3">
+                        <p className="font-bold text-navy text-sm">{closing.status === 'rejected' ? 'Why are you dismissing this report?' : 'What did you do?'}</p>
+                        <textarea value={closing.text} onChange={e => setClosing(c => ({ ...c, text: e.target.value }))} rows={2} autoFocus
+                          aria-label={closing.status === 'rejected' ? 'Reason for dismissing' : 'What was done'}
+                          className="w-full mt-2 border-2 border-navy/20 rounded-lg px-3 py-2 text-sm bg-white focus:border-brand-red focus:outline-none"/>
+                        <p className="text-navy/60 text-xs mt-1">Required. Only admins see it; the member who reported sees {closing.status === 'rejected' ? '"Closed, no action"' : '"Action taken"'}.</p>
+                        <div className="flex gap-2 mt-2">
+                          <button onClick={() => setReportStatus(report.id, closing.status, closing.text.trim())} disabled={!closing.text.trim()}
+                            className={`text-white px-3 py-1.5 rounded-full text-xs font-bold border-2 border-navy disabled:opacity-40 ${closing.status === 'rejected' ? 'bg-brand-red' : 'bg-brand-teal'}`}>
+                            {closing.status === 'rejected' ? 'Dismiss report' : 'Mark as resolved'}
+                          </button>
+                          <button onClick={() => setClosing(null)} className="bg-white text-navy px-3 py-1.5 rounded-full text-xs font-bold border-2 border-navy">Cancel</button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </>
@@ -884,6 +941,7 @@ export default function Admin() {
                             : <>📚 Class #{report.reported_id}</>}
                         </p>
                         <p className="text-navy/65 text-sm mt-1">{report.reason}</p>
+                        {report.notes && <p className="bg-navy/5 rounded-lg px-3 py-2 text-sm text-navy mt-2"><b>Reason:</b> {report.notes}</p>}
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-bold border-2 whitespace-nowrap ${
                         report.status === 'resolved' ? 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30' : 'bg-navy/5 text-navy/65 border-navy/10'}`}>
