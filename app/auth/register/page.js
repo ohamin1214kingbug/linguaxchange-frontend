@@ -27,6 +27,9 @@ function EyeIcon({ crossed }) {
   )
 }
 
+const EMAIL_SHAPE = /^\S+@\S+\.\S+$/
+const NOT_DIGIT = /\D/g
+
 export default function Register() {
   const router = useRouter()
   const { t, language } = useLanguage()
@@ -42,6 +45,12 @@ export default function Register() {
   const [verifyLoading, setVerifyLoading] = useState(false)
   const [phoneVerified, setPhoneVerified] = useState(false)
   const [verifiedToken, setVerifiedToken] = useState('')
+  // Email code (POST /api/auth/send-email-code, /verify-email-code): the
+  // account can't be created until the address is proven.
+  const [emailCodeToken, setEmailCodeToken] = useState('')
+  const [emailCode, setEmailCode] = useState('')
+  const [emailBusy, setEmailBusy] = useState(false)
+  const [emailVerifiedToken, setEmailVerifiedToken] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -99,7 +108,36 @@ export default function Register() {
       setError('auth.errorValidEmail')
       return false
     }
+    if (!emailVerifiedToken) {
+      setError('auth.errorEmailNotConfirmed')
+      return false
+    }
     return true
+  }
+
+  const sendEmailCode = async () => {
+    setError(''); setEmailBusy(true)
+    try {
+      const res = await fetch('/api/auth/send-email-code', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: form.email }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) setError(data.error || 'auth.errorSendCode')
+      else { setEmailCodeToken(data.code_token); setEmailCode('') }
+    } catch { setError('common.connectionError') } finally { setEmailBusy(false) }
+  }
+
+  const confirmEmailCode = async () => {
+    setError(''); setEmailBusy(true)
+    try {
+      const res = await fetch('/api/auth/verify-email-code', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: form.email, code_token: emailCodeToken, code: emailCode }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) setError(data.error || 'auth.errorInvalidCode')
+      else setEmailVerifiedToken(data.email_verified_token)
+    } catch { setError('common.connectionError') } finally { setEmailBusy(false) }
   }
 
   const validateStep2 = () => {
@@ -238,6 +276,7 @@ export default function Register() {
           certificate_explanation: form.certificate_explanation,
           phone_number: phone,
           verified_token: verifiedToken,
+          email_verified_token: emailVerifiedToken,
           invite_code: pendingInvite(),
         })
       })
@@ -314,8 +353,42 @@ export default function Register() {
             </div>
             <div>
               <label className="block text-sm font-bold text-navy mb-1">{t('auth.email')}</label>
-              <input name="email" type="email" onChange={handleChange} value={form.email}
-                className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" placeholder="maria@email.com"/>
+              {emailVerifiedToken ? (
+                <div className="bg-brand-teal/10 text-brand-teal-dark border-2 border-brand-teal/30 rounded-xl px-4 py-2.5 text-sm font-bold flex items-center justify-between gap-2">
+                  <span className="truncate">✓ {t('auth.emailConfirmed')} · {form.email}</span>
+                  <button type="button" onClick={() => { setEmailVerifiedToken(''); setEmailCodeToken(''); setEmailCode('') }}
+                    className="text-navy/65 font-medium underline text-xs shrink-0">{t('auth.changeEmail')}</button>
+                </div>
+              ) : (<>
+                <div className="flex gap-2">
+                  <input name="email" type="email" onChange={e => { handleChange(e); setEmailCodeToken(''); setEmailCode('') }} value={form.email}
+                    className="flex-1 min-w-0 border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors" placeholder="maria@email.com"/>
+                  {!emailCodeToken && (
+                    <button type="button" onClick={sendEmailCode} disabled={emailBusy || !EMAIL_SHAPE.test(form.email)}
+                      className="shrink-0 bg-navy text-white px-4 rounded-xl text-sm font-bold border-2 border-navy disabled:opacity-40">
+                      {emailBusy ? t('auth.sendingCode') : t('auth.sendEmailCode')}
+                    </button>
+                  )}
+                </div>
+                {emailCodeToken && (
+                  <div className="mt-2">
+                    <p className="text-navy/65 text-xs mb-1.5">{t('auth.emailCodeSent', { email: form.email })}</p>
+                    <div className="flex gap-2">
+                      <input type="text" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={emailCode}
+                        onChange={e => setEmailCode(e.target.value.replace(NOT_DIGIT, ''))} placeholder="123456"
+                        className="flex-1 min-w-0 border-2 border-navy/20 rounded-xl px-4 py-2.5 tracking-widest font-bold focus:border-brand-red focus:outline-none"/>
+                      <button type="button" onClick={confirmEmailCode} disabled={emailBusy || emailCode.length !== 6}
+                        className="shrink-0 bg-navy text-white px-4 rounded-xl text-sm font-bold border-2 border-navy disabled:opacity-40">
+                        {t('auth.confirmCode')}
+                      </button>
+                    </div>
+                    <p className="text-navy/65 text-xs mt-1.5">
+                      <button type="button" onClick={sendEmailCode} disabled={emailBusy} className="underline font-bold">{t('auth.resendCode')}</button>
+                      {' · '}{t('auth.emailCodeHint')}
+                    </p>
+                  </div>
+                )}
+              </>)}
             </div>
             <div>
               <label className="block text-sm font-bold text-navy mb-1">{t('auth.password')}</label>
