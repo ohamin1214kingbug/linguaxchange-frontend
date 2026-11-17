@@ -5,35 +5,14 @@ import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
 import ClassRequests from '../../components/ClassRequests'
 import AssignmentBoard from '../../components/AssignmentBoard'
-import { asUtcDate } from '../../lib/timezone'
 import { hasUpcomingSession } from '../../lib/classSchedule'
 import { fetchJoinedClassIds } from '../../lib/enrollments'
 import { rememberReturnPath } from '../../lib/auth'
 import ClassAlertToggle from '../../components/ClassAlertToggle'
+import ClassCard, { nextSession } from '../../components/ClassCard'
 
 const API = ''
 const LANG_CODES = ['KO', 'ES', 'DE', 'EN', 'PT', 'FR', 'IT']
-
-// The next session still to come, with its booked count (`taken`, from
-// GET /api/classes). Outside the component: it reads the clock.
-function nextSession(cls, now = new Date()) {
-  return (cls.class_sessions || [])
-    .filter(s => s.status === 'scheduled' && asUtcDate(s.session_date) > now)
-    .sort((a, b) => asUtcDate(a.session_date) - asUtcDate(b.session_date))[0] || null
-}
-
-// Weekday, day number and time for the card's date block, in the viewer's
-// zone once mounted (UTC before, so server and first client render agree).
-function dateParts(iso, { timezone, timeFormat, locale, mounted }) {
-  const d = asUtcDate(iso)
-  const base = { timeZone: mounted ? (timezone || undefined) : 'UTC' }
-  const f = opts => new Intl.DateTimeFormat(locale, { ...base, ...opts }).format(d)
-  return {
-    weekday: f({ weekday: 'short' }),
-    day: f({ day: 'numeric' }),
-    time: f({ hour: 'numeric', minute: '2-digit', hour12: timeFormat ? timeFormat === '12h' : undefined }),
-  }
-}
 
 // `initialClasses` comes from the server component in page.js, already
 // filtered to whatever the URL asked for. Seeding state with it is what puts
@@ -41,7 +20,7 @@ function dateParts(iso, { timezone, timeFormat, locale, mounted }) {
 // prerendered on the server, but the useEffect that fetches them never runs
 // during that pass, so this page used to ship an empty list to crawlers.
 export default function ClassesBrowseClient({ initialClasses = [], serverFetched = false, initialLanguage = 'all', initialLevel = 'all', initialTab = 'classes' }) {
-  const { t, language } = useLanguage()
+  const { t } = useLanguage()
   const [classes, setClasses] = useState(initialClasses)
   // Every upcoming class, unfiltered: the counts on the language chips and
   // the list of languages that have none.
@@ -199,7 +178,6 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
 
   const counts = Object.fromEntries(LANG_CODES.map(c => [c, (allUpcoming || []).filter(cls => cls.language_code === c).length]))
   const emptyLangs = allUpcoming ? LANG_CODES.filter(c => counts[c] === 0) : []
-  const locale = (language || 'EN').toLowerCase()
   const PILL_SELECT = 'border-2 border-navy rounded-full px-3 py-2 text-sm font-bold text-navy bg-white focus:border-brand-red focus:outline-none'
 
   return (
@@ -280,76 +258,25 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
         <div className="space-y-4">
           {classes.map(cls => {
             const next = nextSession(cls)
-            const when = next && dateParts(next.session_date, { timezone: currentUser?.timezone, timeFormat: currentUser?.time_format, locale, mounted })
-            const max = cls.max_students || 0
-            const taken = Math.min(next?.taken ?? 0, max)
-            const left = max - taken
-            const mine = cls.teacher?.id === currentUser?.id
+            const full = (cls.max_students || 0) - (next?.taken ?? 0) <= 0
             return (
-              <div key={cls.id} className="bg-white rounded-2xl p-4 md:p-5 border-2 border-navy shadow-[4px_4px_0_var(--color-navy)]">
-                <div className="flex gap-3 md:gap-4 items-start">
-                  {when && (
-                    <div className="w-16 md:w-[72px] shrink-0 border-2 border-navy rounded-xl bg-brand-yellow/20 text-center py-1.5">
-                      <p className="text-[11px] font-bold uppercase text-navy">{when.weekday}</p>
-                      <p className="font-display font-extrabold text-2xl md:text-3xl text-navy leading-none">{when.day}</p>
-                      <p className="text-[11px] font-bold text-navy mt-0.5">{when.time}</p>
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="bg-brand-teal/15 text-brand-teal-dark px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/40">
-                        {LANGS[cls.language_code]?.flag} {levelLabel(cls.language_code, cls.level)}
-                      </span>
-                      <span className="text-navy/55 text-xs font-medium">{cls.duration_minutes} {t('classes.min')}</span>
-                    </div>
-                    {/* The card's only link to the class for anyone who isn't
-                        its teacher; without it the class pages have no inbound
-                        links and a crawler reaches them only via the sitemap. */}
-                    <h3 className="font-display font-extrabold text-navy text-lg md:text-xl leading-tight mt-1.5 break-words">
-                      <a href={`/classes/${cls.id}`} className="hover:text-brand-red transition-colors">{cls.title}</a>
-                    </h3>
-                    {cls.topic && <p className="text-navy/60 text-sm mt-0.5 break-words">{cls.topic}</p>}
-
-                    {cls.teacher && (
-                      <a href={`/teachers/${cls.teacher.id}`} className="inline-flex items-center gap-2.5 mt-3 group">
-                        <span className="w-12 h-12 rounded-full border-2 border-navy bg-brand-yellow/30 overflow-hidden flex items-center justify-center font-display font-extrabold text-navy text-lg shrink-0">
-                          {cls.teacher.photo_url
-                            ? <img src={cls.teacher.photo_url} alt="" className="w-full h-full object-cover"/>
-                            : (cls.teacher.first_name || '?')[0]}
-                        </span>
-                        <span className="font-bold text-navy text-sm group-hover:text-brand-red transition-colors">{cls.teacher.first_name} {cls.teacher.last_name}</span>
-                      </a>
-                    )}
-
-                    {max > 0 && (
-                      <div className="mt-3 h-2 rounded-full bg-navy/10 overflow-hidden" aria-hidden="true">
-                        <div className="h-full bg-brand-green border-r-2 border-navy" style={{ width: `${Math.max(4, (taken / max) * 100)}%` }}/>
-                      </div>
-                    )}
-                    <div className="flex items-center justify-between gap-3 mt-2.5 flex-wrap">
-                      <p className={`text-sm ${left === 1 ? 'text-amber-700 font-bold' : left === 0 ? 'text-brand-red font-bold' : 'text-navy/70'}`}>
-                        {left === 0 ? t('classes.full') : left === 1 ? t('classes.oneSpotLeft', { max }) : t('classes.spotsLeft', { n: left, max })}
-                      </p>
-                      {mine ? (
-                        <a href={`/classes/${cls.id}`}
-                          className="bg-white text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-cream transition-colors">
-                          {t('classes.yourClass')}
-                        </a>
-                      ) : joinedClassIds.has(cls.id) ? (
-                        <span className="bg-brand-teal/10 text-brand-teal-dark px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-teal/30">
-                          {t('classes.joined')}
-                        </span>
-                      ) : (
-                        <button onClick={() => joinClass(cls)}
-                          disabled={joining === cls.id || !enrollmentsChecked || left === 0}
-                          className="bg-brand-red text-white px-5 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
-                          {joining === cls.id ? t('classes.joining') : t('classes.joinBanana')}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ClassCard key={cls.id} cls={cls} session={next} user={currentUser} mounted={mounted}
+                actions={cls.teacher?.id === currentUser?.id ? (
+                  <a href={`/classes/${cls.id}`}
+                    className="bg-white text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-cream transition-colors">
+                    {t('classes.yourClass')}
+                  </a>
+                ) : joinedClassIds.has(cls.id) ? (
+                  <span className="bg-brand-teal/10 text-brand-teal-dark px-4 py-2 rounded-full text-sm font-bold border-2 border-brand-teal/30">
+                    {t('classes.joined')}
+                  </span>
+                ) : (
+                  <button onClick={() => joinClass(cls)}
+                    disabled={joining === cls.id || !enrollmentsChecked || full}
+                    className="bg-brand-red text-white px-5 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
+                    {joining === cls.id ? t('classes.joining') : t('classes.joinBanana')}
+                  </button>
+                )}/>
             )
           })}
 

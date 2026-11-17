@@ -12,6 +12,7 @@ import InviteCard from '../../components/InviteCard'
 import Panel from '../../components/Panel'
 import ChatList, { useChats } from '../../components/ChatsPanel'
 import TeachNudge from '../../components/TeachNudge'
+import ClassCard, { nextSession } from '../../components/ClassCard'
 import { isUnread } from '../../lib/chatSeen'
 import { nextSessionDate, hasFinished } from '../../lib/classSchedule'
 import { LANGUAGE_COLORS, levelLabel } from '../../lib/languages'
@@ -402,7 +403,12 @@ export default function Dashboard() {
   const isEnrollmentOver = (e) => sessionTiming(e.class_sessions, e.class_sessions?.classes?.duration_minutes).isClassOver
   const upcomingEnrollments = enrollments.filter(e => !isEnrollmentOver(e))
 
-  const isTeachingOver = (c) => sessionTiming(c.class_sessions?.[0], c.duration_minutes).isClassOver
+  // Over only when every session that isn't cancelled has ended. It used to
+  // look at the first session alone, so a weekly class vanished from the
+  // teaching panels once its first week had passed.
+  const isTeachingOver = (c) => (c.class_sessions || [])
+    .filter(s => s.status !== 'cancelled')
+    .every(s => hasFinished(s.session_date, c.duration_minutes))
   const upcomingTeaching = teachingClasses.filter(c => !isTeachingOver(c))
 
   const reviewFor = (sessionId) => myReviews.find(r => r.class_session_id === sessionId)
@@ -701,13 +707,10 @@ export default function Dashboard() {
             return (
               <Panel icon="⏰" tone="bg-brand-yellow" title={t('dashboard.nextClass')} open
                 note={nextLearn ? `${cls?.title} · ${countdown(at, t)}` : t('dashboard.noUpcomingLearning')}>
-                {nextLearn ? (<>
-                <p className="font-display font-extrabold text-2xl text-navy leading-tight">{FLAGS[cls?.language_code] || ''} {cls?.title}</p>
-                <p className="text-navy text-sm mt-1">
-                  {formatInTimezone(at, user.timezone, user.time_format)}
-                  {cls?.teacher ? ` · ${cls.teacher.first_name} ${cls.teacher.last_name || ''}` : ''}
-                </p>
-                <div className="flex flex-wrap gap-2 mt-3">
+                {nextLearn ? (
+                <ClassCard cls={cls} session={nextLearn.class_sessions} user={user} countdown={countdown(at, t)}
+                  showBar={false} status={`✓ ${t('classes.joined')}`} statusTone="text-brand-teal-dark font-bold"
+                  actions={<>
                   {canJoin && <a href={`/classroom/${nextLearn.class_session_id}`} className={PRIMARY}>{t('dashboard.joinMeeting')}</a>}
                   <button type="button" className={PILL}
                     onClick={() => downloadClassIcs({ sessionId: nextLearn.class_session_id, title: cls?.title || 'Class', start: at, durationMinutes: cls?.duration_minutes })}>
@@ -715,8 +718,8 @@ export default function Dashboard() {
                   </button>
                   {cls?.id && <a href={`/classes/${cls.id}`} className={PILL}>{t('dashboard.classPage')}</a>}
                   <a href={`/chat/${nextLearn.class_session_id}`} className={PILL}>{t('chat.open')}</a>
-                </div>
-                </>) : (
+                  </>}/>
+                ) : (
                   <Link href="/classes" className={PRIMARY}>{t('common.explore')}</Link>
                 )}
               </Panel>
@@ -771,17 +774,10 @@ export default function Dashboard() {
           <Panel icon="✨" tone="bg-brand-purple/25" title={t('dashboard.forYou')} open={forYou.length > 0}
             note={forYou.length ? forYou.map(c => c.title).join(' · ') : t('dashboard.forYouEmpty')}>
             {forYou.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-3">
                 {forYou.map(cls => (
-                  <a key={cls.id} href={`/classes/${cls.id}`} className="rounded-xl border-2 border-navy overflow-hidden hover:-translate-y-0.5 transition-transform">
-                    <div className={`px-3 py-1.5 border-b-2 border-navy font-display font-extrabold text-navy ${LANGUAGE_COLORS[cls.language_code]?.tint || 'bg-cream'}`}>
-                      {FLAGS[cls.language_code] || ''} {cls.title}
-                    </div>
-                    <p className="px-3 py-2 text-navy/65 text-xs">
-                      {levelLabel(cls.language_code, cls.level, t)} · {formatInTimezone(nextSessionDate(cls), user.timezone, user.time_format)}
-                      {cls.teacher ? ` · ${cls.teacher.first_name}` : ''}
-                    </p>
-                  </a>
+                  <ClassCard key={cls.id} cls={cls} session={nextSession(cls)} user={user}
+                    actions={<a href={`/classes/${cls.id}`} className={PRIMARY}>{t('classes.joinBanana')}</a>}/>
                 ))}
               </div>
             ) : (
@@ -797,88 +793,66 @@ export default function Dashboard() {
             note={upcomingEnrollments.length ? upcomingEnrollments.map(e => e.class_sessions?.classes?.title).join(' · ') : t('dashboard.noUpcomingLearning')}>
             {upcomingEnrollments.length === 0
               ? <p className="text-navy/65 text-sm">{t('dashboard.noUpcomingLearning')}</p>
-              : <div className="space-y-1">
+              : <div className="space-y-3">
               {upcomingEnrollments.map(enrollment => {
                 const session = enrollment.class_sessions
                 const cls = session?.classes
                 const { scheduledAt, isClassOver, isLive } = sessionTiming(session, cls?.duration_minutes)
-
+                const active = enrollment.status !== 'attended' && enrollment.status !== 'cancelled'
+                const statusText = enrollment.status === 'cancelled'
+                  ? t('history.cancelled')
+                  : enrollment.status === 'attended'
+                    ? t('dashboard.attended')
+                    : isClassOver
+                      ? t('dashboard.classEndedConfirm')
+                      : isLive ? t('dashboard.liveNow') : `✓ ${t('classes.joined')}`
                 return (
-                  <div key={enrollment.id} className="py-4 border-b border-navy/10 last:border-0">
-                    {isLive && enrollment.status !== 'cancelled' && (
+                  <ClassCard key={enrollment.id} cls={cls} session={session} user={user} showBar={false}
+                    status={statusText} statusTone={enrollment.status === 'cancelled' ? 'text-brand-red font-bold' : 'text-brand-teal-dark font-bold'}
+                    above={isLive && enrollment.status !== 'cancelled' && (
                       <a href={`/classroom/${enrollment.class_session_id}`}
                         className="flex items-center justify-center gap-2 mb-3 bg-red-600 text-white font-extrabold text-sm tracking-wide px-4 py-2 rounded-xl animate-pulse shadow-[0_0_16px_4px_rgba(220,38,38,0.55)] hover:bg-red-700 transition-colors">
                         <span className="w-2 h-2 bg-white rounded-full" /> {t('dashboard.liveNow')} · {t('dashboard.joinMeeting')}
                       </a>
                     )}
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-navy text-sm font-bold">
-                          {cls?.title || 'Class'}
-                        </p>
-                        {/* Reporting is about a person, so this points at the
-                            teacher's profile, where the form with categories
-                            and evidence already lives. */}
-                        {cls?.teacher?.id && (
-                          <a href={`/teachers/${cls.teacher.id}`}
-                            className="text-navy/65 hover:text-brand-red text-xs font-medium transition-colors">
-                            🚩 {t('teacher.report')} · {cls.teacher.first_name} {cls.teacher.last_name}
-                          </a>
-                        )}
-                        <p className="text-navy/65 text-xs mt-0.5">
-                          {scheduledAt
-                            ? formatInTimezone(scheduledAt, user.timezone, user.time_format)
-                            : t('dashboard.noTimeSet')}
-                          {' · '}
-                          {enrollment.status === 'cancelled'
-                            ? t('history.cancelled')
-                            : enrollment.status === 'attended'
-                              ? t('dashboard.attended')
-                              : isClassOver
-                                ? t('dashboard.classEndedConfirm')
-                                : isLive
-                                  ? t('dashboard.liveNow')
-                                  : t('dashboard.upcoming')}
-                        </p>
-                        {scheduledAt && !isClassOver && enrollment.status !== 'cancelled' && (
-                          <button type="button" className="text-navy/65 hover:text-brand-red text-xs font-bold mt-1 transition-colors"
-                            onClick={() => downloadClassIcs({ sessionId: enrollment.class_session_id, title: cls?.title || 'Class', start: scheduledAt, durationMinutes: cls?.duration_minutes })}>
-                            {t('dashboard.addToCalendar')}
-                          </button>
-                        )}
-                      </div>
-                      <div className="flex-shrink-0 ml-3 text-right">
-                        {enrollment.status !== 'attended' && enrollment.status !== 'cancelled' && isClassOver && (
-                          <button
-                            onClick={() => confirmAttendance(enrollment.id)}
-                            disabled={confirming === enrollment.id}
-                            className="bg-brand-teal text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:opacity-90 disabled:opacity-50 transition-opacity">
-                            {confirming === enrollment.id ? t('dashboard.confirming') : t('dashboard.confirmAttendance')}
-                          </button>
-                        )}
-                        {enrollment.status !== 'attended' && enrollment.status !== 'cancelled' && !isClassOver && (
-                          <button
-                            onClick={() => cancelEnrollment(enrollment, scheduledAt && (scheduledAt.getTime() - Date.now() >= 24 * 60 * 60 * 1000))}
-                            disabled={cancellingEnrollmentId === enrollment.id}
-                            className="text-brand-red text-sm font-bold whitespace-nowrap hover:underline disabled:opacity-50">
-                            {cancellingEnrollmentId === enrollment.id ? t('dashboard.cancelling') : t('dashboard.cancelClass')}
-                          </button>
-                        )}
-                        {enrollment.status === 'attended' && (
-                          <span className="bg-brand-teal/10 text-brand-teal-dark px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-teal/30">
-                            {t('dashboard.confirmed')}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Rating form - shows after confirming attendance */}
-                    {enrollment.status === 'attended' && (
-                      <RatingForm classSessionId={enrollment.class_session_id}
-                        existingReview={reviewFor(enrollment.class_session_id)}
-                        onReviewed={r => setMyReviews(rs => [...rs, r])} />
-                    )}
-                  </div>
+                    actions={<>
+                      {scheduledAt && !isClassOver && enrollment.status !== 'cancelled' && (
+                        <button type="button" className={PILL}
+                          onClick={() => downloadClassIcs({ sessionId: enrollment.class_session_id, title: cls?.title || 'Class', start: scheduledAt, durationMinutes: cls?.duration_minutes })}>
+                          {t('dashboard.addToCalendar')}
+                        </button>
+                      )}
+                      {active && !isClassOver && <a href={`/chat/${enrollment.class_session_id}`} className={PILL}>{t('chat.open')}</a>}
+                      {active && isClassOver && (
+                        <button onClick={() => confirmAttendance(enrollment.id)} disabled={confirming === enrollment.id}
+                          className="bg-brand-teal text-white px-4 py-1.5 rounded-full text-sm font-bold border-2 border-navy hover:opacity-90 disabled:opacity-50 transition-opacity">
+                          {confirming === enrollment.id ? t('dashboard.confirming') : t('dashboard.confirmAttendance')}
+                        </button>
+                      )}
+                      {active && !isClassOver && (
+                        <button
+                          onClick={() => cancelEnrollment(enrollment, scheduledAt && (scheduledAt.getTime() - Date.now() >= 24 * 60 * 60 * 1000))}
+                          disabled={cancellingEnrollmentId === enrollment.id}
+                          className="border-2 border-brand-red/30 text-brand-red px-3 py-1.5 rounded-full text-sm font-bold hover:border-brand-red disabled:opacity-50">
+                          {cancellingEnrollmentId === enrollment.id ? t('dashboard.cancelling') : t('dashboard.cancelClass')}
+                        </button>
+                      )}
+                    </>}
+                    below={<>
+                      {/* Reporting is about a person, so this points at the
+                          teacher's profile, where the form already lives. */}
+                      {cls?.teacher?.id && (
+                        <a href={`/teachers/${cls.teacher.id}`}
+                          className="inline-block mt-2 text-navy/55 hover:text-brand-red text-xs font-medium transition-colors">
+                          🚩 {t('teacher.report')}
+                        </a>
+                      )}
+                      {enrollment.status === 'attended' && (
+                        <RatingForm classSessionId={enrollment.class_session_id}
+                          existingReview={reviewFor(enrollment.class_session_id)}
+                          onReviewed={r => setMyReviews(rs => [...rs, r])} />
+                      )}
+                    </>}/>
                 )
               })}
             </div>}
@@ -954,35 +928,35 @@ export default function Dashboard() {
             return (
               <Panel icon="⏰" tone="bg-brand-yellow" title={t('dashboard.nextToTeach')} open
                 note={`${cls.title} · ${countdown(nextTeach.at, t)}`}>
-                <p className="font-display font-extrabold text-2xl text-navy leading-tight">{FLAGS[cls.language_code] || ''} {cls.title}</p>
-                <p className="text-navy text-sm mt-1">
-                  {formatInTimezone(nextTeach.at, user.timezone, user.time_format)} · {t('dashboard.studentsOf', { n: nextStudents.length, max: cls.max_students })}
-                </p>
-                {nextStudents.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {nextStudents.map(st => {
-                      const level = st.learn_details?.[cls.language_code]?.level
-                      return (
-                        <span key={st.id} className="bg-white border-2 border-navy rounded-full px-2.5 py-0.5 text-xs font-bold text-navy">
-                          {st.first_name}{level ? ` · ${levelLabel(cls.language_code, level, t)}` : ''}
-                        </span>
-                      )
-                    })}
-                  </div>
-                ) : <p className="text-navy text-sm mt-2">{t('dashboard.noStudentsYetShare')}</p>}
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {canJoin && nextTeachSession && (
-                    <a href={`/classroom/${nextTeachSession.id}`} className={PRIMARY}>
-                      {isLive ? t('dashboard.startClass') : t('dashboard.openClassroomEarly')}
-                    </a>
-                  )}
-                  <button type="button" className={PILL}
-                    onClick={() => downloadClassIcs({ sessionId: nextTeachSession?.id, title: cls.title, start: nextTeach.at, durationMinutes: cls.duration_minutes })}>
-                    {t('dashboard.addToCalendar')}
-                  </button>
-                  <a href={`/classes/${cls.id}`} className={PILL}>📄 {t('dashboard.classPage')}</a>
-                  {nextTeachSession && <a href={`/chat/${nextTeachSession.id}`} className={PILL}>{t('chat.open')}</a>}
-                </div>
+                <ClassCard cls={cls} session={{ ...nextTeachSession, taken: nextStudents.length }} user={user} countdown={countdown(nextTeach.at, t)}
+                  person={<>
+                    <p className="font-bold text-navy text-sm">👥 {nextStudents.length > 0 ? t('dashboard.studentsBooked', { n: nextStudents.length }) : t('dashboard.noStudentsYetShare')}</p>
+                    {nextStudents.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {nextStudents.map(st => {
+                          const level = st.learn_details?.[cls.language_code]?.level
+                          return (
+                            <span key={st.id} className="bg-white border-2 border-navy rounded-full px-2.5 py-0.5 text-xs font-bold text-navy">
+                              {st.first_name}{level ? ` · ${levelLabel(cls.language_code, level, t)}` : ''}
+                            </span>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </>}
+                  actions={<>
+                    {canJoin && nextTeachSession && (
+                      <a href={`/classroom/${nextTeachSession.id}`} className={PRIMARY}>
+                        {isLive ? t('dashboard.startClass') : t('dashboard.openClassroomEarly')}
+                      </a>
+                    )}
+                    <button type="button" className={PILL}
+                      onClick={() => downloadClassIcs({ sessionId: nextTeachSession?.id, title: cls.title, start: nextTeach.at, durationMinutes: cls.duration_minutes })}>
+                      {t('dashboard.addToCalendar')}
+                    </button>
+                    <a href={`/classes/${cls.id}`} className={PILL}>📄 {t('dashboard.classPage')}</a>
+                    {nextTeachSession && <a href={`/chat/${nextTeachSession.id}`} className={PILL}>{t('chat.open')}</a>}
+                  </>}/>
               </Panel>
             )
           })() : (
@@ -1044,9 +1018,11 @@ export default function Dashboard() {
             <Link href="/classes/create" className={`${PILL} mb-2`}>+ {t('dashboard.createAClass')}</Link>
             {upcomingTeaching.length === 0
               ? <p className="text-navy/65 text-sm">{t('dashboard.noUpcomingTeaching')}</p>
-              : <div className="space-y-1">
+              : <div className="space-y-3">
               {upcomingTeaching.map(cls => {
-                const session = cls.class_sessions?.[0]
+                // The next session, not the first: a weekly class's first
+                // one can already be over.
+                const session = nextSession(cls) || cls.class_sessions?.[0]
                 const { scheduledAt, isClassOver, isLive, canJoin } = sessionTiming(session, cls.duration_minutes, true)
 
                 return (
@@ -1086,34 +1062,22 @@ export default function Dashboard() {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-navy text-sm font-bold">{cls.title}</p>
-                          <p className="text-navy/65 text-xs mt-0.5">
-                            {scheduledAt ? formatInTimezone(scheduledAt, user.timezone, user.time_format) : t('dashboard.noTimeSet')}
-                          </p>
-                          {scheduledAt && session && !isClassOver && (
-                            <button type="button" className="text-navy/65 hover:text-brand-red text-xs font-bold mt-1 transition-colors"
+                      <ClassCard cls={cls} session={session} user={user}
+                        person={<p className="font-bold text-navy text-sm">👥 {(session?.taken ?? 0) > 0 ? t('dashboard.studentsBooked', { n: session.taken }) : t('dashboard.noStudentsYet')}</p>}
+                        status={isClassOver ? t('dashboard.ended') : undefined}
+                        actions={isClassOver ? null : <>
+                          {scheduledAt && session && (
+                            <button type="button" className={PILL}
                               onClick={() => downloadClassIcs({ sessionId: session.id, title: cls.title, start: scheduledAt, durationMinutes: cls.duration_minutes })}>
                               {t('dashboard.addToCalendar')}
                             </button>
                           )}
-                        </div>
-                        {isClassOver ? (
-                          <span className="text-navy/65 text-sm">{t('dashboard.ended')}</span>
-                        ) : (
-                          <div className="flex gap-2 flex-shrink-0 ml-4">
-                            <button onClick={() => startEditClass(cls)}
-                              className="border-2 border-navy/20 text-navy px-3 py-1.5 rounded-full text-xs font-bold hover:border-navy/40">
-                              {t('dashboard.edit')}
-                            </button>
-                            <button onClick={() => cancelTeachingClass(cls.id)} disabled={cancellingClassId === cls.id}
-                              className="border-2 border-brand-red/30 text-brand-red px-3 py-1.5 rounded-full text-xs font-bold hover:border-brand-red disabled:opacity-50">
-                              {cancellingClassId === cls.id ? t('dashboard.cancelling') : t('dashboard.cancelClass')}
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                          <button onClick={() => startEditClass(cls)} className={PILL}>✏️ {t('dashboard.edit')}</button>
+                          <button onClick={() => cancelTeachingClass(cls.id)} disabled={cancellingClassId === cls.id}
+                            className="border-2 border-brand-red/30 text-brand-red px-3 py-1.5 rounded-full text-sm font-bold hover:border-brand-red disabled:opacity-50">
+                            {cancellingClassId === cls.id ? t('dashboard.cancelling') : t('dashboard.cancelClass')}
+                          </button>
+                        </>}/>
                     )}
                   </div>
                 )
