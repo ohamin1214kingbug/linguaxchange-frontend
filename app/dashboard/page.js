@@ -135,6 +135,8 @@ export default function Dashboard() {
     setUser(parsedUser)
     setShowWelcome(!localStorage.getItem(WELCOME_DISMISSED_KEY))
     try { setModeChoice(localStorage.getItem(MODE_KEY)) } catch (e) {}
+    // /dashboard#report (the My reports page's button) opens the report form.
+    if (window.location.hash === '#report') setReporting(true)
     fetch(`${API}/api/classes`).then(r => r.json())
       .then(d => setPublicClasses(Array.isArray(d) ? d : [])).catch(() => {})
     fetchCredits()
@@ -511,10 +513,16 @@ export default function Dashboard() {
           <h1 className="font-display font-extrabold text-2xl md:text-3xl text-navy">
             {t('dashboard.welcomeBack', { name: user.first_name })}
           </h1>
+          <div className="flex gap-2 flex-wrap">
           <button onClick={() => { setReporting(o => !o); setReportState('') }}
             className="px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap border-2 border-navy/20 bg-white text-navy/65 hover:border-brand-red hover:text-brand-red transition-colors">
             🚩 {t('dashboard.reportSomeone')}
           </button>
+          <Link href="/reports"
+            className="px-4 py-2 rounded-full font-bold text-sm whitespace-nowrap border-2 border-navy/20 bg-white text-navy/65 hover:border-navy hover:text-navy transition-colors">
+            📋 {t('myReports.title')}
+          </Link>
+          </div>
         </div>
 
         {/* Two modes, each showing only what that role needs, plus the chats

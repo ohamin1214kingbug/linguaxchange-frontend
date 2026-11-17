@@ -32,6 +32,7 @@ function notificationHref(n) {
   // Someone answered a request you posted or backed — the class is on the
   // browse page waiting to be joined, not on your dashboard yet.
   if (n.type === 'request_fulfilled') return '/classes'
+  if (n.type === 'report_update') return '/reports'
   if (n.type === 'chat_message' && n.class_session_id) return `/chat/${n.class_session_id}`
   if ((n.type === 'request_offer' || n.type === 'request_chat') && n.request_id) return `/chat/request/${n.request_id}`
   return '/dashboard'
@@ -387,6 +388,7 @@ export default function Navbar() {
                     <a href="/dashboard" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('common.dashboard')}</a>
                     <a href="/history" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.myClasses')}</a>
                     <a href="/saved-teachers" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.savedTeachers')}</a>
+                    <a href="/reports" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('myReports.title')}</a>
                     <a href="/settings" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.settings')}</a>
                     <button onClick={() => window.confirm(t('common.logoutConfirm')) && logout()}
                       className="block w-full text-left px-4 py-2.5 text-sm font-medium text-brand-red hover:bg-cream transition-colors border-t border-navy/10">
