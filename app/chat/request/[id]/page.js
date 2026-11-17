@@ -168,6 +168,7 @@ export default function RequestChatPage() {
             <p className="text-navy text-sm mt-3">{t('reqchat.closedFulfilled')} <a href={`/classes/${r.fulfilled_class_id}`} className="font-bold underline">{t('reqchat.seeClass')} →</a></p>
           ) : <p className="text-navy/65 text-sm mt-3">{t('reqchat.closedExpired')}</p>}
           {error && <p className="text-brand-red text-xs font-bold mt-2">{t(error)}</p>}
+          <p className="text-navy/55 text-xs mt-3">🔒 {t('reqchat.privacy')} {t('chat.retention')}</p>
         </section>
         {data.is_teacher && !r.agreed_time && data.open && <a href={createHref} className={BUTTON}>{t('reqchat.createClass')} →</a>}
       </div>
