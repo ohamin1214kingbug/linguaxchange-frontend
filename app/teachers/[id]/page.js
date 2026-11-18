@@ -85,6 +85,8 @@ export default function TeacherProfile() {
       setViewerTimeFormat(viewer.time_format)
       setCurrentUser(viewer)
     }
+    // "🚩 Report" on the tandem chat links here with #report.
+    if (window.location.hash === '#report') setReporting(true)
     if (!stored || !token) return
     fetch(`${API}/api/saved-teachers`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())
