@@ -52,6 +52,7 @@ export default function Classroom() {
     }
 
     let cancelled = false
+    const tandemId = sessionId === 'tandem' ? new URLSearchParams(window.location.search).get('tandem') : null
 
     const connect = async () => {
       try {
@@ -61,7 +62,8 @@ export default function Classroom() {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
           },
-          body: JSON.stringify({ class_session_id: sessionId })
+          // /classroom/tandem?tandem=<id> is a tandem's call (app/tandem/[id]).
+          body: JSON.stringify(tandemId ? { tandem_id: tandemId } : { class_session_id: sessionId })
         })
         const data = await res.json()
 
@@ -104,7 +106,7 @@ export default function Classroom() {
         apiRef.current = api
 
         api.addEventListener('readyToClose', () => {
-          router.push('/dashboard')
+          router.push(tandemId ? `/tandem/${tandemId}` : '/dashboard')
         })
 
         if (!cancelled) setStatus('connected')

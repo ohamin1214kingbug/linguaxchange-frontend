@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import LanguageSwitcher from './LanguageSwitcher'
@@ -33,6 +34,7 @@ function notificationHref(n) {
   // browse page waiting to be joined, not on your dashboard yet.
   if (n.type === 'request_fulfilled') return '/classes'
   if (n.type === 'report_update') return '/reports'
+  if (n.type?.startsWith('tandem_')) return '/tandem'
   if (n.type === 'chat_message' && n.class_session_id) return `/chat/${n.class_session_id}`
   if ((n.type === 'request_offer' || n.type === 'request_chat') && n.request_id) return `/chat/request/${n.request_id}`
   return '/dashboard'
@@ -262,6 +264,7 @@ export default function Navbar() {
         <a href="/classes" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('common.exploreShort')}</a>
         <a href="/resources" className={`${user ? 'hidden sm:block' : ''} text-navy/70 font-medium hover:text-navy`}>{t('nav.resources')}</a>
         <a href="/people" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('nav.people')}</a>
+        {user && <Link href="/tandem" className="hidden md:block text-navy/70 font-medium hover:text-navy">{t('nav.tandem')}</Link>}
         <LanguageSwitcher />
 
         {!user && (
@@ -384,6 +387,7 @@ export default function Navbar() {
                     <a href="/classes" className="sm:hidden block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('common.exploreShort')}</a>
                     <a href="/resources" className="sm:hidden block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.resources')}</a>
                     <a href="/people" className="sm:hidden block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.people')}</a>
+                    <Link href="/tandem" className="md:hidden block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.tandem')}</Link>
                     <a href="/profile" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('common.profile')}</a>
                     <a href="/dashboard" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('common.dashboard')}</a>
                     <a href="/history" className="block px-4 py-2.5 text-sm font-medium text-navy hover:bg-cream transition-colors">{t('nav.myClasses')}</a>
