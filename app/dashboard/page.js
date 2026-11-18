@@ -11,6 +11,7 @@ import FirstClassChecklist from '../../components/FirstClassChecklist'
 import InviteCard from '../../components/InviteCard'
 import Panel from '../../components/Panel'
 import ChatList, { useChats } from '../../components/ChatsPanel'
+import SurveyCard from '../../components/SurveyCard'
 import TeachNudge from '../../components/TeachNudge'
 import ClassCard, { nextSession } from '../../components/ClassCard'
 import { isUnread } from '../../lib/chatSeen'
@@ -524,6 +525,8 @@ export default function Dashboard() {
           </Link>
           </div>
         </div>
+
+        <SurveyCard />
 
         {/* Two modes, each showing only what that role needs, plus the chats
             for both. The badge is what is waiting in each, so nothing hides

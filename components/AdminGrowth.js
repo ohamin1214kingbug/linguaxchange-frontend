@@ -15,6 +15,55 @@ const STEPS = [
 ]
 const pct = (n, of) => (of ? `${Math.round((n / of) * 100)}%` : '')
 
+// Survey answers (GET /api/admin/survey), English labels like the rest of
+// the admin page.
+const SURVEY = [
+  ['heard', 'How they heard', { instagram: '📸 Instagram', tiktok: '🎵 TikTok', youtube: '▶️ YouTube', poster: '📄 Poster', friend: '🧑‍🤝‍🧑 Friend', faculty: '🏫 Faculty / professor', google: '🔎 Google', other: '✏️ Other' }],
+  ['who', 'Who they are', { ucm: '🎓 UCM student', erasmus: '🌍 Erasmus / exchange', other_uni: '🏛️ Other university', not_student: '💼 Not a student' }],
+  ['goals', 'Why they learn', { speaking: '🗣️ Speaking', exam: '📝 Exam', travel: '✈️ Travel / abroad', career: '💼 Career', people: '🤝 Meeting people' }],
+  ['times', "When they're free", { weekday_morning: '🌅 Weekday mornings', weekday_afternoon: '☀️ Weekday afternoons', weekday_evening: '🌙 Weekday evenings', weekend: '🗓️ Weekends' }],
+]
+const faculties = obj => Object.entries(obj || {}).sort((a, b) => b[1] - a[1]).map(([f, n]) => `${f} ${n}`).join(', ')
+
+function SurveyResults() {
+  const [s, setS] = useState(null)
+  useEffect(() => {
+    fetch('/api/admin/survey', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
+      .then(r => (r.ok ? r.json() : null)).then(setS).catch(() => {})
+  }, [])
+  if (!s) return null
+  return (
+    <section className="bg-white rounded-2xl border-2 border-navy p-5">
+      <h2 className="font-display font-bold text-navy mb-1">🗳️ Survey · {s.answered} answered</h2>
+      {s.answered === 0 && <p className="text-navy/65 text-sm">No finished surveys yet. Members see it on their dashboard.</p>}
+      {s.answered > 0 && SURVEY.map(([key, title, labels]) => {
+        const max = Math.max(1, ...Object.values(s[key] || {}))
+        return (
+          <div key={key} className="mt-4">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-navy/55 mb-1.5">{title}</p>
+            {Object.entries(labels).filter(([v]) => (s[key] || {})[v] > 0).sort((a, b) => s[key][b[0]] - s[key][a[0]]).map(([v, label]) => (
+              <div key={v} className="flex items-center gap-2 mb-1">
+                <div className="w-1/3 shrink-0"><div style={{ width: `${Math.max(6, (s[key][v] / max) * 100)}%` }} className="h-4 border-2 border-navy rounded bg-brand-yellow/30"/></div>
+                <p className="text-sm font-bold text-navy">{label} · {s[key][v]}
+                  {key === 'heard' && v === 'poster' && faculties(s.posterFaculties) && <span className="text-navy/55 font-semibold"> ({faculties(s.posterFaculties)})</span>}
+                  {key === 'who' && v === 'ucm' && faculties(s.ucmFaculties) && <span className="text-navy/55 font-semibold"> ({faculties(s.ucmFaculties)})</span>}
+                </p>
+              </div>
+            ))}
+          </div>
+        )
+      })}
+      {s.heardOther?.length > 0 && <p className="text-sm text-navy mt-3"><b>“Other” sources:</b> {s.heardOther.join(' · ')}</p>}
+      {s.ideas?.length > 0 && (
+        <div className="mt-3">
+          <p className="text-xs font-extrabold uppercase tracking-wide text-navy/55 mb-1">Latest ideas</p>
+          <ul className="list-disc pl-5 text-sm text-navy space-y-0.5">{s.ideas.map((idea, i) => <li key={i}>{idea}</li>)}</ul>
+        </div>
+      )}
+    </section>
+  )
+}
+
 export default function AdminGrowth() {
   const [g, setG] = useState(null)
   const [error, setError] = useState('')
@@ -88,6 +137,7 @@ export default function AdminGrowth() {
           </tbody>
         </table>
       </section>
+      <SurveyResults />
     </div>
   )
 }
