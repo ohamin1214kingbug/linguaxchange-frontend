@@ -119,7 +119,18 @@ export default function VerifyPhone() {
       </div>
       <div className="bg-white p-8 rounded-2xl border-2 border-navy w-full max-w-md">
         <a href="/" className="font-display font-bold text-lg text-navy">Gongbu<span className="text-brand-red">Leng</span></a>
-        <h1 className="font-display font-extrabold text-navy text-3xl mt-4 mb-3">{t('auth.phoneTitle')} 🍌</h1>
+        {/* Where you are in signing up (owner request, 2026-11-19): about
+            half of the members who sign up with Google stop at this page. */}
+        <ol className="flex gap-1.5 mt-4" aria-label={t('auth.phoneMinute')}>
+          {[['stepAccount', 'done'], ['stepPhone', 'now'], ['stepLanguages', '']].map(([key, state]) => (
+            <li key={key} className="flex-1 text-center text-[11px] font-bold text-navy" aria-current={state === 'now' ? 'step' : undefined}>
+              <span className={`block h-1.5 rounded-full mb-1 ${state === 'done' ? 'bg-brand-teal-dark' : state === 'now' ? 'bg-brand-red' : 'bg-navy/15'}`}/>
+              {t(`auth.${key}`)}{state === 'done' ? ' ✓' : ''}
+            </li>
+          ))}
+        </ol>
+        <h1 className="font-display font-extrabold text-navy text-3xl mt-3 mb-1">{t('auth.phoneTitleLast')} 🍌</h1>
+        <p className="text-navy/65 text-sm mb-3">{t('auth.phoneMinute')}</p>
 
         {error && (
           <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{t(error)}</div>
@@ -161,10 +172,16 @@ export default function VerifyPhone() {
               className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors disabled:opacity-50">
               {verifyLoading ? t('auth.verifyingCode') : t('auth.phoneConfirm')}
             </button>
-            <p className="text-xs text-navy/65">
-              <button onClick={sendOtp} disabled={otpLoading} className="underline font-bold">{t('auth.resendCode')}</button>
-              {' · '}{t('auth.phoneResendHint')}
-            </p>
+            {/* When the SMS never comes, the member can tell us instead of
+                quietly giving up (owner request, 2026-11-19). */}
+            <div className="border-2 border-dashed border-navy rounded-xl px-3 py-2.5 text-xs text-navy space-y-1">
+              <p className="font-bold text-sm">{t('auth.noCodeTitle')}</p>
+              <p>① {t('auth.noCodeCountry')}</p>
+              <p>② <button onClick={sendOtp} disabled={otpLoading} className="underline font-bold">{t('auth.resendCode')}</button>{' · '}{t('auth.phoneResendHint')}</p>
+              <p>③ {t('auth.noCodeStill')}{' '}
+                <a href={`mailto:gongbuleng.team@gmail.com?subject=${encodeURIComponent('No SMS code')}&body=${encodeURIComponent(`${t('auth.noCodeMailBody')} ${phone}`)}`} className="underline font-bold">{t('auth.noCodeTell')}</a>
+                {' '}{t('auth.noCodeTail')}</p>
+            </div>
           </div>
         )}
       </div>
