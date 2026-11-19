@@ -9,9 +9,18 @@ import { LANGUAGE_COLORS } from '../lib/languages'
 export default function Home() {
   const { t } = useLanguage()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  // Upcoming classes per language, so a language with none offers "Ask for
+  // one" instead of an empty list. null until loaded (links stay as today).
+  const [classCounts, setClassCounts] = useState(null)
 
   useEffect(() => {
     setIsLoggedIn(!!(localStorage.getItem('user') && localStorage.getItem('token')))
+    fetch('/api/classes').then(r => (r.ok ? r.json() : null)).then(list => {
+      if (!Array.isArray(list)) return
+      const counts = {}
+      for (const c of list) counts[c.language_code] = (counts[c.language_code] || 0) + 1
+      setClassCounts(counts)
+    }).catch(() => {})
   }, [])
 
   const LANGUAGES = [
@@ -26,10 +35,13 @@ export default function Home() {
     { code: 'IT', flag: '🇮🇹', name: t('home.langItalian'), greeting: 'Ciao', ink: 'text-navy' },
   ]
 
-  const STEPS = [
-    { n: '01', color: 'bg-brand-red', icon: '👤', title: t('home.step1Title'), text: t('home.step1Text') },
-    { n: '02', color: 'bg-brand-blue', icon: '🌐', title: t('home.step2Title'), text: t('home.step2Text') },
-    { n: '03', color: 'bg-brand-yellow', ink: 'text-navy', icon: '💬', title: t('home.step3Title'), text: t('home.step3Text') },
+  // Four ways to practise (owner-approved sample, 2026-11-19): what the
+  // site offers beyond a class list, since most languages have no class yet.
+  const WAYS = [
+    { icon: '🎧', tint: 'bg-brand-blue/25', href: '/classes', title: t('home.way1Title'), text: t('home.way1Text') },
+    { icon: '🙋', tint: 'bg-brand-yellow/50', href: '/classes?tab=requests', title: t('home.way2Title'), text: t('home.way2Text') },
+    { icon: '🤝', tint: 'bg-brand-green/30', href: '/tandem', title: t('home.way3Title'), text: t('home.way3Text') },
+    { icon: '📚', tint: 'bg-brand-coral/30', href: '/resources', title: t('home.way4Title'), text: t('home.way4Text') },
   ]
 
   return (
@@ -52,7 +64,8 @@ export default function Home() {
                 renders this nav instead of components/Navbar.js — so without
                 a link here the study guides are reachable only by URL for
                 exactly the audience they were written for. */}
-            <a href="/resources" className="text-navy/70 font-medium hover:text-navy">{t('nav.resources')}</a>
+            <a href="/how-it-works" className="text-navy/70 font-medium hover:text-navy whitespace-nowrap">{t('how.navLink')}</a>
+            <a href="/resources" className="hidden sm:block text-navy/70 font-medium hover:text-navy">{t('nav.resources')}</a>
             {/* Sign in and Join free trade places at the sm breakpoint,
                 because five items do not fit at 375px and something has to
                 give.
@@ -83,19 +96,15 @@ export default function Home() {
         <div className="max-w-6xl mx-auto grid md:grid-cols-[1.2fr_1fr] gap-12 lg:gap-16 items-center">
           <div>
           <div className="inline-flex items-center gap-2 bg-white border-2 border-navy rounded-full px-4 py-1.5 mb-8 text-xs md:text-sm font-bold text-navy">
-            <span className="w-2 h-2 rounded-full bg-brand-red animate-pulse" />
-            {t('home.heroBadge')}
+            🍌 {t('home.heroBadgeFree')}
           </div>
 
           <h1 className="font-display font-extrabold text-navy leading-[1.15] text-5xl sm:text-6xl md:text-5xl lg:text-6xl mb-6">
-            {t('home.heroTitle1')}<span className="text-brand-red underline decoration-brand-yellow decoration-[6px] md:decoration-[8px] underline-offset-8">
-              {t('home.heroTitle2')}
-            </span><br/>
-            {t('home.heroTitle3')}
+            {t('home.heroLearn1')}<span className="text-brand-red">{t('home.heroLearn2')}</span>{t('home.heroLearn3')}
           </h1>
 
           <p className="text-lg md:text-xl text-navy/65 mb-10 max-w-xl">
-            {t('home.heroSubtext')}
+            {t('home.heroSub2')}
           </p>
 
           <div className="flex flex-wrap gap-4">
@@ -166,49 +175,44 @@ export default function Home() {
             aria-label reuses the section's own eyebrow rather than adding a
             "scroll down" key to five locales — naming the destination is what
             a link's accessible name is for anyway. */}
-        <a href="#how-it-works" aria-label={t('home.methodEyebrow')}
+        <a href="#how-it-works" aria-label={t('home.waysTitle')}
           className="hidden md:flex mt-20 md:mt-28 mx-auto w-12 h-12 rounded-full border-2 border-navy/20 bg-white/70 text-navy text-xl items-center justify-center hover:border-navy hover:bg-white transition-colors motion-safe:animate-bounce">
           ↓
         </a>
       </section>
 
-      {/* How it works */}
+      {/* Four ways to practise (replaces the three generic steps, which
+          moved to /how-it-works). id kept so the hero's arrow still lands. */}
       <section id="how-it-works" className="px-4 md:px-8 py-16 md:py-24 max-w-5xl mx-auto scroll-mt-20">
-        <p className="text-brand-red font-bold tracking-widest text-sm mb-3">{t('home.methodEyebrow')}</p>
-        <h2 className="font-display font-extrabold text-navy text-4xl md:text-5xl mb-12 md:mb-16 leading-tight">
-          {t('home.methodTitle1')}<br/>{t('home.methodTitle2')}
-        </h2>
-
-        {/* An arrow between the cards (sideways on wide screens, downwards on
-            phones) so the three read as one sequence, not three features. */}
-        <ol className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch gap-3 md:gap-4">
-          {STEPS.map((step, i) => (
-            <li key={step.n} className="contents">
-              {i > 0 && <span aria-hidden="true" className="self-center justify-self-center text-2xl text-navy/30 rotate-90 md:rotate-0">→</span>}
-              <div className="relative bg-white border-2 border-navy rounded-2xl p-6 shadow-[4px_4px_0_var(--color-navy)]">
-                <div className="flex items-center justify-between mb-5">
-                  <div className={`w-14 h-14 rounded-xl ${step.color} border-2 border-navy flex items-center justify-center text-2xl`}>
-                    {step.icon}
-                  </div>
-                  <div className={`w-10 h-10 rounded-full ${step.color} border-2 border-navy flex items-center justify-center ${step.ink || 'text-white'} font-display font-bold`}>
-                    {Number(step.n)}
-                  </div>
-                </div>
-                <h3 className="font-display font-bold text-xl text-navy mb-2">{step.title}</h3>
-                <p className="text-navy/65 leading-relaxed">{step.text}</p>
-              </div>
-            </li>
+        <h2 className="font-display font-extrabold text-navy text-4xl md:text-5xl mb-10 md:mb-12 leading-tight">{t('home.waysTitle')}</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {WAYS.map(way => (
+            <Link key={way.href} href={way.href}
+              className="flex items-start gap-4 bg-white border-2 border-navy rounded-2xl p-5 shadow-[4px_4px_0_var(--color-navy)] hover:-translate-y-0.5 transition-transform">
+              <span aria-hidden="true" className={`w-12 h-12 shrink-0 rounded-xl border-2 border-navy flex items-center justify-center text-2xl ${way.tint}`}>{way.icon}</span>
+              <span>
+                <span className="block font-display font-bold text-xl text-navy">{way.title}</span>
+                <span className="block text-navy/70 mt-1 leading-relaxed">{way.text}</span>
+              </span>
+            </Link>
           ))}
-        </ol>
+        </div>
+        <p className="mt-6 text-navy/70">
+          <Link href="/how-it-works" className="font-bold underline decoration-2 underline-offset-4 hover:text-navy">{t('how.navLink')} →</Link>
+        </p>
 
-        {/* Second and last cue. The hero's earns its place because nothing
-            above the fold hints at a page below it; this one carries a reader
-            who has finished the three steps into the languages. A third would
-            be noise — by then scrolling is established. */}
-        <a href="#languages" aria-label={t('home.languagesEyebrow')}
-          className="mt-16 md:mt-20 mx-auto w-12 h-12 rounded-full border-2 border-navy/20 bg-white/70 text-navy text-xl flex items-center justify-center hover:border-navy hover:bg-white transition-colors motion-safe:animate-bounce">
-          ↓
-        </a>
+        {/* Teaching is the site's real bottleneck: most members teach Korean,
+            while learners want Spanish and other languages. */}
+        <div className="mt-12 bg-brand-yellow border-2 border-navy rounded-3xl p-6 md:p-8 shadow-[6px_6px_0_var(--color-navy)]">
+          <h2 className="font-display font-extrabold text-navy text-3xl md:text-4xl leading-tight">🧑‍🏫 {t('home.teachTitle')}</h2>
+          <p className="text-navy/80 text-lg mt-3 max-w-2xl">{t('home.teachBody')}</p>
+          <div className="flex flex-wrap gap-3 mt-6">
+            <Link href={isLoggedIn ? '/classes/create' : '/auth/register'}
+              className="bg-brand-red text-white px-6 py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark transition-colors">{t('home.teachCreate')}</Link>
+            <Link href="/teach/slides"
+              className="bg-white text-navy px-6 py-3 rounded-full font-bold border-2 border-navy hover:bg-cream transition-colors">📊 {t('teachSlides.title')}</Link>
+          </div>
+        </div>
       </section>
 
       {/* Languages */}
@@ -236,7 +240,9 @@ export default function Home() {
                 </div>
                 <p className="text-white font-display font-bold text-xl mb-1">{lang.name}</p>
                 <p className="text-sm text-white/65">
-                  <Link href={`/classes?language=${lang.code}`} className="hover:text-white">{t('classes.browseClasses')}</Link>
+                  {classCounts && !classCounts[lang.code]
+                    ? <Link href={`/classes?tab=requests&language=${lang.code}`} className="hover:text-white font-bold text-brand-yellow">{t('home.askForOne')}</Link>
+                    : <Link href={`/classes?language=${lang.code}`} className="hover:text-white">{t('classes.browseClasses')}</Link>}
                   {' · '}
                   <Link href={`/resources/${lang.code.toLowerCase()}/a1`} className="hover:text-white">{t('nav.resources')}</Link>
                 </p>
