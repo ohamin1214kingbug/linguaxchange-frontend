@@ -72,7 +72,7 @@ export default async function ClassesPage({ searchParams }) {
       serverFetched={classes !== null}
       initialLanguage={sp?.language ? String(sp.language).toUpperCase() : 'all'}
       initialLevel={sp?.level ? String(sp.level).toUpperCase() : 'all'}
-      initialTab={sp?.tab === 'requests' ? 'requests' : 'classes'}
+      initialTab={['requests', 'assignments'].includes(sp?.tab) ? sp.tab : 'classes'}
     />
   )
 }

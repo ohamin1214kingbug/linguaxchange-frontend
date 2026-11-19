@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { setTandemOpen } from '../../components/TandemSwitch'
+import { userCode } from '../../lib/userCode'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Navbar from '../../components/Navbar'
@@ -52,6 +53,7 @@ export default function WelcomePage() {
   const [classes, setClasses] = useState([])
   const [bananas, setBananas] = useState(null)
   const [tandemAsk, setTandemAsk] = useState(true)
+  const [inviteCopied, setInviteCopied] = useState(false)
 
   const auth = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
 
@@ -242,6 +244,13 @@ export default function WelcomePage() {
               <p className="font-display font-extrabold text-5xl text-navy text-center mt-3">🍌 {bananas}</p>
               <p className="text-navy/65 text-sm text-center">{t('welcome.doneBananas')}</p>
             </>)}
+            {/* Plan 6: the invite reward, one line (2026-11-19). */}
+            <p className="bg-brand-coral/15 border-2 border-navy rounded-xl px-3 py-2 mt-4 text-sm text-navy">
+              💌 <b>{t('invite.welcomeTitle')}</b> {t('invite.welcomeNote')}{' '}
+              <button type="button" className="font-bold underline" onClick={async () => {
+                try { await navigator.clipboard.writeText(`https://gongbuleng.com/?invite=${userCode(me.id)}`); setInviteCopied(true) } catch {}
+              }}>{inviteCopied ? t('dashboard.inviteCopied') : t('invite.copyMine')}</button>
+            </p>
             {forMe.length > 0 && <p className="text-sm font-bold text-navy mt-5 mb-2">{t('welcome.classesForYou')}</p>}
             <div className="space-y-2">
               {forMe.slice(0, 3).map(c => (

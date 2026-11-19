@@ -39,10 +39,23 @@ export default function InviteCard({ userId, t }) {
           {copied ? t('dashboard.inviteCopied') : t('dashboard.inviteCopy')}
         </button>
       </div>
-      {stats && stats.joined > 0 && (
-        <p className="text-navy text-sm font-medium mt-3">
-          {t('dashboard.inviteStats', { joined: stats.joined, rewarded: stats.rewarded })}
-        </p>
+      {stats && (
+        // Progress you can see (owner plan 6): one dot per rewarded invite,
+        // out of the cap (backend MAX_REWARDED_INVITES).
+        <div className="mt-3">
+          {stats.joined > 0 && (
+            <p className="text-navy text-sm font-medium">
+              {t('dashboard.inviteStats', { joined: stats.joined, rewarded: stats.rewarded })}
+              {stats.rewarded > 0 && <b> · {t('invite.earned', { n: Math.min(stats.rewarded, stats.max_rewarded || 10) })}</b>}
+            </p>
+          )}
+          <div className="flex gap-1 mt-1.5" aria-hidden="true">
+            {Array.from({ length: stats.max_rewarded || 10 }, (_, i) => (
+              <span key={i} className={`w-4 h-4 rounded-full border-2 border-navy ${i < stats.rewarded ? 'bg-brand-yellow' : 'bg-white'}`}/>
+            ))}
+          </div>
+          <p className="text-navy/65 text-xs mt-1">{t('invite.left', { n: Math.max(0, (stats.max_rewarded || 10) - stats.rewarded), max: stats.max_rewarded || 10 })}</p>
+        </div>
       )}
     </div>
   )

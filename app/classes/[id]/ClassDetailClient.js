@@ -1,5 +1,6 @@
 'use client'
 import { levelLabel } from '../../../lib/languages'
+import JoinedShare from '../../../components/JoinedShare'
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
@@ -189,7 +190,7 @@ export default function ClassDetailClient({ initialClass = null }) {
       const data = await res.json()
       if (!res.ok) setJoinMessage({ ok: false, text: data.error || 'classes.errorJoinClass' })
       else {
-        setJoinMessage({ ok: true, text: 'classes.successfullyJoined' })
+        setJoinMessage({ ok: true })
         setJoined(true)
         window.dispatchEvent(new Event('credits-changed'))
       }
@@ -222,7 +223,8 @@ export default function ClassDetailClient({ initialClass = null }) {
           )}
           {next && <ShareClass cls={cls} session={next} user={currentUser}/>}
         </div>
-        {joinMessage && (
+        {joinMessage?.ok && <JoinedShare cls={cls} session={next && { ...next, taken: (next.taken || 0) + 1 }} user={currentUser} onClose={() => setJoinMessage(null)}/>}
+        {joinMessage && !joinMessage.ok && (
           <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${joinMessage.ok ? 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30' : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>
             {t(joinMessage.text)}
           </div>
