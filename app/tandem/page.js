@@ -104,9 +104,9 @@ function Partners({ t, lang, router }) {
     return r
   }
   const toggle = () => run(async () => {
-    const ok = await setTandemOpen(!data.open)
-    if (ok) load()
-    return { ok, error: 'tandem.failed' }
+    const r = await setTandemOpen(!data.open)
+    if (r.ok) load()
+    return r
   })
   const sendHello = () => run(async () => {
     const r = await post('/api/tandems', { partner_id: asking.id, message: hello })

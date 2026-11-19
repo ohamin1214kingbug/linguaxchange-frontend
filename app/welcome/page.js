@@ -266,14 +266,14 @@ export default function WelcomePage() {
                 </Link>
               ))}
             </div>
-            {tandemAsk && !me.tandem_open && teach.code && Object.keys(learn).length > 0 && (
+            {tandemAsk && !me.tandem_open && me.phone_verified !== false && teach.code && Object.keys(learn).length > 0 && (
               // Plan B (2026-11-19): offer a tandem partner on the last screen,
               // so sign-up stays 3 steps.
               <div className="bg-brand-green/10 border-2 border-navy rounded-xl p-3 mt-5">
                 <p className="font-bold text-navy">🤝 {t('tandem.welcomeTitle')}</p>
                 <p className="text-navy/65 text-sm mt-0.5 mb-3">{t('tandem.welcomeNote', { teach: name(teach.code)?.name, learn: Object.keys(learn).map(c => name(c)?.name).join(', ') })}</p>
                 <div className="flex gap-2">
-                  <button type="button" disabled={busy} onClick={async () => { setBusy(true); if (await setTandemOpen(true)) router.push('/tandem'); else setBusy(false) }}
+                  <button type="button" disabled={busy} onClick={async () => { setBusy(true); if ((await setTandemOpen(true)).ok) router.push('/tandem'); else setBusy(false) }}
                     className="flex-1 bg-brand-red text-white border-2 border-navy rounded-full py-2 font-bold text-sm">{t('tandem.welcomeYes')}</button>
                   <button type="button" onClick={() => setTandemAsk(false)} className="flex-1 bg-white border-2 border-navy rounded-full py-2 font-bold text-sm text-navy">{t('tandem.notNow')}</button>
                 </div>

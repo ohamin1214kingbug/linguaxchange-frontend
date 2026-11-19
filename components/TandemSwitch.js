@@ -14,13 +14,18 @@ export function SwitchButton({ checked, onClick, disabled, label }) {
   )
 }
 
+// { ok, error }: error is a translation key (common.phoneRequired when the
+// phone isn't verified yet), so callers can show it with t().
 export async function setTandemOpen(open) {
-  const res = await fetch('/api/tandems/open', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
-    body: JSON.stringify({ open }),
-  })
-  return res.ok
+  try {
+    const res = await fetch('/api/tandems/open', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
+      body: JSON.stringify({ open }),
+    })
+    const d = await res.json().catch(() => ({}))
+    return res.ok ? { ok: true } : { ok: false, error: d.error || 'tandem.failed' }
+  } catch { return { ok: false, error: 'tandem.failed' } }
 }
 
 // Profile page card (plan B): the same switch for members who never visit
@@ -29,6 +34,7 @@ export default function TandemSwitch() {
   const { t } = useLanguage()
   const [open, setOpen] = useState(null)
   const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     fetch('/api/users/me', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } })
@@ -37,8 +43,10 @@ export default function TandemSwitch() {
 
   if (open === null) return null
   const toggle = async () => {
-    setBusy(true)
-    if (await setTandemOpen(!open)) setOpen(!open)
+    setBusy(true); setError('')
+    const r = await setTandemOpen(!open)
+    if (r.ok) setOpen(!open)
+    else setError(r.error)
     setBusy(false)
   }
   return (
@@ -46,6 +54,7 @@ export default function TandemSwitch() {
       <div>
         <p className="font-bold text-navy">🤝 {t('tandem.switchLabel')}</p>
         <p className="text-navy/65 text-sm mt-0.5">{t(open ? 'tandem.profileOn' : 'tandem.profileOff')} <Link href="/tandem" className="font-bold underline">{t('tandem.title')} →</Link></p>
+        {error && <p className="text-brand-red text-xs font-bold mt-1">{t(error)}</p>}
       </div>
       <SwitchButton checked={open} onClick={toggle} disabled={busy} label={t('tandem.switchLabel')}/>
     </div>
