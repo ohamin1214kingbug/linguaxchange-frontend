@@ -623,7 +623,9 @@ export default function Admin() {
               {user.first_name?.[0]}{user.last_name?.[0]}
             </div>
             <div className="min-w-0">
-              <p className="font-bold text-navy">{user.first_name} {user.last_name}</p>
+              <p className="font-bold text-navy">{user.first_name} {user.last_name}
+                {user.phone_verified === false && <span title="Signed up with Google but never verified a phone: don't approve yet" className="ml-2 align-middle text-[11px] font-bold border-2 border-brand-red/40 text-brand-red rounded-full px-2 py-0.5">📱 not verified</span>}
+              </p>
               <p className="text-navy/65 text-sm break-all">{user.email} · <span className="font-mono font-bold">{userCode(user.id)}</span></p>
               <p className="text-navy/65 text-xs">{facts.join(' · ')}</p>
             </div>

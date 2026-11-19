@@ -138,7 +138,10 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
     const res = await authed(`/api/requests/${req.id}/offer`, { method: 'POST' })
     setBusy(null)
     if (res?.ok) router.push(`/chat/request/${req.id}`)
-    else setError('reqchat.offerFailed')
+    else {
+      const d = await res?.json().catch(() => ({}))
+      setError(d?.code === 'PHONE_REQUIRED' ? d.error : 'reqchat.offerFailed')
+    }
   }
 
   const teachHref = (req) => '/classes/create?' + new URLSearchParams({
