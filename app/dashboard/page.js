@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import EarnBananas from '../../components/EarnBananas'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
@@ -882,6 +883,7 @@ export default function Dashboard() {
                 {showAllTx ? t('dashboard.hideHistory') : t('dashboard.showAllHistory')}
               </button>
             </div>
+            <EarnBananas credits={credits} userId={user.id}/>
             {!showAllTx && transactions.length > 0 && (
               <p className="text-navy/65 text-xs mt-3">
                 {t('dashboard.recentBananas')}: {transactions.slice(0, 3).map(tx => `${tx.amount > 0 ? '+' : ''}${tx.amount} ${tx.description}`).join(' · ')}
@@ -912,7 +914,7 @@ export default function Dashboard() {
             </div>}
           </Panel>
 
-          <Panel icon="💌" tone="bg-brand-coral/30" title={t('dashboard.inviteTitle')} note={t('dashboard.inviteBody')}>
+          <Panel icon="💌" tone="bg-brand-coral/30" title={`${t('dashboard.inviteTitle')} · ${t('invite.titleChip')}`} note={t('dashboard.inviteBody')}>
             <InviteCard userId={user.id} t={t} />
           </Panel>
         </>)}

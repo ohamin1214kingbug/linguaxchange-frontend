@@ -1,5 +1,6 @@
 'use client'
 import { levelLabel, LEVELS } from '../../lib/languages'
+import JoinedShare from '../../components/JoinedShare'
 import { TandemGroupsStrip } from '../../components/TandemCard'
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
@@ -29,6 +30,7 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
   const [teacherOptions, setTeacherOptions] = useState([])
   const [loading, setLoading] = useState(!serverFetched)
   const [tab, setTab] = useState(initialTab)
+  const [justJoined, setJustJoined] = useState(null)
   const [filter, setFilter] = useState(initialLanguage)
   const [levelFilter, setLevelFilter] = useState(initialLevel)
   const [teacherFilter, setTeacherFilter] = useState('all')
@@ -134,8 +136,11 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
         setMessage(data.error || 'classes.errorJoinClass')
         setMessageOk(false)
       } else {
-        setMessage('classes.successfullyJoined')
-        setMessageOk(true)
+        // The "bring a friend" box replaces the plain success line (plan 6).
+        setMessage('')
+        const next = nextSession(cls)
+        setJustJoined({ cls, session: next && { ...next, taken: (next.taken || 0) + 1 }, user })
+        window.scrollTo({ top: 0, behavior: 'smooth' })
         window.dispatchEvent(new Event('credits-changed'))
         fetchJoinedClassIds(token).then(setJoinedClassIds)
       }
@@ -195,6 +200,7 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
         </div>
 
         <TandemGroupsStrip />
+        {justJoined && <JoinedShare cls={justJoined.cls} session={justJoined.session} user={justJoined.user} onClose={() => setJustJoined(null)}/>}
 
         {message && (
           <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${messageOk ? 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30' : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>
