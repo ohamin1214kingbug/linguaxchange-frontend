@@ -19,10 +19,11 @@ const CARD = 'border-2 border-navy rounded-2xl overflow-hidden shadow-[4px_4px_0
 // "Loading" and contained no link to any guide — leaving the four
 // server-rendered guide pages with no internal inbound links at all, findable
 // only through the sitemap.
-export default function ResourcesGridClient({ initialResources = [], serverFetched = false }) {
+export default function ResourcesGridClient({ initialResources = [], serverFetched = false, initialTab = 'study' }) {
   const { t } = useLanguage()
   const [resources, setResources] = useState(initialResources)
   const [loading, setLoading] = useState(!serverFetched)
+  const [tab, setTab] = useState(initialTab)
 
   useEffect(() => {
     // The server already fetched this; refetching would only repeat a request
@@ -50,11 +51,35 @@ export default function ResourcesGridClient({ initialResources = [], serverFetch
           <span className="bg-white border-2 border-navy rounded-full px-3 py-0.5" aria-hidden="true">{languages.map(l => l.flag).join(' ')}</span>
         </div>
         <h1 className="font-display font-extrabold text-3xl md:text-4xl text-navy mb-2">{t('resources.title')}</h1>
-        <p className="text-navy/65 mb-8 max-w-xl">{t('resources.subtitle')}</p>
+        <p className="text-navy/65 mb-5 max-w-xl">{t('resources.subtitle')}</p>
 
-        {loading && <p className="text-navy/65">{t('common.loading')}</p>}
+        {/* Study guides and teachers' guides, kept apart (owner choice,
+            2026-11-19). The tab is mirrored in the URL so it can be linked. */}
+        <div role="tablist" className="inline-flex border-2 border-navy rounded-full bg-white overflow-hidden mb-7">
+          {[['study', `📚 ${t('resources.tabStudy')}`], ['teachers', `🧑‍🏫 ${t('resources.tabTeachers')}`]].map(([key, label]) => (
+            <button key={key} role="tab" aria-selected={tab === key}
+              onClick={() => { setTab(key); window.history.replaceState(null, '', key === 'teachers' ? '/resources?tab=teachers' : '/resources') }}
+              className={`px-4 py-1.5 text-sm font-bold ${tab === key ? 'bg-navy text-white' : 'text-navy'}`}>{label}</button>
+          ))}
+        </div>
 
-        {!loading && (
+        {tab === 'teachers' && (
+          <section className={`${CARD} bg-white max-w-2xl`}>
+            <div className="h-2.5 border-b-2 border-navy bg-brand-red" />
+            <div className="p-5">
+              <h2 className="font-display font-extrabold text-xl text-navy">📊 {t('teachSlides.title')}</h2>
+              <p className="text-navy/70 text-sm mt-1">{t('resources.slidesCardBody')}</p>
+              <div className="flex flex-wrap gap-2 mt-4">
+                <Link href="/teach/slides" className="bg-brand-red text-white border-2 border-navy rounded-full px-5 py-2 text-sm font-bold hover:bg-brand-red-dark transition-colors">{t('resources.readGuide')} →</Link>
+                <a href="/teach/gongbuleng-class-slides.pptx" download className="bg-white text-navy border-2 border-navy rounded-full px-5 py-2 text-sm font-bold hover:bg-cream transition-colors">⬇️ {t('resources.templateBtn')}</a>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {tab === 'study' && loading && <p className="text-navy/65">{t('common.loading')}</p>}
+
+        {tab === 'study' && !loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {languages.map(lang => {
               const color = LANGUAGE_COLORS[lang.code]

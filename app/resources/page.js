@@ -56,11 +56,13 @@ export async function generateMetadata() {
   }
 }
 
-export default async function ResourcesPage() {
+export default async function ResourcesPage({ searchParams }) {
+  const sp = await searchParams
   // Same request as generateMetadata; Next.js deduplicates it.
   const resources = await loadResources()
   // Same distinction the classes page needs: an empty result is not the same
   // as no result. Without it, a grid with no published guides would render its
   // loading state to crawlers rather than its empty state.
-  return <ResourcesGridClient initialResources={resources || []} serverFetched={resources !== null} />
+  // ?tab=teachers opens the teachers' tab (owner request, 2026-11-19).
+  return <ResourcesGridClient initialResources={resources || []} serverFetched={resources !== null} initialTab={sp?.tab === 'teachers' ? 'teachers' : 'study'} />
 }
