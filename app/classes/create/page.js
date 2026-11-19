@@ -313,6 +313,11 @@ export default function CreateClass() {
                 className="w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 focus:border-brand-red focus:outline-none transition-colors"
                 placeholder={t('classes.customTopicPlaceholder')}/>
             )}
+            {/* The slides guide (app/teach/slides), owner request 2026-11-19. */}
+            <p className="text-navy/75 text-xs mt-2 bg-brand-yellow/20 border-2 border-navy/15 rounded-xl px-3 py-2">
+              📊 <b>{t('teachSlides.createTipTitle')}</b> {t('teachSlides.createTip')}{' '}
+              <a href="/teach/slides" target="_blank" rel="noopener" className="font-bold underline">{t('teachSlides.createTipLink')}</a>
+            </p>
           </div>
 
           <div>

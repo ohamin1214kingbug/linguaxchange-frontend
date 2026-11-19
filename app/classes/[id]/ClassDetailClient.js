@@ -294,7 +294,7 @@ export default function ClassDetailClient({ initialClass = null }) {
 
               <div className="mt-5 border-t border-navy/10 pt-4">
                 <p className="font-display font-bold text-navy text-sm mb-1">{t('classDetail.pdfTitle')}</p>
-                <p className="text-navy/65 text-xs mb-3">{t('classDetail.pdfNote')}</p>
+                <p className="text-navy/65 text-xs mb-3">{t('classDetail.pdfNote')} <a href="/teach/slides" className="font-bold underline">{t('teachSlides.noSlidesYet')}</a></p>
 
                 {cls.lesson_plan_url && (
                   <a href={cls.lesson_plan_url} target="_blank" rel="noopener noreferrer"
