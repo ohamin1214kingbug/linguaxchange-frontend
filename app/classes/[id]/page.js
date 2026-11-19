@@ -35,7 +35,7 @@ export async function generateMetadata({ params }) {
   // beats an empty one, which search engines fill in themselves using whatever
   // text they happen to find first on the page.
   const description = cls.description?.trim()
-    || `A live ${language} class at ${cls.level} level on GongbuLeng. Small group, no subscription.`
+    || `A live ${language} class at ${cls.level} level on GongbuLeng. Small group, no money involved.`
 
   const url = `${SITE}/classes/${id}`
   return {

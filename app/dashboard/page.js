@@ -13,6 +13,7 @@ import Panel from '../../components/Panel'
 import ChatList, { useChats } from '../../components/ChatsPanel'
 import SurveyCard from '../../components/SurveyCard'
 import TandemCard from '../../components/TandemCard'
+import ShareClass from '../../components/ShareClass'
 import TeachNudge from '../../components/TeachNudge'
 import ClassCard, { nextSession } from '../../components/ClassCard'
 import { isUnread } from '../../lib/chatSeen'
@@ -958,6 +959,9 @@ export default function Dashboard() {
                     )}
                   </>}
                   actions={<>
+                    {!isLive && nextTeachSession && (cls.max_students || 0) > nextStudents.length && (
+                      <ShareClass cls={cls} session={{ ...nextTeachSession, taken: nextStudents.length }} user={user} small/>
+                    )}
                     {canJoin && nextTeachSession && (
                       <a href={`/classroom/${nextTeachSession.id}`} className={PRIMARY}>
                         {isLive ? t('dashboard.startClass') : t('dashboard.openClassroomEarly')}
@@ -1076,9 +1080,15 @@ export default function Dashboard() {
                       </div>
                     ) : (
                       <ClassCard cls={cls} session={session} user={user}
-                        person={<p className="font-bold text-navy text-sm">👥 {(session?.taken ?? 0) > 0 ? t('dashboard.studentsBooked', { n: session.taken }) : t('dashboard.noStudentsYet')}</p>}
+                        person={<>
+                          <p className="font-bold text-navy text-sm">👥 {(session?.taken ?? 0) > 0 ? t('dashboard.studentsBooked', { n: session.taken }) : t('dashboard.noStudentsYet')}</p>
+                          {!isClassOver && session && (session.taken ?? 0) < (cls.max_students || 0) && (
+                            <p className="text-navy/75 text-xs mt-2 bg-[#fff8e6] border-2 border-dashed border-navy/40 rounded-xl px-2.5 py-1.5">💡 {t('share.teacherTip')}</p>
+                          )}
+                        </>}
                         status={isClassOver ? t('dashboard.ended') : undefined}
                         actions={isClassOver ? null : <>
+                          {session && (session.taken ?? 0) < (cls.max_students || 0) && <ShareClass cls={cls} session={session} user={user} small/>}
                           {scheduledAt && session && (
                             <button type="button" className={PILL}
                               onClick={() => downloadClassIcs({ sessionId: session.id, title: cls.title, start: scheduledAt, durationMinutes: cls.duration_minutes })}>
