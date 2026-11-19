@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { setTandemOpen } from '../../components/TandemSwitch'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Navbar from '../../components/Navbar'
@@ -50,6 +51,7 @@ export default function WelcomePage() {
   const [error, setError] = useState('')
   const [classes, setClasses] = useState([])
   const [bananas, setBananas] = useState(null)
+  const [tandemAsk, setTandemAsk] = useState(true)
 
   const auth = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
 
@@ -255,6 +257,19 @@ export default function WelcomePage() {
                 </Link>
               ))}
             </div>
+            {tandemAsk && !me.tandem_open && teach.code && Object.keys(learn).length > 0 && (
+              // Plan B (2026-11-19): offer a tandem partner on the last screen,
+              // so sign-up stays 3 steps.
+              <div className="bg-brand-green/10 border-2 border-navy rounded-xl p-3 mt-5">
+                <p className="font-bold text-navy">🤝 {t('tandem.welcomeTitle')}</p>
+                <p className="text-navy/65 text-sm mt-0.5 mb-3">{t('tandem.welcomeNote', { teach: name(teach.code)?.name, learn: Object.keys(learn).map(c => name(c)?.name).join(', ') })}</p>
+                <div className="flex gap-2">
+                  <button type="button" disabled={busy} onClick={async () => { setBusy(true); if (await setTandemOpen(true)) router.push('/tandem'); else setBusy(false) }}
+                    className="flex-1 bg-brand-red text-white border-2 border-navy rounded-full py-2 font-bold text-sm">{t('tandem.welcomeYes')}</button>
+                  <button type="button" onClick={() => setTandemAsk(false)} className="flex-1 bg-white border-2 border-navy rounded-full py-2 font-bold text-sm text-navy">{t('tandem.notNow')}</button>
+                </div>
+              </div>
+            )}
             <Link href="/dashboard" className={`${NEXT} block text-center`}>{t('welcome.toDashboard')}</Link>
           </>)}
         </div>
