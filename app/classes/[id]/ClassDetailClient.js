@@ -5,6 +5,10 @@ import { useParams } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import Navbar from '../../../components/Navbar'
 import ClassChat from '../../../components/ClassChat'
+import ShareClass from '../../../components/ShareClass'
+import { nextSession } from '../../../components/ClassCard'
+import { fetchJoinedClassIds } from '../../../lib/enrollments'
+import { rememberReturnPath } from '../../../lib/auth'
 import { formatInTimezone, utcLabel } from '../../../lib/timezone'
 
 const API = ''
@@ -36,6 +40,10 @@ export default function ClassDetailClient({ initialClass = null }) {
   const [savingMaterials, setSavingMaterials] = useState(false)
   const [materialsMessage, setMaterialsMessage] = useState('')
   const [uploadingPdf, setUploadingPdf] = useState(false)
+  // Join from the class page itself: shared links (plan 5) land here.
+  const [joined, setJoined] = useState(false)
+  const [joining, setJoining] = useState(false)
+  const [joinMessage, setJoinMessage] = useState(null)
 
   const LANGS = {
     KO: { flag: '🇰🇷', name: t('home.langKorean') },
@@ -69,6 +77,7 @@ export default function ClassDetailClient({ initialClass = null }) {
     // null and its section never renders, so no special-casing needed here.
     const token = localStorage.getItem('token')
     if (token) {
+      fetchJoinedClassIds(token).then(ids => setJoined(ids.has(Number(id))))
       fetch(`${API}/api/classes/${id}/roster`, { headers: { Authorization: `Bearer ${token}` } })
         .then(r => r.ok ? r.json() : null)
         .then(data => setRoster(data?.error ? null : data))
@@ -158,6 +167,37 @@ export default function ClassDetailClient({ initialClass = null }) {
   // have no route to it here anyway.
   const isTeacher = currentUser?.id === cls.teacher?.id
   const canEditMaterials = isTeacher && cls.status !== 'cancelled'
+  const next = mounted ? nextSession(cls) : null
+  const full = next ? (cls.max_students || 0) - (next.taken ?? 0) <= 0 : true
+
+  // Same flow as Explore's Join (ClassesBrowseClient joinClass).
+  const join = async () => {
+    const token = localStorage.getItem('token')
+    if (!currentUser || !token) {
+      rememberReturnPath(`/classes/${id}`)
+      window.location.href = '/auth/register'
+      return
+    }
+    if (!window.confirm(t('classes.confirmJoin'))) return
+    setJoining(true)
+    try {
+      const res = await fetch(`${API}/api/enrollments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ class_id: cls.id }),
+      })
+      const data = await res.json()
+      if (!res.ok) setJoinMessage({ ok: false, text: data.error || 'classes.errorJoinClass' })
+      else {
+        setJoinMessage({ ok: true, text: 'classes.successfullyJoined' })
+        setJoined(true)
+        window.dispatchEvent(new Event('credits-changed'))
+      }
+    } catch {
+      setJoinMessage({ ok: false, text: 'common.connectionError' })
+    }
+    setJoining(false)
+  }
 
   return (
     <main className="min-h-screen bg-cream">
@@ -170,7 +210,23 @@ export default function ClassDetailClient({ initialClass = null }) {
           <span className="bg-brand-teal/15 text-brand-teal-dark px-2 py-0.5 rounded-full text-xs font-bold border border-brand-teal/30">{levelLabel(cls.language_code, cls.level)}</span>
           <span className="bg-navy/5 text-navy/65 px-2 py-0.5 rounded-full text-xs font-medium">{cls.duration_minutes} {t('classes.min')}</span>
         </div>
-        <h1 className="font-display font-extrabold text-3xl text-navy mb-6">{cls.title}</h1>
+        <h1 className="font-display font-extrabold text-3xl text-navy mb-4">{cls.title}</h1>
+        <div className="flex flex-wrap items-center gap-2 mb-6">
+          {isTeacher ? null : joined ? (
+            <span className="bg-brand-teal/10 text-brand-teal-dark px-5 py-2 rounded-full text-sm font-bold border-2 border-brand-teal/30">{t('classes.joined')}</span>
+          ) : next && (
+            <button onClick={join} disabled={joining || full}
+              className="bg-brand-red text-white px-5 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">
+              {joining ? t('classes.joining') : full ? t('share.full') : t('classes.joinBanana')}
+            </button>
+          )}
+          {next && <ShareClass cls={cls} session={next} user={currentUser}/>}
+        </div>
+        {joinMessage && (
+          <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${joinMessage.ok ? 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30' : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>
+            {t(joinMessage.text)}
+          </div>
+        )}
 
         {/* Class information */}
         <div className={card}>
