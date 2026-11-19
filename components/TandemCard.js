@@ -32,3 +32,28 @@ export default function TandemCard() {
     </Link>
   )
 }
+
+// Explore page strip: tandem groups coming up, so people browsing classes
+// see them too. Signed-in only (the list needs an account); nothing when
+// there are none.
+export function TandemGroupsStrip() {
+  const { t } = useLanguage()
+  const [n, setN] = useState(0)
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) return
+    fetch('/api/tandem-groups', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => (r.ok ? r.json() : [])).then(list => setN(Array.isArray(list) ? list.length : 0)).catch(() => {})
+  }, [])
+
+  if (!n) return null
+  return (
+    <Link href="/tandem?tab=groups" className="flex items-center gap-2 flex-wrap bg-brand-green/15 border-2 border-navy rounded-2xl px-4 py-2.5 mb-4 text-sm text-navy hover:bg-brand-green/25 transition-colors">
+      <span aria-hidden="true">👥</span>
+      <span className="font-bold">{t('tandem.stripGroups', { n })}</span>
+      <span className="text-navy/70">{t('tandem.stripNote')}</span>
+      <span className="ml-auto font-bold">→</span>
+    </Link>
+  )
+}

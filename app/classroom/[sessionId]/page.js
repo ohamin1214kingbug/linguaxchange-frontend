@@ -52,7 +52,9 @@ export default function Classroom() {
     }
 
     let cancelled = false
-    const tandemId = sessionId === 'tandem' ? new URLSearchParams(window.location.search).get('tandem') : null
+    const query = new URLSearchParams(window.location.search)
+    const tandemId = sessionId === 'tandem' ? query.get('tandem') : null
+    const groupId = sessionId === 'tandem' ? query.get('group') : null
 
     const connect = async () => {
       try {
@@ -62,8 +64,9 @@ export default function Classroom() {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
           },
-          // /classroom/tandem?tandem=<id> is a tandem's call (app/tandem/[id]).
-          body: JSON.stringify(tandemId ? { tandem_id: tandemId } : { class_session_id: sessionId })
+          // /classroom/tandem?tandem=<id> is a 1-to-1 tandem call (app/tandem/[id]),
+          // ?group=<id> a tandem group's call (app/tandem/group/[id]).
+          body: JSON.stringify(tandemId ? { tandem_id: tandemId } : groupId ? { tandem_group_id: groupId } : { class_session_id: sessionId })
         })
         const data = await res.json()
 
@@ -106,7 +109,7 @@ export default function Classroom() {
         apiRef.current = api
 
         api.addEventListener('readyToClose', () => {
-          router.push(tandemId ? `/tandem/${tandemId}` : '/dashboard')
+          router.push(tandemId ? `/tandem/${tandemId}` : groupId ? `/tandem/group/${groupId}` : '/dashboard')
         })
 
         if (!cancelled) setStatus('connected')

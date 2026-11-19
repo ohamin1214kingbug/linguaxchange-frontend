@@ -1,5 +1,6 @@
 'use client'
 import { LEVELS, levelLabel } from '../../lib/languages'
+import TandemSwitch from '../../components/TandemSwitch'
 import { nextSessionDate } from '../../lib/classSchedule'
 import { PROFILE_COLORS, DEFAULT_PROFILE_COLOR, profileColorClass } from '../../lib/profileColors'
 import { useState, useEffect } from 'react'
@@ -623,6 +624,7 @@ export default function ProfilePage() {
         </div>
 
         )}
+        {tab === 'learning' && <TandemSwitch />}
 
         <button onClick={handleSave} disabled={saving}
           className="w-full bg-brand-red text-white py-3 rounded-full font-bold border-2 border-navy hover:bg-brand-red-dark disabled:opacity-50 transition-colors">

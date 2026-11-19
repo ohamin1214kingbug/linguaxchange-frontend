@@ -1,5 +1,6 @@
 'use client'
 import { levelLabel, LEVELS } from '../../lib/languages'
+import { TandemGroupsStrip } from '../../components/TandemCard'
 import { useState, useEffect } from 'react'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import Navbar from '../../components/Navbar'
@@ -192,6 +193,8 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
           </div>
           <a href="/classes/create" className="shrink-0 bg-brand-red text-white px-4 py-2 rounded-full text-sm font-bold border-2 border-navy whitespace-nowrap hover:bg-brand-red-dark transition-colors">+ {t('classes.createShort')}</a>
         </div>
+
+        <TandemGroupsStrip />
 
         {message && (
           <div className={`px-4 py-3 rounded-xl mb-6 text-sm font-medium border-2 ${messageOk ? 'bg-brand-teal/10 text-brand-teal-dark border-brand-teal/30' : 'bg-brand-red/10 text-brand-red border-brand-red/30'}`}>
