@@ -23,7 +23,7 @@ export default function FirstClassChecklist({ profile, teachingClasses, transact
 
   const steps = [
     { done: !!language, label: t('dashboard.firstClassLanguage'), href: '/profile', cta: t('dashboard.firstClassLanguageCta') },
-    { done: posted, label: t('dashboard.firstClassPlan'), href: '/resources', cta: t('dashboard.firstClassPlanCta') },
+    { done: posted, label: t('dashboard.firstClassPlan'), href: '/teach/slides', cta: t('dashboard.firstClassPlanCta') },
     { done: posted, label: t('dashboard.firstClassPost'), href: createHref, cta: t('dashboard.firstClassPostCta'),
       extra: { href: requestsHref, text: t('dashboard.firstClassRequests') },
       note: !profile.is_approved && !posted ? t('dashboard.firstClassReviewNote') : null },
