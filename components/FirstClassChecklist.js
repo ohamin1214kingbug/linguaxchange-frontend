@@ -25,8 +25,7 @@ export default function FirstClassChecklist({ profile, teachingClasses, transact
     { done: !!language, label: t('dashboard.firstClassLanguage'), href: '/profile', cta: t('dashboard.firstClassLanguageCta') },
     { done: posted, label: t('dashboard.firstClassPlan'), href: '/teach/slides', cta: t('dashboard.firstClassPlanCta') },
     { done: posted, label: t('dashboard.firstClassPost'), href: createHref, cta: t('dashboard.firstClassPostCta'),
-      extra: { href: requestsHref, text: t('dashboard.firstClassRequests') },
-      note: !profile.is_approved && !posted ? t('dashboard.firstClassReviewNote') : null },
+      extra: { href: requestsHref, text: t('dashboard.firstClassRequests') } },
     { done: false, label: t('dashboard.firstClassTeach') },
   ]
   // The first unfinished step is the only one with a button, so there is one

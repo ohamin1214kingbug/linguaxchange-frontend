@@ -416,13 +416,6 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Approval status */}
-        {!profile.is_approved && (
-          <div className="bg-brand-yellow/10 border-2 border-brand-yellow/40 text-navy px-4 py-3 rounded-xl mb-6 text-sm font-medium">
-            {t('profile.pendingApprovalNotice')}
-          </div>
-        )}
-
         {/* Four stacked cards meant scrolling past the photo picker to
             reach what you teach. Same pill tabs settings uses; Save stays
             below them since one button still submits the whole form. */}
