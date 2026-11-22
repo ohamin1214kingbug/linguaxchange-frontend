@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { setTandemOpen } from '../../components/TandemSwitch'
 import { userCode } from '../../lib/userCode'
+import { countryOptions } from '../../lib/countries'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Navbar from '../../components/Navbar'
@@ -39,7 +40,7 @@ function Progress({ step, t }) {
 // photo can be skipped, the languages can't.
 export default function WelcomePage() {
   const router = useRouter()
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const LANGS = languageOptions(t)
   const [me, setMe] = useState(null)
   const [step, setStep] = useState(1)
@@ -54,6 +55,7 @@ export default function WelcomePage() {
   const [bananas, setBananas] = useState(null)
   const [tandemAsk, setTandemAsk] = useState(true)
   const [inviteCopied, setInviteCopied] = useState(false)
+  const [country, setCountry] = useState('')
 
   const auth = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
 
@@ -62,6 +64,7 @@ export default function WelcomePage() {
     fetch('/api/users/me', { headers: auth() }).then(r => (r.ok ? r.json() : null)).then(p => {
       if (!p) return
       setMe(p)
+      setCountry(p.nationality || '')
       if (p.teach_language?.trim()) setTeach({ code: p.teach_language, level: TEACH_LEVELS.includes(p.teach_level) ? p.teach_level : 'Native' })
       const picked = {}
       for (const code of (p.learn_languages || []).filter(Boolean)) picked[code] = p.learn_details?.[code]?.level || 'A1'
@@ -101,6 +104,14 @@ export default function WelcomePage() {
   const finish = async (skipPhoto) => {
     setBusy(true); setError('')
     try {
+      // Optional country (owner request, 2026-11-22): Google signups were
+      // never asked, so the admin's region list was mostly "Not given".
+      // Best effort: a failed save never blocks finishing.
+      if (country && country !== (me.nationality || '')) {
+        await fetch(`/api/users/${me.id}`, {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json', ...auth() }, body: JSON.stringify({ nationality: country }),
+        }).catch(() => {})
+      }
       let saved = null
       if (!skipPhoto && photoChoice === 'google') {
         const res = await fetch('/api/users/me/google-photo', { method: 'POST', headers: auth() })
@@ -224,6 +235,15 @@ export default function WelcomePage() {
               </label>
             </div>
             {error && <p className="text-brand-red text-sm font-bold mt-3">{t(error)}</p>}
+            <label className="block bg-brand-yellow/10 border-2 border-navy rounded-xl p-3 mt-5">
+              <span className="block font-bold text-navy text-sm">🌍 {t('welcome.countryTitle')}</span>
+              <span className="block text-navy/65 text-xs mt-0.5 mb-2">{t('welcome.countryNote')}</span>
+              <select value={country} onChange={e => setCountry(e.target.value)}
+                className="w-full border-2 border-navy/20 rounded-xl px-3 py-2 text-sm text-navy bg-white focus:border-brand-red focus:outline-none">
+                <option value="">{t('welcome.countryPlaceholder')}</option>
+                {countryOptions(language).map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+              </select>
+            </label>
             <button type="button" disabled={busy || !photoChoice || (photoChoice === 'upload' && !upload)} onClick={() => finish(photoChoice === 'keep')} className={NEXT}>
               {busy ? t('welcome.saving') : t('welcome.finish')}
             </button>
