@@ -64,7 +64,8 @@ export default function ResourcesGridClient({ initialResources = [], serverFetch
         </div>
 
         {tab === 'teachers' && (
-          <section className={`${CARD} bg-white max-w-2xl`}>
+          <div className="flex flex-col gap-5 max-w-2xl">
+          <section className={`${CARD} bg-white`}>
             <div className="h-2.5 border-b-2 border-navy bg-brand-red" />
             <div className="p-5">
               <h2 className="font-display font-extrabold text-xl text-navy">📊 {t('teachSlides.title')}</h2>
@@ -75,6 +76,29 @@ export default function ResourcesGridClient({ initialResources = [], serverFetch
               </div>
             </div>
           </section>
+
+          {/* Finished decks built by docs/teach/build-korean-hangeul-decks.js
+              (owner request, 2026-11-23). */}
+          <section className={`${CARD} bg-white`}>
+            <div className="h-2.5 border-b-2 border-navy bg-brand-yellow" />
+            <div className="p-5">
+              <h2 className="font-display font-extrabold text-xl text-navy">🎒 {t('resources.decksTitle')}</h2>
+              <p className="text-navy/70 text-sm mt-1">{t('resources.decksBody')}</p>
+              <ul className="mt-4 flex flex-col gap-2.5">
+                {[1, 2].map(n => (
+                  <li key={n} className="flex flex-wrap items-center gap-3 border-2 border-navy/15 rounded-xl px-3 py-2.5">
+                    <span className="w-10 h-10 shrink-0 rounded-full border-2 border-navy flex items-center justify-center text-xl bg-brand-coral/30" aria-hidden="true">🇰🇷</span>
+                    <div className="flex-1 min-w-48">
+                      <p className="font-bold text-navy text-sm leading-tight">{t(`resources.deckKo${n}`)}</p>
+                      <p className="text-navy/65 text-xs mt-0.5">{t('resources.deckMeta')}</p>
+                    </div>
+                    <a href={`/teach/korean-hangeul-${n}.pptx`} download className="bg-white text-navy border-2 border-navy rounded-full px-4 py-1.5 text-sm font-bold hover:bg-cream transition-colors">⬇️ .pptx</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+          </div>
         )}
 
         {tab === 'study' && loading && <p className="text-navy/65">{t('common.loading')}</p>}
