@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../../components/LanguageSwitcher'
 import PhoneNumberField, { isValidPhoneNumber } from '../../../components/PhoneNumberField'
+import CountryBlockedNotice, { phoneCountry } from '../../../components/CountryBlockedNotice'
 import { takeReturnPath } from '../../../lib/auth'
 
 const API = ''
@@ -21,6 +22,7 @@ export default function VerifyPhone() {
   // member already had a banana account).
   const [granted, setGranted] = useState(null)
   const [error, setError] = useState('')
+  const [blockedEmail, setBlockedEmail] = useState('')
 
   useEffect(() => {
     const stored = localStorage.getItem('token')
@@ -37,11 +39,14 @@ export default function VerifyPhone() {
     try {
       const response = await fetch(`${API}/api/auth/send-otp`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone_number: phone })
+        // The token only lets the backend name this member in the admin email
+        // if their country turns out to be blocked; sending a code needs none.
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ phone_number: phone, country: phoneCountry(phone) })
       })
       const data = await response.json()
       if (!response.ok) {
+        setBlockedEmail(data.email || '')
         setError(data.error || 'auth.errorSendCode')
       } else {
         setOtpSent(true)
@@ -132,7 +137,7 @@ export default function VerifyPhone() {
         <h1 className="font-display font-extrabold text-navy text-3xl mt-3 mb-1">{t('auth.phoneTitleLast')} 🍌</h1>
         <p className="text-navy/65 text-sm mb-3">{t('auth.phoneMinute')}</p>
 
-        {error && (
+        {error === 'auth.otpCountryBlocked' ? <CountryBlockedNotice phone={phone} email={blockedEmail} /> : error && (
           <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{t(error)}</div>
         )}
 
