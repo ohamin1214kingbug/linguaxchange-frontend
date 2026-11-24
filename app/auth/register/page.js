@@ -6,6 +6,7 @@ import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../../../components/LanguageSwitcher'
 import { syncTimezone } from '../../../lib/timezone'
 import PhoneNumberField, { isValidPhoneNumber } from '../../../components/PhoneNumberField'
+import CountryBlockedNotice, { phoneCountry } from '../../../components/CountryBlockedNotice'
 import { countryOptions } from '../../../lib/countries'
 import { languageOptions, LEVELS, levelLabel } from '../../../lib/languages'
 import { takeReturnPath } from '../../../lib/auth'
@@ -35,6 +36,7 @@ export default function Register() {
   const { t, language } = useLanguage()
   const [step, setStep] = useState(1)
   const [error, setError] = useState('')
+  const [blockedEmail, setBlockedEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [photo, setPhoto] = useState(null)
   const [photoPreview, setPhotoPreview] = useState(null)
@@ -215,10 +217,13 @@ export default function Register() {
       const response = await fetch(`${API}/api/auth/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone_number: phone })
+        // email and country are only used if the country is blocked, so the
+        // admin can write back (see CountryBlockedNotice).
+        body: JSON.stringify({ phone_number: phone, email: form.email, country: phoneCountry(phone) })
       })
       const data = await response.json()
       if (!response.ok) {
+        setBlockedEmail(data.email || '')
         setError(data.error || 'auth.errorSendCode')
       } else {
         setOtpSent(true)
@@ -315,7 +320,7 @@ export default function Register() {
 
         <StepIndicator />
 
-        {error && (
+        {error === 'auth.otpCountryBlocked' ? <CountryBlockedNotice phone={phone} email={blockedEmail} /> : error && (
           <div className="bg-brand-red/10 text-brand-red border-2 border-brand-red/30 rounded-xl px-4 py-3 mb-4 text-sm font-medium">{t(error)}</div>
         )}
 
