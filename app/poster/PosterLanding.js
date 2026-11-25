@@ -32,14 +32,14 @@ export default function PosterLanding({ color }) {
       <Navbar />
       <section className="bg-brand-red text-white">
         <div className={`${WRAP} py-8 md:py-12`}>
-          <span className="inline-block bg-brand-yellow text-navy border-2 border-navy rounded-full px-3 py-1 font-display font-extrabold text-sm">{t('poster.badge')}</span>
-          <h1 className="font-display font-extrabold text-5xl md:text-6xl leading-[0.98] mt-4">{t('poster.redT1')}<br /><span className="text-brand-yellow">{t('poster.redT2')}</span></h1>
+          <span className="inline-block bg-poster-yellow text-navy border-2 border-navy rounded-full px-3 py-1 font-display font-extrabold text-sm">{t('poster.badge')}</span>
+          <h1 className="font-display font-extrabold text-5xl md:text-6xl leading-[0.98] mt-4">{t('poster.redT1')}<br /><span className="text-poster-yellow">{t('poster.redT2')}</span></h1>
           <p className="text-lg font-semibold mt-4 max-w-xl">{t('poster.sub')}</p>
-          <Link href="/auth/register" className={`${BTN} bg-brand-yellow text-navy mt-6`}>{t('how.ctaSignup')} →</Link>
+          <Link href="/auth/register" className={`${BTN} bg-poster-yellow text-navy mt-6`}>{t('how.ctaSignup')} →</Link>
           <Link href="/classes" className="block sm:inline-block sm:ml-6 text-center mt-4 font-bold underline underline-offset-4">{t('how.ctaBrowse')}</Link>
         </div>
       </section>
-      <p className="bg-brand-yellow border-y-2 border-navy px-4 py-3.5 text-center font-display font-extrabold text-2xl text-navy">{t('poster.free3')}</p>
+      <p className="bg-poster-yellow border-y-2 border-navy px-4 py-3.5 text-center font-display font-extrabold text-2xl text-navy">{t('poster.free3')}</p>
 
       <section className={`${WRAP} py-8`}>
         <h2 className="font-display font-extrabold text-3xl text-navy">{t('poster.howTitle')}</h2>
@@ -58,13 +58,13 @@ export default function PosterLanding({ color }) {
 
       <section className="bg-navy text-white">
         <div className={`${WRAP} py-8`}>
-          <span className="inline-block bg-brand-yellow text-navy rounded-full px-3 py-1 font-display font-extrabold text-sm">{t('how.reqBadge')}</span>
+          <span className="inline-block bg-poster-yellow text-navy rounded-full px-3 py-1 font-display font-extrabold text-sm">{t('how.reqBadge')}</span>
           <h2 className="font-display font-extrabold text-3xl leading-tight mt-3">🙋 {t('how.reqTitle')}</h2>
           <p className="text-lg mt-2">{t('how.reqBody')}</p>
           <ul className="mt-4 flex flex-col gap-2 font-semibold">
-            {['req1B', 'req2B', 'req4B'].map(k => <li key={k}><span className="text-brand-yellow" aria-hidden="true">✓ </span>{t(`how.${k}`)}</li>)}
+            {['req1B', 'req2B', 'req4B'].map(k => <li key={k}><span className="text-poster-yellow" aria-hidden="true">✓ </span>{t(`how.${k}`)}</li>)}
           </ul>
-          <Link href="/classes?tab=requests" className={`${BTN} bg-brand-yellow text-navy mt-6`}>{t('how.reqCta')}</Link>
+          <Link href="/classes?tab=requests" className={`${BTN} bg-poster-yellow text-navy mt-6`}>{t('how.reqCta')}</Link>
         </div>
       </section>
 
@@ -80,7 +80,7 @@ export default function PosterLanding({ color }) {
   return (
     <main className="min-h-screen bg-cream">
       <Navbar />
-      <section className="bg-brand-yellow text-navy">
+      <section className="bg-poster-yellow text-navy">
         <div className={WRAP}>
           <div className="relative h-40" aria-hidden="true">
             {GREETINGS.map(([word, colors, place]) => (
@@ -103,7 +103,7 @@ export default function PosterLanding({ color }) {
         <div className={`${WRAP} py-8`}>
           <h2 className="font-display font-extrabold text-3xl text-navy">🍌 {t('how.banTitle')}</h2>
           <ul className="flex flex-col gap-4 mt-5">
-            {[['3', 'bg-brand-yellow', 'how.banStartSub', 'poster.noCard'], ['1', 'bg-brand-blue/20', 'poster.perClass', 'how.banJoinSub'], ['+1', 'bg-brand-green/25', 'poster.perStudent', 'poster.whenTeach']].map(([n, tint, a, b]) => (
+            {[['3', 'bg-poster-yellow', 'how.banStartSub', 'poster.noCard'], ['1', 'bg-brand-blue/20', 'poster.perClass', 'how.banJoinSub'], ['+1', 'bg-brand-green/25', 'poster.perStudent', 'poster.whenTeach']].map(([n, tint, a, b]) => (
               <li key={n} className="flex items-center gap-4">
                 <span className={`w-16 h-16 shrink-0 rounded-full border-2 border-navy flex items-center justify-center font-display font-extrabold text-3xl text-navy ${tint}`}>{n}</span>
                 <div><p className="font-display font-extrabold text-xl text-navy leading-tight">{t(a)}</p><p className="text-navy/75">{t(b)}</p></div>
@@ -124,7 +124,7 @@ export default function PosterLanding({ color }) {
               </li>
             ))}
           </ol>
-          <Link href="/classes?tab=requests" className={`${BTN} bg-brand-yellow text-navy mt-6`}>{t('how.reqCta')}</Link>
+          <Link href="/classes?tab=requests" className={`${BTN} bg-poster-yellow text-navy mt-6`}>{t('how.reqCta')}</Link>
         </div>
       </section>
 
@@ -133,7 +133,7 @@ export default function PosterLanding({ color }) {
         <ul className="grid grid-cols-2 gap-2.5 mt-4">
           {FEATURE_ICONS.map((icon, i) => <li key={icon} className={`${CARD} bg-white p-3 font-bold text-navy text-sm`}><span aria-hidden="true">{icon} </span>{t(`how.f${i + 1}T`)}</li>)}
         </ul>
-        <div className={`${CARD} bg-brand-yellow p-6 mt-8 text-center`}>
+        <div className={`${CARD} bg-poster-yellow p-6 mt-8 text-center`}>
           <h2 className="font-display font-extrabold text-3xl text-navy">{t('how.endTitle')}</h2>
           <div className="mt-4">{signup}</div>
         </div>
