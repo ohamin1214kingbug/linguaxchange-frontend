@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { getLocale } from '../lib/i18n/locale'
 
 // The admin Activity tab (GET /api/admin/actions): every admin action that
 // changed something or opened a private file. Read-only: the log can't be
@@ -24,7 +25,7 @@ const GROUPS = [['', 'All'], ['bananas', 'Bananas'], ['safety', 'Suspensions & d
 function details(a) {
   const d = a.detail || {}
   if (a.action === 'give_bananas') return `+${d.amount}`
-  if (a.action === 'suspend') return [d.until && `until ${new Date(d.until).toLocaleDateString()}`, d.reason && `"${d.reason}"`].filter(Boolean).join(' · ')
+  if (a.action === 'suspend') return [d.until && `until ${new Date(d.until).toLocaleDateString(getLocale())}`, d.reason && `"${d.reason}"`].filter(Boolean).join(' · ')
   if (a.action === 'update_report' && d.status) return `status: ${d.status}`
   if (a.action === 'open_evidence') return `file ${Number(d.file) + 1}`
   return ''
@@ -63,7 +64,7 @@ export default function AdminActivity() {
               const target = a.target_type === 'user' ? `#${a.target_id} ${a.target_name}` : a.target_type ? `${a.target_type[0].toUpperCase()}${a.target_type.slice(1)} #${a.target_id}` : ''
               return (
                 <tr key={a.id} className="border-t border-navy/10 align-top">
-                  <td className="py-2 pr-3 whitespace-nowrap">{new Date(a.created_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</td>
+                  <td className="py-2 pr-3 whitespace-nowrap">{new Date(a.created_at).toLocaleString(getLocale(), { dateStyle: 'medium', timeStyle: 'short' })}</td>
                   <td className="py-2 pr-3">{a.admin_name || '—'}</td>
                   <td className="py-2 pr-3"><span className={`inline-block border border-navy rounded-full px-2 text-[11px] font-bold whitespace-nowrap ${tone}`}>{label}</span></td>
                   <td className="py-2 pr-3">{target}</td>

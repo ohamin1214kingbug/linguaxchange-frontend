@@ -11,6 +11,7 @@ import Navbar from '../../components/Navbar'
 import Tabs from '../../components/Tabs'
 import { countryOptions } from '../../lib/countries'
 import { userCode } from '../../lib/userCode'
+import { getLocale } from '../../lib/i18n/locale'
 
 const API = ''
 
@@ -87,7 +88,7 @@ function PublicPreview({ form, profile, langs, nextClass, rating, t }) {
       {form.bio && <p className="text-navy text-sm mt-3 whitespace-pre-line break-words">{form.bio}</p>}
       {nextClass && (
         <p className="text-navy/65 text-xs mt-3">
-          {t('teacher.upcomingClasses')}: {nextClass.title} · {nextSessionDate(nextClass).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
+          {t('teacher.upcomingClasses')}: {nextClass.title} · {nextSessionDate(nextClass).toLocaleString(getLocale(), { dateStyle: 'medium', timeStyle: 'short' })}
         </p>
       )}
     </div>

@@ -20,6 +20,7 @@ import ClassCard, { nextSession } from '../../components/ClassCard'
 import { isUnread } from '../../lib/chatSeen'
 import { nextSessionDate, hasFinished } from '../../lib/classSchedule'
 import { LANGUAGE_COLORS, levelLabel } from '../../lib/languages'
+import { getLocale } from '../../lib/i18n/locale'
 
 const API = ''
 
@@ -553,7 +554,7 @@ export default function Dashboard() {
           const teaching = live.role === 'teaching'
           const people = teaching ? liveStudents : live.classmates
           const end = new Date(live.at.getTime() + (cls.duration_minutes || 60) * 60000)
-          const timeOnly = date => new Intl.DateTimeFormat(undefined, { timeStyle: 'short', timeZone: user.timezone || undefined,
+          const timeOnly = date => new Intl.DateTimeFormat(getLocale(), { timeStyle: 'short', timeZone: user.timezone || undefined,
             hour12: user.time_format ? user.time_format === '12h' : undefined }).format(date)
           return (
             <section className="mb-6 bg-white rounded-2xl border-2 border-navy shadow-[4px_4px_0_var(--color-navy)] overflow-hidden">
@@ -899,7 +900,7 @@ export default function Dashboard() {
                   <div>
                     <p className="text-navy text-sm font-medium">{tx.description}</p>
                     <p className="text-navy/65 text-xs">
-                      {new Date(tx.created_at).toLocaleDateString()}
+                      {new Date(tx.created_at).toLocaleDateString(getLocale())}
                     </p>
                   </div>
                   <span className={tx.amount > 0

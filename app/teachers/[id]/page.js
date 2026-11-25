@@ -9,6 +9,7 @@ import Navbar from '../../../components/Navbar'
 import { formatInTimezone, formatDay } from '../../../lib/timezone'
 import { nextSessionDate, lastSessionDate } from '../../../lib/classSchedule'
 import { fetchJoinedClassIds } from '../../../lib/enrollments'
+import { getLocale } from '../../../lib/i18n/locale'
 
 const API = ''
 
@@ -473,7 +474,7 @@ export default function TeacherProfile() {
                   <Stars rating={rev.rating} />
                   {rev.comment && <p className="text-navy/70 text-sm mt-1">{rev.comment}</p>}
                   <p className="text-navy/65 text-xs mt-1">
-                    {new Date(rev.created_at).toLocaleDateString()}
+                    {new Date(rev.created_at).toLocaleDateString(getLocale())}
                   </p>
                 </div>
               ))}

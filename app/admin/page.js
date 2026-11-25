@@ -10,6 +10,7 @@ import { userCode } from '../../lib/userCode'
 import { nextSessionDate, lastSessionDate } from '../../lib/classSchedule'
 import { regionOf } from '../../lib/countries'
 import { REGIONS } from '../../lib/regions'
+import { getLocale } from '../../lib/i18n/locale'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const startsWithinDays = (date, days) => date - new Date() < days * DAY_MS
@@ -33,9 +34,9 @@ function ClassPeople({ cls, students, language }) {
       <p className="text-navy/65 text-sm">
         {language ? `${language} ` : ''}{cls.level} · {cls.duration_minutes} min ·{' '}
         {nextSessionDate(cls)
-          ? nextSessionDate(cls).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
+          ? nextSessionDate(cls).toLocaleString(getLocale(), { dateStyle: 'medium', timeStyle: 'short' })
           : lastSessionDate(cls)
-            ? `ended ${lastSessionDate(cls).toLocaleDateString(undefined, { dateStyle: 'medium' })}`
+            ? `ended ${lastSessionDate(cls).toLocaleDateString(getLocale(), { dateStyle: 'medium' })}`
             : 'no session scheduled'}
       </p>
       <p className="text-navy/70 text-sm mt-2">
@@ -91,7 +92,7 @@ function UserDetail({ user, t, onChanged }) {
 
   const rows = [
     ['Suspended', user.suspended_until && new Date(user.suspended_until) > new Date()
-      ? `until ${new Date(user.suspended_until).toLocaleDateString()} — ${user.suspension_reason || 'no reason recorded'}`
+      ? `until ${new Date(user.suspended_until).toLocaleDateString(getLocale())} — ${user.suspension_reason || 'no reason recorded'}`
       : null],
     ['Teaches', user.teach_language
       ? `${langName(user.teach_language)}${user.teach_level ? ` · ${levelLabel(user.teach_language, user.teach_level, t)}` : ''}`
@@ -110,11 +111,11 @@ function UserDetail({ user, t, onChanged }) {
     ['Sign-in', user.google_id ? 'Google' : 'Email and password'],
     ['Timezone', user.timezone],
     ['Streak', `${user.current_streak || 0} now · ${user.longest_streak || 0} best`],
-    ['Joined', user.created_at ? new Date(user.created_at).toLocaleString() : null],
+    ['Joined', user.created_at ? new Date(user.created_at).toLocaleString(getLocale()) : null],
     ['Approval note', user.approval_reason],
     ['No-show limits', [
-      user.teaching_paused_until && new Date(user.teaching_paused_until) > new Date() && `new classes paused until ${new Date(user.teaching_paused_until).toLocaleDateString()}`,
-      user.booking_limited_until && new Date(user.booking_limited_until) > new Date() && `one booking at a time until ${new Date(user.booking_limited_until).toLocaleDateString()}`,
+      user.teaching_paused_until && new Date(user.teaching_paused_until) > new Date() && `new classes paused until ${new Date(user.teaching_paused_until).toLocaleDateString(getLocale())}`,
+      user.booking_limited_until && new Date(user.booking_limited_until) > new Date() && `one booking at a time until ${new Date(user.booking_limited_until).toLocaleDateString(getLocale())}`,
     ].filter(Boolean).join('; ') || null],
   ].filter(([, value]) => value)
 
@@ -157,7 +158,7 @@ function UserDetail({ user, t, onChanged }) {
       )}
       {user.certificate_uploaded_at && (
         <div className="flex items-center gap-3 flex-wrap text-sm">
-          <span className="text-navy/80">📄 {user.certificate_name || 'Certificate'} · {new Date(user.certificate_uploaded_at).toLocaleDateString()}</span>
+          <span className="text-navy/80">📄 {user.certificate_name || 'Certificate'} · {new Date(user.certificate_uploaded_at).toLocaleDateString(getLocale())}</span>
           <button type="button" onClick={openCertificate} className="text-navy font-bold text-xs underline">View</button>
           <button type="button" onClick={removeCertificate} className="text-brand-red font-bold text-xs underline">Remove</button>
         </div>
@@ -196,7 +197,7 @@ function EnforcementControl({ user, confirmText, message, onConfirmChange, onSus
       {suspendedUntil ? (
         <div className="flex items-center gap-3 flex-wrap">
           <span className="bg-brand-red/10 text-brand-red px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-red/30">
-            Suspended until {suspendedUntil.toLocaleDateString()}
+            Suspended until {suspendedUntil.toLocaleDateString(getLocale())}
           </span>
           {user.suspension_reason && <span className="text-navy/60 text-xs">{user.suspension_reason}</span>}
           <button onClick={() => { if (window.confirm(`Cancel ${user.first_name || 'this member'}'s suspension now?`)) onUnsuspend() }}
@@ -217,7 +218,7 @@ function EnforcementControl({ user, confirmText, message, onConfirmChange, onSus
         {pendingDays && (
           <div className="mt-2 border-2 border-brand-red rounded-xl bg-brand-red/5 p-3">
             <p className="font-bold text-navy text-sm">
-              Suspend {user.first_name || 'this member'} {pendingDays >= 3650 ? 'permanently' : `for ${pendingDays} days, until ${daysFromNow(pendingDays).toLocaleDateString()}`}?
+              Suspend {user.first_name || 'this member'} {pendingDays >= 3650 ? 'permanently' : `for ${pendingDays} days, until ${daysFromNow(pendingDays).toLocaleDateString(getLocale())}`}?
             </p>
             <p className="text-navy/65 text-xs mt-0.5">Their upcoming classes are cancelled, their students refunded, and they get an email with the reason.</p>
             <textarea value={reason} onChange={e => setReason(e.target.value)} rows={2} aria-label="Reason"
@@ -426,7 +427,7 @@ export default function Admin() {
     })
     const data = await res.json().catch(() => ({}))
     setActionMessage(m => ({ ...m, [userId]: res.ok
-      ? `Suspended until ${new Date(data.suspended_until).toLocaleDateString()}`
+      ? `Suspended until ${new Date(data.suspended_until).toLocaleDateString(getLocale())}`
       : data.error || 'Could not suspend' }))
     fetchUsers(); fetchReports()
   }
@@ -598,7 +599,7 @@ export default function Admin() {
       user.nationality,
       user.teach_language && `teaches ${languageLabel(user.teach_language)}`,
       `${theirClasses.length} class${theirClasses.length === 1 ? '' : 'es'}`,
-      `joined ${new Date(user.created_at).toLocaleDateString()}`,
+      `joined ${new Date(user.created_at).toLocaleDateString(getLocale())}`,
     ].filter(Boolean)
     return (
       <div key={user.id} className="bg-white rounded-2xl p-5 border-2 border-navy/10">
@@ -617,7 +618,7 @@ export default function Admin() {
           </div>
           {isSuspended(user) && (
             <div className="flex items-center gap-2 flex-wrap justify-end">
-              <span className="bg-brand-red/10 text-brand-red px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-red/30">Suspended until {new Date(user.suspended_until).toLocaleDateString()}</span>
+              <span className="bg-brand-red/10 text-brand-red px-3 py-1 rounded-full text-xs font-bold border-2 border-brand-red/30">Suspended until {new Date(user.suspended_until).toLocaleDateString(getLocale())}</span>
               <button onClick={() => { if (window.confirm(`Cancel ${user.first_name || 'this member'}'s suspension now?`)) unsuspendUser(user.id) }}
                 className="bg-brand-teal text-white px-3 py-1 rounded-full text-xs font-bold border-2 border-navy hover:opacity-90">
                 ↩ Cancel suspension
@@ -822,7 +823,7 @@ export default function Admin() {
                         <p className="text-navy/65 text-xs font-bold mt-1">{CATEGORY_LABELS[report.category] || CATEGORY_LABELS.other}</p>
                         <p className="text-navy/65 text-sm mt-1">{report.reason}</p>
                         <p className="text-navy/65 text-xs mt-2">
-                          Reported by {report.reporter?.first_name} {report.reporter?.last_name} <span className="font-mono">{userCode(report.reporter_id)}</span> ({report.reporter?.email}) · {new Date(report.created_at).toLocaleDateString()}
+                          Reported by {report.reporter?.first_name} {report.reporter?.last_name} <span className="font-mono">{userCode(report.reporter_id)}</span> ({report.reporter?.email}) · {new Date(report.created_at).toLocaleDateString(getLocale())}
                         </p>
                         {report.evidence_paths?.length > 0 && (
                           <div className="flex gap-2 mt-2">

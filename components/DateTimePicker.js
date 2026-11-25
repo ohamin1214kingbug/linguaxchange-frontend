@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { isSameDay, startOfDay, buildCalendarGrid } from '../lib/calendarGrid'
 import { detectTimezone } from '../lib/timezone'
+import { getLocale } from '../lib/i18n/locale'
 
 const SLOT_INTERVAL_MINUTES = 30
 
@@ -37,8 +38,8 @@ export default function DateTimePicker({ value, onChange, t }) {
 
   const grid = buildCalendarGrid(viewDate)
   const weekdayLabels = grid.slice(0, 7).map(({ date }) =>
-    new Intl.DateTimeFormat(undefined, { weekday: 'short' }).format(date))
-  const monthLabel = new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(viewDate)
+    new Intl.DateTimeFormat(getLocale(), { weekday: 'short' }).format(date))
+  const monthLabel = new Intl.DateTimeFormat(getLocale(), { month: 'long', year: 'numeric' }).format(viewDate)
 
   const timeSlots = selectedDate ? buildTimeSlots(selectedDate, now) : []
   // Every slot here is device wall-clock time, while the rest of the site
@@ -67,7 +68,7 @@ export default function DateTimePicker({ value, onChange, t }) {
   }
 
   const triggerLabel = parsedValue
-    ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(parsedValue)
+    ? new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium', timeStyle: 'short' }).format(parsedValue)
     : t('classes.pickDateTime')
 
   return (
@@ -129,7 +130,7 @@ export default function DateTimePicker({ value, onChange, t }) {
                       <button key={i} type="button" onClick={() => pickTime(slot)}
                         className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                           isSelected ? 'bg-brand-red text-white font-bold' : 'text-navy hover:bg-cream'}`}>
-                        {new Intl.DateTimeFormat(undefined, { timeStyle: 'short' }).format(slot)}
+                        {new Intl.DateTimeFormat(getLocale(), { timeStyle: 'short' }).format(slot)}
                       </button>
                     )
                   })}

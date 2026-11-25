@@ -4,6 +4,7 @@ import { useLanguage } from '../lib/i18n/LanguageContext'
 import { isSameDay, startOfDay, buildCalendarGrid } from '../lib/calendarGrid'
 import { asUtcDate } from '../lib/timezone'
 import { hasFinished } from '../lib/classSchedule'
+import { getLocale } from '../lib/i18n/locale'
 
 const API = ''
 
@@ -74,8 +75,8 @@ export default function StreakCalendar({ userId, streakCount }) {
 
   const grid = buildCalendarGrid(viewDate)
   const weekdayLabels = grid.slice(0, 7).map(({ date }) =>
-    new Intl.DateTimeFormat(undefined, { weekday: 'narrow' }).format(date))
-  const monthLabel = new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(viewDate)
+    new Intl.DateTimeFormat(getLocale(), { weekday: 'narrow' }).format(date))
+  const monthLabel = new Intl.DateTimeFormat(getLocale(), { month: 'long', year: 'numeric' }).format(viewDate)
 
   const countedThisWeek = activityDates.some(d => weekStartUTC(d) === weekStartUTC(now))
 

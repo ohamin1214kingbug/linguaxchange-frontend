@@ -2,6 +2,7 @@
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import { levelLabel } from '../lib/languages'
 import { asUtcDate } from '../lib/timezone'
+import { getLocale } from '../lib/i18n/locale'
 
 const FLAGS = { KO: '🇰🇷', ES: '🇪🇸', DE: '🇩🇪', EN: '🇬🇧', PT: '🇧🇷', FR: '🇫🇷', IT: '🇮🇹' }
 
@@ -39,7 +40,7 @@ export default function ClassCard({
   const { t, language } = useLanguage()
   if (!cls) return null
   const when = session?.session_date && dateParts(session.session_date, {
-    timezone: user?.timezone, timeFormat: user?.time_format, locale: (language || 'EN').toLowerCase(), mounted,
+    timezone: user?.timezone, timeFormat: user?.time_format, locale: getLocale(), mounted,
   })
   const max = cls.max_students || 0
   const taken = Math.min(session?.taken ?? 0, max)

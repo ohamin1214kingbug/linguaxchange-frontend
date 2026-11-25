@@ -7,6 +7,7 @@ import Tabs from '../../components/Tabs'
 import { hasFinished } from '../../lib/classSchedule'
 import RatingForm from '../../components/RatingForm'
 import SharedClassCard from '../../components/ClassCard'
+import { getLocale } from '../../lib/i18n/locale'
 
 const API = ''
 
@@ -372,7 +373,7 @@ export default function History() {
   const router = useRouter()
   const { t, language } = useLanguage()
   // Month headings follow the site language, not the browser's.
-  const monthLocale = (language || 'EN').toLowerCase()
+  const monthLocale = getLocale()
   const [user, setUser] = useState(null)
   const [taken, setTaken] = useState([])
   const [taught, setTaught] = useState([])

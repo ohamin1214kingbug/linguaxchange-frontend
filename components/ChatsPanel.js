@@ -4,15 +4,16 @@ import Link from 'next/link'
 import { useLanguage } from '../lib/i18n/LanguageContext'
 import { formatInTimezone } from '../lib/timezone'
 import { isUnread } from '../lib/chatSeen'
+import { getLocale } from '../lib/i18n/locale'
 
 const POLL_MS = 60000
 const PILL = 'shrink-0 inline-flex items-center border-2 border-navy rounded-full px-3 sm:px-4 py-1 text-sm font-bold text-navy bg-white hover:bg-cream transition-colors'
 const PRIMARY = 'shrink-0 inline-flex items-center border-2 border-navy rounded-full px-3 sm:px-4 py-1 text-sm font-bold text-white bg-brand-red hover:bg-brand-red-dark transition-colors'
 
 // "5 min", "3 h", "2 d" in the site language.
-function ago(iso, language) {
+function ago(iso) {
   const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000)
-  const rtf = new Intl.RelativeTimeFormat(language?.toLowerCase() || undefined, { numeric: 'auto', style: 'short' })
+  const rtf = new Intl.RelativeTimeFormat(getLocale(), { numeric: 'auto', style: 'short' })
   if (mins < 60) return rtf.format(-Math.max(mins, 0), 'minute')
   if (mins < 24 * 60) return rtf.format(-Math.round(mins / 60), 'hour')
   return rtf.format(-Math.round(mins / 1440), 'day')
@@ -81,7 +82,7 @@ export default function ChatList({ chats, user }) {
                   {c.last && (
                     <span className="flex items-center gap-1 text-[11px] text-navy/55 whitespace-nowrap">
                       {isNew && <span className="w-2.5 h-2.5 rounded-full bg-brand-red border border-navy" aria-label={t('chat.inboxNew', { n: 1 })}/>}
-                      {ago(c.last.created_at, language)}
+                      {ago(c.last.created_at)}
                     </span>
                   )}
                   <Link href={c.href} className={isNew ? PRIMARY : PILL}>{t('chat.openBtn')}</Link>
