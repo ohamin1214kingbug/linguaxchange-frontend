@@ -107,7 +107,10 @@ export default function Home() {
           </div>
 
           <h1 className="font-display font-extrabold text-navy leading-[1.15] text-5xl sm:text-6xl md:text-5xl lg:text-6xl mb-6">
-            {t('home.heroLearn1')}<span className="text-brand-red">{t('home.heroLearn2')}</span>{t('home.heroLearn3')}
+            {t('home.heroTitle1')}<span className="text-brand-red underline decoration-brand-yellow decoration-[6px] md:decoration-[8px] underline-offset-8">
+              {t('home.heroTitle2')}
+            </span><br/>
+            {t('home.heroTitle3')}
           </h1>
 
           <p className="text-lg md:text-xl text-navy/65 mb-10 max-w-xl">
