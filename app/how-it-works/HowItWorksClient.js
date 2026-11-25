@@ -26,7 +26,11 @@ export default function HowItWorksClient() {
       <div className="max-w-4xl mx-auto px-4 md:px-8 py-10 md:py-14">
         <section className="mb-12">
           <p className="text-2xl mb-3" aria-hidden="true">{flags}</p>
-          <h1 className="font-display font-extrabold text-4xl md:text-5xl text-navy leading-tight">{t('how.title')}</h1>
+          <h1 className="font-display font-extrabold text-4xl md:text-5xl text-navy leading-tight">
+            {/* Same slogan and look as the home hero (owner, 2026-11-25). */}
+            {t('home.heroTitle1')}<span className="text-brand-red underline decoration-brand-yellow decoration-[6px] md:decoration-[8px] underline-offset-8">{t('home.heroTitle2')}</span><br/>
+            {t('home.heroTitle3')}
+          </h1>
           <p className="text-navy/80 text-lg mt-4 max-w-2xl">{t('how.subtitle')}</p>
           <div className="flex flex-wrap gap-3 mt-6">
             <Link href="/auth/register" className={PRIMARY}>{t('how.ctaSignup')}</Link>
