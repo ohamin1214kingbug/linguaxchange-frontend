@@ -4,7 +4,7 @@ import { useLanguage } from '../lib/i18n/LanguageContext'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import Navbar from '../components/Navbar'
 import Link from 'next/link'
-import { LANGUAGE_COLORS } from '../lib/languages'
+import { LANGUAGE_COLORS, alertOnlyOptions } from '../lib/languages'
 
 export default function Home() {
   const { t } = useLanguage()
@@ -34,6 +34,13 @@ export default function Home() {
     { code: 'FR', flag: '🇫🇷', name: t('home.langFrench'), greeting: 'Bonjour', ink: 'text-navy' },
     { code: 'IT', flag: '🇮🇹', name: t('home.langItalian'), greeting: 'Ciao', ink: 'text-navy' },
   ]
+
+  // Nobody teaches these yet, so they get a strip under the grid rather than
+  // tiles in it. A tile would promise what the other seven deliver — browse
+  // classes, read the A1 guide — and both links are dead for these: the
+  // request form rejects the code, and there is no guide to open. The strip
+  // leads to the one thing that works, the alert on the browse page.
+  const ALERT_ONLY = alertOnlyOptions(t)
 
   // Four ways to practise (owner-approved sample, 2026-11-19): what the
   // site offers beyond a class list, since most languages have no class yet.
@@ -252,6 +259,18 @@ export default function Home() {
               <span aria-hidden="true" className="text-3xl">🌍</span>
               <span className="font-display font-bold text-xl">{t('home.browseAllClasses')}</span>
             </Link>
+          </div>
+
+          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-3">
+            <p className="text-white/55 text-sm">
+              🙋 {t('classes.noClassesIn', { langs: ALERT_ONLY.map(l => l.name).join(', ') })}
+            </p>
+            {ALERT_ONLY.map(lang => (
+              <Link key={lang.code} href={`/classes?language=${lang.code}`}
+                className="text-sm font-bold text-navy bg-white/90 hover:bg-white border-2 border-white/90 rounded-full px-3.5 py-1 transition-colors">
+                {lang.flag} {lang.name} — {t('classes.alertTurnOn')}
+              </Link>
+            ))}
           </div>
         </div>
       </section>

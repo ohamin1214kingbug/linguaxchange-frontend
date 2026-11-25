@@ -1,5 +1,5 @@
 'use client'
-import { levelLabel, LEVELS } from '../../lib/languages'
+import { levelLabel, LEVELS, ALERT_ONLY_CODES } from '../../lib/languages'
 import JoinedShare from '../../components/JoinedShare'
 import { TandemGroupsStrip } from '../../components/TandemCard'
 import { useState, useEffect } from 'react'
@@ -15,6 +15,9 @@ import ClassCard, { nextSession } from '../../components/ClassCard'
 
 const API = ''
 const LANG_CODES = ['KO', 'ES', 'DE', 'EN', 'PT', 'FR', 'IT']
+// Teachable first, then the alert-only ones, so the chips people can
+// actually book sit at the front of the scrolling row.
+const CHIP_CODES = [...LANG_CODES, ...ALERT_ONLY_CODES]
 
 // `initialClasses` comes from the server component in page.js, already
 // filtered to whatever the URL asked for. Seeding state with it is what puts
@@ -159,7 +162,24 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
     PT: { flag: '🇧🇷', name: t('home.langPortuguese') },
     FR: { flag: '🇫🇷', name: t('home.langFrench') },
     IT: { flag: '🇮🇹', name: t('home.langItalian') },
+    ZH: { flag: '🇨🇳', name: t('home.langChinese') },
+    JA: { flag: '🇯🇵', name: t('home.langJapanese') },
   }
+
+  // Nobody can teach this one yet, so every CTA that leads to creating a
+  // class or asking for one would hand the member a form the backend
+  // rejects. The alert toggle is the whole offer on these.
+  const alertOnly = ALERT_ONLY_CODES.includes(filter)
+
+  // The chip row scrolls sideways, and the languages added last sit off the
+  // right edge — so landing on /classes?language=ZH showed a row with no
+  // chip highlighted at all. Centre whatever is selected instead.
+  useEffect(() => {
+    if (filter === 'all') return
+    document.querySelector(`[data-lang-chip="${filter}"]`)
+      ?.scrollIntoView({ inline: 'center', block: 'nearest' })
+  }, [filter])
+  const activeTab = alertOnly ? 'classes' : tab
 
   // The level chips filter across every language at once, so they stay bare
   // CEFR until Korean is the selected language — "B1 · TOPIK 3" on a chip that
@@ -182,7 +202,7 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
     }).filter(([, v]) => v))
   ).toString()
 
-  const counts = Object.fromEntries(LANG_CODES.map(c => [c, (allUpcoming || []).filter(cls => cls.language_code === c).length]))
+  const counts = Object.fromEntries(CHIP_CODES.map(c => [c, (allUpcoming || []).filter(cls => cls.language_code === c).length]))
   const emptyLangs = allUpcoming ? LANG_CODES.filter(c => counts[c] === 0) : []
   const PILL_SELECT = 'border-2 border-navy rounded-full px-3 py-2 text-sm font-bold text-navy bg-white focus:border-brand-red focus:outline-none'
 
@@ -208,6 +228,7 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
           </div>
         )}
 
+        {!alertOnly && (
         <div className="flex gap-1 mb-4 bg-white border-2 border-navy rounded-full p-1 w-fit max-w-full overflow-x-auto">
           {[['classes', t('requests.tabClasses')],
             ['requests', t('requests.tabRequests')],
@@ -218,12 +239,13 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
             </button>
           ))}
         </div>
+        )}
 
         {/* One scrolling row instead of two wrapping rows of buttons; the
             count says where the classes are before anyone clicks. */}
         <div className="flex gap-2 mb-4 overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 [scrollbar-width:none]">
-          {['all', ...LANG_CODES].map(lang => (
-            <button key={lang} onClick={() => setFilter(lang)} aria-pressed={filter === lang}
+          {['all', ...CHIP_CODES].map(lang => (
+            <button key={lang} data-lang-chip={lang} onClick={() => setFilter(lang)} aria-pressed={filter === lang}
               className={`shrink-0 px-3.5 py-1.5 rounded-full text-sm font-bold border-2 whitespace-nowrap transition-colors ${filter === lang ? 'bg-navy text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
               {lang === 'all' ? t('classes.all') : `${LANGS[lang].flag} ${LANGS[lang].name}`}
               {allUpcoming && (
@@ -235,9 +257,9 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
           ))}
         </div>
 
-        {tab === 'assignments' ? (
+        {activeTab === 'assignments' ? (
           <AssignmentBoard language={filter} currentUser={currentUser} langs={LANGS} />
-        ) : tab === 'requests' ? (
+        ) : activeTab === 'requests' ? (
           <ClassRequests language={filter} level={levelFilter} currentUser={currentUser} langs={LANGS} />
         ) : (
         <>
@@ -292,7 +314,7 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
           {/* A guide page links straight here already filtered to its own
               language and level, so this is what its reader sees when nobody
               teaches that combination yet: ask for the class instead. */}
-          {!loading && classes.length === 0 && (
+          {!loading && classes.length === 0 && !alertOnly && (
             <div className="border-2 border-dashed border-navy rounded-2xl p-5 md:p-6 bg-brand-yellow/10">
               <p className="font-display font-extrabold text-navy text-lg">
                 🙋 {emptyLabel ? t('classes.emptyFilteredTitle', { what: emptyLabel }) : t('classes.emptyTitle')}
@@ -305,6 +327,14 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
                 </button>
                 <a href={teachThisHref} className="text-navy/70 text-sm font-bold hover:text-navy underline">{t('classes.emptyTeachCta')}</a>
               </div>
+            </div>
+          )}
+
+          {!loading && classes.length === 0 && alertOnly && (
+            <div className="border-2 border-dashed border-navy rounded-2xl p-5 md:p-6 bg-brand-yellow/10">
+              <p className="font-display font-extrabold text-navy text-lg">
+                🙋 {t('classes.emptyFilteredTitle', { what: LANGS[filter].name })}
+              </p>
             </div>
           )}
 
