@@ -228,12 +228,15 @@ export default function ClassesBrowseClient({ initialClasses = [], serverFetched
           </div>
         )}
 
+        {/* A third look again: padded capsule with inner pills, rather than
+            SegmentedTabs' flush halves. Left as it is — matching them up is a
+            design decision, not a cleanup. */}
         {!alertOnly && (
-        <div className="flex gap-1 mb-4 bg-white border-2 border-navy rounded-full p-1 w-fit max-w-full overflow-x-auto">
+        <div role="tablist" className="flex gap-1 mb-4 bg-white border-2 border-navy rounded-full p-1 w-fit max-w-full overflow-x-auto">
           {[['classes', t('requests.tabClasses')],
             ['requests', t('requests.tabRequests')],
             ['assignments', t('assignments.tab')]].map(([key, label]) => (
-            <button key={key} onClick={() => setTab(key)}
+            <button key={key} type="button" role="tab" aria-selected={tab === key} onClick={() => setTab(key)}
               className={`px-4 md:px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors ${tab === key ? 'bg-navy text-white' : 'text-navy/65 hover:text-navy'}`}>
               {label}
             </button>

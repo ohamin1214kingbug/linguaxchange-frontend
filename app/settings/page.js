@@ -7,6 +7,7 @@ import { detectTimezone, formatDay } from '../../lib/timezone'
 import Navbar from '../../components/Navbar'
 import { CLASS_SIZE_OPTIONS } from '../../lib/classSize'
 import PushToggle from '../../components/PushToggle'
+import Tabs from '../../components/Tabs'
 
 const API = ''
 
@@ -352,29 +353,14 @@ export default function SettingsPage() {
           </button>
         </p>
 
-        {/* Wraps like components/Tabs.js. A sideways-scrolling row hid four of
-            the six sections past the edge of a phone, with nothing to show
-            they were there. Not the shared component: Delete account keeps
-            its red active state. */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          {[
-            { key: 'prefs', label: 'settings.displayPrefs' },
-            { key: 'university', label: 'university.title' },
-            ...(hasTaught ? [{ key: 'teaching', label: 'settings.teachingDefaults' }] : []),
-            { key: 'password', label: 'settings.changePassword' },
-            { key: 'data', label: 'settings.yourData' },
-            { key: 'danger', label: 'settings.deleteAccount' }
-          ].map(tb => (
-            <button key={tb.key} type="button" onClick={() => setTab(tb.key)}
-              className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-bold text-sm whitespace-nowrap border-2 transition-colors ${
-                tab === tb.key
-                  ? tb.key === 'danger' ? 'bg-brand-red text-white border-navy' : 'bg-navy text-white border-navy'
-                  : 'bg-white text-navy/65 border-navy/20 hover:border-navy hover:text-navy'
-              }`}>
-              {t(tb.label)}
-            </button>
-          ))}
-        </div>
+        <Tabs active={tab} onChange={setTab} tabs={[
+          { key: 'prefs', label: t('settings.displayPrefs') },
+          { key: 'university', label: t('university.title') },
+          ...(hasTaught ? [{ key: 'teaching', label: t('settings.teachingDefaults') }] : []),
+          { key: 'password', label: t('settings.changePassword') },
+          { key: 'data', label: t('settings.yourData') },
+          { key: 'danger', label: t('settings.deleteAccount'), danger: true },
+        ]} />
 
         {/* Display preferences */}
         {tab === 'prefs' && (

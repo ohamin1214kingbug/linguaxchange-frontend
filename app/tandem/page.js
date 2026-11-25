@@ -8,6 +8,7 @@ import { useLanguage } from '../../lib/i18n/LanguageContext'
 import { languageOptions, levelLabel } from '../../lib/languages'
 import { formatInTimezone } from '../../lib/timezone'
 import { userCode } from '../../lib/userCode'
+import SegmentedTabs from '../../components/SegmentedTabs'
 
 const CARD = 'bg-white rounded-2xl border-2 border-navy shadow-[4px_4px_0_var(--color-navy)] p-4'
 const PRIMARY = 'inline-flex items-center gap-1.5 border-2 border-navy rounded-full px-4 py-1.5 text-sm font-bold text-white bg-brand-red hover:bg-brand-red-dark transition-colors disabled:opacity-40'
@@ -67,12 +68,10 @@ function Tandem() {
         <header>
           <h1 className="font-display font-extrabold text-3xl md:text-4xl text-navy">🤝 {t('tandem.title')}</h1>
           <p className="text-navy/65 text-sm md:text-base mt-1">{t('tandem.subtitle')}</p>
-          <div role="tablist" className="inline-flex border-2 border-navy rounded-full bg-white overflow-hidden mt-4">
-            {[['partners', t('tandem.tabPartners')], ['groups', `👥 ${t('tandem.tabGroups')}`]].map(([key, label]) => (
-              <button key={key} role="tab" aria-selected={tab === key} onClick={() => pick(key)}
-                className={`px-4 py-1.5 text-sm font-bold ${tab === key ? 'bg-navy text-white' : 'text-navy'}`}>{label}</button>
-            ))}
-          </div>
+          <SegmentedTabs active={tab} onChange={pick} className="mt-4" tabs={[
+            { key: 'partners', label: t('tandem.tabPartners') },
+            { key: 'groups', label: `👥 ${t('tandem.tabGroups')}` },
+          ]} />
         </header>
         {tab === 'partners' ? <Partners t={t} lang={lang} router={router}/> : <Groups t={t} lang={lang}/>}
       </div>

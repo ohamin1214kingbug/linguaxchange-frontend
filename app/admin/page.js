@@ -11,6 +11,7 @@ import { nextSessionDate, lastSessionDate } from '../../lib/classSchedule'
 import { regionOf } from '../../lib/countries'
 import { REGIONS } from '../../lib/regions'
 import { getLocale } from '../../lib/i18n/locale'
+import Tabs from '../../components/Tabs'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const startsWithinDays = (date, days) => date - new Date() < days * DAY_MS
@@ -670,36 +671,15 @@ export default function Admin() {
           ))}
         </div>
 
-        <div className="flex gap-3 mb-6 flex-wrap">
-          <button onClick={() => setTab('users')}
-            className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'users' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
-            👥 Members
-          </button>
-          <button onClick={() => setTab('classes')}
-            className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'classes' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
-            📚 Classes
-          </button>
-          <button onClick={() => setTab('reports')}
-            className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'reports' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
-            🚩 Reports
-          </button>
-          <button onClick={() => setTab('credits')}
-            className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'credits' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
-            💰 Credits
-          </button>
-          <button onClick={() => setTab('resources')}
-            className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'resources' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
-            📄 Resources
-          </button>
-          <button onClick={() => setTab('growth')}
-            className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'growth' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
-            📈 Growth
-          </button>
-          <button onClick={() => setTab('activity')}
-            className={`px-5 py-2 rounded-full font-bold text-sm border-2 transition-colors ${tab === 'activity' ? 'bg-brand-red text-white border-navy' : 'bg-white border-navy/15 text-navy hover:border-navy/40'}`}>
-            🧾 Activity
-          </button>
-        </div>
+        <Tabs active={tab} onChange={setTab} tabs={[
+          { key: 'users', label: '👥 Members' },
+          { key: 'classes', label: '📚 Classes' },
+          { key: 'reports', label: '🚩 Reports' },
+          { key: 'credits', label: '💰 Credits' },
+          { key: 'resources', label: '📄 Resources' },
+          { key: 'growth', label: '📈 Growth' },
+          { key: 'activity', label: '🧾 Activity' },
+        ]} />
 
         {tab === 'growth' && <AdminGrowth />}
         {tab === 'activity' && <AdminActivity />}

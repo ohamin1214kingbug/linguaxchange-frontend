@@ -4,6 +4,7 @@ import { useLanguage } from '../../lib/i18n/LanguageContext'
 import { languageOptions, LEVELS, LANGUAGE_COLORS } from '../../lib/languages'
 import Link from 'next/link'
 import Navbar from '../../components/Navbar'
+import SegmentedTabs from '../../components/SegmentedTabs'
 
 const API = ''
 
@@ -24,6 +25,12 @@ export default function ResourcesGridClient({ initialResources = [], serverFetch
   const [resources, setResources] = useState(initialResources)
   const [loading, setLoading] = useState(!serverFetched)
   const [tab, setTab] = useState(initialTab)
+
+  // Mirrored in the URL so a tab can be linked to.
+  const pickTab = key => {
+    setTab(key)
+    window.history.replaceState(null, '', key === 'teachers' ? '/resources?tab=teachers' : '/resources')
+  }
 
   useEffect(() => {
     // The server already fetched this; refetching would only repeat a request
@@ -55,13 +62,10 @@ export default function ResourcesGridClient({ initialResources = [], serverFetch
 
         {/* Study guides and teachers' guides, kept apart (owner choice,
             2026-11-19). The tab is mirrored in the URL so it can be linked. */}
-        <div role="tablist" className="inline-flex border-2 border-navy rounded-full bg-white overflow-hidden mb-7">
-          {[['study', `📚 ${t('resources.tabStudy')}`], ['teachers', `🧑‍🏫 ${t('resources.tabTeachers')}`]].map(([key, label]) => (
-            <button key={key} role="tab" aria-selected={tab === key}
-              onClick={() => { setTab(key); window.history.replaceState(null, '', key === 'teachers' ? '/resources?tab=teachers' : '/resources') }}
-              className={`px-4 py-1.5 text-sm font-bold ${tab === key ? 'bg-navy text-white' : 'text-navy'}`}>{label}</button>
-          ))}
-        </div>
+        <SegmentedTabs active={tab} onChange={pickTab} className="mb-7" tabs={[
+          { key: 'study', label: `📚 ${t('resources.tabStudy')}` },
+          { key: 'teachers', label: `🧑‍🏫 ${t('resources.tabTeachers')}` },
+        ]} />
 
         {tab === 'teachers' && (
           <div className="flex flex-col gap-5 max-w-2xl">
