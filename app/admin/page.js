@@ -671,7 +671,7 @@ export default function Admin() {
           ))}
         </div>
 
-        <Tabs active={tab} onChange={setTab} tabs={[
+        <Tabs active={tab} onChange={setTab} tone="red" tabs={[
           { key: 'users', label: '👥 Members' },
           { key: 'classes', label: '📚 Classes' },
           { key: 'reports', label: '🚩 Reports' },
