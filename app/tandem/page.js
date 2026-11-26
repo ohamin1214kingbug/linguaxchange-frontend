@@ -125,10 +125,15 @@ function Partners({ t, lang, router }) {
   const invite = async () => {
     const me = readMe()
     const link = `https://gongbuleng.com/?invite=${userCode(me?.id)}`
-    try {
-      if (navigator.share) await navigator.share({ url: link, text: t('tandem.inviteText') })
-      else { await navigator.clipboard.writeText(link); setCopied(true) }
-    } catch {}
+    // Share menu on phones only: a computer's (macOS's) has no Copy, so the
+    // link could not be copied there (owner report, 2026-11-27). Same rule as
+    // components/ShareClass.js.
+    if (window.matchMedia?.('(pointer: coarse)').matches && navigator.share) {
+      try { await navigator.share({ url: link, text: t('tandem.inviteText') }); return } catch (e) {
+        if (e?.name === 'AbortError') return
+      }
+    }
+    try { await navigator.clipboard.writeText(`${t('tandem.inviteText')} ${link}`); setCopied(true) } catch {}
   }
 
   if (!data) return null
