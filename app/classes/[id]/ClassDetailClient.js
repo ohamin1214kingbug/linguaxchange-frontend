@@ -7,6 +7,7 @@ import { useLanguage } from '../../../lib/i18n/LanguageContext'
 import Navbar from '../../../components/Navbar'
 import ClassChat from '../../../components/ClassChat'
 import ShareClass from '../../../components/ShareClass'
+import LateStart, { lateSession } from '../../../components/LateStart'
 import { nextSession } from '../../../components/ClassCard'
 import { fetchJoinedClassIds } from '../../../lib/enrollments'
 import { rememberReturnPath } from '../../../lib/auth'
@@ -162,12 +163,13 @@ export default function ClassDetailClient({ initialClass = null }) {
     </main>
   )
 
-  // Materials stay editable after the class has happened — a recap or
-  // homework handed out afterwards is normal teaching. Only a cancelled
-  // class closes the door, which the backend enforces; the teacher would
-  // have no route to it here anyway.
+  // Materials stay editable after the class has happened: a recap or
+  // homework handed out afterwards is normal teaching.
   const isTeacher = currentUser?.id === cls.teacher?.id
-  const canEditMaterials = isTeacher && cls.status !== 'cancelled'
+  // Editable after a cancellation too (owner, 2026-11-27): the PDF and the
+  // chat are how the teacher still helps the students.
+  const canEditMaterials = isTeacher
+  const late = isTeacher && mounted ? lateSession(cls.class_sessions) : null
   const next = mounted ? nextSession(cls) : null
   const full = next ? (cls.max_students || 0) - (next.taken ?? 0) <= 0 : true
 
@@ -252,6 +254,13 @@ export default function ClassDetailClient({ initialClass = null }) {
               </dd>
             </div>
           </dl>
+
+          {late && (
+            <div className="mt-5">
+              <LateStart session={late} user={currentUser}
+                onMoved={moved => setCls(c => ({ ...c, class_sessions: c.class_sessions.map(x => (x.id === moved.id ? { ...x, ...moved } : x)) }))} />
+            </div>
+          )}
 
           {cls.class_sessions?.length > 0 && (
             <>
