@@ -22,7 +22,10 @@ export default function AssignmentPage({ params }) {
   const [error, setError] = useState('')
 
   const load = () => {
-    fetch(`${API}/api/assignments/${id}`)
+    // Signed in, so an answered request opens for its student and reviewer:
+    // to everyone else the API answers 404 (owner, 2026-11-27).
+    const token = localStorage.getItem('token')
+    fetch(`${API}/api/assignments/${id}`, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
       .then(r => (r.ok ? r.json() : null))
       .then(setRequest)
       .catch(() => setRequest(null))

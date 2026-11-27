@@ -10,6 +10,7 @@ export default function AssignmentBoard({ language, currentUser, langs }) {
   const { t } = useLanguage()
   const [requests, setRequests] = useState([])
   const [mine, setMine] = useState([])
+  const [given, setGiven] = useState([])
   const [loading, setLoading] = useState(true)
   const [posting, setPosting] = useState(false)
 
@@ -26,7 +27,15 @@ export default function AssignmentBoard({ language, currentUser, langs }) {
     // for — the notification carries no link, so this list is the only route
     // back to it. Deliberately unfiltered by language: it is your own list,
     // not a search.
-    if (!currentUser) { setMine([]); return }
+    if (!currentUser) { setMine([]); setGiven([]); return }
+    // Answered requests leave the board and are private to the student and
+    // the reviewer, so this is a reviewer's only way back to what they wrote.
+    fetch(`${API}/api/assignments/given`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+      .then(r => (r.ok ? r.json() : []))
+      .then(d => setGiven(Array.isArray(d) ? d : []))
+      .catch(() => setGiven([]))
     fetch(`${API}/api/assignments/mine`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
@@ -77,6 +86,14 @@ export default function AssignmentBoard({ language, currentUser, langs }) {
       )}
 
       {posting && <AssignmentForm onPosted={() => { setPosting(false); load() }} />}
+
+      {given.length > 0 && (
+        <div className="mb-8">
+          <p className="font-display font-extrabold text-navy mb-3">{t('assignments.given')}</p>
+          {given.map(r => card(r, false))}
+          {mine.length === 0 && <p className="font-display font-extrabold text-navy mb-3 mt-8">{t('assignments.openBoard')}</p>}
+        </div>
+      )}
 
       {mine.length > 0 && (
         <div className="mb-8">
