@@ -4,12 +4,14 @@ import Navbar from '../../components/Navbar'
 import { useLanguage } from '../../lib/i18n/LanguageContext'
 import { userCode } from '../../lib/userCode'
 import { languageOptions, levelLabel } from '../../lib/languages'
+import TandemByLanguage from '../../components/TandemByLanguage'
 
 const API = ''
 
-// A lookup, not a directory. An empty box shows nothing rather than
-// everyone: the point is reaching a person you already have in mind — the
-// teacher from a class, whoever left you feedback — not browsing members.
+// The search is a lookup, not a directory: an empty box shows nothing
+// rather than everyone, for reaching a person you already have in mind.
+// Browsing is only for members who chose to be found: the tandem section
+// below lists those who switched on "Find me a partner" (owner, 2026-11-27).
 export default function People() {
   const { t } = useLanguage()
   const [q, setQ] = useState('')
@@ -153,6 +155,8 @@ export default function People() {
             ))}
           </div>
         )}
+
+        <TandemByLanguage />
       </div>
     </main>
   )
