@@ -251,7 +251,11 @@ export default function Classroom() {
       {/* The class's PDF, notes and people stay one tap away during the call;
           before, the classroom showed the video and nothing else. */}
       <div className="flex-1 flex flex-col lg:flex-row min-h-0">
-        <div ref={containerRef} className={`flex-1 min-w-0 ${panelOpen ? 'h-[55vh]' : 'h-[calc(100vh-65px)]'} lg:h-[calc(100vh-65px)]`} />
+        {/* flex-none below lg: in this column a flex-1 item sizes from the
+            leftover space and ignores its height, so with the panel open the
+            tall panel took it all and the call shrank to an iframe's default
+            150px (owner report, 2026-11-27). Side by side on lg, flex-1 is right. */}
+        <div ref={containerRef} className={`flex-none lg:flex-1 min-w-0 ${panelOpen ? 'h-[55vh]' : 'h-[calc(100vh-65px)]'} lg:h-[calc(100vh-65px)]`} />
         {classInfo && (
           <aside className={`${panelOpen ? 'block' : 'hidden'} lg:block lg:w-80 shrink-0 bg-cream text-navy border-t-2 lg:border-t-0 lg:border-l-2 border-navy overflow-y-auto lg:h-[calc(100vh-65px)]`}>
             <div className="flex gap-2 p-3 border-b-2 border-navy/10 sticky top-0 bg-cream">
