@@ -3,11 +3,14 @@ import { LEVELS, levelLabel } from '../lib/languages'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../lib/i18n/LanguageContext'
-import DateTimePicker from './DateTimePicker'
 import { formatInTimezone, asUtcDate } from '../lib/timezone'
 import { CLASS_SIZE_OPTIONS, DEFAULT_CLASS_SIZE } from '../lib/classSize'
 import { rememberReturnPath } from '../lib/auth'
 import { saveRequestDraft, takeRequestDraft } from '../lib/requestDraft'
+import { getLocale } from '../lib/i18n/locale'
+import { detectTimezone } from '../lib/timezone'
+import FreeHoursGrid from './FreeHoursGrid'
+import RequestFreeHours from './RequestFreeHours'
 
 const API = ''
 
@@ -32,8 +35,9 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
   const [posted, setPosted] = useState(false)
   const [form, setForm] = useState({
     language_code: '', level: '', topic: '', details: '',
-    max_students: DEFAULT_CLASS_SIZE, preferred_time: '', time_flexible: true
+    max_students: DEFAULT_CLASS_SIZE, slots: []
   })
+  const [gridFor, setGridFor] = useState(null) // request id whose free-hours panel is open
 
   // Back from signing up with a request they had already typed: reopen it.
   useEffect(() => {
@@ -84,11 +88,15 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
 
   const submit = async () => {
     setError('')
+    if (!form.slots?.length) { setError('requests.freeNeedOne'); return }
     setBusy('form')
     try {
+      // Free hours from the grid; the backend makes the earliest one the
+      // preferred time (owner, 2026-11-27).
+      const { slots, language_code, level, topic, details, max_students } = form
       const res = await authed('/api/class-requests', {
         method: 'POST',
-        body: JSON.stringify({ ...form, level: form.level || null, preferred_time: form.preferred_time ? new Date(form.preferred_time).toISOString() : '' })
+        body: JSON.stringify({ language_code, level: level || null, topic, details, max_students, slots })
       })
       if (!res) return
       const data = await res.json()
@@ -96,7 +104,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
       else {
         setShowForm(false)
         setPosted(true)
-        setForm({ language_code: '', level: '', topic: '', details: '', max_students: DEFAULT_CLASS_SIZE, preferred_time: '', time_flexible: true })
+        setForm({ language_code: '', level: '', topic: '', details: '', max_students: DEFAULT_CLASS_SIZE, slots: [] })
         // Posting spends a credit, so the navbar counter is now stale.
         window.dispatchEvent(new Event('credits-changed'))
         load()
@@ -144,13 +152,14 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
     }
   }
 
-  const teachHref = (req) => '/classes/create?' + new URLSearchParams({
+  // slot: the hour a teacher picked on the free-hours map, if any.
+  const teachHref = (req, slot) => '/classes/create?' + new URLSearchParams({
     request: req.id,
     language_code: req.language_code,
     level: req.level || '',
     topic: req.topic,
     max_students: req.max_students,
-    preferred_time: req.preferred_time
+    preferred_time: slot || req.preferred_time
   }).toString()
 
   const field = 'w-full border-2 border-navy/20 rounded-xl px-4 py-2.5 text-navy focus:border-brand-red focus:outline-none transition-colors'
@@ -233,18 +242,15 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
                 ))}
               </select>
             </div>
-            <div>
-              <label className={label}>{t('requests.timeLabel')}</label>
-              <DateTimePicker value={form.preferred_time} onChange={v => setForm({ ...form, preferred_time: v })} t={t}/>
-            </div>
           </div>
 
-          <label className="flex items-start gap-3 cursor-pointer bg-cream border-2 border-navy/10 rounded-xl px-4 py-3">
-            <input type="checkbox" checked={form.time_flexible}
-              onChange={e => setForm({ ...form, time_flexible: e.target.checked })}
-              className="mt-0.5 w-4 h-4 accent-brand-red"/>
-            <span className="text-sm text-navy font-medium">{t('requests.flexibleLabel')}</span>
-          </label>
+          <div>
+            <label className={label}>{t('requests.freeTitle')}</label>
+            <p className="text-navy/65 text-xs mb-2">{t('requests.freeHelp', { tz: currentUser?.timezone || detectTimezone() || 'UTC' })}</p>
+            <FreeHoursGrid tz={currentUser?.timezone || detectTimezone() || 'UTC'} locale={getLocale()}
+              value={new Set(form.slots || [])} onChange={v => setForm({ ...form, slots: [...v] })} />
+            <p className="text-sm font-bold text-navy mt-2">{t('requests.freeMarked', { n: form.slots?.length || 0 })}</p>
+          </div>
 
           <p className="text-navy/65 text-xs">{t('requests.costNote')}</p>
 
@@ -277,7 +283,7 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
                 )}
                 <span className={`px-2 py-0.5 rounded-full text-xs font-bold border ${
                   hours < 3 ? 'bg-brand-red/10 text-brand-red border-brand-red/30' : 'bg-navy/5 text-navy/65 border-navy/10'}`}>
-                  ⏳ {hours < 1 ? t('requests.expiresSoon') : t('requests.expiresIn', { n: hours })}
+                  ⏳ {hours < 1 ? t('requests.expiresSoon') : hours >= 48 ? t('requests.expiresInDays', { n: Math.floor(hours / 24) }) : t('requests.expiresIn', { n: hours })}
                 </span>
                 {req.time_flexible && (
                   <span className="bg-brand-yellow/20 text-navy px-2 py-0.5 rounded-full text-xs font-bold border border-brand-yellow">
@@ -298,7 +304,19 @@ export default function ClassRequests({ language, level, currentUser, langs }) {
                 {interested.length > 0 && ` · 🙋 ${t('requests.interestedCount', { n: interested.length })}`}
               </p>
 
+              {gridFor === req.id && (
+                <div className="border-2 border-navy/10 rounded-xl p-3 mb-4 bg-cream/40">
+                  <RequestFreeHours req={req} currentUser={currentUser} teachHref={teachHref} />
+                </div>
+              )}
+
               <div className="flex flex-wrap gap-2">
+                <button type="button" onClick={() => {
+                  if (!localStorage.getItem('token')) { authed('/'); return }
+                  setGridFor(g => (g === req.id ? null : req.id))
+                }} className="bg-white text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy hover:bg-cream transition-colors">
+                  🗓️ {gridFor === req.id ? t('requests.freeHide') : t('requests.freeButton')}
+                </button>
                 {inChat && offers.length > 0 && (
                   <a href={`/chat/request/${req.id}`} className="bg-brand-yellow text-navy px-4 py-2 rounded-full text-sm font-bold border-2 border-navy">
                     {t('reqchat.openChat', { n: offers.length })}
