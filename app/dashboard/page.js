@@ -13,6 +13,7 @@ import InviteCard from '../../components/InviteCard'
 import Panel from '../../components/Panel'
 import ChatList, { useChats } from '../../components/ChatsPanel'
 import SurveyCard from '../../components/SurveyCard'
+import InterestsCard from '../../components/InterestsCard'
 import TandemCard from '../../components/TandemCard'
 import ShareClass from '../../components/ShareClass'
 import TeachNudge from '../../components/TeachNudge'
@@ -530,6 +531,7 @@ export default function Dashboard() {
           </div>
         </div>
 
+        <InterestsCard profile={profile} />
         <SurveyCard />
         <TandemCard />
 
