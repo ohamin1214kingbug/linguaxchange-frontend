@@ -10,6 +10,7 @@ import { formatInTimezone, formatDay } from '../../../lib/timezone'
 import { nextSessionDate, lastSessionDate } from '../../../lib/classSchedule'
 import { fetchJoinedClassIds } from '../../../lib/enrollments'
 import { getLocale } from '../../../lib/i18n/locale'
+import { InterestChips } from '../../../components/Interests'
 
 const API = ''
 
@@ -401,6 +402,8 @@ export default function TeacherProfile() {
                   ))}
                 </div>
               )}
+
+              {teacher.interests?.length > 0 && <InterestChips interests={teacher.interests} small={false} />}
 
               {teacher.bio && (
                 <p className="text-navy/70 mt-4 leading-relaxed">{teacher.bio}</p>

@@ -5,6 +5,7 @@ import { useLanguage } from '../lib/i18n/LanguageContext'
 import { languageOptions, levelLabel } from '../lib/languages'
 import { userCode } from '../lib/userCode'
 import { setTandemOpen } from './TandemSwitch'
+import { InterestChips } from './Interests'
 
 // People page: members who switched on "Find me a partner", by the language
 // they teach (backend GET /api/tandems/people; owner, 2026-11-27). Saying
@@ -128,6 +129,7 @@ export default function TandemByLanguage() {
                 </p>
               </div>
             </div>
+            <InterestChips interests={m.interests} mine={data.my_interests} />
             {m.live ? (
               <Link href="/tandem" className={`${BUTTON} mt-3`}>🤝 {t('people.inTandem')}</Link>
             ) : sent.has(m.id) ? (

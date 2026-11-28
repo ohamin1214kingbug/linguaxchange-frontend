@@ -9,6 +9,7 @@ import { languageOptions, levelLabel } from '../../lib/languages'
 import { formatInTimezone } from '../../lib/timezone'
 import { userCode } from '../../lib/userCode'
 import SegmentedTabs from '../../components/SegmentedTabs'
+import { InterestChips } from '../../components/Interests'
 
 const CARD = 'bg-white rounded-2xl border-2 border-navy shadow-[4px_4px_0_var(--color-navy)] p-4'
 const PRIMARY = 'inline-flex items-center gap-1.5 border-2 border-navy rounded-full px-4 py-1.5 text-sm font-bold text-white bg-brand-red hover:bg-brand-red-dark transition-colors disabled:opacity-40'
@@ -268,6 +269,7 @@ function Partners({ t, lang, router }) {
                 </p>
               </div>
             </div>
+            <InterestChips interests={m.interests} mine={data.my_interests} />
             {asking?.id === m.id ? (
               <form className="mt-3 space-y-2" onSubmit={e => { e.preventDefault(); sendHello() }}>
                 <textarea value={hello} onChange={e => setHello(e.target.value)} maxLength={300} rows={3} autoFocus
