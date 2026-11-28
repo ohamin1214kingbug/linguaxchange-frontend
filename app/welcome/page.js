@@ -10,6 +10,7 @@ import { useLanguage } from '../../lib/i18n/LanguageContext'
 import { languageOptions } from '../../lib/languages'
 import { nextSessionDate } from '../../lib/classSchedule'
 import { formatInTimezone } from '../../lib/timezone'
+import { InterestPicker } from '../../components/Interests'
 
 const TEACH_LEVELS = ['Native', 'C2', 'C1']
 const LEARN_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1']
@@ -56,6 +57,7 @@ export default function WelcomePage() {
   const [tandemAsk, setTandemAsk] = useState(true)
   const [inviteCopied, setInviteCopied] = useState(false)
   const [country, setCountry] = useState('')
+  const [interests, setInterests] = useState([])
 
   const auth = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
 
@@ -107,9 +109,14 @@ export default function WelcomePage() {
       // Optional country (owner request, 2026-11-22): Google signups were
       // never asked, so the admin's region list was mostly "Not given".
       // Best effort: a failed save never blocks finishing.
-      if (country && country !== (me.nationality || '')) {
+      // Interest tags (owner, 2026-11-28), optional, saved with the country.
+      const extra = {
+        ...(country && country !== (me.nationality || '') ? { nationality: country } : {}),
+        ...(interests.length ? { interests } : {}),
+      }
+      if (Object.keys(extra).length) {
         await fetch(`/api/users/${me.id}`, {
-          method: 'PATCH', headers: { 'Content-Type': 'application/json', ...auth() }, body: JSON.stringify({ nationality: country }),
+          method: 'PATCH', headers: { 'Content-Type': 'application/json', ...auth() }, body: JSON.stringify(extra),
         }).catch(() => {})
       }
       let saved = null
@@ -244,6 +251,11 @@ export default function WelcomePage() {
                 {countryOptions(language).map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
               </select>
             </label>
+            <div className="border-t-2 border-dashed border-navy/15 mt-5 pt-4">
+              <p className="font-display font-extrabold text-navy text-lg">{t('interests.title')} <span className="font-sans text-sm font-semibold text-navy/55">{t('interests.optional')}</span></p>
+              <p className="text-navy/65 text-sm mt-0.5 mb-3">{t('interests.help')}</p>
+              <InterestPicker value={interests} onChange={setInterests} />
+            </div>
             <button type="button" disabled={busy || !photoChoice || (photoChoice === 'upload' && !upload)} onClick={() => finish(photoChoice === 'keep')} className={NEXT}>
               {busy ? t('welcome.saving') : t('welcome.finish')}
             </button>

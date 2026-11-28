@@ -12,6 +12,7 @@ import Tabs from '../../components/Tabs'
 import { countryOptions } from '../../lib/countries'
 import { userCode } from '../../lib/userCode'
 import { getLocale } from '../../lib/i18n/locale'
+import { InterestPicker } from '../../components/Interests'
 
 const API = ''
 
@@ -119,7 +120,7 @@ export default function ProfilePage() {
   const [form, setForm] = useState({
     first_name: '', last_name: '', nationality: '', bio: '',
     photo_url: '', teach_language: '', teach_level: '',
-    learn_languages: [], learn_details: {}, has_certificate: null, certificate_explanation: ''
+    learn_languages: [], learn_details: {}, has_certificate: null, certificate_explanation: '', interests: []
   })
 
   const LANGUAGES = [
@@ -164,7 +165,8 @@ export default function ProfilePage() {
           learn_languages: data.learn_languages || [],
           learn_details: data.learn_details || {},
           has_certificate: data.has_certificate ?? null,
-          certificate_explanation: data.certificate_explanation || ''
+          certificate_explanation: data.certificate_explanation || '',
+          interests: data.interests || []
         })
       })
     // For the checklist's "first class" step and the preview's next class.
@@ -575,6 +577,15 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        )}
+
+        {/* Interest tags (owner, 2026-11-28): saved with the rest of the form. */}
+        {tab === 'learning' && (
+        <div className="bg-white rounded-2xl p-6 border-2 border-navy mb-8">
+          <h2 className="font-display font-bold text-navy mb-1">{t('interests.title')}</h2>
+          <p className="text-navy/65 text-sm mb-4">{t('interests.help')}</p>
+          <InterestPicker value={form.interests} onChange={v => setForm(f => ({ ...f, interests: v }))} />
+        </div>
         )}
 
         {/* Learning */}
